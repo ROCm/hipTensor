@@ -42,6 +42,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_CK_CLONE_DIRECTORY  ${CMAKE_BINARY_DIR}/composable_kernel)
+set(CMAKE_CK_CLONE_LIB  ${CMAKE_CK_CLONE_DIRECTORY}/build/lib)
 
 ExternalProject_Add(ck
 	SOURCE_DIR       ${CMAKE_CK_CLONE_DIRECTORY}
@@ -63,10 +64,7 @@ ExternalProject_Add(ck
 
 )
 
+add_library(ck_dep SHARED IMPORTED)
+set_target_properties(ck_dep PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libhost_tensor.a)
+
 add_subdirectory(src)
-
-#include(${ucm_SOURCE_DIR}/cmake/ucm.cmake)
-
-#ucm_print_flags()
-
-#add_executable(example example.cpp)
