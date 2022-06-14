@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 project(hipTENSOR)
 
-include(cmake/GitUtils.cmake)
+include(ExternalProject)
+
+if(NOT BUILD_DEV)
+  set(BUILD_DEV "OFF" CACHE STRING
+    "Choose the type of build, options are: ON, OFF."
+    FORCE)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING
@@ -9,25 +15,55 @@ if(NOT CMAKE_BUILD_TYPE)
     FORCE)
 endif()
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
-
-set(CK_DEP_DIR "external")
-
-if(NOT EXISTS ${PROJECT_SOURCE_DIR}/${CK_DEP_DIR})
-  message(STATUS "Creating the external directory for the composable kernels.......")
-  file(MAKE_DIRECTORY ${CK_DEP_DIR})
-else()
-  message(STATUS "external dependencies directory already present")
+if(NOT CMAKE_CXX_FLAGS)
+  set(CMAKE_CXX_FLAGS "--offload-arch=gfx908 --offload-arch=gfx90a -O3" CACHE STRING
+    "Choose the type of chipset need to build: Default building for MI200 board"
+    FORCE)
 endif()
 
-git_clone(
-	PROJECT_NAME    composable_kernels
-        GIT_URL         "https://github.com/ROCmSoftwarePlatform/composable_kernel.git"
-        GIT_BRANCH      contraction
-	DIRECTORY       ${PROJECT_SOURCE_DIR}/${CK_DEP_DIR}
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_CXX_COMPILER)
+  set(CMAKE_CXX_COMPILER "/opt/rocm/bin/hipcc" CACHE STRING
+    "Choose the type of compiler to build: Default point to the hipcc"
+    FORCE)
+endif()
+
+
+if(NOT CMAKE_PREFIX_PATH)
+  set(CMAKE_PREFIX_PATH "/opt/rocm" CACHE STRING
+    "Choose the path to be pointed: Default point to /opt/rocm"
+    FORCE)
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_CK_CLONE_DIRECTORY  ${CMAKE_BINARY_DIR}/composable_kernel)
+
+ExternalProject_Add(ck
+	SOURCE_DIR       ${CMAKE_CK_CLONE_DIRECTORY}
+	GIT_REPOSITORY   https://github.com/ROCmSoftwarePlatform/composable_kernel.git
+	GIT_TAG          origin/contraction
+	GIT_PROGRESS     true
+	LIST_SEPARATOR   "|"
+	PATCH_COMMAND    mkdir build
+	BINARY_DIR       ${CMAKE_CK_CLONE_DIRECTORY}/build
+	CMAKE_ARGS       -D BUILD_DEV=${BUILD_DEV}
+			 -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+			 -D CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+			 -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+			 -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+
+	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j examples
+	INSTALL_COMMAND  ""
+	BUILD_ALWAYS     FALSE
+
 )
+
+add_subdirectory(src)
 
 #include(${ucm_SOURCE_DIR}/cmake/ucm.cmake)
 
