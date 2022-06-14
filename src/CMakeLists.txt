@@ -1,6 +1,5 @@
-
-message("CK_CLONE_DIRECTORY: ${CMAKE_CK_CLONE_DIRECTORY}")
 include_directories(BEFORE
+    ${PROJECT_SOURCE_DIR}/include/utility
     ${CMAKE_CK_CLONE_DIRECTORY}/external/include/half
     ${CMAKE_CK_CLONE_DIRECTORY}/include
     ${CMAKE_CK_CLONE_DIRECTORY}/include/ck
@@ -21,15 +20,12 @@ include_directories(BEFORE
     ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/utility
 )
 
-
-#find_package(composable_kernel COMPONENTS host_tensor REQUIRED PATHS ${CMAKE_CK_CLONE_DIRECTORY}/build)
-
 add_custom_target(src)
 function(add_executable_no_testing BINARY_NAME FILE_NAME)
-    message("adding binary ${BINARY_NAME}")
+    message( STATUS "adding binary ${BINARY_NAME}")
     add_executable(${BINARY_NAME} ${FILE_NAME})
-    target_link_libraries(${BINARY_NAME} -L${CMAKE_CK_CLONE_DIRECTORY}/build/lib)
-    target_link_libraries(${BINARY_NAME} libhost_tensor.a)
+    target_link_libraries(${BINARY_NAME} ck_dep)
+    add_dependencies(${BINARY_NAME} ck)
     add_dependencies(src ${BINARY_NAME})
 endfunction(add_executable_no_testing BINARY_NAME)
 

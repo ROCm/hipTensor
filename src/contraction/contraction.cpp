@@ -14,6 +14,7 @@
 #include "element_wise_operation.hpp"
 #include "reference_gemm.hpp"
 #include "gemm_specialization.hpp"
+#include "ht_tensor_generator_utility.hpp"
 
 template <ck::index_t... Is>
 using S = ck::Sequence<Is...>;
@@ -335,11 +336,11 @@ int main(int argc, char* argv[])
                                     static_cast<BDataType*>(b_ks_ns_device_buf.GetDeviceBuffer()),
                                     static_cast<CDataType*>(c_ms_ns_device_buf.GetDeviceBuffer()),
                                     a_ms_ks_lengths,
-                                    std::vector<ck::index_t>(a_ms_ks.mDesc.mStrides.begin(), a_ms_ks.mDesc.mStrides.end()),
+                                    std::vector<ck::index_t>(a_ms_ks.mDesc.GetStrides().begin(), a_ms_ks.mDesc.GetStrides().end()),
                                     b_ks_ns_lengths,
-				    std::vector<ck::index_t>(b_ks_ns.mDesc.mStrides.begin(), b_ks_ns.mDesc.mStrides.end()),
+				    std::vector<ck::index_t>(b_ks_ns.mDesc.GetStrides().begin(), b_ks_ns.mDesc.GetStrides().end()),
                                     c_ms_ns_lengths,
-                                    std::vector<ck::index_t>(c_ms_ns_host_result.mDesc.mStrides.begin(), c_ms_ns_host_result.mDesc.mStrides.end()),
+                                    std::vector<ck::index_t>(c_ms_ns_host_result.mDesc.GetStrides().begin(), c_ms_ns_host_result.mDesc.GetStrides().end()),
                                     a_element_op,
                                     b_element_op,
                                     c_element_op);
