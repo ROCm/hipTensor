@@ -50,7 +50,7 @@ ExternalProject_Add(ck
 	GIT_TAG          origin/contraction
 	GIT_PROGRESS     true
 	LIST_SEPARATOR   "|"
-	PATCH_COMMAND    mkdir build
+	PATCH_COMMAND    mkdir -p build
 	BINARY_DIR       ${CMAKE_CK_CLONE_DIRECTORY}/build
 	CMAKE_ARGS       -D BUILD_DEV=${BUILD_DEV}
 			 -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
