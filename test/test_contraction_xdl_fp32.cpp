@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "check_err.hpp"
 #include "config.hpp"
+#include "ht_tensor.hpp"
 #include "device.hpp"
 #include "host_tensor.hpp"
 #include "host_tensor_generator.hpp"
@@ -26,9 +27,9 @@ using Col = ck::tensor_layout::gemm::ColumnMajor;
 
 using PassThrough = ck::tensor_operation::element_wise::PassThrough;
 
-using ADataType   = float;
-using BDataType   = float;
-using CDataType   = float;
+typedef float ADataType;
+typedef float BDataType;
+typedef float CDataType;
 using AccDataType = float;
 
 static constexpr ck::index_t NumDimM = 2;
@@ -51,21 +52,6 @@ using DeviceOpInstance = ck::tensor_operation::device::
         DeviceContraction_Xdl_CShuffle< NumDimM, NumDimN, NumDimK,   F32,   F32,   F32,     F32,      F32, PassThrough, PassThrough, PassThrough,    GemmDefault,        1,   256,   256,   128,    16,   4,   4,   32,   32,    4,    2,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1, 16>,              4>;
 // clang-format on
 
-
-template <typename T, typename Range>
-void LogRangeToFile(std::ofstream& fs, Range&& range, std::string delim)
-{
-    bool first = true;
-    for(auto&& v : range)
-    {
-        if(first)
-            first = false;
-        else
-            fs << delim;
-        fs << static_cast<T>(v);
-    }
-    return;
-}
 
 
 // hardcoded for NumDimM == NumDimN == NumDimK == 2
@@ -234,96 +220,118 @@ int main(int argc, char* argv[])
         exit(0);
     }
 
-    std::ofstream tensorA;
-    std::ofstream tensorB;
-    std::ofstream tensorC;
+    std::ofstream tensorA, tensorB, tensorC;
+
+    typedef float floatTypeCompute;
+
+    hiptensorDataType_t typeA = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeB = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeC = HIPTENSOR_R_32F;
+    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+
+    floatTypeCompute alpha = (floatTypeCompute)1.0f;
+    floatTypeCompute beta  = (floatTypeCompute)0.0f;
+
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
 
+    /**********************
+     * Computing: C_{m,n,u,v} = A_{m,n,h,k} B_{h,k,u,v}
+     **********************/
+
+    std::vector<int> modeC{'m','n','u','v'};
+    std::vector<int> modeA{'m','n','h','k'};
+    std::vector<int> modeB{'h','k','u','v'};
+
+
+    int nmodeA = modeA.size();
+    int nmodeB = modeB.size();
+    int nmodeC = modeC.size();
+
+    std::unordered_map<int, int64_t> extent;
     
+    extent['m'] = 5;
+    extent['n'] = 6;
+    extent['u'] = 3;
+    extent['v'] = 4;
+    extent['h'] = 3;
+    extent['k'] = 4;
+    
+    std::vector<int64_t> c_ms_ns_lengths;
+    for (auto mode : modeC)
+    	c_ms_ns_lengths.push_back(extent[mode]);
+    std::vector<int64_t> a_ms_ks_lengths;
+    for (auto mode : modeA)
+       	a_ms_ks_lengths.push_back(extent[mode]);
+    std::vector<int64_t> b_ks_ns_lengths;
+    for (auto mode : modeB)
+        b_ks_ns_lengths.push_back(extent[mode]);
 
+    floatTypeA *A, *B, *C;
+    void *A_d, *B_d, *C_d;
+
+    hiptensorHandle_t handle;
+    hiptensorInit(&handle);
+    
+    /********************************************
+     * Intialise Tensors with the input lengths *
+     ********************************************/
+    hiptensorTensorDescriptor_t a_ms_ks;
+    std::cout << "a_ms_ks: ";
+    hiptensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA, 
+				a_ms_ks.data(), NULL,/*stride*/
+				typeA, HIPTENSOR_OP_IDENTITY);
+
+    hiptensorTensorDescriptor_t b_ks_ns;
+    std::cout << "b_ks_ns: ";
+    hiptensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
+                       		b_ks_ns_lengths.data(), NULL,/*stride*/
+				typeB, HIPTENSOR_OP_IDENTITY);
+    
+    hiptensorTensorDescriptor_t c_ms_ns;
+    std::cout << "c_ms_ns: ";
+    hiptensorInitTensorDescriptor(&handle, 
+				&c_ms_ns, nmodeC,
+				c_ms_ns_lengths.data(), NULL,/*stride*/
+                      		typeC, HIPTENSOR_OP_IDENTITY);
+
+    /***************************************************
+     * Intialise Tensors with the input style elements *
+     ***************************************************/
+     hiptensorGenerateInputTensorElements(&handle,
+                          		&a_ms_ks, typeA, A,
+                         		&b_ks_ns, typeB, B,
+                          		init_style);
+
+    /********************************************
+     * Intialise Device memory with the tensors *
+     ********************************************/
+    size_t sizeA = sizeof(ADataType)*hiptensorGetElementSpace(&a_ms_ks);
+    size_t sizeB = sizeof(BDataType)*hiptensorGetElementSpace(&b_ks_ns);
+    size_t sizeC = sizeof(CDataType)*hiptensorGetElementSpace(&c_ms_ns);
 #if 0
-    // a[m0, m1, k0, k1]
-    std::vector<ck::index_t> a_ms_ks_lengths{30, 128, 32, 64};
-    //std::vector<ck::index_t> a_ms_ks_strides{524288, 4096, 128, 1};
-    // b[k0, k1, n0, n1]
-    std::vector<ck::index_t> b_ks_ns_lengths{32, 64, 32, 64};
-    //std::vector<ck::index_t> b_ks_ns_strides{128, 1, 524288, 4096};
-    // c[m0, m1, n0, n1]
-    std::vector<ck::index_t> c_ms_ns_lengths{30, 128, 32, 64};
-    //std::vector<ck::index_t> c_ms_ns_strides{524288, 4096, 128, 1};
-#else  
-    // a[m0, m1, k0, k1]
-    std::vector<ck::index_t> a_ms_ks_lengths{5,6,3,4};
-    //std::vector<ck::index_t> a_ms_ks_strides{108,20,16,1};
-    // b[k0, k1, n0, n1]
-    std::vector<ck::index_t> b_ks_ns_lengths{3,4,3,4};
-    //std::vector<ck::index_t> b_ks_ns_strides{16,1,108,20};
-    // c[m0, m1, n0, n1]
-    std::vector<ck::index_t> c_ms_ns_lengths{5,6,3,4};
-    //std::vector<ck::index_t> c_ms_ns_strides{108,20,16,1};
-#endif
+    hip_check_error(hipMalloc(static_cast<void**>(&A_d), sizeA));
+    hip_check_error(hipMalloc(static_cast<void**>(&B_d), sizeB));
+    hip_check_error(hipMalloc(static_cast<void**>(&C_d), sizeC));
+    
+	/********************************************
+     * Transfer the Host Tensor to Device Memory *
+     ********************************************/
+	hip_check_error(hipMemcpy(A_d, const_cast<void*>(p), , hipMemcpyHostToDevice));
+	
+    
+    /************************************************
+     * Retrieve the memory alignment for each tensor
+     ************************************************/ 
 
-#if 0
-    Tensor<ADataType> a_ms_ks(
-        std::vector<std::size_t>(a_ms_ks_lengths.begin(), a_ms_ks_lengths.end()),
-        std::vector<std::size_t>(a_ms_ks_strides.begin(), a_ms_ks_strides.end()));
-    Tensor<BDataType> b_ks_ns(
-        std::vector<std::size_t>(b_ks_ns_lengths.begin(), b_ks_ns_lengths.end()),
-        std::vector<std::size_t>(b_ks_ns_strides.begin(), b_ks_ns_strides.end()));
-    Tensor<CDataType> c_ms_ns_host_result(
-        std::vector<std::size_t>(c_ms_ns_lengths.begin(), c_ms_ns_lengths.end()),
-        std::vector<std::size_t>(c_ms_ns_strides.begin(), c_ms_ns_strides.end()));
-    Tensor<CDataType> c_ms_ns_device_result(
-        std::vector<std::size_t>(c_ms_ns_lengths.begin(), c_ms_ns_lengths.end()),
-        std::vector<std::size_t>(c_ms_ns_strides.begin(), c_ms_ns_strides.end()));
-#else
-    Tensor<ADataType> a_ms_ks(
-        std::vector<std::size_t>(a_ms_ks_lengths.begin(), a_ms_ks_lengths.end()));
-    Tensor<BDataType> b_ks_ns(
-        std::vector<std::size_t>(b_ks_ns_lengths.begin(), b_ks_ns_lengths.end()));
-    Tensor<CDataType> c_ms_ns_host_result(
-        std::vector<std::size_t>(c_ms_ns_lengths.begin(), c_ms_ns_lengths.end()));
-    Tensor<CDataType> c_ms_ns_device_result(
-        std::vector<std::size_t>(c_ms_ns_lengths.begin(), c_ms_ns_lengths.end()));
-#endif
+	
 
-    std::cout << "a_ms_ks: " << a_ms_ks.mDesc << std::endl;
-    std::cout << "b_ks_ns: " << b_ks_ns.mDesc << std::endl;
-    std::cout << "c_ms_ns: " << c_ms_ns_host_result.mDesc << std::endl;
 
-    switch(init_method)
-    {
-    case 0: break;
-    case 1:
-        a_ms_ks.GenerateTensorValue(GeneratorTensor_2<ADataType>{-5, 5});
-        b_ks_ns.GenerateTensorValue(GeneratorTensor_2<BDataType>{-5, 5});
-        break;
-    case 2:
-        a_ms_ks.GenerateTensorValue(GeneratorTensor_3<ADataType>{0.0, 1.0});
-        b_ks_ns.GenerateTensorValue(GeneratorTensor_3<BDataType>{-0.5, 0.5});
-        break;
-    case 3:
-        a_ms_ks.GenerateTensorValue(GeneratorTensor_cuTensor<ADataType>{});
-        b_ks_ns.GenerateTensorValue(GeneratorTensor_cuTensor<BDataType>{});
-        break;
-    default:
-        a_ms_ks.GenerateTensorValue(GeneratorTensor_Sequential<0>{});
-        b_ks_ns.GenerateTensorValue(GeneratorTensor_Sequential<1>{});
-    }
-
-    DeviceMem a_ms_ks_device_buf(sizeof(ADataType) * a_ms_ks.mDesc.GetElementSpace());
-    DeviceMem b_ks_ns_device_buf(sizeof(BDataType) * b_ks_ns.mDesc.GetElementSpace());
-    DeviceMem c_ms_ns_device_buf(sizeof(CDataType) * c_ms_ns_device_result.mDesc.GetElementSpace());
-
-    std::cout << "Tensor A element space: " << a_ms_ks.mDesc.GetElementSpace() << std::endl;
-    std::cout << "Tensor B element space: " << b_ks_ns.mDesc.GetElementSpace() << std::endl;
-    std::cout << "Tensor C element space: " <<  c_ms_ns_device_result.mDesc.GetElementSpace() << std::endl;
-
-    a_ms_ks_device_buf.ToDevice(a_ms_ks.mData.data());
-    b_ks_ns_device_buf.ToDevice(b_ks_ns.mData.data());
-
-    // set zero
-    c_ms_ns_device_buf.SetZero();
+    std::cout << "Tensor A element space: " ;
+    hiptensorAllocateDeviceMemToTensor<ADataType>(handle, a_ms_ks, false);
+    std::cout << "Tensor B element space: " ;
+    hiptensorAllocateDeviceMemToTensor<BDataType>(handle, b_ks_ns, false);
+    std::cout << "Tensor C element space: " ;
+    hiptensorAllocateDeviceMemToTensor<CDataType>(handle, c_ms_ns, false);
 
     auto a_element_op = AElementOp{};
     auto b_element_op = BElementOp{};
@@ -332,15 +340,15 @@ int main(int argc, char* argv[])
     // device operation
     auto op       = DeviceOpInstance{};
     auto invoker  = op.MakeInvoker();
-    auto argument = op.MakeArgument(static_cast<ADataType*>(a_ms_ks_device_buf.GetDeviceBuffer()),
-                                    static_cast<BDataType*>(b_ks_ns_device_buf.GetDeviceBuffer()),
-                                    static_cast<CDataType*>(c_ms_ns_device_buf.GetDeviceBuffer()),
+    auto argument = op.MakeArgument(static_cast<ADataType*>(a_ms_ks.ht_devmem.GetDeviceBuffer()),
+                                    static_cast<BDataType*>(b_ks_ns.ht_devmem.GetDeviceBuffer()),
+                                    static_cast<CDataType*>(c_ms_ns.ht_devmem.GetDeviceBuffer()),
                                     a_ms_ks_lengths,
-                                    std::vector<ck::index_t>(a_ms_ks.mDesc.GetStrides().begin(), a_ms_ks.mDesc.GetStrides().end()),
+                                    std::vector<ck::index_t>(a_ms_ks.ht_tensor.mDesc.GetStrides().begin(), a_ms_ks.ht_tensor.mDesc.GetStrides().end()),
                                     b_ks_ns_lengths,
-				    std::vector<ck::index_t>(b_ks_ns.mDesc.GetStrides().begin(), b_ks_ns.mDesc.GetStrides().end()),
+				    std::vector<ck::index_t>(b_ks_ns.ht_tensor.mDesc.GetStrides().begin(), b_ks_ns.ht_tensor.mDesc.GetStrides().end()),
                                     c_ms_ns_lengths,
-                                    std::vector<ck::index_t>(c_ms_ns_host_result.mDesc.GetStrides().begin(), c_ms_ns_host_result.mDesc.GetStrides().end()),
+                                    std::vector<ck::index_t>(c_ms_ns.ht_tensor.mDesc.GetStrides().begin(), c_ms_ns.ht_tensor.mDesc.GetStrides().end()),
                                     a_element_op,
                                     b_element_op,
                                     c_element_op);
@@ -380,19 +388,19 @@ int main(int argc, char* argv[])
     std::cout << "Perf: " << ave_time << " ms, " << tflops << " TFlops, " << gb_per_sec << " GB/s, "
               << op.GetTypeString() << std::endl;
 
-    c_ms_ns_device_buf.FromDevice(c_ms_ns_device_result.mData.data());
+    //c_ms_ns_device_buf.FromDevice(c_ms_ns_device_result.mData.data());
 
     tensorA.open("tensor_A.txt");
-    LogRangeToFile<ADataType>(tensorA, a_ms_ks.mData, ","); 
-    LogRangeAsType<ADataType>(std::cout<<"Tensor A elements:\n", a_ms_ks.mData,",");
+    LogRangeToFile<ADataType>(tensorA, a_ms_ks.ht_tensor.mData, ","); 
+    LogRangeAsType<ADataType>(std::cout<<"Tensor A elements:\n", a_ms_ks.ht_tensor.mData,",");
     std::cout<<std::endl;
     tensorA.close();
     tensorB.open("tensor_B.txt");
-    LogRangeToFile<BDataType>(tensorB, b_ks_ns.mData, ","); 
-    LogRangeAsType<BDataType>(std::cout<<"Tensor B elements:\n", b_ks_ns.mData,",");
+    LogRangeToFile<BDataType>(tensorB, b_ks_ns.ht_tensor.mData, ","); 
+    LogRangeAsType<BDataType>(std::cout<<"Tensor B elements:\n", b_ks_ns.ht_tensor.mData,",");
     std::cout<<std::endl;
     tensorB.close();
-
+#if 0
     if(do_verification)
     {
         auto ref_gemm    = ReferenceOpInstance{};
@@ -403,14 +411,15 @@ int main(int argc, char* argv[])
 
         ref_invoker.Run(ref_argument);
 
-	tensorC.open("tensor_C_contraction_results.txt");
-    	LogRangeToFile<CDataType>(tensorC, c_ms_ns_host_result.mData, ","); 
-    	LogRangeAsType<CDataType>(std::cout<<"Tensor C elements:\n", c_ms_ns_host_result.mData, ",");
-    	std::cout<<std::endl;
-	tensorC.close();
-
         return ck::utils::check_err(c_ms_ns_device_result.mData, c_ms_ns_host_result.mData) ? 0 : 1;
     }
+#endif
+    tensorC.open("tensor_C_contraction_results.txt");
+    LogRangeToFile<CDataType>(tensorC, c_ms_ns.ht_tensor.mData, ","); 
+    LogRangeAsType<CDataType>(std::cout<<"Tensor C elements:\n", c_ms_ns.ht_tensor.mData, ","); 
+    std::cout<<std::endl;
+    tensorC.close();
+#endif
 
     return 0;
 }
