@@ -1,4 +1,5 @@
 #pragma once
+#include <fstream>
 
 template <typename T>
 struct GeneratorTensor_cuTensor
@@ -11,14 +12,19 @@ struct GeneratorTensor_cuTensor
     }
 };
 
-template <>
-struct GeneratorTensor_cuTensor<ck::bhalf_t>
+
+template <typename T, typename Range>
+void LogRangeToFile(std::ofstream& fs, Range&& range, std::string delim)
 {
-    template <typename... Is>
-    ck::bhalf_t operator()(Is...)
+    bool first = true;
+    for(auto&& v : range)
     {
-        float tmp = ((float(std::rand()))/float(RAND_MAX))*2;
-        return ck::type_convert<ck::bhalf_t>(tmp);
+        if(first)
+            first = false;
+        else
+            fs << delim;
+        fs << static_cast<T>(v);
     }
-};
+    return;
+}
 

@@ -47,7 +47,7 @@ set(CMAKE_CK_CLONE_LIB  ${CMAKE_CK_CLONE_DIRECTORY}/build/lib)
 ExternalProject_Add(ck
 	SOURCE_DIR       ${CMAKE_CK_CLONE_DIRECTORY}
 	GIT_REPOSITORY   https://github.com/ROCmSoftwarePlatform/composable_kernel.git
-	GIT_TAG          origin/contraction
+	GIT_TAG          origin/contraction_hipTENSOR
 	GIT_PROGRESS     true
 	LIST_SEPARATOR   "|"
 	PATCH_COMMAND    mkdir -p build
