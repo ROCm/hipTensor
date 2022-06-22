@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
     hiptensorGetAlignmentRequirement(&handle,
                           C_d, &c_ms_ns,
                           &alignmentRequirementC);
-    std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;;
+    std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;
 
 #if 0
     auto a_element_op = AElementOp{};
