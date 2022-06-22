@@ -266,8 +266,6 @@ int main(int argc, char* argv[])
     for (auto mode : modeB)
         b_ks_ns_lengths.push_back(extent[mode]);
 
-    floatTypeA *A, *B, *C;
-    void *A_d, *B_d, *C_d;
 
     hiptensorHandle_t handle;
     hiptensorInit(&handle);
@@ -278,7 +276,7 @@ int main(int argc, char* argv[])
     hiptensorTensorDescriptor_t a_ms_ks;
     std::cout << "a_ms_ks: ";
     hiptensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA, 
-				a_ms_ks.data(), NULL,/*stride*/
+				a_ms_ks_lengths.data(), NULL,/*stride*/
 				typeA, HIPTENSOR_OP_IDENTITY);
 
     hiptensorTensorDescriptor_t b_ks_ns;
@@ -294,45 +292,50 @@ int main(int argc, char* argv[])
 				c_ms_ns_lengths.data(), NULL,/*stride*/
                       		typeC, HIPTENSOR_OP_IDENTITY);
 
-    /***************************************************
-     * Intialise Tensors with the input style elements *
-     ***************************************************/
-     hiptensorGenerateInputTensorElements(&handle,
-                          		&a_ms_ks, typeA, A,
-                         		&b_ks_ns, typeB, B,
-                          		init_style);
 
-    /********************************************
-     * Intialise Device memory with the tensors *
-     ********************************************/
-    size_t sizeA = sizeof(ADataType)*hiptensorGetElementSpace(&a_ms_ks);
-    size_t sizeB = sizeof(BDataType)*hiptensorGetElementSpace(&b_ks_ns);
-    size_t sizeC = sizeof(CDataType)*hiptensorGetElementSpace(&c_ms_ns);
-#if 0
+    size_t sizeA = sizeof(ADataType) * a_ms_ks.hiptensorGetElementSpace();
+    size_t sizeB = sizeof(BDataType) * b_ks_ns.hiptensorGetElementSpace();
+    size_t sizeC = sizeof(CDataType) * c_ms_ns.hiptensorGetElementSpace();
+
+    void *A_d, *B_d, *C_d;
     hip_check_error(hipMalloc(static_cast<void**>(&A_d), sizeA));
     hip_check_error(hipMalloc(static_cast<void**>(&B_d), sizeB));
     hip_check_error(hipMalloc(static_cast<void**>(&C_d), sizeC));
-    
-	/********************************************
+
+
+    ADataType *A = (ADataType*) malloc(sizeA);
+    BDataType *B = (BDataType*) malloc(sizeB);
+    CDataType *C = (CDataType*) malloc(sizeC);
+	
+    /********************************************
      * Transfer the Host Tensor to Device Memory *
      ********************************************/
-	hip_check_error(hipMemcpy(A_d, const_cast<void*>(p), , hipMemcpyHostToDevice));
-	
-    
+    hip_check_error(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
+    hip_check_error(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
+    hip_check_error(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
+
     /************************************************
      * Retrieve the memory alignment for each tensor
      ************************************************/ 
+    uint32_t alignmentRequirementA;
+    hiptensorGetAlignmentRequirement(&handle,
+                          A_d, &a_ms_ks,
+                          &alignmentRequirementA);
+    std::cout << "Tensor A element space: " << alignmentRequirementA << std::endl;
 
-	
+    uint32_t alignmentRequirementB;
+    hiptensorGetAlignmentRequirement(&handle,
+                          B_d, &b_ks_ns,
+                          &alignmentRequirementB);
+    std::cout << "Tensor B element space: " << alignmentRequirementB << std::endl;
 
+    uint32_t alignmentRequirementC;
+    hiptensorGetAlignmentRequirement(&handle,
+                          C_d, &c_ms_ns,
+                          &alignmentRequirementC);
+    std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;;
 
-    std::cout << "Tensor A element space: " ;
-    hiptensorAllocateDeviceMemToTensor<ADataType>(handle, a_ms_ks, false);
-    std::cout << "Tensor B element space: " ;
-    hiptensorAllocateDeviceMemToTensor<BDataType>(handle, b_ks_ns, false);
-    std::cout << "Tensor C element space: " ;
-    hiptensorAllocateDeviceMemToTensor<CDataType>(handle, c_ms_ns, false);
-
+#if 0
     auto a_element_op = AElementOp{};
     auto b_element_op = BElementOp{};
     auto c_element_op = CElementOp{};
@@ -420,6 +423,13 @@ int main(int argc, char* argv[])
     std::cout<<std::endl;
     tensorC.close();
 #endif
-
+	
+    if (A) free(A);
+    if (B) free(B);
+    if (C) free(C);
+    if (A_d) hip_check_error(hipFree(A_d));
+    if (B_d) hip_check_error(hipFree(B_d));
+    if (C_d) hip_check_error(hipFree(C_d));
+    
     return 0;
 }

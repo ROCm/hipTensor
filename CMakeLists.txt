@@ -68,3 +68,4 @@ add_library(ck_dep SHARED IMPORTED)
 set_target_properties(ck_dep PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libhost_tensor.a)
 
 add_subdirectory(src)
+add_subdirectory(test)

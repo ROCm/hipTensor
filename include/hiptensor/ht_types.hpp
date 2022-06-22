@@ -129,6 +129,5 @@ struct hiptensorTensorDescriptor_t{
     hiptensorDataType_t ht_type;
     hiptensorTensorDescriptor_t() = default;
     std::size_t hiptensorGetElementSpace() const;
-    //void* GetHipTensorBuffer();
 };
 

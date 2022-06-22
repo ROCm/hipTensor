@@ -1,11 +1,11 @@
-# Instructions for ```contraction```
+# Instructions for ```example_contraction_xdl_fp32```
 
 ## Run
 ```bash
 #arg1: verification (0=no, 1=yes)
-#arg2: initialization (0=no init, 1=integer value, 2=decimal value, 3=cutensor_style_init)
-#arg3: time kernel (0=no, 1=yes)a
-./bin/contraction 1 1 1
+#arg2: initialization (0=no init, 1=integer value, 2=decimal value)
+#arg3: time kernel (0=no, 1=yes)
+./bin/example_contraction_xdl_fp32 1 1 1
 ```
 
 Result (MI100 @ dynammic freq, 46TFlops peak FP32)
