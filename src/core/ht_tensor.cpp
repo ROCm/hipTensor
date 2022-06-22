@@ -2,7 +2,13 @@
 #include "host_tensor_generator.hpp"
 #include "ht_tensor_generator_utility.hpp"
 
-#define HIPTENSOR_MAX_TENSORS 3
+hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
+{
+    if (!handle)
+	return HIPTENSOR_STATUS_NOT_INITIALIZED;
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
 
 std::size_t hiptensorTensorDescriptor_t::hiptensorGetElementSpace() const
 {	

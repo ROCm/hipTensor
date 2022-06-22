@@ -46,6 +46,8 @@ set(HT_OPS_INC_DIRS
 
 
 target_compile_features(hiptensor PUBLIC)
+target_link_libraries(hiptensor ck_dep)
+#add_dependencies(hiptesnor ck)
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(hiptensor PUBLIC

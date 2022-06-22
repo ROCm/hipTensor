@@ -1,0 +1,1 @@
+add_executable_no_testing(contraction_xdl_fp32 test_contraction_xdl_fp32.cpp)
