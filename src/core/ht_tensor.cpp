@@ -47,7 +47,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
     
     desc->ht_type = dataType;
     
-    std::cout << desc << std::endl;
+    std::cout << desc->ht_desc << std::endl;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
