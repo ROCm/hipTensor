@@ -81,6 +81,7 @@ typedef enum
     HIPTENSOR_COMPUTE_32I  = (1U<< 9U),  ///< 32-bit signed integer
 } hiptensorComputeType_t;
 
+
 typedef enum
 {
     /* Unary */
@@ -118,11 +119,23 @@ typedef enum
 
 } hiptensorOperator_t;
 
+typedef enum
+{
+    HIPTENSOR_ALGO_DEFAULT_PATIENT   = -6, ///< Uses the more accurate but also more time-consuming performance model
+    HIPTENSOR_ALGO_GETT              = -4, ///< Choose the GETT algorithm
+    HIPTENSOR_ALGO_TGETT             = -3, ///< Transpose (A or B) + GETT
+    HIPTENSOR_ALGO_TTGT              = -2, ///< Transpose-Transpose-GEMM-Transpose (requires additional memory)
+    HIPTENSOR_ALGO_DEFAULT           = -1, ///< Lets the internal heuristic choose
+} hiptensorAlgo_t;
 
-
+typedef enum
+{
+    HIPTENSOR_WORKSPACE_MIN = 1,         ///< At least one algorithm will be available
+    HIPTENSOR_WORKSPACE_RECOMMENDED = 2, ///< The most suitable algorithm will be available
+    HIPTENSOR_WORKSPACE_MAX = 3,         ///< All algorithms will be available
+} hiptensorWorksizePreference_t;
 
 typedef struct { /*TODO: Discuss the struct members */ }hiptensorHandle_t;
-
 
 struct hiptensorTensorDescriptor_t{
     HostTensorDescriptor ht_desc;
@@ -131,3 +144,18 @@ struct hiptensorTensorDescriptor_t{
     std::size_t hiptensorGetElementSpace() const;
 };
 
+struct tensor_attr{
+    std::vector<std::size_t> lens;
+    std::vector<std::size_t> strides;
+};
+
+struct hiptensorContractionDescriptor_t{
+    std::vector<tensor_attr> ht_contract_desc;
+    void hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t *desc[], const int tensor_desc_num);
+};
+
+struct hiptensorContractionFind_t {/*TODO: Discuss the struct members */ };
+
+struct hiptensorContractionPlan_t{
+    hiptensorContractionDescriptor_t ht_plan_desc;
+};

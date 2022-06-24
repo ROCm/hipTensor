@@ -34,13 +34,13 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
 
     for (int index=0; index < numModes; index++)
     {
-	ht_lens.push_back(lens[index]);
-	if (strides)
-	    ht_strides.push_back(strides[index]);
+	    ht_lens.push_back(lens[index]);
+	    if (strides)
+	        ht_strides.push_back(strides[index]);
     }
 	
     if (!strides) 
-   	desc->ht_desc = HostTensorDescriptor(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
+   	    desc->ht_desc = HostTensorDescriptor(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
     else
       	desc->ht_desc = HostTensorDescriptor(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
 		       				    std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
@@ -55,12 +55,53 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
 hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t* handle,
                           const void *ptr, const hiptensorTensorDescriptor_t* desc, uint32_t* alignmentRequirement)
 {
-    if (!desc)
+    if (!handle || !desc)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+
+    if (desc->ht_type != HIPTENSOR_R_32F)
+		return  HIPTENSOR_STATUS_INVALID_VALUE;
+        
+     using descType = float;
     
-    *alignmentRequirement = desc->hiptensorGetElementSpace();
+    *alignmentRequirement = sizeof (descType) * desc->hiptensorGetElementSpace();
+    
     return HIPTENSOR_STATUS_SUCCESS;
 }
+#if 0
+void print_elements(const std::vector<std::size_t>& vec1)
+{
+    for(int i=0; i<vec1.size(); i++) 
+    {
+        std::cout << vec1[i] << " ";
+    }
+    std::cout << std::endl;
+}
+#endif
+
+void hiptensorContractionDescriptor_t:: hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t* desc[], const int tensor_desc_num) 
+{	
+    std::cout << "Entered the " << __func__ << std::endl;	
+	
+    for(int index = 0; index < tensor_desc_num; index++)
+    {
+	std::cout << "In for loop at " << index << std::endl;	    
+	
+        ht_contract_desc.push_back({desc[index]->ht_desc.GetLengths(), desc[index]->ht_desc.GetStrides()});
+
+    }	
+    std::cout << "Exited for loop" << std::endl;
+#if 0
+    for(auto it = ht_contract_desc.begin(); it < ht_contract_desc.end(); ++it)
+    {
+        print_elements(it->lens);
+	print_elements(it->strides);
+    }
+
+    std::cout << "Exited the " << __func__ << std::endl;  
+#endif    
+    return;
+}
+
 
 #if 0
 hiptensorStatus_t hiptensorGenerateInputTensorElements(const hiptensorHandle_t *handle, 
