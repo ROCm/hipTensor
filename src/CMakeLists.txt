@@ -35,18 +35,22 @@ endfunction(add_executable_no_testing BINARY_NAME)
 
 
 add_subdirectory(core)
+add_subdirectory(contraction)
 
 add_library(hiptensor SHARED 
-	    $<TARGET_OBJECTS:core_instance>)
+	    $<TARGET_OBJECTS:core_instance>
+	    $<TARGET_OBJECTS:contraction_instance>)
+
 add_library(hipTENSOR::hiptensor ALIAS hiptensor)
 
 set(HT_OPS_INC_DIRS
     ${PROJECT_SOURCE_DIR}/include/
 )
 
-
+target_compile_options(hiptensor PRIVATE --offload-arch=gfx908)
 target_compile_features(hiptensor PUBLIC)
 target_link_libraries(hiptensor ck_dep)
+
 #add_dependencies(hiptesnor ck)
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
@@ -69,6 +73,3 @@ install(EXPORT hiptensorTargets
     NAMESPACE hipTENSOR::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hipTENSOR
 )
-
-
-#add_subdirectory(contraction)
