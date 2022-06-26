@@ -142,6 +142,7 @@ struct hiptensorTensorDescriptor_t{
     hiptensorDataType_t ht_type;
     hiptensorTensorDescriptor_t() = default;
     std::size_t hiptensorGetElementSpace() const;
+    void hiptensorPrintTensorAttributes();
 };
 
 struct tensor_attr{
@@ -156,6 +157,13 @@ struct hiptensorContractionDescriptor_t{
 
 struct hiptensorContractionFind_t {/*TODO: Discuss the struct members */ };
 
+struct hiptensorContractionMetrics_t {
+    float avg_time;
+    float tflops;
+    float transfer_speed;
+};
+
 struct hiptensorContractionPlan_t{
     hiptensorContractionDescriptor_t ht_plan_desc;
+    void hiptensorPrintContractionMetrics();
 };

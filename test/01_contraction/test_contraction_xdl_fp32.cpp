@@ -69,25 +69,33 @@ int main(int argc, char* argv[])
      * Intialise Tensors with the input lengths *
      ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks;
-    std::cout << "a_ms_ks: ";
     hiptensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA, 
 				a_ms_ks_lengths.data(), NULL,/*stride*/
 				typeA, HIPTENSOR_OP_IDENTITY);
 
+    std::cout << "a_ms_ks: ";
+    a_ms_ks.hiptensorPrintTensorAttributes();
+    std::cout << std::endl;
+    
     hiptensorTensorDescriptor_t b_ks_ns;
-    std::cout << "b_ks_ns: ";
     hiptensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
                        		b_ks_ns_lengths.data(), NULL,/*stride*/
 				typeB, HIPTENSOR_OP_IDENTITY);
     
+    std::cout << "b_ks_ns: ";
+    b_ks_ns.hiptensorPrintTensorAttributes();
+    std::cout << std::endl;
+    
     hiptensorTensorDescriptor_t c_ms_ns;
-    std::cout << "c_ms_ns: ";
     hiptensorInitTensorDescriptor(&handle, 
 				&c_ms_ns, nmodeC,
 				c_ms_ns_lengths.data(), NULL,/*stride*/
                       		typeC, HIPTENSOR_OP_IDENTITY);
 
-
+    std::cout << "c_ms_ns: ";
+    c_ms_ns.hiptensorPrintTensorAttributes(); 
+    std::cout << std::endl;
+    
     /**********************
      * Allocating data
      **********************/
@@ -114,9 +122,9 @@ int main(int argc, char* argv[])
      * Initialize data
      *******************/
     for (int64_t i = 0; i < elementsA; i++)
-        A[i] = (((float) rand())/float(RAND_MAX))*2;
+        A[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;
     for (int64_t i = 0; i < elementsB; i++)
-        B[i] = (((float) rand())/float(RAND_MAX))*2;	
+        B[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
 
     /********************************************
      * Transfer the Host Tensor to Device Memory *
@@ -197,6 +205,8 @@ int main(int argc, char* argv[])
                        work, worksize, 0 /* stream */);
     
     hip_check_error(hipMemcpy(static_cast<void *>(C), C_d, sizeC, hipMemcpyDeviceToHost));
+    
+    plan.hiptensorPrintContractionMetrics();
     
     std::cout<<"Tensor A elements:\n";
     std::copy(A, A + elementsA, std::ostream_iterator<ADataType>(std::cout, ","));
