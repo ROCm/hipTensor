@@ -50,6 +50,9 @@ using DeviceOpInstance = ck::tensor_operation::device::
 // clang-format on
 
 
+hiptensorContractionMetrics_t ht_contract_metrics;
+
+
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t* handle,
                                                     hiptensorContractionDescriptor_t* desc,
                                                     const hiptensorTensorDescriptor_t* descA, const int32_t modeA[], const uint32_t alignmentRequirementA,
@@ -59,15 +62,12 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t* ha
                                                     hiptensorComputeType_t typeCompute)
 
 {
-    std::cout << "Entered the " << __func__ << std::endl;
     
     if (!handle || !desc || !descA || !descB || !descC )
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     const hiptensorTensorDescriptor_t *ht_input_descs[] = { descA, descB, descC };
     desc->hiptensorContractionAttrUpdate(ht_input_descs, 3);
-    
-    std::cout << "Exited the " << __func__ << std::endl;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -77,8 +77,6 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t* handle,
                                              hiptensorContractionFind_t* find,
                                              const hiptensorAlgo_t algo)
 {
-    std::cout << "Entered the " << __func__ << std::endl;
-    std::cout << "Exited the " << __func__ << std::endl;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -88,8 +86,6 @@ hiptensorStatus_t hiptensorContractionGetWorkspace(const hiptensorHandle_t* hand
                                                  const hiptensorWorksizePreference_t pref,
                                                  uint64_t *workspaceSize) 
 {
-    std::cout << "Entered the " << __func__ << std::endl;
-    std::cout << "Exited the " << __func__ << std::endl;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -98,13 +94,10 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t* handle,
                                             const hiptensorContractionFind_t* find,
                                             const uint64_t workspaceSize) 
 {
-    std::cout << "Entered the " << __func__ << std::endl;
-
     if (!handle || !plan || !desc)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     plan->ht_plan_desc = *desc; 
-    std::cout << "Exited the " << __func__ << std::endl;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -118,7 +111,6 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
     if (!handle || !A || !B || !D)
 	    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    std::cout << "Entered the " << __func__ << std::endl;
     auto a_element_op = AElementOp{};
     auto b_element_op = BElementOp{};
     auto c_element_op = CElementOp{};
@@ -132,12 +124,13 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
                                     std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[0].lens.begin(), plan->ht_plan_desc.ht_contract_desc[0].lens.end()),
                                     std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[0].strides.begin(), plan->ht_plan_desc.ht_contract_desc[0].strides.end()),
                                     std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].lens.begin(), plan->ht_plan_desc.ht_contract_desc[1].lens.end()),
-				    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].strides.begin(), plan->ht_plan_desc.ht_contract_desc[1].strides.end()),
+				                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].strides.begin(), plan->ht_plan_desc.ht_contract_desc[1].strides.end()),
                                     std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[2].lens.begin(), plan->ht_plan_desc.ht_contract_desc[2].lens.end()),
                                     std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[2].strides.begin(), plan->ht_plan_desc.ht_contract_desc[2].strides.end()),
                                     a_element_op,
                                     b_element_op,
                                     c_element_op);
+
 
     if(!op.IsSupportedArgument(argument))
     {
@@ -146,8 +139,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
         return HIPTENSOR_STATUS_SUCCESS;
     }
     
+	memset(&ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
-    float ave_time = invoker.Run(argument, StreamConfig{nullptr, true});
+    ht_contract_metrics.avg_time = invoker.Run(argument, StreamConfig{nullptr, true});
 
     ck::index_t M = std::accumulate(plan->ht_plan_desc.ht_contract_desc[2].lens.begin(),
                                     plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM,
@@ -167,13 +161,15 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
     std::size_t flop = std::size_t(2) * M * N * K;
     std::size_t num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N + sizeof(CDataType) * M * N;
 
-    float tflops = static_cast<float>(flop) / 1.E9 / ave_time;
-
-    float gb_per_sec = num_btype / 1.E6 / ave_time;
-
-    std::cout << "Perf: " << ave_time << " ms, " << tflops << " TFlops, " << gb_per_sec << " GB/s, " 
-	    << op.GetTypeString() << std::endl;
-    std::cout << "Exited the " << __func__ << std::endl;
+    ht_contract_metrics.tflops = static_cast<float>(flop) / 1.E9 / ht_contract_metrics.avg_time;
+    ht_contract_metrics.transfer_speed = num_btype / 1.E6 / ht_contract_metrics.avg_time;
 
     return HIPTENSOR_STATUS_SUCCESS;
+}
+
+
+void hiptensorContractionPlan_t:: hiptensorPrintContractionMetrics()
+{
+    std::cout << "Perf: " << ht_contract_metrics.avg_time << " ms, " <<  ht_contract_metrics.tflops << " TFlops, " 
+              << ht_contract_metrics.transfer_speed << " GB/s, " << std::endl;
 }

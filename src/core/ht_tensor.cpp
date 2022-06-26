@@ -46,8 +46,6 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
 		       				    std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
     
     desc->ht_type = dataType;
-    
-    std::cout << desc->ht_desc << std::endl;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -80,16 +78,11 @@ void print_elements(const std::vector<std::size_t>& vec1)
 
 void hiptensorContractionDescriptor_t:: hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t* desc[], const int tensor_desc_num) 
 {	
-    std::cout << "Entered the " << __func__ << std::endl;	
 	
     for(int index = 0; index < tensor_desc_num; index++)
     {
-	std::cout << "In for loop at " << index << std::endl;	    
-	
         ht_contract_desc.push_back({desc[index]->ht_desc.GetLengths(), desc[index]->ht_desc.GetStrides()});
-
     }	
-    std::cout << "Exited for loop" << std::endl;
 #if 0
     for(auto it = ht_contract_desc.begin(); it < ht_contract_desc.end(); ++it)
     {
@@ -102,6 +95,11 @@ void hiptensorContractionDescriptor_t:: hiptensorContractionAttrUpdate(const hip
     return;
 }
 
+void hiptensorTensorDescriptor_t:: hiptensorPrintTensorAttributes()
+{
+	std::cout << ht_desc;
+    return;
+}
 
 #if 0
 hiptensorStatus_t hiptensorGenerateInputTensorElements(const hiptensorHandle_t *handle, 

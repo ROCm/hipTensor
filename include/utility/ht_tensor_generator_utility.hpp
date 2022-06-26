@@ -1,6 +1,6 @@
 #pragma once
 #include <fstream>
-
+#if 0
 template <typename T>
 struct GeneratorTensor_cuTensor
 {
@@ -27,4 +27,4 @@ void LogRangeToFile(std::ofstream& fs, Range&& range, std::string delim)
     }
     return;
 }
-
+#endif
