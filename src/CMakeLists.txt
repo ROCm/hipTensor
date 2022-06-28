@@ -1,4 +1,5 @@
 include_directories(BEFORE
+    ${PROJECT_SOURCE_DIR}/include/hiptensor/ck
     ${PROJECT_SOURCE_DIR}/include/hiptensor
     ${PROJECT_SOURCE_DIR}/include/utility
     ${CMAKE_CK_CLONE_DIRECTORY}/external/include/half
@@ -39,7 +40,8 @@ add_subdirectory(contraction)
 
 add_library(hiptensor SHARED 
 	    $<TARGET_OBJECTS:core_instance>
-	    $<TARGET_OBJECTS:contraction_instance>)
+	    $<TARGET_OBJECTS:contraction_instance>
+        $<TARGET_OBJECTS:ck_core_instance>)
 
 add_library(hipTENSOR::hiptensor ALIAS hiptensor)
 
