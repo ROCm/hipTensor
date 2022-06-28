@@ -153,79 +153,99 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t* handle,
 	if (!handle || !ht_contract_metrics || !A || !B || !D)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    auto a_element_op = AElementOp{};
-    auto b_element_op = BElementOp{};
-    auto c_element_op = CElementOp{};
+    memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
+    
+    auto contraction =[&] (auto a_type,
+                       auto b_type,
+                       auto c_type,
+					   auto op_layout,
+                       auto a_ele_op,
+                       auto b_ele_op,
+                       auto c_ele_op) 
+    {
+        using ADataType   = decltype(a_type);
+        using BDataType   = decltype(b_type);
+        using CDataType   = decltype(c_type);
+
+		using ContractionInstance  = decltype(op_layout);
+        
+        using AEleOp  = decltype(a_ele_op);
+        using BEleOp  = decltype(b_ele_op);
+        using CEleOp  = decltype(c_ele_op);
+
+        auto a_element_op = AEleOp{};
+        auto b_element_op = BEleOp{};
+        auto c_element_op = CEleOp{};
+        
+
+
+		auto op = ContractionInstance{};
+		auto invoker  = op.MakeInvoker();
+		auto argument = op.MakeArgument((ADataType *) A,
+										(BDataType *) B,
+										(CDataType *) D,
+										std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[0].lens.begin(), plan->ht_plan_desc.ht_contract_desc[0].lens.end()),
+										std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[0].strides.begin(), plan->ht_plan_desc.ht_contract_desc[0].strides.end()),
+										std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].lens.begin(), plan->ht_plan_desc.ht_contract_desc[1].lens.end()),
+										std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].strides.begin(), plan->ht_plan_desc.ht_contract_desc[1].strides.end()),
+										std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[2].lens.begin(), plan->ht_plan_desc.ht_contract_desc[2].lens.end()),
+										std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[2].strides.begin(), plan->ht_plan_desc.ht_contract_desc[2].strides.end()),
+										a_element_op,
+										b_element_op,
+										c_element_op);
+			
+		if(!op.IsSupportedArgument(argument))
+		{
+			std::cout << op.GetTypeString() << " does not support this problem" << std::endl;
+			return HIPTENSOR_STATUS_CK_ERROR;
+		}
+
+		ht_contract_metrics->avg_time = invoker.Run(argument, StreamConfig{nullptr, true});
+        ck::index_t M = std::accumulate(plan->ht_plan_desc.ht_contract_desc[2].lens.begin(),
+                                        plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM,
+                                        ck::index_t{1},
+                                        std::multiplies<ck::index_t>{});
+
+        ck::index_t N = std::accumulate(plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM,
+                                        plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM + NumDimN,
+                                        ck::index_t{1},
+                                        std::multiplies<ck::index_t>{});
+
+        ck::index_t K = std::accumulate(plan->ht_plan_desc.ht_contract_desc[0].lens.begin() + NumDimM,
+                                        plan->ht_plan_desc.ht_contract_desc[0].lens.begin() + NumDimM + NumDimK,
+                                        ck::index_t{1},
+                                        std::multiplies<ck::index_t>{});
+
+        std::size_t flop = std::size_t(2) * M * N * K;
+        std::size_t num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N + sizeof(CDataType) * M * N;
+
+        ht_contract_metrics->tflops = static_cast<float>(flop) / 1.E9 / ht_contract_metrics->avg_time;
+        ht_contract_metrics->transfer_speed = num_btype / 1.E6 / ht_contract_metrics->avg_time;
+        
+        return HIPTENSOR_STATUS_SUCCESS;
+    };
 
     
-    // device operation
-    //std::unique_ptrck::tensor_operation::device::DeviceContraction> op_ptr;
-    
-/*
     if (plan->ht_plan_desc.ht_contract_layout == HIPTENSOR_CONTRACTION_KNN)
     {
-        op_ptr =  std::make_unique<ContractionInstanceKNN>(ContractionInstanceKNN(){});
+	    contraction(F32{}, F32{}, F32{}, ContractionInstanceKNN{}, AElementOp{}, BElementOp{}, CElementOp{});
+
     }
 	else if (plan->ht_plan_desc.ht_contract_layout == HIPTENSOR_CONTRACTION_KKN)
     {
-        op_ptr =  std::make_unique<ContractionInstanceKNN>(ContractionInstanceKKN(){});
+        contraction(F32{}, F32{}, F32{}, ContractionInstanceKKN{}, AElementOp{}, BElementOp{}, CElementOp{});
     }
 	else if (plan->ht_plan_desc.ht_contract_layout == HIPTENSOR_CONTRACTION_MNN)
     {
-        op_ptr =  std::make_unique<ContractionInstanceKNN>(ContractionInstanceMNN(){});
+        contraction(F32{}, F32{}, F32{}, ContractionInstanceMNN{}, AElementOp{}, BElementOp{}, CElementOp{});
     }
-	else
+	else if (plan->ht_plan_desc.ht_contract_layout == HIPTENSOR_CONTRACTION_MKN)
     {
-        op_ptr =  std::make_unique<ContractionInstanceKNN>(ContractionInstanceMKN(){});
+       contraction(F32{}, F32{}, F32{}, ContractionInstanceMKN{}, AElementOp{}, BElementOp{}, CElementOp{});
     }
-*/	
-    
-    auto op_ptr = ContractionInstanceKNN{};
-    auto invoker  = op_ptr.MakeInvoker();
-    auto argument = op_ptr.MakeArgument((ADataType *) A,
-                                    (BDataType *) B,
-                                    (CDataType *) D,
-                                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[0].lens.begin(), plan->ht_plan_desc.ht_contract_desc[0].lens.end()),
-                                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[0].strides.begin(), plan->ht_plan_desc.ht_contract_desc[0].strides.end()),
-                                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].lens.begin(), plan->ht_plan_desc.ht_contract_desc[1].lens.end()),
-                                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[1].strides.begin(), plan->ht_plan_desc.ht_contract_desc[1].strides.end()),
-                                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[2].lens.begin(), plan->ht_plan_desc.ht_contract_desc[2].lens.end()),
-                                    std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_desc[2].strides.begin(), plan->ht_plan_desc.ht_contract_desc[2].strides.end()),
-                                    a_element_op,
-                                    b_element_op,
-                                    c_element_op);
-        
-    if(!op_ptr.IsSupportedArgument(argument))
+    else
     {
-        std::cout << op_ptr.GetTypeString() << " does not support this problem" << std::endl;
-         return HIPTENSOR_STATUS_SUCCESS;
+       std::cout << "Layout not supported " << std::endl;
     }
-
-    memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
-
-    ht_contract_metrics->avg_time = invoker.Run(argument, StreamConfig{nullptr, true});
-
-    ck::index_t M = std::accumulate(plan->ht_plan_desc.ht_contract_desc[2].lens.begin(),
-                                    plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM,
-                                    ck::index_t{1},
-                                    std::multiplies<ck::index_t>{});
-
-    ck::index_t N = std::accumulate(plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM,
-                                    plan->ht_plan_desc.ht_contract_desc[2].lens.begin() + NumDimM + NumDimN,
-                                    ck::index_t{1},
-                                    std::multiplies<ck::index_t>{});
-
-    ck::index_t K = std::accumulate(plan->ht_plan_desc.ht_contract_desc[0].lens.begin() + NumDimM,
-                                    plan->ht_plan_desc.ht_contract_desc[0].lens.begin() + NumDimM + NumDimK,
-                                    ck::index_t{1},
-                                    std::multiplies<ck::index_t>{});
-
-    std::size_t flop = std::size_t(2) * M * N * K;
-    std::size_t num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N + sizeof(CDataType) * M * N;
-
-    ht_contract_metrics->tflops = static_cast<float>(flop) / 1.E9 / ht_contract_metrics->avg_time;
-    ht_contract_metrics->transfer_speed = num_btype / 1.E6 / ht_contract_metrics->avg_time;
-
-    return HIPTENSOR_STATUS_SUCCESS;
-
+    return HIPTENSOR_STATUS_CK_ERROR;;
 }
