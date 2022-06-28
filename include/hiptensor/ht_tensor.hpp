@@ -44,9 +44,4 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
 			                        const void* beta,  const void* C,       void* D,
 			                        void *workspace, uint64_t workspaceSize, hipStream_t stream);
 
-hiptensorStatus_t hiptensorGetContractionMetrics( const hiptensorHandle_t* handle,
-                                                const hiptensorContractionPlan_t* plan, 
-				     	                        float* avgTime, float* flops, float* speed);
-
-
 #endif
