@@ -3,10 +3,10 @@
 #include <numeric>
 #include <algorithm>
 #include <iterator>
-#include "ht_types.hpp"
-#include "ht_tensor.hpp"
-#include "ht_tensor_generator_utility.hpp"
-
+#include <unordered_map>
+#include "ht/ht_types.hpp"
+#include "ht/ht_tensor.hpp"
+#include "ht/ht_utility.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -204,9 +204,8 @@ int main(int argc, char* argv[])
                        (void*) &beta,  NULL, C_d,
                        work, worksize, 0 /* stream */);
     
+	plan.hiptensorPrintContractionMetrics();
     hip_check_error(hipMemcpy(static_cast<void *>(C), C_d, sizeC, hipMemcpyDeviceToHost));
-    
-    plan.hiptensorPrintContractionMetrics();
     
     std::cout<<"Tensor A elements:\n";
     std::copy(A, A + elementsA, std::ostream_iterator<ADataType>(std::cout, ","));

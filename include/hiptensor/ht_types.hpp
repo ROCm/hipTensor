@@ -1,9 +1,7 @@
 #ifndef HT_TYPES_H_
 #define HT_TYPES_H_
 
-
 #include "host_tensor.hpp"
-#include "device.hpp"
 
 typedef enum
 {
@@ -138,6 +136,7 @@ typedef enum
     HIPTENSOR_WORKSPACE_MAX = 3,         ///< All algorithms will be available
 } hiptensorWorksizePreference_t;
 
+#if 0
 typedef enum
 {
     HIPTENSOR_CONTRACTION_KNN = 0,
@@ -145,6 +144,13 @@ typedef enum
     HIPTENSOR_CONTRACTION_MNN = 2,
     HIPTENSOR_CONTRACTION_MKN = 3,
 }hiptesnorContractionLayout_t;
+#endif
+
+typedef enum
+{
+    HIPTENSOR_CONTRACTION_SCALE= 0,
+    HIPTENSOR_CONTRACTION_BILINEAR = 1,
+}hiptesnorContractionOperation_t;
 
 typedef struct { /*TODO: Discuss the struct members */ }hiptensorHandle_t;
 
@@ -162,8 +168,8 @@ struct tensor_attr{
 };
 
 struct hiptensorContractionDescriptor_t{
-    hiptesnorContractionLayout_t ht_contract_layout;
-    std::vector<tensor_attr> ht_contract_desc;
+	hiptesnorContractionOperation_t ht_contract_op;
+    std::vector<tensor_attr> ht_contract_attr_desc;
     void hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t *desc[], const int tensor_desc_num);
 };
 
@@ -180,4 +186,9 @@ struct hiptensorContractionPlan_t{
     void hiptensorPrintContractionMetrics();
 };
 
+/*    
+	std::shared_ptr<void> ht_contract_scale_op;
+	std::shared_ptr<void> ht_contract_bilinear_op;
+};
+*/
 #endif

@@ -3,6 +3,20 @@ project(hipTENSOR)
 
 include(ExternalProject)
 
+set(ROCM_SYMLINK_LIBS OFF)
+find_package(ROCM 0.8 REQUIRED PATHS /opt/rocm)
+
+include(ROCMInstallTargets)
+include(ROCMPackageConfigHelpers)
+include(ROCMSetupVersion)
+include(ROCMInstallSymlinks)
+include(ROCMCreatePackage)
+include(CheckCXXCompilerFlag)
+
+rocm_setup_version(VERSION 0.2.0)
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/llvm ${CMAKE_INSTALL_PREFIX}/hip /opt/rocm /opt/rocm/llvm /opt/rocm/hip)
+
+
 if(NOT BUILD_DEV)
   set(BUILD_DEV "OFF" CACHE STRING
     "Choose the type of build, options are: ON, OFF."
@@ -53,19 +67,55 @@ ExternalProject_Add(ck
 	PATCH_COMMAND    mkdir -p build
 	BINARY_DIR       ${CMAKE_CK_CLONE_DIRECTORY}/build
 	CMAKE_ARGS       -D BUILD_DEV=${BUILD_DEV}
-			 -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-			 -D CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-			 -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-			 -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                     -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                     -D CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+                     -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                     -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
 
-	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j examples
+	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all && make install
 	INSTALL_COMMAND  ""
 	BUILD_ALWAYS     FALSE
 
 )
 
-add_library(ck_dep SHARED IMPORTED)
-set_target_properties(ck_dep PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libhost_tensor.a)
+
+find_package(composable_kernel 1.0.0 REQUIRED PATHS ${CMAKE_CK_CLONE_DIRECTORY}/build COMPONENTS host_tensor)
+find_package(composable_kernel 1.0.0 REQUIRED PATHS ${CMAKE_CK_CLONE_DIRECTORY}/build COMPONENTS device_operations)
+find_package(hip REQUIRED PATHS /opt/rocm)
 
 add_subdirectory(src)
 add_subdirectory(test)
+
+
+#Create an interface target for the include only files and call it "composablekernels"
+include(CMakePackageConfigHelpers)
+
+set(version 1.0.0)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfigVersion.cmake"
+    VERSION "${version}"
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+     "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfig.cmake"
+     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hipTENSOR
+     NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+rocm_install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hipTENSOR
+)
+
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+
+rocm_create_package(
+    NAME hipTENSOR
+    DESCRIPTION "Adaptation library of tensor contraction with composable_kernel backend"
+    MAINTAINER "Chaitanya Inumella <Chaitanya.Inumella@amd.com>"
+    LDCONFIG
+    HEADER_ONLY
+)
