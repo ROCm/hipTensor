@@ -81,7 +81,7 @@ void hiptensorContractionDescriptor_t:: hiptensorContractionAttrUpdate(const hip
 	
     for(int index = 0; index < tensor_desc_num; index++)
     {
-        ht_contract_desc.push_back({desc[index]->ht_desc.GetLengths(), desc[index]->ht_desc.GetStrides()});
+        ht_contract_attr_desc.push_back({desc[index]->ht_desc.GetLengths(), desc[index]->ht_desc.GetStrides()});
     }	
 #if 0
     for(auto it = ht_contract_desc.begin(); it < ht_contract_desc.end(); ++it)

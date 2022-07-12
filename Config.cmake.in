@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+set(_hipTENSOR_supported_components hiptensor)
+
+foreach(_comp ${hipTENSOR_FIND_COMPONENTS})
+	if(NOT _comp IN_LIST _hipTENSOR_supported_components)
+		set(hipTENSOR_FOUND False)
+		set(hipTENSOR_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+	endif()
+	include("${CMAKE_CURRENT_LIST_DIR}/hipTENSOR${_comp}Targets.cmake")
+endforeach()
