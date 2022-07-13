@@ -24,13 +24,13 @@ int main(int argc, char* argv[])
     hiptensorDataType_t typeC = HIPTENSOR_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
-    floatTypeCompute beta  = (floatTypeCompute)0.0f;
+    floatTypeCompute alpha = (floatTypeCompute)1.1f;
+    floatTypeCompute beta  = (floatTypeCompute)1.0f;
 
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
 
     /**********************
-     * Computing: C_{m,n,u,v} = A_{m,n,h,k} B_{h,k,u,v}
+     * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta * C_{m,n,u,v}
      **********************/
 
     std::vector<int> modeC{'m','n','u','v'};
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     
     hiptensorTensorDescriptor_t b_ks_ns;
     hiptensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
-               b_ks_ns_lengths.data(), NULL,/*stride*/
+                b_ks_ns_lengths.data(), NULL,/*stride*/
 				typeB, HIPTENSOR_OP_IDENTITY);
     
     std::cout << "b_ks_ns: ";
@@ -103,7 +103,6 @@ int main(int argc, char* argv[])
     size_t elementsB = b_ks_ns.hiptensorGetElementSpace();
     size_t elementsC = c_ms_ns.hiptensorGetElementSpace();
 
-    
     size_t sizeA = sizeof(ADataType) * elementsA;
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeC = sizeof(CDataType) * elementsC;
@@ -125,21 +124,15 @@ int main(int argc, char* argv[])
         A[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;
     for (int64_t i = 0; i < elementsB; i++)
         B[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
+    for (int64_t i = 0; i < elementsC; i++)
+        C[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
     
-    std::cout<<"Tensor A elements:\n";
-    hiptensorPrintTensor(A, elementsA);    
-    std::cout<<std::endl;
-    
-    std::cout<<"Tensor B elements:\n";
-    hiptensorPrintTensor(B, elementsB);    
-    std::cout<<std::endl;
-
     /********************************************
      * Transfer the Host Tensor to Device Memory *
      ********************************************/
     hip_check_error(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
     hip_check_error(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    hip_check_error(hipMemset(C_d, 0, sizeC));
+    hip_check_error(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
     
     /************************************************
      * Retrieve the memory alignment for each tensor
@@ -173,7 +166,7 @@ int main(int argc, char* argv[])
                                     &a_ms_ks, modeA.data(), alignmentRequirementA,
                                     &b_ks_ns, modeB.data(), alignmentRequirementB,
                                     &c_ms_ns, modeC.data(), alignmentRequirementC,
-                                    NULL, NULL, 0,
+                                    &c_ms_ns, modeC.data(), alignmentRequirementC,
                                     typeCompute);
     /**************************
     * Set the algorithm to use
@@ -215,8 +208,14 @@ int main(int argc, char* argv[])
 	plan.hiptensorPrintContractionMetrics();
     hip_check_error(hipMemcpy(static_cast<void *>(C), C_d, sizeC, hipMemcpyDeviceToHost));
     
+    std::cout<<"Tensor A elements:\n";
+    std::copy(A, A + elementsA, std::ostream_iterator<ADataType>(std::cout, ","));
+    std::cout<<std::endl;
+    std::cout<<"Tensor B elements:\n";
+    std::copy(B, B + elementsB, std::ostream_iterator<BDataType>(std::cout, ","));
+    std::cout<<std::endl;
     std::cout<<"Tensor C elements:\n";
-    hiptensorPrintTensor(C, elementsC);    
+    std::copy(C, C + elementsC, std::ostream_iterator<BDataType>(std::cout, ","));
     std::cout<<std::endl;
 
 

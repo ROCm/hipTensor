@@ -1,1 +1,2 @@
 add_executable_no_testing(scale_contraction_xdl_fp32 test_scale_contraction_xdl_fp32.cpp)
+add_executable_no_testing(bilinear_contraction_xdl_fp32 test_bilinear_contraction_xdl_fp32.cpp)

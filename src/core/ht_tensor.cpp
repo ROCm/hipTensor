@@ -5,7 +5,13 @@
 hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
 {
     if (!handle)
-	return HIPTENSOR_STATUS_NOT_INITIALIZED;
+	    return HIPTENSOR_STATUS_NOT_INITIALIZED;
+
+    else if (hipInit(0) == hipErrorInvalidDevice)
+        return HIPTENSOR_STATUS_ROCM_ERROR;
+
+    else if(hipInit(0) == hipErrorInvalidValue)
+        return HIPTENSOR_STATUS_INVALID_VALUE;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }

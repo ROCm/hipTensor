@@ -12,7 +12,6 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t* ha
                                                     hiptensorComputeType_t typeCompute)
 
 {
-    
     if (!handle || !desc || !descA || !descB || !descC )
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
