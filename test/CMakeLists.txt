@@ -2,7 +2,7 @@ include_directories(BEFORE
 	${PROJECT_SOURCE_DIR}/include/hiptensor/ck
 	${PROJECT_SOURCE_DIR}/include/hiptensor
 	${PROJECT_SOURCE_DIR}/include/utility
-    	${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor
+    ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor
 )
 
 find_package(hipTENSOR 1.0.0 COMPONENTS hiptensor)
