@@ -18,9 +18,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t* ha
 
     const hiptensorTensorDescriptor_t *ht_input_descs[] = { descA, descB, descC };
     desc->hiptensorContractionAttrUpdate(ht_input_descs, 3);
-
     //hiptensorDeriveLayoutFromInputs(desc, 2);
-    
     if ( !descD )
         desc->ht_contract_op = HIPTENSOR_CONTRACTION_SCALE;
     else
@@ -77,18 +75,14 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
     if (!handle || !A || !B || !D)
 	    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-#if 0
-   	hiptensorCKContraction( handle, plan, ht_contract_metrics, alpha, A, B,
-                       		beta, C, D, workspace, workspaceSize, stream );
-#endif        
 	if ( plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE )
 	{
-		hiptensorCKScaleContraction( handle, plan, alpha, A, B,
+		hiptensorCKScaleContraction( handle, plan, &ht_contract_metrics, alpha, A, B,
 								NULL, NULL, D, workspace, workspaceSize, stream );
 	}
 	else if ( plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR )
 	{
-		hiptensorCKBilinearContraction( handle, plan, alpha, A, B,
+		hiptensorCKBilinearContraction( handle, plan, &ht_contract_metrics, alpha, A, B,
 								beta, C, D, workspace, workspaceSize, stream );
 	}
 	else

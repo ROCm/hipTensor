@@ -26,19 +26,19 @@ add_subdirectory(contraction)
 add_library(hiptensor SHARED 
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
-            $<TARGET_OBJECTS:ck_core_instance>)
+        $<TARGET_OBJECTS:ck_core_instance>)
 
 add_library(hipTENSOR::hiptensor ALIAS hiptensor)
 
-
 target_compile_options(hiptensor PRIVATE --offload-arch=gfx908)
 target_compile_features(hiptensor PUBLIC)
-target_link_libraries(hiptensor PRIVATE composable_kernel::host_tensor composable_kernel::device_operations)
+target_link_libraries(hiptensor ck_dep_ht ck_dep_do)
+#target_link_libraries(hiptensor PRIVATE composable_kernel::host_tensor composable_kernel::device_operations)
 
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(hiptensor PUBLIC
-	"$<BUILD_INTERFACE:${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor>"
+        "$<BUILD_INTERFACE:${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor>"
 )
 
 set(DEV_OPS_INC_DIRS
