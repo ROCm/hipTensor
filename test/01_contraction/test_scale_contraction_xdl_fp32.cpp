@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
-#include "ht/ht_types.hpp"
-#include "ht/ht_tensor.hpp"
-#include "ht/ht_utility.hpp"
+#include "ht_types.hpp"
+#include "ht_tensor.hpp"
+#include "ht_utility.hpp"
 
 int main(int argc, char* argv[])
 {

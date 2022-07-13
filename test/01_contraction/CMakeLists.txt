@@ -1,2 +1,1 @@
-add_executable(contraction_xdl_fp32 test_contraction_xdl_fp32.cpp)
-target_link_libraries(contraction_xdl_fp32 PRIVATE hipTENSOR::hiptensor)
+add_executable_no_testing(scale_contraction_xdl_fp32 test_scale_contraction_xdl_fp32.cpp)

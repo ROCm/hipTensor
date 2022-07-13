@@ -72,16 +72,16 @@ ExternalProject_Add(ck
                      -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                      -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
 
-	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all && make install
-	INSTALL_COMMAND  ""
+	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all
+    INSTALL_COMMAND  COMMAND make install
 	BUILD_ALWAYS     FALSE
 
 )
 
-
-find_package(composable_kernel 1.0.0 REQUIRED PATHS ${CMAKE_CK_CLONE_DIRECTORY}/build COMPONENTS host_tensor)
-find_package(composable_kernel 1.0.0 REQUIRED PATHS ${CMAKE_CK_CLONE_DIRECTORY}/build COMPONENTS device_operations)
-find_package(hip REQUIRED PATHS /opt/rocm)
+add_library(ck_dep_ht SHARED IMPORTED)
+set_target_properties(ck_dep_ht PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libhost_tensor.a)
+add_library(ck_dep_do SHARED IMPORTED)
+set_target_properties(ck_dep_do PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libdevice_operations.a)
 
 add_subdirectory(src)
 add_subdirectory(test)
