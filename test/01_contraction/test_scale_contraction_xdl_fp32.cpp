@@ -127,11 +127,11 @@ int main(int argc, char* argv[])
         B[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
     
     std::cout<<"Tensor A elements:\n";
-    hiptensorPrintTensor(A, elementsA);    
+    hiptensorPrintArrayElements(A, elementsA);    
     std::cout<<std::endl;
     
     std::cout<<"Tensor B elements:\n";
-    hiptensorPrintTensor(B, elementsB);    
+    hiptensorPrintArrayElements(B, elementsB);    
     std::cout<<std::endl;
 
     /********************************************
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
                                     &a_ms_ks, modeA.data(), alignmentRequirementA,
                                     &b_ks_ns, modeB.data(), alignmentRequirementB,
                                     &c_ms_ns, modeC.data(), alignmentRequirementC,
-                                    NULL, NULL, 0,
+                                    &c_ms_ns, modeC.data(), alignmentRequirementC,
                                     typeCompute);
     /**************************
     * Set the algorithm to use
@@ -213,10 +213,10 @@ int main(int argc, char* argv[])
                        work, worksize, 0 /* stream */);
     
 	plan.hiptensorPrintContractionMetrics();
-    hip_check_error(hipMemcpy(static_cast<void *>(C), C_d, sizeC, hipMemcpyDeviceToHost));
+    hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
     
     std::cout<<"Tensor C elements:\n";
-    hiptensorPrintTensor(C, elementsC);    
+    hiptensorPrintArrayElements(C, elementsC);    
     std::cout<<std::endl;
 
 

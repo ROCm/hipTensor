@@ -126,7 +126,19 @@ int main(int argc, char* argv[])
         B[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
     for (int64_t i = 0; i < elementsC; i++)
         C[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
-    
+
+	std::cout<<"Tensor A elements:\n";
+    hiptensorPrintArrayElements(A, elementsA);
+    std::cout<<std::endl;
+
+    std::cout<<"Tensor B elements:\n";
+    hiptensorPrintArrayElements(B, elementsB);
+    std::cout<<std::endl;
+
+	std::cout<<"Tensor C elements (input):\n";
+	hiptensorPrintArrayElements(C, elementsC);
+	std::cout<<std::endl;
+
     /********************************************
      * Transfer the Host Tensor to Device Memory *
      ********************************************/
@@ -137,6 +149,7 @@ int main(int argc, char* argv[])
     /************************************************
      * Retrieve the memory alignment for each tensor
      ************************************************/ 
+
     uint32_t alignmentRequirementA;
     hiptensorGetAlignmentRequirement(&handle,
                           A_d, &a_ms_ks,
@@ -206,16 +219,10 @@ int main(int argc, char* argv[])
                        work, worksize, 0 /* stream */);
     
 	plan.hiptensorPrintContractionMetrics();
-    hip_check_error(hipMemcpy(static_cast<void *>(C), C_d, sizeC, hipMemcpyDeviceToHost));
+    hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
     
-    std::cout<<"Tensor A elements:\n";
-    std::copy(A, A + elementsA, std::ostream_iterator<ADataType>(std::cout, ","));
-    std::cout<<std::endl;
-    std::cout<<"Tensor B elements:\n";
-    std::copy(B, B + elementsB, std::ostream_iterator<BDataType>(std::cout, ","));
-    std::cout<<std::endl;
-    std::cout<<"Tensor C elements:\n";
-    std::copy(C, C + elementsC, std::ostream_iterator<BDataType>(std::cout, ","));
+	std::cout<<"Tensor C elements (output):\n";
+    hiptensorPrintArrayElements(C, elementsC);
     std::cout<<std::endl;
 
 

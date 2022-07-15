@@ -16,8 +16,9 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t* ha
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     const hiptensorTensorDescriptor_t *ht_input_descs[] = { descA, descB, descC };
-    desc->hiptensorContractionAttrUpdate(ht_input_descs, 3);
-    //hiptensorDeriveLayoutFromInputs(desc, 2);
+    const uint32_t alignmentRequriement_arr[] = {alignmentRequirementA, alignmentRequirementB, alignmentRequirementC};
+    desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequriement_arr, 3);
+    
     if ( !descD )
         desc->ht_contract_op = HIPTENSOR_CONTRACTION_SCALE;
     else
