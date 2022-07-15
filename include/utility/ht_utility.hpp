@@ -13,8 +13,9 @@ inline void hip_check_error(hipError_t x)
     }
 }
 
+
 template<typename T>
-void hiptensorPrintTensor ( T *vec, size_t size)
+void hiptensorPrintArrayElements ( T *vec, size_t size)
 {
      int index = 0;
      while (index != size)
@@ -27,3 +28,16 @@ void hiptensorPrintTensor ( T *vec, size_t size)
         index++;
      }
 }
+
+template <typename S>
+void hiptensorPrintVectorElements(const std::vector<S>& vec,
+                    	std::string sep = " ")
+{
+    for (auto elem : vec) {
+        std::cout << elem << sep;
+    }
+ 
+    std::cout << std::endl;
+}
+
+

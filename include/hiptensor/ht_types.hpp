@@ -136,16 +136,6 @@ typedef enum
     HIPTENSOR_WORKSPACE_MAX = 3,         ///< All algorithms will be available
 } hiptensorWorksizePreference_t;
 
-#if 0
-typedef enum
-{
-    HIPTENSOR_CONTRACTION_KNN = 0,
-    HIPTENSOR_CONTRACTION_KKN = 1,
-    HIPTENSOR_CONTRACTION_MNN = 2,
-    HIPTENSOR_CONTRACTION_MKN = 3,
-}hiptesnorContractionLayout_t;
-#endif
-
 typedef enum
 {
     HIPTENSOR_CONTRACTION_SCALE= 0,
@@ -165,12 +155,14 @@ struct hiptensorTensorDescriptor_t{
 struct tensor_attr{
     std::vector<std::size_t> lens;
     std::vector<std::size_t> strides;
+    std::size_t tensor_size;
 };
 
 struct hiptensorContractionDescriptor_t{
 	hiptesnorContractionOperation_t ht_contract_op;
     std::vector<tensor_attr> ht_contract_attr_desc;
-    void hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t *desc[], const int tensor_desc_num);
+    void hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t *desc[], 
+                                    const uint32_t tensor_size[], const int tensor_desc_num);
 };
 
 struct hiptensorContractionFind_t {/*TODO: Discuss the struct members */ };
