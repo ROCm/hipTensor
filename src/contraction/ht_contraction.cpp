@@ -97,5 +97,5 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t* handle,
 void hiptensorContractionPlan_t:: hiptensorPrintContractionMetrics()
 {
     std::cout << "Perf: " << ht_contract_metrics.avg_time << " ms, " <<  ht_contract_metrics.tflops << " TFlops, " 
-              << ht_contract_metrics.transfer_speed << std::endl;
+              << ht_contract_metrics.transfer_speed << " GB/s, " << ht_contract_metrics.ht_instance << std::endl;
 }

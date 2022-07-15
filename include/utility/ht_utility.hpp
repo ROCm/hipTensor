@@ -1,6 +1,7 @@
 #pragma once
 
 #include <hip/hip_runtime.h>
+#include <fstream>
 
 inline void hip_check_error(hipError_t x)
 {
@@ -33,11 +34,29 @@ template <typename S>
 void hiptensorPrintVectorElements(const std::vector<S>& vec,
                     	std::string sep = " ")
 {
-    for (auto elem : vec) {
+    for (auto elem : vec) 
+    {
         std::cout << elem << sep;
     }
  
-    std::cout << std::endl;
 }
 
+template <typename F>
+void hiptensorPrintElementsToFile(std::ofstream& fs, F *output, size_t size, char delim)
+{
+	if(!fs.is_open())
+    {
+        std::cout << "File not found!\n";
+        return;
+    }
+
+    for(int i = 0;i < size; i++)
+    {
+        if (i == size-1)
+          fs << static_cast<F>(output[i]);
+        else
+           fs << static_cast<F>(output[i]) << delim;
+    }
+    return;
+}
 
