@@ -9,6 +9,9 @@ set(CONTRACTION_INSTANCE_SOURCE
 )
 
 add_library(contraction_instance OBJECT ${CONTRACTION_INSTANCE_SOURCE})
+if("${HT_DEBUG_MODE}" STREQUAL "ON")
+    target_compile_options(contraction_instance PRIVATE -DHT_DEBUG_MODE)
+endif()
 target_compile_features(contraction_instance PUBLIC)
 set_target_properties(contraction_instance PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

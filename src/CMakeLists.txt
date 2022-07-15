@@ -24,16 +24,11 @@ add_library(hiptensor SHARED
 
 add_library(hipTENSOR::hiptensor ALIAS hiptensor)
 
-target_compile_options(hiptensor PRIVATE --offload-arch=gfx908)
+target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
 target_compile_features(hiptensor PUBLIC)
 target_link_libraries(hiptensor ck_dep_ht ck_dep_do)
-#target_link_libraries(hiptensor PRIVATE composable_kernel::host_tensor composable_kernel::device_operations)
 
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
-target_include_directories(hiptensor PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor>"
-)
 
 set(DEV_OPS_INC_DIRS
     ${PROJECT_SOURCE_DIR}/include/utility/

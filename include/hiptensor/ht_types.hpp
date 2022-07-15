@@ -171,6 +171,7 @@ struct hiptensorContractionMetrics_t {
     float avg_time;
     float tflops;
     float transfer_speed;
+    std::string ht_instance;
 };
 
 struct hiptensorContractionPlan_t{
@@ -178,9 +179,4 @@ struct hiptensorContractionPlan_t{
     void hiptensorPrintContractionMetrics();
 };
 
-/*    
-	std::shared_ptr<void> ht_contract_scale_op;
-	std::shared_ptr<void> ht_contract_bilinear_op;
-};
-*/
 #endif

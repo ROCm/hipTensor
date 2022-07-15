@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <numeric>
 #include <algorithm>
@@ -8,11 +7,10 @@
 #include "ht_tensor.hpp"
 #include "ht_utility.hpp"
 
+#define MAX_ELEMENTS_PRINT_COUNT 512
+
 int main(int argc, char* argv[])
 {
-
-    //std::ofstream tensorA, tensorB, tensorC;
-
     typedef float ADataType;
     typedef float BDataType;
     typedef float CDataType;
@@ -27,8 +25,9 @@ int main(int argc, char* argv[])
     floatTypeCompute alpha = (floatTypeCompute)1.0f;
     floatTypeCompute beta  = (floatTypeCompute)0.0f;
 
+#ifdef HT_PRINT_DEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
-
+#endif
     /**********************
      * Computing: C_{m,n,u,v} = A_{m,n,h,k} B_{h,k,u,v}
      **********************/
@@ -72,29 +71,35 @@ int main(int argc, char* argv[])
 				a_ms_ks_lengths.data(), NULL,/*stride*/
 				typeA, HIPTENSOR_OP_IDENTITY);
 
+#if HT_PRINT_DEBUG
     std::cout << "a_ms_ks: ";
     a_ms_ks.hiptensorPrintTensorAttributes();
     std::cout << std::endl;
-    
+#endif
+
     hiptensorTensorDescriptor_t b_ks_ns;
     hiptensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
                b_ks_ns_lengths.data(), NULL,/*stride*/
 				typeB, HIPTENSOR_OP_IDENTITY);
-    
+
+#ifdef HT_PRINT_DEBUG
     std::cout << "b_ks_ns: ";
     b_ks_ns.hiptensorPrintTensorAttributes();
     std::cout << std::endl;
-    
+#endif
+
     hiptensorTensorDescriptor_t c_ms_ns;
     hiptensorInitTensorDescriptor(&handle, 
 				&c_ms_ns, nmodeC,
 				c_ms_ns_lengths.data(), NULL,/*stride*/
                 typeC, HIPTENSOR_OP_IDENTITY);
 
+#ifdef HT_PRINT_DEBUG
     std::cout << "c_ms_ns: ";
     c_ms_ns.hiptensorPrintTensorAttributes(); 
     std::cout << std::endl;
-    
+#endif    
+
     /**********************
      * Allocating data
      **********************/
@@ -125,14 +130,6 @@ int main(int argc, char* argv[])
         A[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;
     for (int64_t i = 0; i < elementsB; i++)
         B[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
-    
-    std::cout<<"Tensor A elements:\n";
-    hiptensorPrintArrayElements(A, elementsA);    
-    std::cout<<std::endl;
-    
-    std::cout<<"Tensor B elements:\n";
-    hiptensorPrintArrayElements(B, elementsB);    
-    std::cout<<std::endl;
 
     /********************************************
      * Transfer the Host Tensor to Device Memory *
@@ -148,20 +145,23 @@ int main(int argc, char* argv[])
     hiptensorGetAlignmentRequirement(&handle,
                           A_d, &a_ms_ks,
                           &alignmentRequirementA);
+#ifdef HT_PRINT_DEBUG    
     std::cout << "Tensor A element space: " << alignmentRequirementA << std::endl;
-
+#endif
     uint32_t alignmentRequirementB;
     hiptensorGetAlignmentRequirement(&handle,
                           B_d, &b_ks_ns,
                           &alignmentRequirementB);
+#ifdef HT_PRINT_DEBUG
     std::cout << "Tensor B element space: " << alignmentRequirementB << std::endl;
-
+#endif
     uint32_t alignmentRequirementC;
     hiptensorGetAlignmentRequirement(&handle,
                           C_d, &c_ms_ns,
                           &alignmentRequirementC);
+#ifdef HT_PRINT_DEBUG
     std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;
-
+#endif
     
     /*******************************
      * Create Contraction Descriptor
@@ -215,25 +215,36 @@ int main(int argc, char* argv[])
 	plan.hiptensorPrintContractionMetrics();
     hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
     
-    std::cout<<"Tensor C elements:\n";
-    hiptensorPrintArrayElements(C, elementsC);    
-    std::cout<<std::endl;
-
-
-#if 0
+#if HT_PRINT_DEBUG
+    std::ofstream tensorA, tensorB, tensorC;
+    if (elementsA < MAX_ELEMENTS_PRINT_COUNT)
+    {
+        std::cout<<"Tensor A elements:\n";
+        hiptensorPrintArrayElements(A, elementsA);    
+        std::cout<<std::endl;
+    }
     tensorA.open("tensor_A.txt");
-    LogRangeToFile<ADataType>(tensorA, a_ms_ks.ht_tensor.mData, ","); 
-    LogRangeAsType<ADataType>(std::cout<<"Tensor A elements:\n", a_ms_ks.ht_tensor.mData,",");
+    hiptensorPrintElementsToFile(tensorA, A, elementsA, ','); 
     std::cout<<std::endl;
     tensorA.close();
+    if (elementsB < MAX_ELEMENTS_PRINT_COUNT)
+    {
+        std::cout<<"Tensor B elements:\n";
+        hiptensorPrintArrayElements(B, elementsB);    
+        std::cout<<std::endl;
+    }
     tensorB.open("tensor_B.txt");
-    LogRangeToFile<BDataType>(tensorB, b_ks_ns.ht_tensor.mData, ","); 
-    LogRangeAsType<BDataType>(std::cout<<"Tensor B elements:\n", b_ks_ns.ht_tensor.mData,",");
+    hiptensorPrintElementsToFile(tensorB, B, elementsB, ','); 
     std::cout<<std::endl;
     tensorB.close();
-    tensorC.open("tensor_C_contraction_results.txt");
-    LogRangeToFile<CDataType>(tensorC, c_ms_ns.ht_tensor.mData, ","); 
-    LogRangeAsType<CDataType>(std::cout<<"Tensor C elements:\n", c_ms_ns.ht_tensor.mData, ","); 
+    if (elementsC < MAX_ELEMENTS_PRINT_COUNT)
+    {
+        std::cout<<"Tensor C elements:\n";
+        hiptensorPrintArrayElements(C, elementsC);    
+        std::cout<<std::endl;
+    }
+    tensorC.open("tensor_C_scale_contraction_results.txt");
+    hiptensorPrintElementsToFile(tensorC, C, elementsC, ','); 
     std::cout<<std::endl;
     tensorC.close();
 #endif
