@@ -91,7 +91,9 @@ set_target_properties(ck_dep_do PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LI
 
 add_subdirectory(src)
 add_subdirectory(test)
-
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+add_subdirectory (docs)
+endif()
 
 #Create an interface target for the include only files and call it "hipTENSOR"
 include(CMakePackageConfigHelpers)
@@ -125,3 +127,29 @@ rocm_create_package(
     LDCONFIG
     HEADER_ONLY
 )
+
+
+if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+#[[
+  find_package(Doxygen REQUIRED)
+  if(DOXYGEN_FOUND)
+    set(ENV{project_name} "hipTENSOR")
+  	# set input and output files
+    set(DOXYGEN_IN  ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+	# request to configure the file
+	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+	message("Doxygen build started")
+
+	# note the option ALL which allows to build the docs together with the application
+	add_custom_target( doc_doxygen ALL
+			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
+			COMMENT "Generating API documentation with Doxygen"
+			VERBATIM )
+	else(DOXYGEN_FOUND)
+  	  message("Doxygen need to be installed to generate the doxygen documentation")
+	endif (DOXYGEN_FOUND)
+]]
+endif()
