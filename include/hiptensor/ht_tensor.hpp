@@ -3,6 +3,36 @@
 
 #include "ht_types.hpp"
 
+
+/**
+ * \brief Initializes the hipTENSOR library
+ *
+ * \details The device associated with a particular hipTENSOR handle is assumed to remain
+ * unchanged after the hiptensorInit() call. In order for the cuTENSOR library to
+ * use a different device, the application must set the new device to be used by
+ * calling hipInit(0) and then create another hipTENSOR handle, which will
+ * be associated with the new device, by calling hiptensorInit().
+ *
+ * \param[out] handle Pointer to hiptensorHandle_t
+ *
+ * \returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
+ * \remarks blocking, no reentrant, and thread-safe
+ */
+
+
+/**
+ * @brief Get a string representation of the function name.
+ *
+ * Again, a somewhat longer description with fancy notes etc.
+ *
+ * @param[out]  str  char* where string representation will be stored.
+ *
+ * @return 0 on success, or -1 if an error occurred.
+ *
+ * @pre Same as with @foo. Why?!
+ * @post Yeah, really, why?!
+ */
+
 hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle);
 
 hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
