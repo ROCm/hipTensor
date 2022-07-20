@@ -75,13 +75,13 @@ ExternalProject_Add(ck
 	PATCH_COMMAND    mkdir -p build
 	BINARY_DIR       ${CMAKE_CK_CLONE_DIRECTORY}/build
 	CMAKE_ARGS       -D BUILD_DEV=${BUILD_DEV}
-                     -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                     -D CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-                     -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                     -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                         -D CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                         -D CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+                         -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                         -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
 
 	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all
-    INSTALL_COMMAND  COMMAND make install
+        INSTALL_COMMAND  COMMAND make install
 	BUILD_ALWAYS     FALSE
 
 )

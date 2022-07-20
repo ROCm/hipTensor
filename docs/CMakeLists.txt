@@ -40,10 +40,8 @@ add_custom_target(Sphinx-latex ALL
                   ${SPHINX_SOURCE} ${SPHINX_LATEX_BUILD}
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   COMMENT "Generating LATEX documentation with Sphinx")
-       
-add_custom_target(Sphinx-build_pdf
+
+add_custom_target(Sphinx-build_pdf ALL
                   COMMAND make 
                   WORKING_DIRECTORY ${SPHINX_LATEX_BUILD}
-                  COMMENT "Building pdf documentation"
-                  DEPENDS Sphinx-latex)
-
+                  COMMENT "Building PDF on the LATEX documentation built with Sphinx")
