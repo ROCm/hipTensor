@@ -5,8 +5,8 @@
 
 Welcome to hipTENSOR's documentation
 ====================================
-** Advanced Micro Devices, Inc's open source deep learning library.**
-Sources and binaries can be found at `MIOpen's GitHub site <https://github.com/AMD-HPC/hipTENSOR>`_.
+**Advanced Micro Devices, Inc's tensor contraction library.**
+Sources and binaries can be found at `hipTENSOR's GitHub site <https://github.com/AMD-HPC/hipTENSOR>`_.
 
 .. toctree::
    :maxdepth: 2

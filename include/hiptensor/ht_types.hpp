@@ -3,6 +3,11 @@
 
 #include "host_tensor.hpp"
 
+/**
+ * \brief hipTENSOR status type returns
+ * \details The type is used for function status returns. All hipTENSOR library functions return their status, which can have the following values.
+ *
+*/
 typedef enum
 {
     /** The operation completed successfully.*/
@@ -37,38 +42,24 @@ typedef enum
     HIPTENSOR_STATUS_IO_ERROR               = 21,
 } hiptensorStatus_t;
 
+/**
+ * \brief hiptensorDataType_t is an enumeration of the types supported by HIPTENSOR libraries. 
+ * hipTENSOR supports real FP16, BF16, FP32 input types.
+ * FP64 is not supported by the xdlops compiler issue (SWDEV-335738)
+ *
+*/
 typedef enum 
 {
-	HIPTENSOR_R_16F  =  2, /* real as a half */
-	HIPTENSOR_C_16F  =  6, /* complex as a pair of half numbers */
-	HIPTENSOR_R_16BF = 14, /* real as a nv_bfloat16 */
-	HIPTENSOR_C_16BF = 15, /* complex as a pair of nv_bfloat16 numbers */
-	HIPTENSOR_R_32F  =  0, /* real as a float */
-	HIPTENSOR_C_32F  =  4, /* complex as a pair of float numbers */
-	HIPTENSOR_R_64F  =  1, /* real as a double */
-	HIPTENSOR_C_64F  =  5, /* complex as a pair of double numbers */
-	HIPTENSOR_R_4I   = 16, /* real as a signed 4-bit int */
-	HIPTENSOR_C_4I   = 17, /* complex as a pair of signed 4-bit int numbers */
-	HIPTENSOR_R_4U   = 18, /* real as a unsigned 4-bit int */
-	HIPTENSOR_C_4U   = 19, /* complex as a pair of unsigned 4-bit int numbers */
-	HIPTENSOR_R_8I   =  3, /* real as a signed 8-bit int */
-	HIPTENSOR_C_8I   =  7, /* complex as a pair of signed 8-bit int numbers */
-	HIPTENSOR_R_8U   =  8, /* real as a unsigned 8-bit int */
-	HIPTENSOR_C_8U   =  9, /* complex as a pair of unsigned 8-bit int numbers */
-	HIPTENSOR_R_16I  = 20, /* real as a signed 16-bit int */
-	HIPTENSOR_C_16I  = 21, /* complex as a pair of signed 16-bit int numbers */
-	HIPTENSOR_R_16U  = 22, /* real as a unsigned 16-bit int */
-	HIPTENSOR_C_16U  = 23, /* complex as a pair of unsigned 16-bit int numbers */
-	HIPTENSOR_R_32I  = 10, /* real as a signed 32-bit int */
-	HIPTENSOR_C_32I  = 11, /* complex as a pair of signed 32-bit int numbers */
-	HIPTENSOR_R_32U  = 12, /* real as a unsigned 32-bit int */
-	HIPTENSOR_C_32U  = 13, /* complex as a pair of unsigned 32-bit int numbers */
-	HIPTENSOR_R_64I  = 24, /* real as a signed 64-bit int */
-	HIPTENSOR_C_64I  = 25, /* complex as a pair of signed 64-bit int numbers */
-	HIPTENSOR_R_64U  = 26, /* real as a unsigned 64-bit int */
-	HIPTENSOR_C_64U  = 27  /* complex as a pair of unsigned 64-bit int numbers */
+	HIPTENSOR_R_16F  =  0,      ///<real as a half
+	HIPTENSOR_R_16BF =  1,      ///<real as a nv_bfloat16
+	HIPTENSOR_R_32F  =  2,      ///<real as a float 
+	HIPTENSOR_R_64F  =  3,      ///<real as a double 
 } hiptensorDataType_t;
 
+/**
+ * \brief Encodes hipTENSOR’s compute type 
+ *
+*/
 typedef enum
 {
     HIPTENSOR_COMPUTE_16F  = (1U<< 0U),  ///< floating-point: 5-bit exponent and 10-bit mantissa (aka half)
@@ -82,44 +73,21 @@ typedef enum
     HIPTENSOR_COMPUTE_32I  = (1U<< 9U),  ///< 32-bit signed integer
 } hiptensorComputeType_t;
 
-
+/**
+ * \brief This enum captures the operations supported by the hipTENSOR library.
+ *
+*/
 typedef enum
 {
-    /* Unary */
-    HIPTENSOR_OP_IDENTITY = 1,          ///< Identity operator (i.e., elements are not changed)
-    HIPTENSOR_OP_SQRT = 2,              ///< Square root
-    HIPTENSOR_OP_RELU = 8,              ///< Rectified linear unit
-    HIPTENSOR_OP_CONJ = 9,              ///< Complex conjugate
-    HIPTENSOR_OP_RCP = 10,              ///< Reciprocal
-    HIPTENSOR_OP_SIGMOID = 11,          ///< y=1/(1+exp(-x))
-    HIPTENSOR_OP_TANH = 12,             ///< y=tanh(x)
-    HIPTENSOR_OP_EXP = 22,              ///< Exponentiation.
-    HIPTENSOR_OP_LOG = 23,              ///< Log (base e).
-    HIPTENSOR_OP_ABS = 24,              ///< Absolute value.
-    HIPTENSOR_OP_NEG = 25,              ///< Negation.
-    HIPTENSOR_OP_SIN = 26,              ///< Sine.
-    HIPTENSOR_OP_COS = 27,              ///< Cosine.
-    HIPTENSOR_OP_TAN = 28,              ///< Tangent.
-    HIPTENSOR_OP_SINH = 29,             ///< Hyperbolic sine.
-    HIPTENSOR_OP_COSH = 30,             ///< Hyperbolic cosine.
-    HIPTENSOR_OP_ASIN = 31,             ///< Inverse sine.
-    HIPTENSOR_OP_ACOS = 32,             ///< Inverse cosine.
-    HIPTENSOR_OP_ATAN = 33,             ///< Inverse tangent.
-    HIPTENSOR_OP_ASINH = 34,            ///< Inverse hyperbolic sine.
-    HIPTENSOR_OP_ACOSH = 35,            ///< Inverse hyperbolic cosine.
-    HIPTENSOR_OP_ATANH = 36,            ///< Inverse hyperbolic tangent.
-    HIPTENSOR_OP_CEIL = 37,             ///< Ceiling.
-    HIPTENSOR_OP_FLOOR = 38,            ///< Floor.
-    /* Binary */
-    HIPTENSOR_OP_ADD = 3,               ///< Addition of two elements
-    HIPTENSOR_OP_MUL = 5,               ///< Multiplication of two elements
-    HIPTENSOR_OP_MAX = 6,               ///< Maximum of two elements
-    HIPTENSOR_OP_MIN = 7,               ///< Minimum of two elements
-
-    HIPTENSOR_OP_UNKNOWN = 126, ///< reserved for internal use only
-
+    HIPTENSOR_OP_IDENTITY = 1,       ///< Identity operator (i.e., elements are not changed)
+    HIPTENSOR_OP_UNKNOWN = 126,      ///< reserved for internal use only
 } hiptensorOperator_t;
 
+/**
+ * \brief Allows users to specify the algorithm to be used for performing the tensor contraction.
+ * \details This enum gives users finer control over which algorithm should be executed by hiptensorContraction(); 
+ * values >= 0 correspond to certain sub-algorithms of GETT.
+*/
 typedef enum
 {
     HIPTENSOR_ALGO_DEFAULT_PATIENT   = -6, ///< Uses the more accurate but also more time-consuming performance model
@@ -129,6 +97,10 @@ typedef enum
     HIPTENSOR_ALGO_DEFAULT           = -1, ///< Lets the internal heuristic choose
 } hiptensorAlgo_t;
 
+/**
+ * \brief This enum gives users finer control over the suggested workspace
+ * \details This enum gives users finer control over the amount of workspace that is suggested by hiptensorContractionGetWorkspace
+*/
 typedef enum
 {
     HIPTENSOR_WORKSPACE_MIN = 1,         ///< At least one algorithm will be available
@@ -136,47 +108,93 @@ typedef enum
     HIPTENSOR_WORKSPACE_MAX = 3,         ///< All algorithms will be available
 } hiptensorWorksizePreference_t;
 
+
+/**
+ * \brief This enum decides the over the operation based on the inputs.
+ * \details This enum decides the operation based on the in puts passed in the hiptensorContractionGetWorkspace
+*/
 typedef enum
 {
-    HIPTENSOR_CONTRACTION_SCALE= 0,
-    HIPTENSOR_CONTRACTION_BILINEAR = 1,
+    HIPTENSOR_CONTRACTION_SCALE= 0,       ///< C = alpha * A *B
+    HIPTENSOR_CONTRACTION_BILINEAR = 1,   ///< C = alpha * A * B + beta * C
 }hiptesnorContractionOperation_t;
 
+
+/**
+ * \brief Opaque structure holding hipTENSOR's library context.
+*/
 typedef struct { /*TODO: Discuss the struct members */ }hiptensorHandle_t;
 
+/**
+ * \brief Structure representing a tensor descriptor with the given lengths, and strides.
+ *
+ * Constructs a descriptor for the input tensor with the given lengths, strides when passed
+ * in the function hiptensorInitTensorDescriptor
+*/
 struct hiptensorTensorDescriptor_t{
-    HostTensorDescriptor ht_desc;
-    hiptensorDataType_t ht_type;
-    hiptensorTensorDescriptor_t() = default;
-    std::size_t hiptensorGetElementSpace() const;
-    void hiptensorPrintTensorAttributes();
+    HostTensorDescriptor ht_desc;      /*!< composable_kernel host tensor descriptor structure */
+    hiptensorDataType_t ht_type;       /*!< Data type of the tensors enum selection */
+    hiptensorTensorDescriptor_t() = default; /*!< Default Constructor of the structure hipTensorDescriptor_t */
+    std::size_t hiptensorGetElementSpace() const; /*!< Function that returns the size of the tensor based on the input length and strides */
+    void hiptensorPrintTensorAttributes(); /*!< Function that prints the length, strides tensor */
 };
 
+/**
+ * \brief Structure used to store the tensor descriptor dimensions and strides
+ * for the contraction operation.
+ *
+*/
 struct tensor_attr{
-    std::vector<std::size_t> lens;
-    std::vector<std::size_t> strides;
-    std::size_t tensor_size;
+    std::vector<std::size_t> lens; /*!< Represent the lengths of the descriptor */
+    std::vector<std::size_t> strides; /*!< Represent the strides of the descriptor */
+    std::size_t tensor_size; /*!< Represent the allocated size of the tensor*/
 };
 
+/**
+ * \brief Structure representing a tensor contraction descriptor
+ * 
+ * Constructs a contraction descriptor with all the input tensor descriptors and updates the 
+ * dimensions on to this structure when passed into the function hiptensorInitContractionDescriptor
+ *
+*/
 struct hiptensorContractionDescriptor_t{
-	hiptesnorContractionOperation_t ht_contract_op;
-    std::vector<tensor_attr> ht_contract_attr_desc;
+	hiptesnorContractionOperation_t ht_contract_op; /*!<Enum that has the contraction operation(scale/bilinear)*/
+    std::vector<tensor_attr> ht_contract_attr_desc; /*!<Vector that represents the length,strides,and size of the input tensors*/
     void hiptensorContractionAttrUpdate(const hiptensorTensorDescriptor_t *desc[], 
-                                    const uint32_t tensor_size[], const int tensor_desc_num);
+                                    const uint32_t tensor_size[], const int tensor_desc_num); /*!< Function that updates the param  ht_contract_attr_desc vector*/
 };
 
+/**
+ * \brief Opaque structure representing a candidate.
+ *
+*/
 struct hiptensorContractionFind_t {/*TODO: Discuss the struct members */ };
 
+/**
+ * \brief structure representing a plan
+ * 
+ * Captures all the perf results: execution time, FLOPS, Transfer speed, and 
+ * the CK's contraction instance name
+ * 
+*/
 struct hiptensorContractionMetrics_t {
-    float avg_time;
-    float tflops;
-    float transfer_speed;
-    std::string ht_instance;
+    float avg_time; /*!<Time to exectued the selected CK's contraction instance*/
+    float tflops;  /*!<FLOPS returned by the selected CK's contraction instance*/
+    float transfer_speed; /*!<Transfer speed returned by the CK's contraction instance*/
+    std::string ht_instance;/*!<CK's contraction instance name */
 };
 
+/**
+ * \brief structure representing a plan
+ *
+ * 
+ * Constructs a contraction plan with the contractions descriptor passed into the function
+ * hiptensorInitContractionPlan
+ *
+*/
 struct hiptensorContractionPlan_t{
-    hiptensorContractionDescriptor_t ht_plan_desc;
-    void hiptensorPrintContractionMetrics();
+    hiptensorContractionDescriptor_t ht_plan_desc; /*!< Represent the contraction descriptor */
+    void hiptensorPrintContractionMetrics(); /*!< Function that prints all the perf results of the CK's contraction instance */
 };
 
 #endif

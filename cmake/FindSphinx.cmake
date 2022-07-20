@@ -1,7 +1,12 @@
 #Look for an executable called sphinx-build
-find_program(SPHINX_EXECUTABLE
-             NAMES sphinx-build
-             DOC "Path to sphinx-build executable")
+find_program(SPHINX_EXECUTABLE 
+    NAMES sphinx-build
+    DOC "Sphinx documentation generator"
+)
+mark_as_advanced(SPHINX_EXECUTABLE)
+
+#TOFIX the pointing to /usr/bin instead of /usr/local/bin issue
+set(SPHINX_EXECUTABLE "/usr/local/bin/sphinx-build")
 
 include(FindPackageHandleStandardArgs)
 
