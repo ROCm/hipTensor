@@ -14,9 +14,3 @@ Sources and binaries can be found at `hipTENSOR's GitHub site <https://github.co
         
    apireference
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
