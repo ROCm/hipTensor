@@ -5,7 +5,7 @@ include_directories(BEFORE
     ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor
 )
 
-find_package(hipTENSOR 1.0.0 COMPONENTS hiptensor)
+#find_package(hipTENSOR 1.0.0 COMPONENTS hiptensor)
 #find_package(composable_kernel 1.0.0 COMPONENTS host_tensor deviceoperations)
 find_package(hip REQUIRED PATHS /opt/rocm)
 message(STATUS "Build with HIP ${hip_VERSION}")

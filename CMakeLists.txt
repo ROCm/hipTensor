@@ -54,9 +54,15 @@ if(NOT CMAKE_PREFIX_PATH)
     FORCE)
 endif()
 
-if(NOT HT_DEBUG_MODE)
-  set(HT_DEBUG_MODE "OFF" CACHE STRING
+if(NOT DEBUG_MODE)
+  set(DEBUG_MODE "OFF" CACHE STRING
     "Choose the type of build, options are: ON, OFF."
+    FORCE)
+endif()
+
+if(NOT BUILD_DOC)
+  set(BUILD_DOC "OFF" CACHE STRING
+      "Choose the type of build, options are: DOXYGEN, SPHINX, PDF, OFF."
     FORCE)
 endif()
 
@@ -81,7 +87,7 @@ ExternalProject_Add(ck
                          -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
 
 	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all
-        INSTALL_COMMAND  COMMAND make install
+    INSTALL_COMMAND  COMMAND make install
 	BUILD_ALWAYS     FALSE
 
 )
@@ -93,7 +99,7 @@ set_target_properties(ck_dep_do PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LI
 
 add_subdirectory(src)
 add_subdirectory(test)
-if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+if(NOT BUILD_DOC MATCHES "^[Oo]ff")
   # Add the cmake folder so the FindSphinx module is found
   set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
   add_subdirectory (docs)
