@@ -41,7 +41,7 @@ cmake                                                                 \
 -D CMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc                             \
 -D CMAKE_PREFIX_PATH=/opt/rocm                                        \
 -D CMAKE_INSTALL_PREFIX=${PATH_TO_CK_INSTALL_DIRECTORY}               \
--D HT_DEBUG_MODE=ON                                                   \
+-D DEBUG_MODE=ON                                                   \
 ..
 ```
 ### Build and run hipTENSOR

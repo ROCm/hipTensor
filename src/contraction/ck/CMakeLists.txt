@@ -9,7 +9,7 @@ set(CK_CORE_SOURCE
 )
 
 add_library(ck_core_instance OBJECT ${CK_CORE_SOURCE})
-if("${HT_DEBUG_MODE}" STREQUAL "ON")
+if("${DEBUG_MODE}" STREQUAL "ON")
     target_compile_options(ck_core_instance PRIVATE -DHT_DEBUG_MODE)
 endif()
 target_compile_features(ck_core_instance PUBLIC)
