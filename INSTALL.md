@@ -52,7 +52,7 @@ cmake                                                                 \
  make
 ```
 
-### Install hipTENSOR package
+## Install hipTENSOR package
 * The package will be installed to the path specified in the CMAKE_INSTALL_PREFIX cmake flag.
 ```bash
  make install
