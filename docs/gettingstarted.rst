@@ -1,11 +1,10 @@
-
-API Reference
-=============
+Getting Started
+===============
 
 
 .. toctree::
     :maxdepth: 2
     :caption: Contents:
 
-    datatypes
-    functions
+    readme
+    install

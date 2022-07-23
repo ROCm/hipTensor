@@ -62,7 +62,7 @@ endif()
 
 if(NOT BUILD_DOC)
   set(BUILD_DOC "OFF" CACHE STRING
-      "Choose the type of build, options are: DOXYGEN, SPHINX, PDF, OFF."
+      "Choose the type of build, options are: ON, OFF."
     FORCE)
 endif()
 

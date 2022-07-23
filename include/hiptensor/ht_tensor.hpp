@@ -27,8 +27,8 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle);
  * \param[in] handle Opaque handle holding hipTENSOR's library context.
  * \param[out] desc Pointer to the address where the allocated tensor descriptor object is stored.
  * \param[in] numModes Number of modes/dimensions.
- * \param[in] extent Extent of each mode(lengths) (must be larger than zero).
- * \param[in] stride stride[i] denotes the displacement (stride) between two consecutive elements in the ith-mode.
+ * \param[in] lens Extent of each mode(lengths) (must be larger than zero).
+ * \param[in] strides stride[i] denotes the displacement (stride) between two consecutive elements in the ith-mode.
  *            If stride is NULL, a packed generalized column-major memory
  *            layout is assumed (i.e., the strides increase monotonically from left to right)
  * \param[in] dataType Data type of the stored entries.
