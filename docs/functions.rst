@@ -4,7 +4,7 @@ hipTENSOR Functions
 
 
 .. toctree::
-    :maxdepth: 8
+    :maxdepth: 2
     :caption: Contents:
 
     helperfunctions

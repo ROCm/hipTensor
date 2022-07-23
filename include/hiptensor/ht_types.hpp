@@ -115,8 +115,8 @@ typedef enum
 */
 typedef enum
 {
-    HIPTENSOR_CONTRACTION_SCALE= 0,       ///< \f[ C = \alpha \mathcal{A}  \mathcal{B} \f]
-    HIPTENSOR_CONTRACTION_BILINEAR = 1,   ///< \f[ D = \alpha \mathcal{A}  \mathcal{B} + \beta \mathcal{C} \f]
+    HIPTENSOR_CONTRACTION_SCALE= 0,       ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
+    HIPTENSOR_CONTRACTION_BILINEAR = 1,   ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
 }hiptesnorContractionOperation_t;
 
 

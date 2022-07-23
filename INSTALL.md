@@ -1,4 +1,4 @@
-# Installing hipTENSOR package:
+# Installing hipTENSOR package
 ## Pre-requisites
 ### Docker script to setup env
 ```bash
@@ -20,7 +20,7 @@ Create and move to the build directory.
 ```bash 
 mkdir build && cd build 
 ```
-#### For building the hipTENSOR packages, a couple of options are available 
+### For building the hipTENSOR packages, a couple of options are available 
 1. Regular build with the package with build type, AARCH, Compiler, Prefix, and Install paths.
 ```bash
 # Need to specify target ID, example below is gfx908 and gfx90a

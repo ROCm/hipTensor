@@ -5,9 +5,6 @@ find_program(SPHINX_EXECUTABLE
 )
 mark_as_advanced(SPHINX_EXECUTABLE)
 
-#TOFIX the pointing to /usr/bin instead of /usr/local/bin issue
-set(SPHINX_EXECUTABLE "/usr/local/bin/sphinx-build")
-
 include(FindPackageHandleStandardArgs)
 
 #Handle standard arguments to find_package like REQUIRED and QUIET
