@@ -141,7 +141,9 @@ latex_elements = {
 
     # Additional stuff for the LaTeX preamble.
     #
-    # 'preamble': '',
+    'preamble': r'''
+                \renewcommand{\hyperref}[2][]{#2}
+                ''',
 
     # Latex figure (float) alignment
     #
