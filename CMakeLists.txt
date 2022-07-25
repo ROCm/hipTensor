@@ -99,7 +99,7 @@ set_target_properties(ck_dep_do PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LI
 
 add_subdirectory(src)
 add_subdirectory(test)
-if(NOT BUILD_DOC MATCHES "^[Oo]ff")
+if(NOT BUILD_DOC MATCHES "^[Oo]FF")
   # Add the cmake folder so the FindSphinx module is found
   set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
   add_subdirectory (docs)
