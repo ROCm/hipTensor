@@ -24,7 +24,7 @@ add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
 add_custom_target(Doxygen ALL DEPENDS ${DOXYGEN_INDEX_FILE} copyover_install)
 
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
-set(SPHINX_HOST ${CMAKE_CURRENT_SOURCE_DIR}/_build)
+set(SPHINX_HOST ${CMAKE_CURRENT_SOURCE_DIR}/html)
 set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/sphinx)
 
 add_custom_target(Sphinx ALL
