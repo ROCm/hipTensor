@@ -8,4 +8,5 @@ Getting Started
    
     overview
     install
+    docgeneration
     clientinstallation

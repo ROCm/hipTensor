@@ -1,5 +1,5 @@
-Compilation and Running the client application
-==============================================
+Setting up the client application
+=================================
 
 | Assuming hipTENSOR has be installed to the path specified in the ${CMAKE_INSTALL_PREFIX} while building the hipTENSOR package.
 | Update the environment variables as mentioned below.
@@ -13,7 +13,7 @@ Compilation and Running the client application
 
 .. code-block:: console
  
-   hipcc contraction.cu -L${HIPTENSOR_ROOT}/lib/ -I${HIPTENSOR_ROOT}/include -std=c++17 -lhiptensor -o contraction
+   hipcc contraction.cpp -L${HIPTENSOR_ROOT}/lib/ -I${HIPTENSOR_ROOT}/include -std=c++17 -lhiptensor -o contraction
 
 | When compiling intermediate steps of this example, the compiler might warn about unused variables. This is due to the example not being complete. The final step should issue no warnings.
 
