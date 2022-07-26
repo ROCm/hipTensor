@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Helper Functions &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contraction Operations" href="contractionfunctions.html" />
+    <link rel="prev" title="hipTENSOR Functions" href="functions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> hipTENSOR
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="overview.html#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="overview.html#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="overview.html#future-development">Future development</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTENSOR package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install.html#pre-requisites">Pre-requisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="install.html#docker-cmd">Docker CMD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="install.html#install-the-new-rocm-cmake-version">Install the new rocm-cmake version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="install.html#build-steps">Build steps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="install.html#build-modes">Build modes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="install.html#execution">Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="install.html#installation">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docgeneration.html">DOC Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docgeneration.html#pre-requisites">Pre-requisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docgeneration.html#building-the-documentation">Building the documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docgeneration.html#html-and-pdf-documentation">HTML and PDF documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="clientinstallation.html">Setting up the client application</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="apireference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hipTENSOR Data Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorstatus-t">hiptensorStatus_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensordatatype-t">hiptensorDataType_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcomputetype-t">hiptensorComputeType_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensoroperator-t">hiptensorOperator_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensoralgo-t">hiptensorAlgo_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorworksizepreference-t">hiptensorWorksizePreference_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptesnorcontractionoperation-t">hiptesnorContractionOperation_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorhandle-t">hiptensorHandle_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensortensordescriptor-t">hiptensorTensorDescriptor_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#tensor-attr">tensor_attr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractiondescriptor-t">hiptensorContractionDescriptor_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionfind-t">hiptensorContractionFind_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionmetrics-t">hiptensorContractionMetrics_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionplan-t">hiptensorContractionPlan_t</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="functions.html">hipTENSOR Functions</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Helper Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hiptensorinit">hiptensorInit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hiptensorinittensordescriptor">hiptensorInitTensorDescriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hiptensorgetalignmentrequirement">hiptensorGetAlignmentRequirement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="contractionfunctions.html">Contraction Operations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractiondescriptor">hiptensorInitContractionDescriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractionfind">hiptensorInitContractionFind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractionplan">hiptensorInitContractionPlan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorcontraction">hiptensorContraction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">hipTENSOR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="apireference.html">API Reference</a> &raquo;</li>
+          <li><a href="functions.html">hipTENSOR Functions</a> &raquo;</li>
+      <li>Helper Functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/helperfunctions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="helper-functions">
+<h1>Helper Functions<a class="headerlink" href="#helper-functions" title="Permalink to this heading"></a></h1>
+<section id="hiptensorinit">
+<h2>hiptensorInit<a class="headerlink" href="#hiptensorinit" title="Permalink to this heading"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413hiptensorInitP17hiptensorHandle_t">
+<span id="_CPPv313hiptensorInitP17hiptensorHandle_t"></span><span id="_CPPv213hiptensorInitP17hiptensorHandle_t"></span><span id="hiptensorInit__hiptensorHandle_tP"></span><span class="target" id="ht__tensor_8hpp_1a2c5cb3e9f88a598f00632a99424d60b7"></span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorStatus_t" title="hiptensorStatus_t"><span class="n"><span class="pre">hiptensorStatus_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorInit</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorHandle_t" title="hiptensorHandle_t"><span class="n"><span class="pre">hiptensorHandle_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">handle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413hiptensorInitP17hiptensorHandle_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Initializes the hipTENSOR library. </p>
+<p>The device associated with a particular hipTENSOR handle is assumed to remain unchanged after the <a class="reference internal" href="#ht__tensor_8hpp_1a2c5cb3e9f88a598f00632a99424d60b7"><span class="std std-ref">hiptensorInit()</span></a> call. In order for the hipTENSOR library to use a different device, the application must set the new device to be used by calling hipInit(0) and then create another hipTENSOR handle, which will be associated with the new device, by calling <a class="reference internal" href="#ht__tensor_8hpp_1a2c5cb3e9f88a598f00632a99424d60b7"><span class="std std-ref">hiptensorInit()</span></a>.</p>
+<p><div class="remark admonition">
+<p class="admonition-title">Remark</p>
+<p>blocking, no reentrant, and thread-safe </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>handle</strong> – <strong>[out]</strong> Pointer to <a class="reference internal" href="datatypes.html#structhiptensorHandle__t"><span class="std std-ref">hiptensorHandle_t</span></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="hiptensorinittensordescriptor">
+<h2>hiptensorInitTensorDescriptor<a class="headerlink" href="#hiptensorinittensordescriptor" title="Permalink to this heading"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429hiptensorInitTensorDescriptorPK17hiptensorHandle_tP27hiptensorTensorDescriptor_tK8uint32_tA_K7int64_tA_K7int64_t19hiptensorDataType_t19hiptensorOperator_t">
+<span id="_CPPv329hiptensorInitTensorDescriptorPK17hiptensorHandle_tP27hiptensorTensorDescriptor_tK8uint32_tA_K7int64_tA_K7int64_t19hiptensorDataType_t19hiptensorOperator_t"></span><span id="_CPPv229hiptensorInitTensorDescriptorPK17hiptensorHandle_tP27hiptensorTensorDescriptor_tK8uint32_tA_K7int64_tA_K7int64_t19hiptensorDataType_t19hiptensorOperator_t"></span><span id="hiptensorInitTensorDescriptor__hiptensorHandle_tCP.hiptensorTensorDescriptor_tP.uint32_tC.int64_tCA.int64_tCA.hiptensorDataType_t.hiptensorOperator_t"></span><span class="target" id="ht__tensor_8hpp_1a4f58b2337203075908d2335374b1845a"></span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorStatus_t" title="hiptensorStatus_t"><span class="n"><span class="pre">hiptensorStatus_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorInitTensorDescriptor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorHandle_t" title="hiptensorHandle_t"><span class="n"><span class="pre">hiptensorHandle_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">handle</span></span>, <a class="reference internal" href="datatypes.html#_CPPv427hiptensorTensorDescriptor_t" title="hiptensorTensorDescriptor_t"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desc</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numModes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lens</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <a class="reference internal" href="datatypes.html#_CPPv419hiptensorDataType_t" title="hiptensorDataType_t"><span class="n"><span class="pre">hiptensorDataType_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dataType</span></span>, <a class="reference internal" href="datatypes.html#_CPPv419hiptensorOperator_t" title="hiptensorOperator_t"><span class="n"><span class="pre">hiptensorOperator_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">unaryOp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429hiptensorInitTensorDescriptorPK17hiptensorHandle_tP27hiptensorTensorDescriptor_tK8uint32_tA_K7int64_tA_K7int64_t19hiptensorDataType_t19hiptensorOperator_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Initializes a tensor descriptor. </p>
+<p><div class="remark admonition">
+<p class="admonition-title">Remark</p>
+<p>non-blocking, no reentrant, and thread-safe </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
+<li><p><strong>desc</strong> – <strong>[out]</strong> Pointer to the address where the allocated tensor descriptor object is stored. </p></li>
+<li><p><strong>numModes</strong> – <strong>[in]</strong> Number of modes/dimensions. </p></li>
+<li><p><strong>lens</strong> – <strong>[in]</strong> Extent of each mode(lengths) (must be larger than zero). </p></li>
+<li><p><strong>strides</strong> – <strong>[in]</strong> stride[i] denotes the displacement (stride) between two consecutive elements in the ith-mode. If stride is NULL, a packed generalized column-major memory layout is assumed (i.e., the strides increase monotonically from left to right) </p></li>
+<li><p><strong>dataType</strong> – <strong>[in]</strong> Data type of the stored entries. </p></li>
+<li><p><strong>unaryOp</strong> – <strong>[in]</strong> Unary operator that will be applied to each element of the corresponding tensor in a lazy fashion (i.e., the algorithm uses this tensor as its operand only once). The original data of this tensor remains unchanged. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
+<li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle is not initialized. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Pre</dt>
+<dd class="field-odd"><p>extent and stride arrays must each contain at least sizeof(int64_t) * numModes bytes </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="hiptensorgetalignmentrequirement">
+<h2>hiptensorGetAlignmentRequirement<a class="headerlink" href="#hiptensorgetalignmentrequirement" title="Permalink to this heading"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t">
+<span id="_CPPv332hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t"></span><span id="_CPPv232hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t"></span><span id="hiptensorGetAlignmentRequirement__hiptensorHandle_tCP.voidCP.hiptensorTensorDescriptor_tCP.uint32_tP"></span><span class="target" id="ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"></span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorStatus_t" title="hiptensorStatus_t"><span class="n"><span class="pre">hiptensorStatus_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetAlignmentRequirement</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorHandle_t" title="hiptensorHandle_t"><span class="n"><span class="pre">hiptensorHandle_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">handle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv427hiptensorTensorDescriptor_t" title="hiptensorTensorDescriptor_t"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desc</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">alignmentRequirement</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Computes the minimal alignment requirement for a given pointer and descriptor. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
+<li><p><strong>ptr</strong> – <strong>[in]</strong> Raw pointer to the data of the respective tensor. </p></li>
+<li><p><strong>desc</strong> – <strong>[in]</strong> Tensor descriptor for ptr. </p></li>
+<li><p><strong>alignmentRequirement</strong> – <strong>[out]</strong> Largest alignment requirement that ptr can fulfill (in bytes). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return values</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
+<li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle is not initialized. </p></li>
+<li><p><strong>HIPTENSOR_STATUS_INVALID_VALUE</strong> – if the unsupported datatype is passed. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="functions.html" class="btn btn-neutral float-left" title="hipTENSOR Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contractionfunctions.html" class="btn btn-neutral float-right" title="Contraction Operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Advanced Micro Devices, Inc. All rights reserved.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
