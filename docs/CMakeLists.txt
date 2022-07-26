@@ -24,6 +24,7 @@ add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
 add_custom_target(Doxygen ALL DEPENDS ${DOXYGEN_INDEX_FILE} copyover_install)
 
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
+set(SPHINX_HOST ${CMAKE_CURRENT_SOURCE_DIR}/_build)
 set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/sphinx)
 
 add_custom_target(Sphinx ALL
@@ -31,9 +32,18 @@ add_custom_target(Sphinx ALL
                   # Tell Breathe where to find the Doxygen output
                   -Dbreathe_projects.proj=${DOXYGEN_OUTPUT_DIR}/xml
                   -Dbreathe_default_project=proj
-                  ${SPHINX_SOURCE} ${SPHINX_BUILD}
+		  ${SPHINX_SOURCE} ${SPHINX_BUILD}
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   COMMENT "Generating HTML documentation with Sphinx")
+	 
+add_custom_target(Sphinx-host ALL
+                  COMMAND ${SPHINX_EXECUTABLE} -b html
+                  # Tell Breathe where to find the Doxygen output
+                  -Dbreathe_projects.proj=${DOXYGEN_OUTPUT_DIR}/xml
+                  -Dbreathe_default_project=proj
+		  ${SPHINX_SOURCE} ${SPHINX_HOST}
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                  COMMENT "Generating HTML documentation to host")
 
 set(SPHINX_LATEX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/sphinx/latex)
 add_custom_target(Sphinx-latex ALL
