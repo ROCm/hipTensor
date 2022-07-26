@@ -30,7 +30,8 @@ Pre-requisites
    sudo apt-get install python3.9-venv
  
 .. warning:: 
-   In a few linux environments, a few errors encounterd. Follow the steps mentioned in the `package errors <https://askubuntu.com/questions/1402410/sub-process-usr-bin-dpkg-returned-an-error-code-1-while-upgrading-python3-10>`_.
+   In a few linux environments, a few errors encounterd in installing the package. 
+   Follow the steps to resolve those errors as mentioned in the `website  <https://askubuntu.com/questions/1402410/sub-process-usr-bin-dpkg-returned-an-error-code-1-while-upgrading-python3-10>`_.
 
 * Create and activate the virtual environment and the install the requirments.txt in the docs folders of the package.
 
