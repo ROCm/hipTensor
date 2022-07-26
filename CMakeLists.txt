@@ -54,6 +54,12 @@ if(NOT CMAKE_PREFIX_PATH)
     FORCE)
 endif()
 
+if(NOT CMAKE_INSTALL_PREFIX)
+    set(CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE STRING
+    "Choose the path to be pointed: Default point to /opt/rocm"
+    FORCE)
+endif()
+
 if(NOT DEBUG_MODE)
   set(DEBUG_MODE "OFF" CACHE STRING
     "Choose the type of build, options are: ON, OFF."
@@ -85,9 +91,10 @@ ExternalProject_Add(ck
                          -D CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
                          -D CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                          -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+			 -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 
 	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all
-    INSTALL_COMMAND  COMMAND make install
+        INSTALL_COMMAND  COMMAND make install
 	BUILD_ALWAYS     FALSE
 
 )
@@ -99,7 +106,7 @@ set_target_properties(ck_dep_do PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LI
 
 add_subdirectory(src)
 add_subdirectory(test)
-if(NOT BUILD_DOC MATCHES "^[Oo]FF")
+if(BUILD_DOC MATCHES "ON")
   # Add the cmake folder so the FindSphinx module is found
   set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
   add_subdirectory (docs)

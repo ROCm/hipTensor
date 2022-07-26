@@ -1,6 +1,6 @@
 # Installing hipTENSOR package
 ## Pre-requisites
-### Docker script to setup env
+### Docker CMD
 ```bash
 docker run                                     \
 -it                                            \
@@ -17,10 +17,11 @@ https://github.com/RadeonOpenCompute/rocm-cmake
 
 ## Build steps
 Create and move to the build directory.
-```bash 
+
+``` bash 
 mkdir build && cd build 
 ```
-### For building the hipTENSOR packages, a couple of options are available 
+### Build modes 
 1. Regular build with the package with build type, AARCH, Compiler, Prefix, and Install paths.
 ```bash
 # Need to specify target ID, example below is gfx908 and gfx90a
@@ -30,7 +31,7 @@ cmake                                                                 \
 -D CMAKE_CXX_FLAGS=" --offload-arch=gfx908 --offload-arch=gfx90a -O3" \
 -D CMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc                             \
 -D CMAKE_PREFIX_PATH=/opt/rocm                                        \
--D CMAKE_INSTALL_PREFIX=${PATH_TO_CK_INSTALL_DIRECTORY}               \
+-D CMAKE_INSTALL_PREFIX=${PATH_TO_HT_INSTALL_DIRECTORY}               \
 ..
 ```
 2. To build the hipTENSOR in debug mode for extensive debugging of APIs add the flag -D DEBUG_MODE=ON.
@@ -42,17 +43,17 @@ cmake                                                                 \
 -D CMAKE_CXX_FLAGS=" --offload-arch=gfx908 --offload-arch=gfx90a -O3" \
 -D CMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc                             \
 -D CMAKE_PREFIX_PATH=/opt/rocm                                        \
--D CMAKE_INSTALL_PREFIX=${PATH_TO_CK_INSTALL_DIRECTORY}               \
+-D CMAKE_INSTALL_PREFIX=${PATH_TO_HT_INSTALL_DIRECTORY}               \
 -D DEBUG_MODE=ON                                                      \
 ..
 ```
-### Build and run hipTENSOR
+### Execution
 * NOTE: Parallel build isn't supported due to the unavailability of the parallel support with the backend i.e., composable_kernel (CK).
 ```bash
  make
 ```
 
-## Install hipTENSOR package
+## Installation
 * The package will be installed to the path specified in the CMAKE_INSTALL_PREFIX cmake flag.
 ```bash
  make install

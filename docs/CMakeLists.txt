@@ -1,18 +1,8 @@
 find_package(Doxygen REQUIRED)
 find_package(Sphinx REQUIRED)
 
-add_custom_target(copyover_readme
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../README.md ${CMAKE_CURRENT_SOURCE_DIR}/readme.md
-    COMMAND sed -i '1i Overview' ${CMAKE_CURRENT_SOURCE_DIR}/readme.md
-    COMMAND sed -i '2i ========' ${CMAKE_CURRENT_SOURCE_DIR}/readme.md
-    COMMENT "Copying over README.md to docs folder as readme.md."
-)
-
 add_custom_target(copyover_install
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../INSTALL.md ${CMAKE_CURRENT_SOURCE_DIR}/install.md
-    COMMAND sed -i '1d' ${CMAKE_CURRENT_SOURCE_DIR}/install.md 
-    COMMAND sed -i '1i Installation and compilation' ${CMAKE_CURRENT_SOURCE_DIR}/install.md
-    COMMAND sed -i '2i ============================' ${CMAKE_CURRENT_SOURCE_DIR}/install.md
     COMMENT "Copying over INSTALL.md to docs folder as install.md."
 )
 
@@ -31,7 +21,7 @@ add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
                      MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
                      COMMENT "Generating docs")
 
-add_custom_target(Doxygen ALL DEPENDS ${DOXYGEN_INDEX_FILE} copyover_readme copyover_install)
+add_custom_target(Doxygen ALL DEPENDS ${DOXYGEN_INDEX_FILE} copyover_install)
 
 set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
 set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/sphinx)

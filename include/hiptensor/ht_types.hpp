@@ -14,7 +14,7 @@ typedef enum
     HIPTENSOR_STATUS_SUCCESS                = 0,
     /** The opaque data structure was not initialized.*/
     HIPTENSOR_STATUS_NOT_INITIALIZED        = 1,
-    /** Resource allocation failed inside the cuTENSOR library.*/
+    /** Resource allocation failed inside the hipTENSOR library.*/
     HIPTENSOR_STATUS_ALLOC_FAILED           = 3,
     /** An unsupported value or parameter was passed to the function (indicates an user error).*/
     HIPTENSOR_STATUS_INVALID_VALUE          = 7,
@@ -24,7 +24,7 @@ typedef enum
     HIPTENSOR_STATUS_MAPPING_ERROR          = 11,
     /** The GPU program failed to execute. This is often caused by a launch failure of the kernel on the GPU, which can be caused by multiple reasons.*/
     HIPTENSOR_STATUS_EXECUTION_FAILED       = 13,
-    /** An internal cuTENSOR error has occurred.*/
+    /** An internal hipTENSOR error has occurred.*/
     HIPTENSOR_STATUS_INTERNAL_ERROR         = 14,
     /** The requested operation is not supported.*/
     HIPTENSOR_STATUS_NOT_SUPPORTED          = 15,

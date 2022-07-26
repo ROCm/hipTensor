@@ -5,8 +5,7 @@
 
 hipTENSOR: A High-Performance HIP Library For Tensor Primitives
 ===============================================================
-| **Advanced Micro Devices, Inc's tensor contraction library.**
-| Sources and binaries can be found at `hipTENSOR's GitHub site <https://github.com/AMD-HPC/hipTENSOR>`_.
+
 
 .. toctree::
    :maxdepth: 2
