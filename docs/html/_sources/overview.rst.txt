@@ -19,7 +19,7 @@ Overview
 Introduction
 ------------
 
-hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performanceassembly kernels for mathematical operations.
+hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.
 
 Limitations
 -----------

@@ -16,10 +16,11 @@ Overview
    D_{M0,M1,N0,N1} = \alpha A_{M0,M1,K0,K1}B_{N0,N1,K0,K1} + \beta C_{M0,M1,N0,N1}
 
 
+
 Introduction
 ------------
 
-hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performanceassembly kernels for mathematical operations.
+hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.
 
 Limitations
 -----------
