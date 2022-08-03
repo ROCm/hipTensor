@@ -17,7 +17,7 @@ function(add_executable_no_testing BINARY_NAME FILE_NAME)
     if("${HT_DEBUG_MODE}" STREQUAL "ON")
         target_compile_options(${BINARY_NAME} PRIVATE -DHT_PRINT_DEBUG)
     endif()
-    target_link_libraries(${BINARY_NAME} PRIVATE ck_dep_do ck_dep_ht hipTENSOR::hiptensor)
+    target_link_libraries(${BINARY_NAME} PRIVATE device_operations hipTENSOR::hiptensor)
     add_dependencies(test ${BINARY_NAME})
 endfunction(add_executable_no_testing BINARY_NAME)
 

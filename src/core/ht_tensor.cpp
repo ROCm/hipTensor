@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "ht_tensor.hpp"
 #include "host_tensor_generator.hpp"
 #include "ht_tensor_generator_utility.hpp"
@@ -16,10 +18,6 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-std::size_t hiptensorTensorDescriptor_t::hiptensorGetElementSpace() const
-{	
-    return ht_desc.GetElementSpace();
-}
 
 hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
 			  hiptensorTensorDescriptor_t* desc, const uint32_t numModes,
@@ -46,10 +44,10 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
     }
 	
     if (!strides) 
-   	    desc->ht_desc = HostTensorDescriptor(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
+   	    *desc = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
     else
-      	desc->ht_desc = HostTensorDescriptor(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
-		       				    std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
+      	    *desc = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
+		       					std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
     
     desc->ht_type = dataType;
 
@@ -77,14 +75,57 @@ void hiptensorContractionDescriptor_t:: hiptensorContractionAttrUpdate(const hip
 {
     for(int index = 0; index < tensor_desc_num; index++)
     {
-        ht_contract_attr_desc.push_back({desc[index]->ht_desc.GetLengths(), desc[index]->ht_desc.GetStrides(), tensor_size[index]});
+        ht_contract_attr_desc.push_back({desc[index]->hiptensorGetLengths(), desc[index]->hiptensorGetStrides(), tensor_size[index]});
     }	
     return;
 }
 
-void hiptensorTensorDescriptor_t:: hiptensorPrintTensorAttributes()
+void hiptensorTensorDescriptor_t::hiptensorCalculateStrides()
 {
-	std::cout << ht_desc;
-    return;
+    mStrides.clear();
+    mStrides.resize(mLens.size(), 0);
+    if(mStrides.empty())
+        return;
+
+    mStrides.back() = 1;
+    std::partial_sum(
+        mLens.rbegin(), mLens.rend() - 1, mStrides.rbegin() + 1, std::multiplies<std::size_t>());
 }
 
+std::size_t hiptensorTensorDescriptor_t::hiptensorGetNumOfDimension() const { return mLens.size(); }
+
+std::size_t hiptensorTensorDescriptor_t::hiptensorGetElementSize() const
+{
+    assert(mLens.size() == mStrides.size());
+    return std::accumulate(
+        mLens.begin(), mLens.end(), std::size_t{1}, std::multiplies<std::size_t>());
+}
+
+std::size_t hiptensorTensorDescriptor_t::hiptensorGetElementSpace() const
+{
+    std::size_t space = 1;
+    for(std::size_t i = 0; i < mLens.size(); ++i)
+    {
+        space += (mLens[i] - 1) * mStrides[i];
+    }
+    return space;
+}
+
+const std::vector<std::size_t>&  hiptensorTensorDescriptor_t::hiptensorGetLengths() const { return mLens; }
+
+const std::vector<std::size_t>&  hiptensorTensorDescriptor_t::hiptensorGetStrides() const { return mStrides; }
+
+std::ostream& operator<<(std::ostream& os, const hiptensorTensorDescriptor_t& desc)
+{
+    os << "dim " << desc.hiptensorGetNumOfDimension() << ", ";
+
+    os << "lengths {";
+    LogRange(os, desc.hiptensorGetLengths(), ", ");
+    os << "}, ";
+
+    os << "strides {";
+    LogRange(os, desc.hiptensorGetStrides(), ", ");
+    os << "}";
+
+    return os;
+}

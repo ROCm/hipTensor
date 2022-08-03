@@ -132,11 +132,38 @@ typedef struct { /*TODO: Discuss the struct members */ }hiptensorHandle_t;
  * in the function hiptensorInitTensorDescriptor
 */
 struct hiptensorTensorDescriptor_t{
-    HostTensorDescriptor ht_desc;      /*!< composable_kernel host tensor descriptor structure */
-    hiptensorDataType_t ht_type;       /*!< Data type of the tensors enum selection */
+
     hiptensorTensorDescriptor_t() = default; /*!< Default Constructor of the structure hipTensorDescriptor_t */
+    void hiptensorCalculateStrides(); /*!< Function that returns the size of the tensor based on the input length and strides */
+
+    template <typename X>
+    hiptensorTensorDescriptor_t(const std::vector<X>& lens) : mLens(lens.begin(), lens.end()) /*!< Function that initializes the tensor based on the input lengths*/
+    {
+        this->hiptensorCalculateStrides();
+    }
+
+    template <typename X, typename Y>
+    hiptensorTensorDescriptor_t(const std::vector<X>& lens, const std::vector<Y>& strides) /*!< Function that initializes the tensor based on the input length and strides */
+        : mLens(lens.begin(), lens.end()), mStrides(strides.begin(), strides.end())
+    {
+
+    }
+
+    hiptensorDataType_t ht_type;       /*!< Data type of the tensors enum selection */
+
+    std::size_t hiptensorGetNumOfDimension() const; /*!< Function that returns the number of dimensions */
+    std::size_t hiptensorGetElementSize() const; /*!< Function that returns the total elements size*/
     std::size_t hiptensorGetElementSpace() const; /*!< Function that returns the size of the tensor based on the input length and strides */
-    void hiptensorPrintTensorAttributes(); /*!< Function that prints the length, strides tensor */
+
+    const std::vector<std::size_t>& hiptensorGetLengths() const; /*!< Function that returns the lengths of the tensor */
+    const std::vector<std::size_t>& hiptensorGetStrides() const; /*!< Function that returns the strides of the tensor */
+
+
+    friend std::ostream& operator<<(std::ostream& os, const hiptensorTensorDescriptor_t& desc); /*!< Function that prints the length, strides tensor */
+
+    private:
+    std::vector<std::size_t> mLens; /*!< Lengths of the tensor */
+    std::vector<std::size_t> mStrides; /*!< Strides of the tensor */
 };
 
 /**

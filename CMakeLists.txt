@@ -99,10 +99,8 @@ ExternalProject_Add(ck
 
 )
 
-add_library(ck_dep_ht SHARED IMPORTED)
-set_target_properties(ck_dep_ht PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libhost_tensor.a)
-add_library(ck_dep_do SHARED IMPORTED)
-set_target_properties(ck_dep_do PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libdevice_operations.a)
+add_library(device_operations SHARED IMPORTED)
+set_target_properties(device_operations PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libdevice_operations.a)
 
 add_subdirectory(src)
 add_subdirectory(test)

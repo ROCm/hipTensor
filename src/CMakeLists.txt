@@ -20,13 +20,13 @@ add_subdirectory(contraction)
 add_library(hiptensor SHARED 
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
-        $<TARGET_OBJECTS:ck_core_instance>)
+            $<TARGET_OBJECTS:ck_core_instance>)
 
 add_library(hipTENSOR::hiptensor ALIAS hiptensor)
 
 target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
 target_compile_features(hiptensor PUBLIC)
-target_link_libraries(hiptensor ck_dep_ht ck_dep_do)
+target_link_libraries(hiptensor device_operations)
 
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
@@ -37,7 +37,7 @@ set(DEV_OPS_INC_DIRS
 )
 
 rocm_install(
-    TARGETS hiptensor
+    TARGETS hiptensor 
     EXPORT hiptensorTargets
 )
 
