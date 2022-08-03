@@ -20,7 +20,7 @@ add_subdirectory(contraction)
 add_library(hiptensor SHARED 
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
-            $<TARGET_OBJECTS:ck_core_instance>)
+        $<TARGET_OBJECTS:ck_core_instance>)
 
 add_library(hipTENSOR::hiptensor ALIAS hiptensor)
 
