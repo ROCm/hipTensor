@@ -13,7 +13,7 @@ Overview
   
 .. math::
    
-   C_{M0,M1,N0,N1} = \alpha A_{M0,M1,K0,K1} + \beta B_{N0,N1,K0,K1}
+   D_{M0,M1,N0,N1} = \alpha A_{M0,M1,K0,K1}B_{N0,N1,K0,K1} + \beta C_{M0,M1,N0,N1}
 
 
 Introduction
