@@ -73,9 +73,7 @@ int main(int argc, char* argv[])
 				a_ms_ks_lengths.data(), NULL,/*stride*/
 				typeA, HIPTENSOR_OP_IDENTITY);
 #ifdef HT_PRINT_DEBUG
-    std::cout << "a_ms_ks: ";
-    a_ms_ks.hiptensorPrintTensorAttributes();
-    std::cout << std::endl;
+    std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
 #endif
 
     hiptensorTensorDescriptor_t b_ks_ns;
@@ -84,9 +82,7 @@ int main(int argc, char* argv[])
 				typeB, HIPTENSOR_OP_IDENTITY);
     
 #ifdef HT_PRINT_DEBUG    
-    std::cout << "b_ks_ns: ";
-    b_ks_ns.hiptensorPrintTensorAttributes();
-    std::cout << std::endl;
+    std::cout << "b_ks_ns: " << b_ks_ns  << std::endl;
 #endif
 
     hiptensorTensorDescriptor_t c_ms_ns;
@@ -96,9 +92,7 @@ int main(int argc, char* argv[])
                 typeC, HIPTENSOR_OP_IDENTITY);
 
 #ifdef HT_PRINT_DEBUG
-    std::cout << "c_ms_ns: ";
-    c_ms_ns.hiptensorPrintTensorAttributes(); 
-    std::cout << std::endl;
+    std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
 #endif
 
     /**********************
@@ -148,24 +142,16 @@ int main(int argc, char* argv[])
     hiptensorGetAlignmentRequirement(&handle,
                           A_d, &a_ms_ks,
                           &alignmentRequirementA);
-#ifdef HT_PRINT_DEBUG    
-    std::cout << "Tensor A element space: " << alignmentRequirementA << std::endl;
-#endif
 
     uint32_t alignmentRequirementB;
     hiptensorGetAlignmentRequirement(&handle,
                           B_d, &b_ks_ns,
                           &alignmentRequirementB);
-#ifdef HT_PRINT_DEBUG    
-    std::cout << "Tensor B element space: " << alignmentRequirementB << std::endl;
-#endif
+    
     uint32_t alignmentRequirementC;
     hiptensorGetAlignmentRequirement(&handle,
                           C_d, &c_ms_ns,
                           &alignmentRequirementC);
-#ifdef HT_PRINT_DEBUG    
-    std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;
-#endif
     
     /*******************************
      * Create Contraction Descriptor
