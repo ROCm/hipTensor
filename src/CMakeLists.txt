@@ -33,7 +33,6 @@ set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 set(DEV_OPS_INC_DIRS
     ${PROJECT_SOURCE_DIR}/include/utility/
     ${PROJECT_SOURCE_DIR}/include/hiptensor/
-    ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor/
 )
 
 rocm_install(
