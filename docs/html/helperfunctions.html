@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Helper Functions &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
@@ -152,10 +152,10 @@
 </div>
 </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>handle</strong> – <strong>[out]</strong> Pointer to <a class="reference internal" href="datatypes.html#structhiptensorHandle__t"><span class="std std-ref">hiptensorHandle_t</span></a></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise </p>
 </dd>
 </dl>
@@ -174,7 +174,7 @@
 </div>
 </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
 <li><p><strong>desc</strong> – <strong>[out]</strong> Pointer to the address where the allocated tensor descriptor object is stored. </p></li>
@@ -185,13 +185,13 @@
 <li><p><strong>unaryOp</strong> – <strong>[in]</strong> Unary operator that will be applied to each element of the corresponding tensor in a lazy fashion (i.e., the algorithm uses this tensor as its operand only once). The original data of this tensor remains unchanged. </p></li>
 </ul>
 </dd>
-<dt class="field-even">Return values</dt>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
 <li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle is not initialized. </p></li>
 </ul>
 </dd>
-<dt class="field-odd">Pre</dt>
+<dt class="field-odd">Pre<span class="colon">:</span></dt>
 <dd class="field-odd"><p>extent and stride arrays must each contain at least sizeof(int64_t) * numModes bytes </p>
 </dd>
 </dl>
@@ -205,7 +205,7 @@
 <span id="_CPPv332hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t"></span><span id="_CPPv232hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t"></span><span id="hiptensorGetAlignmentRequirement__hiptensorHandle_tCP.voidCP.hiptensorTensorDescriptor_tCP.uint32_tP"></span><span class="target" id="ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"></span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorStatus_t" title="hiptensorStatus_t"><span class="n"><span class="pre">hiptensorStatus_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetAlignmentRequirement</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorHandle_t" title="hiptensorHandle_t"><span class="n"><span class="pre">hiptensorHandle_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">handle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv427hiptensorTensorDescriptor_t" title="hiptensorTensorDescriptor_t"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desc</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">alignmentRequirement</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432hiptensorGetAlignmentRequirementPK17hiptensorHandle_tPKvPK27hiptensorTensorDescriptor_tP8uint32_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Computes the minimal alignment requirement for a given pointer and descriptor. </p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
 <li><p><strong>ptr</strong> – <strong>[in]</strong> Raw pointer to the data of the respective tensor. </p></li>
@@ -213,7 +213,7 @@
 <li><p><strong>alignmentRequirement</strong> – <strong>[out]</strong> Largest alignment requirement that ptr can fulfill (in bytes). </p></li>
 </ul>
 </dd>
-<dt class="field-even">Return values</dt>
+<dt class="field-even">Return values<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
 <li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle is not initialized. </p></li>
