@@ -50,7 +50,8 @@ typedef enum
 /**
  * \brief hiptensorDataType_t is an enumeration of the types supported by HIPTENSOR libraries. 
  * hipTENSOR supports real FP16, BF16, FP32 input types.
- * FP64 is not supported by the xdlops compiler issue (SWDEV-335738)
+ * \note Only HIPTENSOR_R_32F is supported.
+ * \todo Other datatypes support to be added in future releases. 
  *
 */
 typedef enum 
@@ -63,6 +64,8 @@ typedef enum
 
 /**
  * \brief Encodes hipTENSOR’s compute type 
+ * \note Only the HIPTENSOR_COMPUTE_32F compute is supported.
+ * \todo Needs to add support for the other computing types.
  *
 */
 typedef enum
@@ -80,7 +83,7 @@ typedef enum
 
 /**
  * \brief This enum captures the operations supported by the hipTENSOR library.
- *
+ * \todo Other operations supported in the cuTENSOR in the hipTENSOR library.
 */
 typedef enum
 {
@@ -92,6 +95,8 @@ typedef enum
  * \brief Allows users to specify the algorithm to be used for performing the tensor contraction.
  * \details This enum gives users finer control over which algorithm should be executed by hiptensorContraction(); 
  * values >= 0 correspond to certain sub-algorithms of GETT.
+ * \note Only the default algorithm(HIPTENSOR_ALGO_DEFAULT) is supported by the hipTENSOR.
+ * \todo need to add support for other algorithm in the hipTENSOR future releases.
 */
 typedef enum
 {
@@ -104,7 +109,9 @@ typedef enum
 
 /**
  * \brief This enum gives users finer control over the suggested workspace
- * \details This enum gives users finer control over the amount of workspace that is suggested by hiptensorContractionGetWorkspace
+ * \details This enum gives users finer control over the amount of workspace that is suggested by hiptensorContractionGetWorkspace.
+ * \warning Not supported by the current composable_kernel backend. Need to adapt in the future releases.
+ *
 */
 typedef enum
 {
@@ -143,21 +150,19 @@ struct hiptensorTensorDescriptor_t{
     void hiptensorCalculateStrides(); /*!< Function that returns the size of the tensor based on the input length and strides */
     
     template <typename X>
-    hiptensorTensorDescriptor_t(const std::vector<X>& lens) : mLens(lens.begin(), lens.end())
+    hiptensorTensorDescriptor_t(const std::vector<X>& lens) : mLens(lens.begin(), lens.end()) /*!< Function that initializes the tensor based on the input lengths*/
     {
         this->hiptensorCalculateStrides();
     }
-    /*!< Function that initializes the tensor based on the input lengths*/
 
     template <typename X, typename Y>
     hiptensorTensorDescriptor_t(const std::vector<X>& lens, const std::vector<Y>& strides)
-        : mLens(lens.begin(), lens.end()), mStrides(strides.begin(), strides.end())
+        : mLens(lens.begin(), lens.end()), mStrides(strides.begin(), strides.end())  /*!< Function that initializes the tensor based on the input length and strides */
     {
 
     }
-    /*!< Function that initializes the tensor based on the input length and strides */
 
-    hiptensorDataType_t ht_type;       /*!< Data type of the tensors enum selection */
+    hiptensorDataType_t ht_type;/*!< Data type of the tensors enum selection */
 
     std::size_t hiptensorGetNumOfDimension() const; /*!< Function that returns the number of dimensions */
     std::size_t hiptensorGetElementSize() const; /*!< Function that returns the total elements size*/
@@ -201,6 +206,7 @@ struct hiptensorContractionDescriptor_t{
 
 /**
  * \brief Opaque structure representing a candidate.
+ * \todo  Needs to adapt the structure as per the GPU devices in the hipTENSOR future releases.
  *
 */
 struct hiptensorContractionFind_t {/*TODO: Discuss the struct members */ };
@@ -221,7 +227,6 @@ struct hiptensorContractionMetrics_t {
 
 /**
  * \brief structure representing a plan
- *
  * 
  * Constructs a contraction plan with the contractions descriptor passed into the function
  * hiptensorInitContractionPlan

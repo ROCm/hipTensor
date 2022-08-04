@@ -245,7 +245,18 @@
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv419hiptensorDataType_t">
 <span id="_CPPv319hiptensorDataType_t"></span><span id="_CPPv219hiptensorDataType_t"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorDataType_t</span></span></span><a class="headerlink" href="#_CPPv419hiptensorDataType_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>hiptensorDataType_t is an enumeration of the types supported by HIPTENSOR libraries. hipTENSOR supports real FP16, BF16, FP32 input types. FP64 is not supported by the xdlops compiler issue (SWDEV-335738) </p>
+<dd><p>hiptensorDataType_t is an enumeration of the types supported by HIPTENSOR libraries. hipTENSOR supports real FP16, BF16, FP32 input types. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Todo:</span></em></dt>
+<dd><p>Other datatypes support to be added in future releases. </p>
+</dd></dl>
+
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only HIPTENSOR_R_32F is supported. </p>
+</div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_16FE">
@@ -280,6 +291,17 @@
 <dt class="sig sig-object cpp" id="_CPPv422hiptensorComputeType_t">
 <span id="_CPPv322hiptensorComputeType_t"></span><span id="_CPPv222hiptensorComputeType_t"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorComputeType_t</span></span></span><a class="headerlink" href="#_CPPv422hiptensorComputeType_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Encodes hipTENSOR’s compute type. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Todo:</span></em></dt>
+<dd><p>Needs to add support for the other computing types.</p>
+</dd></dl>
+
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only the HIPTENSOR_COMPUTE_32F compute is supported. </p>
+</div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_16FE">
@@ -344,6 +366,13 @@
 <dt class="sig sig-object cpp" id="_CPPv419hiptensorOperator_t">
 <span id="_CPPv319hiptensorOperator_t"></span><span id="_CPPv219hiptensorOperator_t"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorOperator_t</span></span></span><a class="headerlink" href="#_CPPv419hiptensorOperator_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>This enum captures the operations supported by the hipTENSOR library. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Todo:</span></em></dt>
+<dd><p>Other operations supported in the cuTENSOR in the hipTENSOR library. </p>
+</dd></dl>
+
+</p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N19hiptensorOperator_t21HIPTENSOR_OP_IDENTITYE">
@@ -366,7 +395,17 @@
 <dt class="sig sig-object cpp" id="_CPPv415hiptensorAlgo_t">
 <span id="_CPPv315hiptensorAlgo_t"></span><span id="_CPPv215hiptensorAlgo_t"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6ac"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorAlgo_t</span></span></span><a class="headerlink" href="#_CPPv415hiptensorAlgo_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Allows users to specify the algorithm to be used for performing the tensor contraction. </p>
-<p>This enum gives users finer control over which algorithm should be executed by <a class="reference internal" href="contractionfunctions.html#ht__tensor_8hpp_1a61c9f62cd08c508875f874b5ff635560"><span class="std std-ref">hiptensorContraction()</span></a>; values &gt;= 0 correspond to certain sub-algorithms of GETT. </p>
+<p>This enum gives users finer control over which algorithm should be executed by <a class="reference internal" href="contractionfunctions.html#ht__tensor_8hpp_1a61c9f62cd08c508875f874b5ff635560"><span class="std std-ref">hiptensorContraction()</span></a>; values &gt;= 0 correspond to certain sub-algorithms of GETT. <dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Todo:</span></em></dt>
+<dd><p>need to add support for other algorithm in the hipTENSOR future releases. </p>
+</dd></dl>
+
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only the default algorithm(HIPTENSOR_ALGO_DEFAULT) is supported by the hipTENSOR. </p>
+</div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N15hiptensorAlgo_t30HIPTENSOR_ALGO_DEFAULT_PATIENTE">
@@ -407,7 +446,11 @@
 <dt class="sig sig-object cpp" id="_CPPv429hiptensorWorksizePreference_t">
 <span id="_CPPv329hiptensorWorksizePreference_t"></span><span id="_CPPv229hiptensorWorksizePreference_t"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorWorksizePreference_t</span></span></span><a class="headerlink" href="#_CPPv429hiptensorWorksizePreference_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>This enum gives users finer control over the suggested workspace. </p>
-<p>This enum gives users finer control over the amount of workspace that is suggested by hiptensorContractionGetWorkspace </p>
+<p>This enum gives users finer control over the amount of workspace that is suggested by hiptensorContractionGetWorkspace. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Not supported by the current composable_kernel backend. Need to adapt in the future releases. </p>
+</div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MINE">
@@ -486,13 +529,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE">
 <span id="_CPPv3I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE"></span><span id="_CPPv2I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structhiptensorTensorDescriptor__t_1a1d5b8edf30aa3b802f1dfaa08d73b465"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE" title="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t::X"><span class="n"><span class="pre">X</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lens</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Function that initializes the tensor based on the input lengths </p>
+<dd><p>&lt; Function that initializes the tensor based on the input lengths </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE">
 <span id="_CPPv3I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE"></span><span id="_CPPv2I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Y</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structhiptensorTensorDescriptor__t_1aa1ba4dbb7e836258c992d54130be8061"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t::X"><span class="n"><span class="pre">X</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lens</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t::Y"><span class="n"><span class="pre">Y</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Function that initializes the tensor based on the input length and strides </p>
+<dd><p>&lt; Function that initializes the tensor based on the input length and strides </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -617,6 +660,13 @@
 <dt class="sig sig-object cpp" id="_CPPv426hiptensorContractionFind_t">
 <span id="_CPPv326hiptensorContractionFind_t"></span><span id="_CPPv226hiptensorContractionFind_t"></span><span id="hiptensorContractionFind_t"></span><span class="target" id="structhiptensorContractionFind__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorContractionFind_t</span></span></span><a class="headerlink" href="#_CPPv426hiptensorContractionFind_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Opaque structure representing a candidate. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<em><span class="pre">Todo:</span></em></dt>
+<dd><p>Needs to adapt the structure as per the GPU devices in the hipTENSOR future releases.</p>
+</dd></dl>
+
+</p>
 </dd></dl>
 
 </section>
