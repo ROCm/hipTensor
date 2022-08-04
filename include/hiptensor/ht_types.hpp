@@ -1,7 +1,12 @@
 #ifndef HT_TYPES_H_
 #define HT_TYPES_H_
 
-#include "host_tensor.hpp"
+#include <vector>
+#include <numeric>
+#include <algorithm>
+#include <utility>
+#include <cassert>
+#include <iostream>
 
 /**
  * \brief hipTENSOR status type returns
@@ -134,20 +139,23 @@ typedef struct { /*TODO: Discuss the struct members */ }hiptensorHandle_t;
 struct hiptensorTensorDescriptor_t{
 
     hiptensorTensorDescriptor_t() = default; /*!< Default Constructor of the structure hipTensorDescriptor_t */
+    
     void hiptensorCalculateStrides(); /*!< Function that returns the size of the tensor based on the input length and strides */
-
+    
     template <typename X>
-    hiptensorTensorDescriptor_t(const std::vector<X>& lens) : mLens(lens.begin(), lens.end()) /*!< Function that initializes the tensor based on the input lengths*/
+    hiptensorTensorDescriptor_t(const std::vector<X>& lens) : mLens(lens.begin(), lens.end())
     {
         this->hiptensorCalculateStrides();
     }
+    /*!< Function that initializes the tensor based on the input lengths*/
 
     template <typename X, typename Y>
-    hiptensorTensorDescriptor_t(const std::vector<X>& lens, const std::vector<Y>& strides) /*!< Function that initializes the tensor based on the input length and strides */
+    hiptensorTensorDescriptor_t(const std::vector<X>& lens, const std::vector<Y>& strides)
         : mLens(lens.begin(), lens.end()), mStrides(strides.begin(), strides.end())
     {
 
     }
+    /*!< Function that initializes the tensor based on the input length and strides */
 
     hiptensorDataType_t ht_type;       /*!< Data type of the tensors enum selection */
 

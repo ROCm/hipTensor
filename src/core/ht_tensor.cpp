@@ -1,7 +1,4 @@
-#include <cassert>
-
 #include "ht_tensor.hpp"
-#include "host_tensor_generator.hpp"
 #include "ht_tensor_generator_utility.hpp"
 
 hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
@@ -42,13 +39,11 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t* handle,
 	    if (strides)
 	        ht_strides.push_back(strides[index]);
     }
-	
     if (!strides) 
    	    *desc = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
     else
-      	    *desc = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
+      	*desc = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
 		       					std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
-    
     desc->ht_type = dataType;
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -120,11 +115,11 @@ std::ostream& operator<<(std::ostream& os, const hiptensorTensorDescriptor_t& de
     os << "dim " << desc.hiptensorGetNumOfDimension() << ", ";
 
     os << "lengths {";
-    LogRange(os, desc.hiptensorGetLengths(), ", ");
+    hiptensorPrintVectorElements(desc.hiptensorGetLengths(), ", ");
     os << "}, ";
 
     os << "strides {";
-    LogRange(os, desc.hiptensorGetStrides(), ", ");
+    hiptensorPrintVectorElements(desc.hiptensorGetStrides(), ", ");
     os << "}";
 
     return os;

@@ -93,7 +93,7 @@ ExternalProject_Add(ck
                          -D CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
 			 -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 
-	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j all
+	BUILD_COMMAND    cmake ${CMAKE_ARGS} .. COMMAND make -j 32 all
         INSTALL_COMMAND  COMMAND make install
 	BUILD_ALWAYS     FALSE
 
