@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
      * Intialise Tensors with the input lengths *
      ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks;
+
     hiptensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA, 
 				a_ms_ks_lengths.data(), NULL,/*stride*/
 				typeA, HIPTENSOR_OP_IDENTITY);
@@ -79,7 +80,7 @@ int main(int argc, char* argv[])
     hiptensorTensorDescriptor_t b_ks_ns;
     hiptensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
                 b_ks_ns_lengths.data(), NULL,/*stride*/
-				typeB, HIPTENSOR_OP_IDENTITY);
+			    typeB, HIPTENSOR_OP_IDENTITY);
     
 #ifdef HT_PRINT_DEBUG    
     std::cout << "b_ks_ns: " << b_ks_ns  << std::endl;
@@ -245,6 +246,5 @@ int main(int argc, char* argv[])
     if (A_d) hip_check_error(hipFree(A_d));
     if (B_d) hip_check_error(hipFree(B_d));
     if (C_d) hip_check_error(hipFree(C_d));
-    
     return 0;
 }
