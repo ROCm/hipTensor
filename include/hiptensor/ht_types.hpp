@@ -51,7 +51,7 @@ typedef enum
  * \brief hiptensorDataType_t is an enumeration of the types supported by HIPTENSOR libraries. 
  * hipTENSOR supports real FP16, BF16, FP32 input types.
  * \note Only HIPTENSOR_R_32F is supported.
- * \todo Other datatypes support to be added in future releases. 
+ * \todo Other datatypes support to be added in the next hipTENSOR library releases.
  *
 */
 typedef enum 
@@ -83,7 +83,7 @@ typedef enum
 
 /**
  * \brief This enum captures the operations supported by the hipTENSOR library.
- * \todo Other operations supported in the cuTENSOR in the hipTENSOR library.
+ * \todo Other operations supported in the cuTENSOR needs to be adapted in the hipTENSOR library.
 */
 typedef enum
 {
