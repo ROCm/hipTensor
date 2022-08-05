@@ -180,8 +180,8 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t* handle,
  * \endverbatim
 
  * \par[Example]
- * See https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp
- *     https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp
+ * See https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp \n
+ *     https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp 
  * for the concrete examples.
  *
  * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
