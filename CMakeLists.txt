@@ -32,7 +32,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(NOT CMAKE_CXX_FLAGS)
-  set(CMAKE_CXX_FLAGS "--offload-arch=gfx908 --offload-arch=gfx90a -O3" CACHE STRING
+  set(CMAKE_CXX_FLAGS "--offload-arch=gfx908 --offload-arch=gfx90a -O3 -lpthread" CACHE STRING
     "Choose the type of chipset need to build: Default building for MI200 board"
     FORCE)
 endif()
