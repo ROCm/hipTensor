@@ -1,14 +1,18 @@
+// std includes
 #include <iomanip>
 #include <numeric>
 #include <vector>
 #include <iostream>
-#include "ck.hpp"
-#include "tensor_layout.hpp"
-#include "device_contraction_multiple_d.hpp"
-#include "element_wise_operation.hpp"
-#include "contraction_scale.hpp"
-#include "contraction_bilinear.hpp"
 
+// CK includes
+#include <ck.hpp>
+#include <tensor_layout.hpp>
+#include <element_wise_operation.hpp>
+#include <device_contraction_multiple_d.hpp>
+#include <contraction_scale.hpp>
+#include <contraction_bilinear.hpp>
+
+// HipTensor includes
 #include "ht_types.hpp"
 #include "ht_ck_core.hpp"
 #include "ht_utility.hpp"

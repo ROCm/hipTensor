@@ -16,7 +16,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hipTensor tests" ON )
-  option( HIPTENSOR_BUILD_SAMPLES "Build hipTensor samples" ON )
+  option( HIPTENSOR_BUILD_CLIENTS "Build hipTensor clients" OFF )
   option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
   option( HIPTENSOR_BUILD_DOCS "Build hipTensor documentation" OFF )
 endif()
@@ -68,9 +68,6 @@ endif()
 message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
 
 rocm_setup_version(VERSION 0.2.0)
-#list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}
-#    ${CMAKE_INSTALL_PREFIX}/llvm ${CMAKE_INSTALL_PREFIX}/hip /opt/rocm
-#    /opt/rocm/llvm /opt/rocm/hip ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
 if(NOT CMAKE_CXX_COMPILER)
   set(CMAKE_CXX_COMPILER "/opt/rocm/bin/hipcc" CACHE STRING
@@ -86,34 +83,29 @@ if(NOT CMAKE_INSTALL_PREFIX)
 endif()
 
 
-include( FetchContent )
-
-FetchContent_Declare(ck
-	GIT_REPOSITORY   https://github.com/ROCmSoftwarePlatform/composable_kernel.git
-	GIT_TAG          develop
-	GIT_PROGRESS     true
-)
-
-FetchContent_GetProperties(ck)
-if(NOT ck_POPULATED)
-  # Fetch the content using default details
-  FetchContent_Populate(ck)
-
-  # Populate specific ck vars
-  set(GPU_TARGETS ${AMDGPU_TARGETS})
-  set(BUILD_DEV ${HIPTENSOR_BUILD_DEV})
-
-  # Don't add CK to the 'all' target
-  add_subdirectory(${ck_SOURCE_DIR} ${ck_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
-#add_library(device_operations SHARED IMPORTED)
-#set_target_properties(device_operations PROPERTIES IMPORTED_LOCATION ${CMAKE_CK_CLONE_LIB}/libdevice_operations.a)
+find_package( hip REQUIRED )
+set(HIPTENSOR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+message(STATUS "Build with HIP ${hip_VERSION}")
 
 add_subdirectory(src)
-add_subdirectory(test)
 
-if(HIPTENSOR_BUILD_DOCS MATCHES "ON")
+if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_CLIENTS)
+  enable_testing()
+  rocm_package_setup_component(clients)
+endif()
+
+if(HIPTENSOR_BUILD_TESTS)
+  rocm_package_setup_component(tests PARENT clients)
+  add_subdirectory(test)
+endif()
+
+if(HIPTENSOR_BUILD_CLIENTS)
+  rocm_package_setup_component(samples PARENT clients)
+  add_subdirectory(client_example)
+endif()
+
+
+if(HIPTENSOR_BUILD_DOCS)
   # Add the cmake folder so the FindSphinx module is found
   set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
   add_subdirectory (docs)
@@ -124,31 +116,29 @@ include(CMakePackageConfigHelpers)
 
 set(version 1.0.0)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfigVersion.cmake"
     VERSION "${version}"
     COMPATIBILITY AnyNewerVersion
 )
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
-     "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfig.cmake"
-     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hipTENSOR
+     "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfig.cmake"
+     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hiptensor
      NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
 
 rocm_install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/hipTENSORConfigVersion.cmake"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hipTENSOR
+    "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hiptensor
 )
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_RPM_PACKAGE_LICENSE "MIT")
 
 rocm_create_package(
-    NAME hipTENSOR
+    NAME hiptensor
     DESCRIPTION "Adaptation library of tensor contraction with composable_kernel backend"
     MAINTAINER "hipTensor Maintainer <hiptensor-maintainer@amd.com>"
     LDCONFIG
-    HEADER_ONLY
 )
 
