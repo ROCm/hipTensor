@@ -1,7 +1,7 @@
 
 add_executable(client_contraction_scale test_scale_contraction_xdl_fp32.cpp)
-target_link_libraries(client_contraction_scale PRIVATE hipTENSOR::hiptensor)
+target_link_libraries(client_contraction_scale PRIVATE hiptensor::hiptensor)
 
 add_executable(client_contraction_bilinear test_bilinear_contraction_xdl_fp32.cpp)
-target_link_libraries(client_contraction_bilinear PRIVATE hipTENSOR::hiptensor)
+target_link_libraries(client_contraction_bilinear PRIVATE hiptensor::hiptensor)
 

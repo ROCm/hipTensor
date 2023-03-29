@@ -1,18 +1,6 @@
-include_directories(BEFORE
-    ${PROJECT_SOURCE_DIR}/include/hiptensor/ck
-    ${PROJECT_SOURCE_DIR}/include/hiptensor
-    ${PROJECT_SOURCE_DIR}/include/utility
-    ${CMAKE_CK_CLONE_DIRECTORY}/external/include/half
-    ${CMAKE_CK_CLONE_DIRECTORY}/include
-    ${CMAKE_CK_CLONE_DIRECTORY}/include/ck
-    ${CMAKE_CK_CLONE_DIRECTORY}/include/ck/tensor_operation/gpu/element
-    ${CMAKE_CK_CLONE_DIRECTORY}/include/ck/tensor_operation/gpu/device
-    ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/tensor_operation_instance/gpu
-    ${CMAKE_CK_CLONE_DIRECTORY}/library/include
-    ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/host_tensor
-    ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/reference_tensor_operation/gpu
-    ${CMAKE_CK_CLONE_DIRECTORY}/library/include/ck/library/utility
-)
+
+find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_operations )
+rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
 add_subdirectory(core)
 add_subdirectory(contraction)
@@ -20,29 +8,25 @@ add_subdirectory(contraction)
 add_library(hiptensor SHARED 
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
-            $<TARGET_OBJECTS:ck_core_instance>)
+        $<TARGET_OBJECTS:ck_core_instance>
+        )
 
-add_library(hipTENSOR::hiptensor ALIAS hiptensor)
+add_library(hiptensor::hiptensor ALIAS hiptensor)
 
 target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
-target_compile_features(hiptensor PUBLIC)
-target_link_libraries(hiptensor device_operations)
 
+# Users of hiptensor will need HIP and CK libs
+target_link_libraries(hiptensor INTERFACE hip::device hip::host composable_kernel::device_operations)
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-set(DEV_OPS_INC_DIRS
-    ${PROJECT_SOURCE_DIR}/include/utility/
-    ${PROJECT_SOURCE_DIR}/include/hiptensor/
-)
-
-rocm_install(
-    TARGETS hiptensor 
+rocm_install_targets(
+    TARGETS hiptensor
     EXPORT hiptensorTargets
+    INCLUDE ${PROJECT_SOURCE_DIR}/include
 )
 
-rocm_install(DIRECTORY ${DEV_OPS_INC_DIRS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ht)
 rocm_install (EXPORT hiptensorTargets
-    FILE hipTENSORhiptensorTargets.cmake
-    NAMESPACE hipTENSOR::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hipTENSOR
+    FILE hiptensorTargets.cmake
+    NAMESPACE hip::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hiptensor
 )
