@@ -7,9 +7,9 @@ Overview
 
 | **Advanced Micro Devices, Inc's tensor contraction library.**
 
-* Sources and binaries can be found at `hipTENSOR GitHub repo <https://github.com/AMD-HPC/hipTENSOR>`_.
+* Sources and binaries can be found at `hipTensor GitHub repo <https://github.com/AMD-HPC/hipTensor>`_.
 * Backend package can be found at `composable_kernel GitHub repo <https://github.com/ROCmSoftwarePlatform/composable_kernel>`_.
-* This package implement a first tensor contraction using hipTENSOR. Our code will compute the following operation using single-precision arithmetic.
+* This package implement a first tensor contraction using hipTensor. Our code will compute the following operation using single-precision arithmetic.
   
 .. math::
    
@@ -20,7 +20,7 @@ Overview
 Introduction
 ------------
 
-hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.
+hipTensor is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.
 
 Limitations
 -----------
@@ -35,8 +35,8 @@ Future development
 ------------------
   
 * Adapt the library to adapt the arbitrary input tensor layouts and type computes.
-* Adapt the hiptensorContractionFind API to different set of available algorithms on the different accelerators.
-* Adapt the hiptensorContractionGetWorkspace API as per the future backends.
+* Adapt the hipTensorContractionFind API to different set of available algorithms on the different accelerators.
+* Adapt the hipTensorContractionGetWorkspace API as per the future backends.
 * Also, to adapt the library to handle for the FP64 tensors support.
   |br| Pending due to compiler issue: `SWDEV-335738 <https://ontrack-internal.amd.com/browse/SWDEV-335738>`_.
 * Need to make few modularisation in the ck part of the core logic handling all the datatypes.

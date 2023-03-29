@@ -27,7 +27,7 @@ def runCompileCommand(platform, project, jobName, boolean debug=false)
                 ${getDependenciesCommand}
                 mkdir -p build/${buildTypeDir} && cd build/${buildTypeDir}
                 ${auxiliary.gfxTargetParser()}
-                ${cmake} ${cmakeArgs} -DHIPTENSOR_BUILD_BENCHMARK_TESTS=OFF ../..
+                ${cmake} ${cmakeArgs} -DhipTensor_BUILD_BENCHMARK_TESTS=OFF ../..
                 make -j\$(nproc)
                 """
 

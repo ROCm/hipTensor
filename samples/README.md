@@ -1,5 +1,5 @@
 ##
-Client application links to hipTENSOR library, and therefore hipTENSOR library needs to be installed before building client applications.
+Client application links to hipTensor library, and therefore hipTensor library needs to be installed before building client applications.
 
 
 ## Build

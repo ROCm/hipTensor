@@ -62,8 +62,8 @@ using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMul
 								ck::tensor_operation::element_wise::Bilinear>;
 
 
-hiptensorStatus_t hiptensorFillCKContractionMetrics( const hiptensorContractionPlan_t* plan, 
-												hiptensorContractionMetrics_t *ht_contract_metrics, 
+hipTensorStatus_t hipTensorFillCKContractionMetrics( const hipTensorContractionPlan_t* plan, 
+												hipTensorContractionMetrics_t *ht_contract_metrics, 
 												const hiptesnorContractionOperation_t contractionOp )
 {
 	ck::index_t M = std::accumulate(plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
@@ -84,35 +84,35 @@ hiptensorStatus_t hiptensorFillCKContractionMetrics( const hiptensorContractionP
 	std::size_t flop = std::size_t(2) * M * N * K;
 	std::size_t num_btype;
 
-	if ( contractionOp == HIPTENSOR_CONTRACTION_BILINEAR )
+	if ( contractionOp == hipTensor_CONTRACTION_BILINEAR )
 	{
 		num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N +
 							sizeof(CDataType) * M * N + sizeof(DDataType) * M * N;
 	}
-	else if ( contractionOp == HIPTENSOR_CONTRACTION_SCALE)
+	else if ( contractionOp == hipTensor_CONTRACTION_SCALE)
 	{
 		num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N + sizeof(DDataType) * M * N;
 	}
 	else
    	{
    		std::cout << "Input Contraction operation not supported by CK" << std::endl;
-     	return HIPTENSOR_STATUS_CK_ERROR;
+     	return hipTensor_STATUS_CK_ERROR;
    	}
 	
 	ht_contract_metrics->tflops = static_cast<float>(flop) / 1.E9 / ht_contract_metrics->avg_time;
 	ht_contract_metrics->transfer_speed = num_btype / 1.E6 / ht_contract_metrics->avg_time;
-	return HIPTENSOR_STATUS_SUCCESS;
+	return hipTensor_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorCKScaleContraction(const hiptensorHandle_t* handle,
-									const hiptensorContractionPlan_t* plan,
-									hiptensorContractionMetrics_t *ht_contract_metrics,
+hipTensorStatus_t hipTensorCKScaleContraction(const hipTensorHandle_t* handle,
+									const hipTensorContractionPlan_t* plan,
+									hipTensorContractionMetrics_t *ht_contract_metrics,
 									const void* alpha, const void* A, const void* B,
 									const void* beta,  const void* C,       void* D,
 									void *workspace, uint64_t workspaceSize, hipStream_t stream)
 {
 	if (!handle || !ht_contract_metrics || !A || !B || !D)
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+        return hipTensor_STATUS_NOT_INITIALIZED;
 
 	std::string best_op_name;
     bool found            = false;
@@ -122,30 +122,30 @@ hiptensorStatus_t hiptensorCKScaleContraction(const hiptensorHandle_t* handle,
     float best_gb_per_sec = 0;
 
     
-    memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
+    memset(ht_contract_metrics, 0, sizeof(hipTensorContractionMetrics_t));
 
 #ifdef HT_DEBUG_MODE
     std::cout << "Tensor A lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(), plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()));
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(), plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()));
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[0].tensor_size << std::endl;
 
     std::cout << "Tensor B lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(), plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()));
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(), plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()));
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[1].tensor_size << std::endl;
 
     std::cout << "Tensor C lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(), plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()));
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(), plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()));
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif	
@@ -153,7 +153,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(const hiptensorHandle_t* handle,
     auto contraction_scale = [&] (auto &op_layout)
     {
         if (!op_layout)
-            return HIPTENSOR_STATUS_NOT_INITIALIZED;
+            return hipTensor_STATUS_NOT_INITIALIZED;
 
         using ContractionInstance = decltype(op_layout);
         ContractionInstance op = std::move(op_layout);
@@ -187,12 +187,12 @@ hiptensorStatus_t hiptensorCKScaleContraction(const hiptensorHandle_t* handle,
 #ifdef HT_DEBUG_MODE
 			std::cout << op->GetTypeString() << " does not support this problem" << std::endl;
 #endif
-            return HIPTENSOR_STATUS_CK_ERROR;
+            return hipTensor_STATUS_CK_ERROR;
        	}    
 
 		ht_contract_metrics->avg_time = invoker_ptr->Run(argument_ptr.get(), StreamConfig{nullptr, true});
-		hiptensorFillCKContractionMetrics( plan, ht_contract_metrics, plan->ht_plan_desc.ht_contract_op );
-		return HIPTENSOR_STATUS_SUCCESS;
+		hipTensorFillCKContractionMetrics( plan, ht_contract_metrics, plan->ht_plan_desc.ht_contract_op );
+		return hipTensor_STATUS_SUCCESS;
 	};
 
 	const auto op_scale_ptrs =  ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionScaleOp>::GetInstances();
@@ -222,17 +222,17 @@ hiptensorStatus_t hiptensorCKScaleContraction(const hiptensorHandle_t* handle,
 	auto& contract_op_ptr = op_scale_ptrs[best_op_id];
     ht_contract_metrics->ht_instance = contract_op_ptr->GetTypeString();
 	contraction_scale(contract_op_ptr);
-	return HIPTENSOR_STATUS_SUCCESS;
+	return hipTensor_STATUS_SUCCESS;
 }
-hiptensorStatus_t hiptensorCKBilinearContraction(const hiptensorHandle_t* handle,
-									const hiptensorContractionPlan_t* plan,
-									hiptensorContractionMetrics_t *ht_contract_metrics,
+hipTensorStatus_t hipTensorCKBilinearContraction(const hipTensorHandle_t* handle,
+									const hipTensorContractionPlan_t* plan,
+									hipTensorContractionMetrics_t *ht_contract_metrics,
 									const void* alpha, const void* A, const void* B,
 									const void* beta,  const void* C,       void* D,
 									void *workspace, uint64_t workspaceSize, hipStream_t stream)
 {
 	if (!handle || !ht_contract_metrics || !A || !B || !D)
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+        return hipTensor_STATUS_NOT_INITIALIZED;
 
 	std::string best_op_name;
     bool found            = false;
@@ -242,30 +242,30 @@ hiptensorStatus_t hiptensorCKBilinearContraction(const hiptensorHandle_t* handle
     float best_gb_per_sec = 0;
     void *output;
     
-    memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
+    memset(ht_contract_metrics, 0, sizeof(hipTensorContractionMetrics_t));
     
 #ifdef HT_DEBUG_MODE
     std::cout << "Tensor A lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(), plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()));
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(), plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()));
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[0].tensor_size << std::endl;
 
     std::cout << "Tensor B lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(), plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()));
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(), plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()));
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[1].tensor_size << std::endl;
 
     std::cout << "Tensor C lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(), plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()));
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>
+    hipTensorPrintVectorElements<ck::index_t>
         (std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(), plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()));
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif	
@@ -276,7 +276,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(const hiptensorHandle_t* handle
     auto contraction_bilinear = [&] (auto &op_layout)
     {
         if (!op_layout)
-            return HIPTENSOR_STATUS_NOT_INITIALIZED;
+            return hipTensor_STATUS_NOT_INITIALIZED;
 
         using ContractionInstance = decltype(op_layout);
         ContractionInstance op = std::move(op_layout);
@@ -313,12 +313,12 @@ hiptensorStatus_t hiptensorCKBilinearContraction(const hiptensorHandle_t* handle
 #ifdef HT_DEBUG_MODE           
 			std::cout << op->GetTypeString() << " does not support this problem" << std::endl;
 #endif          
-            return HIPTENSOR_STATUS_CK_ERROR;
+            return hipTensor_STATUS_CK_ERROR;
        	}    
 
 		ht_contract_metrics->avg_time = invoker_ptr->Run(argument_ptr.get(), StreamConfig{nullptr, true});
-		hiptensorFillCKContractionMetrics( plan, ht_contract_metrics, plan->ht_plan_desc.ht_contract_op );
-		return HIPTENSOR_STATUS_SUCCESS;
+		hipTensorFillCKContractionMetrics( plan, ht_contract_metrics, plan->ht_plan_desc.ht_contract_op );
+		return hipTensor_STATUS_SUCCESS;
 	};
 
 	const auto op_bilinear_ptrs =  ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionBilinearOp>::GetInstances();
@@ -354,6 +354,6 @@ hiptensorStatus_t hiptensorCKBilinearContraction(const hiptensorHandle_t* handle
 
     if (output) 
         hip_check_error(hipFree(output));
-	return HIPTENSOR_STATUS_SUCCESS;
+	return hipTensor_STATUS_SUCCESS;
 }
 

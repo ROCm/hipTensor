@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
+  <title>Overview &mdash; hipTensor: AMD&#39;s tensor contraction library</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installing hipTENSOR package" href="install.html" />
+    <link rel="next" title="Installing hipTensor package" href="install.html" />
     <link rel="prev" title="Getting Started" href="gettingstarted.html" /> 
 </head>
 
@@ -29,7 +29,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hipTENSOR
+            <a href="index.html" class="icon icon-home"> hipTensor
           </a>
               <div class="version">
                 1.0.0
@@ -51,7 +51,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#future-development">Future development</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTENSOR package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTensor package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="install.html#pre-requisites">Pre-requisites</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="install.html#docker-cmd">Docker CMD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="install.html#install-the-new-rocm-cmake-version">Install the new rocm-cmake version</a></li>
@@ -75,35 +75,35 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="apireference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hipTENSOR Data Types</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorstatus-t">hiptensorStatus_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensordatatype-t">hiptensorDataType_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcomputetype-t">hiptensorComputeType_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensoroperator-t">hiptensorOperator_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensoralgo-t">hiptensorAlgo_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorworksizepreference-t">hiptensorWorksizePreference_t</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hipTensor Data Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorstatus-t">hipTensorStatus_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensordatatype-t">hipTensorDataType_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorcomputetype-t">hipTensorComputeType_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensoroperator-t">hipTensorOperator_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensoralgo-t">hipTensorAlgo_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorworksizepreference-t">hipTensorWorksizePreference_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptesnorcontractionoperation-t">hiptesnorContractionOperation_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorhandle-t">hiptensorHandle_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensortensordescriptor-t">hiptensorTensorDescriptor_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorhandle-t">hipTensorHandle_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensortensordescriptor-t">hipTensorTensorDescriptor_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#tensor-attr">tensor_attr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractiondescriptor-t">hiptensorContractionDescriptor_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionfind-t">hiptensorContractionFind_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionmetrics-t">hiptensorContractionMetrics_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionplan-t">hiptensorContractionPlan_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorcontractiondescriptor-t">hipTensorContractionDescriptor_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorcontractionfind-t">hipTensorContractionFind_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorcontractionmetrics-t">hipTensorContractionMetrics_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatypes.html#hipTensorcontractionplan-t">hipTensorContractionPlan_t</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="functions.html">hipTENSOR Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">hipTensor Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="helperfunctions.html">Helper Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinit">hiptensorInit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinittensordescriptor">hiptensorInitTensorDescriptor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorgetalignmentrequirement">hiptensorGetAlignmentRequirement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hipTensorinit">hipTensorInit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hipTensorinittensordescriptor">hipTensorInitTensorDescriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hipTensorgetalignmentrequirement">hipTensorGetAlignmentRequirement</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="contractionfunctions.html">Contraction Operations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractiondescriptor">hiptensorInitContractionDescriptor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractionfind">hiptensorInitContractionFind</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractionplan">hiptensorInitContractionPlan</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorcontraction">hiptensorContraction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorinitcontractiondescriptor">hipTensorInitContractionDescriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorinitcontractionfind">hipTensorInitContractionFind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorinitcontractionplan">hipTensorInitContractionPlan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorcontraction">hipTensorContraction</a></li>
 </ul>
 </li>
 </ul>
@@ -118,7 +118,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">hipTENSOR</a>
+          <a href="index.html">hipTensor</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -143,15 +143,15 @@
 <div class="line"><strong>Advanced Micro Devices, Inc’s tensor contraction library.</strong></div>
 </div>
 <ul class="simple">
-<li><p>Sources and binaries can be found at <a class="reference external" href="https://github.com/AMD-HPC/hipTENSOR">hipTENSOR GitHub repo</a>.</p></li>
+<li><p>Sources and binaries can be found at <a class="reference external" href="https://github.com/AMD-HPC/hipTensor">hipTensor GitHub repo</a>.</p></li>
 <li><p>Backend package can be found at <a class="reference external" href="https://github.com/ROCmSoftwarePlatform/composable_kernel">composable_kernel GitHub repo</a>.</p></li>
-<li><p>This package implement a first tensor contraction using hipTENSOR. Our code will compute the following operation using single-precision arithmetic.</p></li>
+<li><p>This package implement a first tensor contraction using hipTensor. Our code will compute the following operation using single-precision arithmetic.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[D_{M0,M1,N0,N1} = \alpha A_{M0,M1,K0,K1}B_{N0,N1,K0,K1} + \beta C_{M0,M1,N0,N1}\]</div>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
-<p>hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.</p>
+<p>hipTensor is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.</p>
 </section>
 <section id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h2>
@@ -167,8 +167,8 @@
 <h2>Future development<a class="headerlink" href="#future-development" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>Adapt the library to adapt the arbitrary input tensor layouts and type computes.</p></li>
-<li><p>Adapt the hiptensorContractionFind API to different set of available algorithms on the different accelerators.</p></li>
-<li><p>Adapt the hiptensorContractionGetWorkspace API as per the future backends.</p></li>
+<li><p>Adapt the hipTensorContractionFind API to different set of available algorithms on the different accelerators.</p></li>
+<li><p>Adapt the hipTensorContractionGetWorkspace API as per the future backends.</p></li>
 <li><p>Also, to adapt the library to handle for the FP64 tensors support.
 <br /> Pending due to compiler issue: <a class="reference external" href="https://ontrack-internal.amd.com/browse/SWDEV-335738">SWDEV-335738</a>.</p></li>
 <li><p>Need to make few modularisation in the ck part of the core logic handling all the datatypes.</p></li>
@@ -181,7 +181,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gettingstarted.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="install.html" class="btn btn-neutral float-right" title="Installing hipTENSOR package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Installing hipTensor package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

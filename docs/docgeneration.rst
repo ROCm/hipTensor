@@ -1,11 +1,11 @@
 DOC Generation
 ==============
 
-| This section describes the generation of documentation for the hipTENSOR package with the Doxygen, Sphinx, and breathe extensions.
+| This section describes the generation of documentation for the hipTensor package with the Doxygen, Sphinx, and breathe extensions.
   
 Pre-requisites
 --------------
-| All the pre-requistes need to be installed in the docker before generating the documentation for the hipTENSOR package.
+| All the pre-requistes need to be installed in the docker before generating the documentation for the hipTensor package.
 
 * Install Doxygen modules.
 
@@ -60,7 +60,7 @@ Building the documentation
    -D BUILD_DOC=ON                                                       \
    ..
 
-| Build the hipTENSOR packages with the same the make command.
+| Build the hipTensor packages with the same the make command.
 
 .. code-block:: console
 

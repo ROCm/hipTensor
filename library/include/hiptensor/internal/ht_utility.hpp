@@ -16,7 +16,7 @@ inline void hip_check_error(hipError_t x)
 
 
 template<typename T>
-void hiptensorPrintArrayElements ( T *vec, size_t size)
+void hipTensorPrintArrayElements ( T *vec, size_t size)
 {
      int index = 0;
      while (index != size)
@@ -31,7 +31,7 @@ void hiptensorPrintArrayElements ( T *vec, size_t size)
 }
 
 template <typename S>
-void hiptensorPrintVectorElements(const std::vector<S>& vec,
+void hipTensorPrintVectorElements(const std::vector<S>& vec,
                     	std::string sep = " ")
 {
     for (auto elem : vec) 
@@ -42,7 +42,7 @@ void hiptensorPrintVectorElements(const std::vector<S>& vec,
 }
 
 template <typename F>
-void hiptensorPrintElementsToFile(std::ofstream& fs, F *output, size_t size, char delim)
+void hipTensorPrintElementsToFile(std::ofstream& fs, F *output, size_t size, char delim)
 {
 	if(!fs.is_open())
     {
