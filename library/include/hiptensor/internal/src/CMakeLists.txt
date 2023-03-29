@@ -5,7 +5,7 @@ rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 add_subdirectory(core)
 add_subdirectory(contraction)
 
-add_library(hiptensor SHARED 
+add_library(hipTensor SHARED 
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
         $<TARGET_OBJECTS:ck_core_instance>

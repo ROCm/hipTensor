@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>hipTENSOR Data Types &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
+  <title>hipTensor Data Types &mdash; hipTensor: AMD&#39;s tensor contraction library</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="hipTENSOR Functions" href="functions.html" />
+    <link rel="next" title="hipTensor Functions" href="functions.html" />
     <link rel="prev" title="API Reference" href="apireference.html" /> 
 </head>
 
@@ -29,7 +29,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hipTENSOR
+            <a href="index.html" class="icon icon-home"> hipTensor
           </a>
               <div class="version">
                 1.0.0
@@ -51,7 +51,7 @@
 <li class="toctree-l3"><a class="reference internal" href="overview.html#future-development">Future development</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTENSOR package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTensor package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="install.html#pre-requisites">Pre-requisites</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="install.html#docker-cmd">Docker CMD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="install.html#install-the-new-rocm-cmake-version">Install the new rocm-cmake version</a></li>
@@ -75,35 +75,35 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="apireference.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">hipTENSOR Data Types</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorstatus-t">hiptensorStatus_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensordatatype-t">hiptensorDataType_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorcomputetype-t">hiptensorComputeType_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensoroperator-t">hiptensorOperator_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensoralgo-t">hiptensorAlgo_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorworksizepreference-t">hiptensorWorksizePreference_t</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">hipTensor Data Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorstatus-t">hipTensorStatus_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensordatatype-t">hipTensorDataType_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorcomputetype-t">hipTensorComputeType_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensoroperator-t">hipTensorOperator_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensoralgo-t">hipTensorAlgo_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorworksizepreference-t">hipTensorWorksizePreference_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#hiptesnorcontractionoperation-t">hiptesnorContractionOperation_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorhandle-t">hiptensorHandle_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensortensordescriptor-t">hiptensorTensorDescriptor_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorhandle-t">hipTensorHandle_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensortensordescriptor-t">hipTensorTensorDescriptor_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tensor-attr">tensor_attr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorcontractiondescriptor-t">hiptensorContractionDescriptor_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorcontractionfind-t">hiptensorContractionFind_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorcontractionmetrics-t">hiptensorContractionMetrics_t</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hiptensorcontractionplan-t">hiptensorContractionPlan_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorcontractiondescriptor-t">hipTensorContractionDescriptor_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorcontractionfind-t">hipTensorContractionFind_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorcontractionmetrics-t">hipTensorContractionMetrics_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hipTensorcontractionplan-t">hipTensorContractionPlan_t</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="functions.html">hipTENSOR Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">hipTensor Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="helperfunctions.html">Helper Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinit">hiptensorInit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinittensordescriptor">hiptensorInitTensorDescriptor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorgetalignmentrequirement">hiptensorGetAlignmentRequirement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hipTensorinit">hipTensorInit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hipTensorinittensordescriptor">hipTensorInitTensorDescriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hipTensorgetalignmentrequirement">hipTensorGetAlignmentRequirement</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="contractionfunctions.html">Contraction Operations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractiondescriptor">hiptensorInitContractionDescriptor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractionfind">hiptensorInitContractionFind</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorinitcontractionplan">hiptensorInitContractionPlan</a></li>
-<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hiptensorcontraction">hiptensorContraction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorinitcontractiondescriptor">hipTensorInitContractionDescriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorinitcontractionfind">hipTensorInitContractionFind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorinitcontractionplan">hipTensorInitContractionPlan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contractionfunctions.html#hipTensorcontraction">hipTensorContraction</a></li>
 </ul>
 </li>
 </ul>
@@ -118,7 +118,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">hipTENSOR</a>
+          <a href="index.html">hipTensor</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -127,7 +127,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="apireference.html">API Reference</a> &raquo;</li>
-      <li>hipTENSOR Data Types</li>
+      <li>hipTensor Data Types</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/datatypes.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -137,160 +137,160 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="hiptensor-data-types">
-<h1>hipTENSOR Data Types<a class="headerlink" href="#hiptensor-data-types" title="Permalink to this heading"></a></h1>
-<section id="hiptensorstatus-t">
-<h2>hiptensorStatus_t<a class="headerlink" href="#hiptensorstatus-t" title="Permalink to this heading"></a></h2>
+  <section id="hipTensor-data-types">
+<h1>hipTensor Data Types<a class="headerlink" href="#hipTensor-data-types" title="Permalink to this heading"></a></h1>
+<section id="hipTensorstatus-t">
+<h2>hipTensorStatus_t<a class="headerlink" href="#hipTensorstatus-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv417hiptensorStatus_t">
-<span id="_CPPv317hiptensorStatus_t"></span><span id="_CPPv217hiptensorStatus_t"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorStatus_t</span></span></span><a class="headerlink" href="#_CPPv417hiptensorStatus_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>hipTENSOR status type returns </p>
-<p>The type is used for function status returns. All hipTENSOR library functions return their status, which can have the following values. </p>
+<dt class="sig sig-object cpp" id="_CPPv417hipTensorStatus_t">
+<span id="_CPPv317hipTensorStatus_t"></span><span id="_CPPv217hipTensorStatus_t"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorStatus_t</span></span></span><a class="headerlink" href="#_CPPv417hipTensorStatus_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>hipTensor status type returns </p>
+<p>The type is used for function status returns. All hipTensor library functions return their status, which can have the following values. </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t24HIPTENSOR_STATUS_SUCCESSE">
-<span id="_CPPv3N17hiptensorStatus_t24HIPTENSOR_STATUS_SUCCESSE"></span><span id="_CPPv2N17hiptensorStatus_t24HIPTENSOR_STATUS_SUCCESSE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a67db43b30294d82d91e0ab2391ef2f5e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_SUCCESS</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t24HIPTENSOR_STATUS_SUCCESSE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t24hipTensor_STATUS_SUCCESSE">
+<span id="_CPPv3N17hipTensorStatus_t24hipTensor_STATUS_SUCCESSE"></span><span id="_CPPv2N17hipTensorStatus_t24hipTensor_STATUS_SUCCESSE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a67db43b30294d82d91e0ab2391ef2f5e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_SUCCESS</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t24hipTensor_STATUS_SUCCESSE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The operation completed successfully. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t32HIPTENSOR_STATUS_NOT_INITIALIZEDE">
-<span id="_CPPv3N17hiptensorStatus_t32HIPTENSOR_STATUS_NOT_INITIALIZEDE"></span><span id="_CPPv2N17hiptensorStatus_t32HIPTENSOR_STATUS_NOT_INITIALIZEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a9867f1ab085ff56e9392405e6028c516"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_NOT_INITIALIZED</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t32HIPTENSOR_STATUS_NOT_INITIALIZEDE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t32hipTensor_STATUS_NOT_INITIALIZEDE">
+<span id="_CPPv3N17hipTensorStatus_t32hipTensor_STATUS_NOT_INITIALIZEDE"></span><span id="_CPPv2N17hipTensorStatus_t32hipTensor_STATUS_NOT_INITIALIZEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a9867f1ab085ff56e9392405e6028c516"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_NOT_INITIALIZED</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t32hipTensor_STATUS_NOT_INITIALIZEDE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The opaque data structure was not initialized. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t29HIPTENSOR_STATUS_ALLOC_FAILEDE">
-<span id="_CPPv3N17hiptensorStatus_t29HIPTENSOR_STATUS_ALLOC_FAILEDE"></span><span id="_CPPv2N17hiptensorStatus_t29HIPTENSOR_STATUS_ALLOC_FAILEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1aa4b689ad97de8de2e474cd378695a6f4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_ALLOC_FAILED</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t29HIPTENSOR_STATUS_ALLOC_FAILEDE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Resource allocation failed inside the hipTENSOR library. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t29hipTensor_STATUS_ALLOC_FAILEDE">
+<span id="_CPPv3N17hipTensorStatus_t29hipTensor_STATUS_ALLOC_FAILEDE"></span><span id="_CPPv2N17hipTensorStatus_t29hipTensor_STATUS_ALLOC_FAILEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1aa4b689ad97de8de2e474cd378695a6f4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_ALLOC_FAILED</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t29hipTensor_STATUS_ALLOC_FAILEDE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Resource allocation failed inside the hipTensor library. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_INVALID_VALUEE">
-<span id="_CPPv3N17hiptensorStatus_t30HIPTENSOR_STATUS_INVALID_VALUEE"></span><span id="_CPPv2N17hiptensorStatus_t30HIPTENSOR_STATUS_INVALID_VALUEE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a48fcc22bca581bfa58a4e20d618bbcfa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_INVALID_VALUE</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_INVALID_VALUEE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_INVALID_VALUEE">
+<span id="_CPPv3N17hipTensorStatus_t30hipTensor_STATUS_INVALID_VALUEE"></span><span id="_CPPv2N17hipTensorStatus_t30hipTensor_STATUS_INVALID_VALUEE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a48fcc22bca581bfa58a4e20d618bbcfa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_INVALID_VALUE</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_INVALID_VALUEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>An unsupported value or parameter was passed to the function (indicates an user error). </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_ARCH_MISMATCHE">
-<span id="_CPPv3N17hiptensorStatus_t30HIPTENSOR_STATUS_ARCH_MISMATCHE"></span><span id="_CPPv2N17hiptensorStatus_t30HIPTENSOR_STATUS_ARCH_MISMATCHE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a851c4fb07ca93fc8ce9a50ce8e58def0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_ARCH_MISMATCH</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_ARCH_MISMATCHE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_ARCH_MISMATCHE">
+<span id="_CPPv3N17hipTensorStatus_t30hipTensor_STATUS_ARCH_MISMATCHE"></span><span id="_CPPv2N17hipTensorStatus_t30hipTensor_STATUS_ARCH_MISMATCHE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a851c4fb07ca93fc8ce9a50ce8e58def0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_ARCH_MISMATCH</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_ARCH_MISMATCHE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Indicates that the device is either not ready, or the target architecture is not supported. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_MAPPING_ERRORE">
-<span id="_CPPv3N17hiptensorStatus_t30HIPTENSOR_STATUS_MAPPING_ERRORE"></span><span id="_CPPv2N17hiptensorStatus_t30HIPTENSOR_STATUS_MAPPING_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a3e679fcb32bb6918aef614cbd476068b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_MAPPING_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_MAPPING_ERRORE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_MAPPING_ERRORE">
+<span id="_CPPv3N17hipTensorStatus_t30hipTensor_STATUS_MAPPING_ERRORE"></span><span id="_CPPv2N17hipTensorStatus_t30hipTensor_STATUS_MAPPING_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a3e679fcb32bb6918aef614cbd476068b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_MAPPING_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_MAPPING_ERRORE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>An access to GPU memory space failed, which is usually caused by a failure to bind a texture. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t33HIPTENSOR_STATUS_EXECUTION_FAILEDE">
-<span id="_CPPv3N17hiptensorStatus_t33HIPTENSOR_STATUS_EXECUTION_FAILEDE"></span><span id="_CPPv2N17hiptensorStatus_t33HIPTENSOR_STATUS_EXECUTION_FAILEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1ad989bb909048a04fe3033e1c4ea7d3de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_EXECUTION_FAILED</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t33HIPTENSOR_STATUS_EXECUTION_FAILEDE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t33hipTensor_STATUS_EXECUTION_FAILEDE">
+<span id="_CPPv3N17hipTensorStatus_t33hipTensor_STATUS_EXECUTION_FAILEDE"></span><span id="_CPPv2N17hipTensorStatus_t33hipTensor_STATUS_EXECUTION_FAILEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1ad989bb909048a04fe3033e1c4ea7d3de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_EXECUTION_FAILED</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t33hipTensor_STATUS_EXECUTION_FAILEDE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The GPU program failed to execute. This is often caused by a launch failure of the kernel on the GPU, which can be caused by multiple reasons. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t31HIPTENSOR_STATUS_INTERNAL_ERRORE">
-<span id="_CPPv3N17hiptensorStatus_t31HIPTENSOR_STATUS_INTERNAL_ERRORE"></span><span id="_CPPv2N17hiptensorStatus_t31HIPTENSOR_STATUS_INTERNAL_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a97858004fc1e3d492b67cf831c3fff82"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_INTERNAL_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t31HIPTENSOR_STATUS_INTERNAL_ERRORE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>An internal hipTENSOR error has occurred. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t31hipTensor_STATUS_INTERNAL_ERRORE">
+<span id="_CPPv3N17hipTensorStatus_t31hipTensor_STATUS_INTERNAL_ERRORE"></span><span id="_CPPv2N17hipTensorStatus_t31hipTensor_STATUS_INTERNAL_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a97858004fc1e3d492b67cf831c3fff82"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_INTERNAL_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t31hipTensor_STATUS_INTERNAL_ERRORE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>An internal hipTensor error has occurred. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_NOT_SUPPORTEDE">
-<span id="_CPPv3N17hiptensorStatus_t30HIPTENSOR_STATUS_NOT_SUPPORTEDE"></span><span id="_CPPv2N17hiptensorStatus_t30HIPTENSOR_STATUS_NOT_SUPPORTEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a1280aaed57462da9c4fa29cefd75147e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_NOT_SUPPORTED</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_NOT_SUPPORTEDE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_NOT_SUPPORTEDE">
+<span id="_CPPv3N17hipTensorStatus_t30hipTensor_STATUS_NOT_SUPPORTEDE"></span><span id="_CPPv2N17hipTensorStatus_t30hipTensor_STATUS_NOT_SUPPORTEDE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a1280aaed57462da9c4fa29cefd75147e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_NOT_SUPPORTED</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_NOT_SUPPORTEDE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The requested operation is not supported. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_LICENSE_ERRORE">
-<span id="_CPPv3N17hiptensorStatus_t30HIPTENSOR_STATUS_LICENSE_ERRORE"></span><span id="_CPPv2N17hiptensorStatus_t30HIPTENSOR_STATUS_LICENSE_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a78102136f4a657283bf289d4ccafad35"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_LICENSE_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t30HIPTENSOR_STATUS_LICENSE_ERRORE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_LICENSE_ERRORE">
+<span id="_CPPv3N17hipTensorStatus_t30hipTensor_STATUS_LICENSE_ERRORE"></span><span id="_CPPv2N17hipTensorStatus_t30hipTensor_STATUS_LICENSE_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a78102136f4a657283bf289d4ccafad35"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_LICENSE_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t30hipTensor_STATUS_LICENSE_ERRORE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The functionality requested requires some license and an error was detected when trying to check the current licensing. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t25HIPTENSOR_STATUS_CK_ERRORE">
-<span id="_CPPv3N17hiptensorStatus_t25HIPTENSOR_STATUS_CK_ERRORE"></span><span id="_CPPv2N17hiptensorStatus_t25HIPTENSOR_STATUS_CK_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a63d87789d06ad820aa5a5b1e3208befa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_CK_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t25HIPTENSOR_STATUS_CK_ERRORE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t25hipTensor_STATUS_CK_ERRORE">
+<span id="_CPPv3N17hipTensorStatus_t25hipTensor_STATUS_CK_ERRORE"></span><span id="_CPPv2N17hipTensorStatus_t25hipTensor_STATUS_CK_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a63d87789d06ad820aa5a5b1e3208befa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_CK_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t25hipTensor_STATUS_CK_ERRORE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>A call to CUBLAS did not succeed. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t27HIPTENSOR_STATUS_ROCM_ERRORE">
-<span id="_CPPv3N17hiptensorStatus_t27HIPTENSOR_STATUS_ROCM_ERRORE"></span><span id="_CPPv2N17hiptensorStatus_t27HIPTENSOR_STATUS_ROCM_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a663e304b8ae3bb65746dfa03f384fec7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_ROCM_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t27HIPTENSOR_STATUS_ROCM_ERRORE" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Some unknown HIPTENSOR error has occurred. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t27hipTensor_STATUS_ROCM_ERRORE">
+<span id="_CPPv3N17hipTensorStatus_t27hipTensor_STATUS_ROCM_ERRORE"></span><span id="_CPPv2N17hipTensorStatus_t27hipTensor_STATUS_ROCM_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a663e304b8ae3bb65746dfa03f384fec7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_ROCM_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t27hipTensor_STATUS_ROCM_ERRORE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Some unknown hipTensor error has occurred. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t39HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACEE">
-<span id="_CPPv3N17hiptensorStatus_t39HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACEE"></span><span id="_CPPv2N17hiptensorStatus_t39HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACEE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a223c222c80b8870a49baee0f3d3e0555"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t39HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACEE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t39hipTensor_STATUS_INSUFFICIENT_WORKSPACEE">
+<span id="_CPPv3N17hipTensorStatus_t39hipTensor_STATUS_INSUFFICIENT_WORKSPACEE"></span><span id="_CPPv2N17hipTensorStatus_t39hipTensor_STATUS_INSUFFICIENT_WORKSPACEE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a223c222c80b8870a49baee0f3d3e0555"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_INSUFFICIENT_WORKSPACE</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t39hipTensor_STATUS_INSUFFICIENT_WORKSPACEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The provided workspace was insufficient. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t36HIPTENSOR_STATUS_INSUFFICIENT_DRIVERE">
-<span id="_CPPv3N17hiptensorStatus_t36HIPTENSOR_STATUS_INSUFFICIENT_DRIVERE"></span><span id="_CPPv2N17hiptensorStatus_t36HIPTENSOR_STATUS_INSUFFICIENT_DRIVERE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1af9c45be01823ab8449382cb67b871f69"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_INSUFFICIENT_DRIVER</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t36HIPTENSOR_STATUS_INSUFFICIENT_DRIVERE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t36hipTensor_STATUS_INSUFFICIENT_DRIVERE">
+<span id="_CPPv3N17hipTensorStatus_t36hipTensor_STATUS_INSUFFICIENT_DRIVERE"></span><span id="_CPPv2N17hipTensorStatus_t36hipTensor_STATUS_INSUFFICIENT_DRIVERE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1af9c45be01823ab8449382cb67b871f69"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_INSUFFICIENT_DRIVER</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t36hipTensor_STATUS_INSUFFICIENT_DRIVERE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Indicates that the driver version is insufficient. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N17hiptensorStatus_t25HIPTENSOR_STATUS_IO_ERRORE">
-<span id="_CPPv3N17hiptensorStatus_t25HIPTENSOR_STATUS_IO_ERRORE"></span><span id="_CPPv2N17hiptensorStatus_t25HIPTENSOR_STATUS_IO_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a88cdd3d776caa2d3d185bf99be581b24"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_STATUS_IO_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hiptensorStatus_t25HIPTENSOR_STATUS_IO_ERRORE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N17hipTensorStatus_t25hipTensor_STATUS_IO_ERRORE">
+<span id="_CPPv3N17hipTensorStatus_t25hipTensor_STATUS_IO_ERRORE"></span><span id="_CPPv2N17hipTensorStatus_t25hipTensor_STATUS_IO_ERRORE"></span><span class="target" id="ht__types_8hpp_1abb77cb19c3794b6a3f5b952d194c7ec1a88cdd3d776caa2d3d185bf99be581b24"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_STATUS_IO_ERROR</span></span></span><a class="headerlink" href="#_CPPv4N17hipTensorStatus_t25hipTensor_STATUS_IO_ERRORE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Indicates an error related to file I/O. </p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="hiptensordatatype-t">
-<h2>hiptensorDataType_t<a class="headerlink" href="#hiptensordatatype-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensordatatype-t">
+<h2>hipTensorDataType_t<a class="headerlink" href="#hipTensordatatype-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv419hiptensorDataType_t">
-<span id="_CPPv319hiptensorDataType_t"></span><span id="_CPPv219hiptensorDataType_t"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorDataType_t</span></span></span><a class="headerlink" href="#_CPPv419hiptensorDataType_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>hiptensorDataType_t is an enumeration of the types supported by HIPTENSOR libraries. hipTENSOR supports real FP16, BF16, FP32 input types. </p>
+<dt class="sig sig-object cpp" id="_CPPv419hipTensorDataType_t">
+<span id="_CPPv319hipTensorDataType_t"></span><span id="_CPPv219hipTensorDataType_t"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorDataType_t</span></span></span><a class="headerlink" href="#_CPPv419hipTensorDataType_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>hipTensorDataType_t is an enumeration of the types supported by hipTensor libraries. hipTensor supports real FP16, BF16, FP32 input types. </p>
 <p><dl>
 <dt class="sig sig-object cpp">
 <em><span class="pre">Todo:</span></em></dt>
-<dd><p>Other datatypes support to be added in the next hipTENSOR library releases.</p>
+<dd><p>Other datatypes support to be added in the next hipTensor library releases.</p>
 </dd></dl>
 
 </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Only HIPTENSOR_R_32F is supported. </p>
+<p>Only hipTensor_R_32F is supported. </p>
 </div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_16FE">
-<span id="_CPPv3N19hiptensorDataType_t15HIPTENSOR_R_16FE"></span><span id="_CPPv2N19hiptensorDataType_t15HIPTENSOR_R_16FE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5a9758e4dea65fb6742add6d97236b438a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_R_16F</span></span></span><a class="headerlink" href="#_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_16FE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N19hipTensorDataType_t15hipTensor_R_16FE">
+<span id="_CPPv3N19hipTensorDataType_t15hipTensor_R_16FE"></span><span id="_CPPv2N19hipTensorDataType_t15hipTensor_R_16FE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5a9758e4dea65fb6742add6d97236b438a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_R_16F</span></span></span><a class="headerlink" href="#_CPPv4N19hipTensorDataType_t15hipTensor_R_16FE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>real as a half </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N19hiptensorDataType_t16HIPTENSOR_R_16BFE">
-<span id="_CPPv3N19hiptensorDataType_t16HIPTENSOR_R_16BFE"></span><span id="_CPPv2N19hiptensorDataType_t16HIPTENSOR_R_16BFE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5a5e3300891395a8e1c38ca898cd3ec695"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_R_16BF</span></span></span><a class="headerlink" href="#_CPPv4N19hiptensorDataType_t16HIPTENSOR_R_16BFE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N19hipTensorDataType_t16hipTensor_R_16BFE">
+<span id="_CPPv3N19hipTensorDataType_t16hipTensor_R_16BFE"></span><span id="_CPPv2N19hipTensorDataType_t16hipTensor_R_16BFE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5a5e3300891395a8e1c38ca898cd3ec695"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_R_16BF</span></span></span><a class="headerlink" href="#_CPPv4N19hipTensorDataType_t16hipTensor_R_16BFE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>real as a nv_bfloat16 </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_32FE">
-<span id="_CPPv3N19hiptensorDataType_t15HIPTENSOR_R_32FE"></span><span id="_CPPv2N19hiptensorDataType_t15HIPTENSOR_R_32FE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5a8ae36d7f16687c1c51211b73b89ec697"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_R_32F</span></span></span><a class="headerlink" href="#_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_32FE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N19hipTensorDataType_t15hipTensor_R_32FE">
+<span id="_CPPv3N19hipTensorDataType_t15hipTensor_R_32FE"></span><span id="_CPPv2N19hipTensorDataType_t15hipTensor_R_32FE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5a8ae36d7f16687c1c51211b73b89ec697"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_R_32F</span></span></span><a class="headerlink" href="#_CPPv4N19hipTensorDataType_t15hipTensor_R_32FE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>real as a float </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_64FE">
-<span id="_CPPv3N19hiptensorDataType_t15HIPTENSOR_R_64FE"></span><span id="_CPPv2N19hiptensorDataType_t15HIPTENSOR_R_64FE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5ae6be44c0c6e8e6570660dab08e661fbd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_R_64F</span></span></span><a class="headerlink" href="#_CPPv4N19hiptensorDataType_t15HIPTENSOR_R_64FE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N19hipTensorDataType_t15hipTensor_R_64FE">
+<span id="_CPPv3N19hipTensorDataType_t15hipTensor_R_64FE"></span><span id="_CPPv2N19hipTensorDataType_t15hipTensor_R_64FE"></span><span class="target" id="ht__types_8hpp_1a4ec07bb95da09cb26783f13728d7d8f5ae6be44c0c6e8e6570660dab08e661fbd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_R_64F</span></span></span><a class="headerlink" href="#_CPPv4N19hipTensorDataType_t15hipTensor_R_64FE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>real as a double </p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="hiptensorcomputetype-t">
-<h2>hiptensorComputeType_t<a class="headerlink" href="#hiptensorcomputetype-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorcomputetype-t">
+<h2>hipTensorComputeType_t<a class="headerlink" href="#hipTensorcomputetype-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv422hiptensorComputeType_t">
-<span id="_CPPv322hiptensorComputeType_t"></span><span id="_CPPv222hiptensorComputeType_t"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorComputeType_t</span></span></span><a class="headerlink" href="#_CPPv422hiptensorComputeType_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Encodes hipTENSOR’s compute type. </p>
+<dt class="sig sig-object cpp" id="_CPPv422hipTensorComputeType_t">
+<span id="_CPPv322hipTensorComputeType_t"></span><span id="_CPPv222hipTensorComputeType_t"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorComputeType_t</span></span></span><a class="headerlink" href="#_CPPv422hipTensorComputeType_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Encodes hipTensor’s compute type. </p>
 <p><dl>
 <dt class="sig sig-object cpp">
 <em><span class="pre">Todo:</span></em></dt>
@@ -300,173 +300,173 @@
 </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Only the HIPTENSOR_COMPUTE_32F compute is supported. </p>
+<p>Only the hipTensor_COMPUTE_32F compute is supported. </p>
 </div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_16FE">
-<span id="_CPPv3N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_16FE"></span><span id="_CPPv2N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_16FE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a58ec25990d3818b6976b5b1c513f3af3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_16F</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_16FE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_16FE">
+<span id="_CPPv3N22hipTensorComputeType_t21hipTensor_COMPUTE_16FE"></span><span id="_CPPv2N22hipTensorComputeType_t21hipTensor_COMPUTE_16FE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a58ec25990d3818b6976b5b1c513f3af3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_16F</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_16FE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>floating-point: 5-bit exponent and 10-bit mantissa (aka half) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_16BFE">
-<span id="_CPPv3N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_16BFE"></span><span id="_CPPv2N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_16BFE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a002e2680fd3be5c4265a7ee2e4da91d0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_16BF</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_16BFE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t22hipTensor_COMPUTE_16BFE">
+<span id="_CPPv3N22hipTensorComputeType_t22hipTensor_COMPUTE_16BFE"></span><span id="_CPPv2N22hipTensorComputeType_t22hipTensor_COMPUTE_16BFE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a002e2680fd3be5c4265a7ee2e4da91d0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_16BF</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t22hipTensor_COMPUTE_16BFE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>floating-point: 8-bit exponent and 7-bit mantissa (aka bfloat) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_TF32E">
-<span id="_CPPv3N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_TF32E"></span><span id="_CPPv2N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_TF32E"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a60b2a546669c7b7fc20e75077c47b48a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_TF32</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t22HIPTENSOR_COMPUTE_TF32E" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t22hipTensor_COMPUTE_TF32E">
+<span id="_CPPv3N22hipTensorComputeType_t22hipTensor_COMPUTE_TF32E"></span><span id="_CPPv2N22hipTensorComputeType_t22hipTensor_COMPUTE_TF32E"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a60b2a546669c7b7fc20e75077c47b48a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_TF32</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t22hipTensor_COMPUTE_TF32E" title="Permalink to this definition"></a><br /></dt>
 <dd><p>floating-point: 8-bit exponent and 10-bit mantissa (aka tensor-float-32) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32FE">
-<span id="_CPPv3N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32FE"></span><span id="_CPPv2N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32FE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a1f40966cc39c10bd3d15a0bd4d8663c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_32F</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32FE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_32FE">
+<span id="_CPPv3N22hipTensorComputeType_t21hipTensor_COMPUTE_32FE"></span><span id="_CPPv2N22hipTensorComputeType_t21hipTensor_COMPUTE_32FE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a1f40966cc39c10bd3d15a0bd4d8663c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_32F</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_32FE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>floating-point: 8-bit exponent and 23-bit mantissa (aka float) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_64FE">
-<span id="_CPPv3N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_64FE"></span><span id="_CPPv2N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_64FE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6af4effdabd7259727bf0b912879267a81"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_64F</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_64FE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_64FE">
+<span id="_CPPv3N22hipTensorComputeType_t21hipTensor_COMPUTE_64FE"></span><span id="_CPPv2N22hipTensorComputeType_t21hipTensor_COMPUTE_64FE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6af4effdabd7259727bf0b912879267a81"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_64F</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_64FE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>floating-point: 11-bit exponent and 52-bit mantissa (aka double) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8UE">
-<span id="_CPPv3N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8UE"></span><span id="_CPPv2N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8UE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6ab28c6d4f4452cc4554b04515466d870e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_8U</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8UE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t20hipTensor_COMPUTE_8UE">
+<span id="_CPPv3N22hipTensorComputeType_t20hipTensor_COMPUTE_8UE"></span><span id="_CPPv2N22hipTensorComputeType_t20hipTensor_COMPUTE_8UE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6ab28c6d4f4452cc4554b04515466d870e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_8U</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t20hipTensor_COMPUTE_8UE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>8-bit unsigned integer </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8IE">
-<span id="_CPPv3N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8IE"></span><span id="_CPPv2N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8IE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a5016a4a843236a0a09755bab259f8a8f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_8I</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t20HIPTENSOR_COMPUTE_8IE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t20hipTensor_COMPUTE_8IE">
+<span id="_CPPv3N22hipTensorComputeType_t20hipTensor_COMPUTE_8IE"></span><span id="_CPPv2N22hipTensorComputeType_t20hipTensor_COMPUTE_8IE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a5016a4a843236a0a09755bab259f8a8f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_8I</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t20hipTensor_COMPUTE_8IE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>8-bit signed integer </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32UE">
-<span id="_CPPv3N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32UE"></span><span id="_CPPv2N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32UE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a804d2987fe26bc3b42e0d9f3a65a9e4f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_32U</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32UE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_32UE">
+<span id="_CPPv3N22hipTensorComputeType_t21hipTensor_COMPUTE_32UE"></span><span id="_CPPv2N22hipTensorComputeType_t21hipTensor_COMPUTE_32UE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a804d2987fe26bc3b42e0d9f3a65a9e4f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_32U</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_32UE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>32-bit unsigned integer </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32IE">
-<span id="_CPPv3N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32IE"></span><span id="_CPPv2N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32IE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a9c683780ccf70257866c61c20402900f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_COMPUTE_32I</span></span></span><a class="headerlink" href="#_CPPv4N22hiptensorComputeType_t21HIPTENSOR_COMPUTE_32IE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_32IE">
+<span id="_CPPv3N22hipTensorComputeType_t21hipTensor_COMPUTE_32IE"></span><span id="_CPPv2N22hipTensorComputeType_t21hipTensor_COMPUTE_32IE"></span><span class="target" id="ht__types_8hpp_1a7b8eddd94d9043662024ee2420efe5c6a9c683780ccf70257866c61c20402900f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_COMPUTE_32I</span></span></span><a class="headerlink" href="#_CPPv4N22hipTensorComputeType_t21hipTensor_COMPUTE_32IE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>32-bit signed integer </p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="hiptensoroperator-t">
-<h2>hiptensorOperator_t<a class="headerlink" href="#hiptensoroperator-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensoroperator-t">
+<h2>hipTensorOperator_t<a class="headerlink" href="#hipTensoroperator-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv419hiptensorOperator_t">
-<span id="_CPPv319hiptensorOperator_t"></span><span id="_CPPv219hiptensorOperator_t"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorOperator_t</span></span></span><a class="headerlink" href="#_CPPv419hiptensorOperator_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>This enum captures the operations supported by the hipTENSOR library. </p>
+<dt class="sig sig-object cpp" id="_CPPv419hipTensorOperator_t">
+<span id="_CPPv319hipTensorOperator_t"></span><span id="_CPPv219hipTensorOperator_t"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorOperator_t</span></span></span><a class="headerlink" href="#_CPPv419hipTensorOperator_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This enum captures the operations supported by the hipTensor library. </p>
 <p><dl>
 <dt class="sig sig-object cpp">
 <em><span class="pre">Todo:</span></em></dt>
-<dd><p>Other operations supported in the cuTENSOR needs to be adapted in the hipTENSOR library. </p>
+<dd><p>Other operations supported in the cuTENSOR needs to be adapted in the hipTensor library. </p>
 </dd></dl>
 
 </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N19hiptensorOperator_t21HIPTENSOR_OP_IDENTITYE">
-<span id="_CPPv3N19hiptensorOperator_t21HIPTENSOR_OP_IDENTITYE"></span><span id="_CPPv2N19hiptensorOperator_t21HIPTENSOR_OP_IDENTITYE"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0a6ead91830d46913677770940f7bdb8b3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_OP_IDENTITY</span></span></span><a class="headerlink" href="#_CPPv4N19hiptensorOperator_t21HIPTENSOR_OP_IDENTITYE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N19hipTensorOperator_t21hipTensor_OP_IDENTITYE">
+<span id="_CPPv3N19hipTensorOperator_t21hipTensor_OP_IDENTITYE"></span><span id="_CPPv2N19hipTensorOperator_t21hipTensor_OP_IDENTITYE"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0a6ead91830d46913677770940f7bdb8b3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_OP_IDENTITY</span></span></span><a class="headerlink" href="#_CPPv4N19hipTensorOperator_t21hipTensor_OP_IDENTITYE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Identity operator (i.e., elements are not changed) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N19hiptensorOperator_t20HIPTENSOR_OP_UNKNOWNE">
-<span id="_CPPv3N19hiptensorOperator_t20HIPTENSOR_OP_UNKNOWNE"></span><span id="_CPPv2N19hiptensorOperator_t20HIPTENSOR_OP_UNKNOWNE"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0a34bc17d0907694fd09cb6b59d0a16590"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_OP_UNKNOWN</span></span></span><a class="headerlink" href="#_CPPv4N19hiptensorOperator_t20HIPTENSOR_OP_UNKNOWNE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N19hipTensorOperator_t20hipTensor_OP_UNKNOWNE">
+<span id="_CPPv3N19hipTensorOperator_t20hipTensor_OP_UNKNOWNE"></span><span id="_CPPv2N19hipTensorOperator_t20hipTensor_OP_UNKNOWNE"></span><span class="target" id="ht__types_8hpp_1a1d54dbdd1f08feacc99c853ed5d820f0a34bc17d0907694fd09cb6b59d0a16590"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_OP_UNKNOWN</span></span></span><a class="headerlink" href="#_CPPv4N19hipTensorOperator_t20hipTensor_OP_UNKNOWNE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>reserved for internal use only </p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="hiptensoralgo-t">
-<h2>hiptensorAlgo_t<a class="headerlink" href="#hiptensoralgo-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensoralgo-t">
+<h2>hipTensorAlgo_t<a class="headerlink" href="#hipTensoralgo-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv415hiptensorAlgo_t">
-<span id="_CPPv315hiptensorAlgo_t"></span><span id="_CPPv215hiptensorAlgo_t"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6ac"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorAlgo_t</span></span></span><a class="headerlink" href="#_CPPv415hiptensorAlgo_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv415hipTensorAlgo_t">
+<span id="_CPPv315hipTensorAlgo_t"></span><span id="_CPPv215hipTensorAlgo_t"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6ac"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorAlgo_t</span></span></span><a class="headerlink" href="#_CPPv415hipTensorAlgo_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Allows users to specify the algorithm to be used for performing the tensor contraction. </p>
-<p>This enum gives users finer control over which algorithm should be executed by <a class="reference internal" href="contractionfunctions.html#ht__tensor_8hpp_1a61c9f62cd08c508875f874b5ff635560"><span class="std std-ref">hiptensorContraction()</span></a>; values &gt;= 0 correspond to certain sub-algorithms of GETT. <dl>
+<p>This enum gives users finer control over which algorithm should be executed by <a class="reference internal" href="contractionfunctions.html#ht__tensor_8hpp_1a61c9f62cd08c508875f874b5ff635560"><span class="std std-ref">hipTensorContraction()</span></a>; values &gt;= 0 correspond to certain sub-algorithms of GETT. <dl>
 <dt class="sig sig-object cpp">
 <em><span class="pre">Todo:</span></em></dt>
-<dd><p>need to add support for other algorithm in the hipTENSOR future releases. </p>
+<dd><p>need to add support for other algorithm in the hipTensor future releases. </p>
 </dd></dl>
 
 </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Only the default algorithm(HIPTENSOR_ALGO_DEFAULT) is supported by the hipTENSOR. </p>
+<p>Only the default algorithm(hipTensor_ALGO_DEFAULT) is supported by the hipTensor. </p>
 </div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N15hiptensorAlgo_t30HIPTENSOR_ALGO_DEFAULT_PATIENTE">
-<span id="_CPPv3N15hiptensorAlgo_t30HIPTENSOR_ALGO_DEFAULT_PATIENTE"></span><span id="_CPPv2N15hiptensorAlgo_t30HIPTENSOR_ALGO_DEFAULT_PATIENTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca0a2898e47070993cbcb34882497f03d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_ALGO_DEFAULT_PATIENT</span></span></span><a class="headerlink" href="#_CPPv4N15hiptensorAlgo_t30HIPTENSOR_ALGO_DEFAULT_PATIENTE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N15hipTensorAlgo_t30hipTensor_ALGO_DEFAULT_PATIENTE">
+<span id="_CPPv3N15hipTensorAlgo_t30hipTensor_ALGO_DEFAULT_PATIENTE"></span><span id="_CPPv2N15hipTensorAlgo_t30hipTensor_ALGO_DEFAULT_PATIENTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca0a2898e47070993cbcb34882497f03d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_ALGO_DEFAULT_PATIENT</span></span></span><a class="headerlink" href="#_CPPv4N15hipTensorAlgo_t30hipTensor_ALGO_DEFAULT_PATIENTE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Uses the more accurate but also more time-consuming performance model. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N15hiptensorAlgo_t19HIPTENSOR_ALGO_GETTE">
-<span id="_CPPv3N15hiptensorAlgo_t19HIPTENSOR_ALGO_GETTE"></span><span id="_CPPv2N15hiptensorAlgo_t19HIPTENSOR_ALGO_GETTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca11433af7c9e16030c1c86c3fe763a648"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_ALGO_GETT</span></span></span><a class="headerlink" href="#_CPPv4N15hiptensorAlgo_t19HIPTENSOR_ALGO_GETTE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N15hipTensorAlgo_t19hipTensor_ALGO_GETTE">
+<span id="_CPPv3N15hipTensorAlgo_t19hipTensor_ALGO_GETTE"></span><span id="_CPPv2N15hipTensorAlgo_t19hipTensor_ALGO_GETTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca11433af7c9e16030c1c86c3fe763a648"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_ALGO_GETT</span></span></span><a class="headerlink" href="#_CPPv4N15hipTensorAlgo_t19hipTensor_ALGO_GETTE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Choose the GETT algorithm. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N15hiptensorAlgo_t20HIPTENSOR_ALGO_TGETTE">
-<span id="_CPPv3N15hiptensorAlgo_t20HIPTENSOR_ALGO_TGETTE"></span><span id="_CPPv2N15hiptensorAlgo_t20HIPTENSOR_ALGO_TGETTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6acaa75c46a62ebe766cdd1affb97ee312c5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_ALGO_TGETT</span></span></span><a class="headerlink" href="#_CPPv4N15hiptensorAlgo_t20HIPTENSOR_ALGO_TGETTE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N15hipTensorAlgo_t20hipTensor_ALGO_TGETTE">
+<span id="_CPPv3N15hipTensorAlgo_t20hipTensor_ALGO_TGETTE"></span><span id="_CPPv2N15hipTensorAlgo_t20hipTensor_ALGO_TGETTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6acaa75c46a62ebe766cdd1affb97ee312c5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_ALGO_TGETT</span></span></span><a class="headerlink" href="#_CPPv4N15hipTensorAlgo_t20hipTensor_ALGO_TGETTE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Transpose (A or B) + GETT. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N15hiptensorAlgo_t19HIPTENSOR_ALGO_TTGTE">
-<span id="_CPPv3N15hiptensorAlgo_t19HIPTENSOR_ALGO_TTGTE"></span><span id="_CPPv2N15hiptensorAlgo_t19HIPTENSOR_ALGO_TTGTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca6934489f7ebbee819df59a4d9508c003"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_ALGO_TTGT</span></span></span><a class="headerlink" href="#_CPPv4N15hiptensorAlgo_t19HIPTENSOR_ALGO_TTGTE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N15hipTensorAlgo_t19hipTensor_ALGO_TTGTE">
+<span id="_CPPv3N15hipTensorAlgo_t19hipTensor_ALGO_TTGTE"></span><span id="_CPPv2N15hipTensorAlgo_t19hipTensor_ALGO_TTGTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca6934489f7ebbee819df59a4d9508c003"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_ALGO_TTGT</span></span></span><a class="headerlink" href="#_CPPv4N15hipTensorAlgo_t19hipTensor_ALGO_TTGTE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Transpose-Transpose-GEMM-Transpose (requires additional memory) </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N15hiptensorAlgo_t22HIPTENSOR_ALGO_DEFAULTE">
-<span id="_CPPv3N15hiptensorAlgo_t22HIPTENSOR_ALGO_DEFAULTE"></span><span id="_CPPv2N15hiptensorAlgo_t22HIPTENSOR_ALGO_DEFAULTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca2547d530f4067945d45c79588b41b82d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_ALGO_DEFAULT</span></span></span><a class="headerlink" href="#_CPPv4N15hiptensorAlgo_t22HIPTENSOR_ALGO_DEFAULTE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N15hipTensorAlgo_t22hipTensor_ALGO_DEFAULTE">
+<span id="_CPPv3N15hipTensorAlgo_t22hipTensor_ALGO_DEFAULTE"></span><span id="_CPPv2N15hipTensorAlgo_t22hipTensor_ALGO_DEFAULTE"></span><span class="target" id="ht__types_8hpp_1a8b783f4659cfaa9a302290722b9dd6aca2547d530f4067945d45c79588b41b82d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_ALGO_DEFAULT</span></span></span><a class="headerlink" href="#_CPPv4N15hipTensorAlgo_t22hipTensor_ALGO_DEFAULTE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Lets the internal heuristic choose. </p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="hiptensorworksizepreference-t">
-<h2>hiptensorWorksizePreference_t<a class="headerlink" href="#hiptensorworksizepreference-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorworksizepreference-t">
+<h2>hipTensorWorksizePreference_t<a class="headerlink" href="#hipTensorworksizepreference-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp enum">
-<dt class="sig sig-object cpp" id="_CPPv429hiptensorWorksizePreference_t">
-<span id="_CPPv329hiptensorWorksizePreference_t"></span><span id="_CPPv229hiptensorWorksizePreference_t"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorWorksizePreference_t</span></span></span><a class="headerlink" href="#_CPPv429hiptensorWorksizePreference_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv429hipTensorWorksizePreference_t">
+<span id="_CPPv329hipTensorWorksizePreference_t"></span><span id="_CPPv229hipTensorWorksizePreference_t"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorWorksizePreference_t</span></span></span><a class="headerlink" href="#_CPPv429hipTensorWorksizePreference_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>This enum gives users finer control over the suggested workspace. </p>
-<p>This enum gives users finer control over the amount of workspace that is suggested by hiptensorContractionGetWorkspace. </p>
+<p>This enum gives users finer control over the amount of workspace that is suggested by hipTensorContractionGetWorkspace. </p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Not supported by the current composable_kernel backend. Need to adapt in the future releases. </p>
 </div>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MINE">
-<span id="_CPPv3N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MINE"></span><span id="_CPPv2N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MINE"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2a87185e626d61ba0f0439f45887d88db5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_WORKSPACE_MIN</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MINE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MINE">
+<span id="_CPPv3N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MINE"></span><span id="_CPPv2N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MINE"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2a87185e626d61ba0f0439f45887d88db5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_WORKSPACE_MIN</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MINE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>At least one algorithm will be available. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorWorksizePreference_t31HIPTENSOR_WORKSPACE_RECOMMENDEDE">
-<span id="_CPPv3N29hiptensorWorksizePreference_t31HIPTENSOR_WORKSPACE_RECOMMENDEDE"></span><span id="_CPPv2N29hiptensorWorksizePreference_t31HIPTENSOR_WORKSPACE_RECOMMENDEDE"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2a84b1a8ac8deeeb348ea5f0108eb9d067"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_WORKSPACE_RECOMMENDED</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorWorksizePreference_t31HIPTENSOR_WORKSPACE_RECOMMENDEDE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorWorksizePreference_t31hipTensor_WORKSPACE_RECOMMENDEDE">
+<span id="_CPPv3N29hipTensorWorksizePreference_t31hipTensor_WORKSPACE_RECOMMENDEDE"></span><span id="_CPPv2N29hipTensorWorksizePreference_t31hipTensor_WORKSPACE_RECOMMENDEDE"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2a84b1a8ac8deeeb348ea5f0108eb9d067"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_WORKSPACE_RECOMMENDED</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorWorksizePreference_t31hipTensor_WORKSPACE_RECOMMENDEDE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>The most suitable algorithm will be available. </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MAXE">
-<span id="_CPPv3N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MAXE"></span><span id="_CPPv2N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MAXE"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2ac480f2ea5eed91cc0808f2c8145b45bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_WORKSPACE_MAX</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorWorksizePreference_t23HIPTENSOR_WORKSPACE_MAXE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MAXE">
+<span id="_CPPv3N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MAXE"></span><span id="_CPPv2N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MAXE"></span><span class="target" id="ht__types_8hpp_1a9e08e255460c1c22b27cd2f0d37f0fb2ac480f2ea5eed91cc0808f2c8145b45bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_WORKSPACE_MAX</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorWorksizePreference_t23hipTensor_WORKSPACE_MAXE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>All algorithms will be available. </p>
 </dd></dl>
 
@@ -479,92 +479,92 @@
 <dt class="sig sig-object cpp" id="_CPPv431hiptesnorContractionOperation_t">
 <span id="_CPPv331hiptesnorContractionOperation_t"></span><span id="_CPPv231hiptesnorContractionOperation_t"></span><span class="target" id="ht__types_8hpp_1aae090dd7531a303a4ecfd9880439a008"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptesnorContractionOperation_t</span></span></span><a class="headerlink" href="#_CPPv431hiptesnorContractionOperation_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>This enum decides the over the operation based on the inputs. </p>
-<p>This enum decides the operation based on the in puts passed in the hiptensorContractionGetWorkspace </p>
+<p>This enum decides the operation based on the in puts passed in the hipTensorContractionGetWorkspace </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N31hiptesnorContractionOperation_t27HIPTENSOR_CONTRACTION_SCALEE">
-<span id="_CPPv3N31hiptesnorContractionOperation_t27HIPTENSOR_CONTRACTION_SCALEE"></span><span id="_CPPv2N31hiptesnorContractionOperation_t27HIPTENSOR_CONTRACTION_SCALEE"></span><span class="target" id="ht__types_8hpp_1aae090dd7531a303a4ecfd9880439a008a16aaa1e93dba29cf9552ab348112e77c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_CONTRACTION_SCALE</span></span></span><a class="headerlink" href="#_CPPv4N31hiptesnorContractionOperation_t27HIPTENSOR_CONTRACTION_SCALEE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N31hiptesnorContractionOperation_t27hipTensor_CONTRACTION_SCALEE">
+<span id="_CPPv3N31hiptesnorContractionOperation_t27hipTensor_CONTRACTION_SCALEE"></span><span id="_CPPv2N31hiptesnorContractionOperation_t27hipTensor_CONTRACTION_SCALEE"></span><span class="target" id="ht__types_8hpp_1aae090dd7531a303a4ecfd9880439a008a16aaa1e93dba29cf9552ab348112e77c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_CONTRACTION_SCALE</span></span></span><a class="headerlink" href="#_CPPv4N31hiptesnorContractionOperation_t27hipTensor_CONTRACTION_SCALEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p><span class="math notranslate nohighlight">\({C=\alpha\mathcal{A}\mathcal{B}}\)</span> </p>
 </dd></dl>
 
 <dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N31hiptesnorContractionOperation_t30HIPTENSOR_CONTRACTION_BILINEARE">
-<span id="_CPPv3N31hiptesnorContractionOperation_t30HIPTENSOR_CONTRACTION_BILINEARE"></span><span id="_CPPv2N31hiptesnorContractionOperation_t30HIPTENSOR_CONTRACTION_BILINEARE"></span><span class="target" id="ht__types_8hpp_1aae090dd7531a303a4ecfd9880439a008a16c8de1409a77cf843ccb4d41925cb3a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HIPTENSOR_CONTRACTION_BILINEAR</span></span></span><a class="headerlink" href="#_CPPv4N31hiptesnorContractionOperation_t30HIPTENSOR_CONTRACTION_BILINEARE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N31hiptesnorContractionOperation_t30hipTensor_CONTRACTION_BILINEARE">
+<span id="_CPPv3N31hiptesnorContractionOperation_t30hipTensor_CONTRACTION_BILINEARE"></span><span id="_CPPv2N31hiptesnorContractionOperation_t30hipTensor_CONTRACTION_BILINEARE"></span><span class="target" id="ht__types_8hpp_1aae090dd7531a303a4ecfd9880439a008a16c8de1409a77cf843ccb4d41925cb3a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensor_CONTRACTION_BILINEAR</span></span></span><a class="headerlink" href="#_CPPv4N31hiptesnorContractionOperation_t30hipTensor_CONTRACTION_BILINEARE" title="Permalink to this definition"></a><br /></dt>
 <dd><p><span class="math notranslate nohighlight">\({D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\)</span> </p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="hiptensorhandle-t">
-<h2>hiptensorHandle_t<a class="headerlink" href="#hiptensorhandle-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorhandle-t">
+<h2>hipTensorHandle_t<a class="headerlink" href="#hipTensorhandle-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv417hiptensorHandle_t">
-<span id="_CPPv317hiptensorHandle_t"></span><span id="_CPPv217hiptensorHandle_t"></span><span id="hiptensorHandle_t"></span><span class="target" id="structhiptensorHandle__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorHandle_t</span></span></span><a class="headerlink" href="#_CPPv417hiptensorHandle_t" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Opaque structure holding hipTENSOR’s library context. </p>
+<dt class="sig sig-object cpp" id="_CPPv417hipTensorHandle_t">
+<span id="_CPPv317hipTensorHandle_t"></span><span id="_CPPv217hipTensorHandle_t"></span><span id="hipTensorHandle_t"></span><span class="target" id="structhipTensorHandle__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorHandle_t</span></span></span><a class="headerlink" href="#_CPPv417hipTensorHandle_t" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Opaque structure holding hipTensor’s library context. </p>
 </dd></dl>
 
 </section>
-<section id="hiptensortensordescriptor-t">
-<h2>hiptensorTensorDescriptor_t<a class="headerlink" href="#hiptensortensordescriptor-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensortensordescriptor-t">
+<h2>hipTensorTensorDescriptor_t<a class="headerlink" href="#hipTensortensordescriptor-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv427hiptensorTensorDescriptor_t">
-<span id="_CPPv327hiptensorTensorDescriptor_t"></span><span id="_CPPv227hiptensorTensorDescriptor_t"></span><span id="hiptensorTensorDescriptor_t"></span><span class="target" id="structhiptensorTensorDescriptor__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></span><a class="headerlink" href="#_CPPv427hiptensorTensorDescriptor_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv427hipTensorTensorDescriptor_t">
+<span id="_CPPv327hipTensorTensorDescriptor_t"></span><span id="_CPPv227hipTensorTensorDescriptor_t"></span><span id="hipTensorTensorDescriptor_t"></span><span class="target" id="structhipTensorTensorDescriptor__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorTensorDescriptor_t</span></span></span><a class="headerlink" href="#_CPPv427hipTensorTensorDescriptor_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Structure representing a tensor descriptor with the given lengths, and strides. </p>
-<p>Constructs a descriptor for the input tensor with the given lengths, strides when passed in the function hiptensorInitTensorDescriptor </p>
+<p>Constructs a descriptor for the input tensor with the given lengths, strides when passed in the function hipTensorInitTensorDescriptor </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tEv">
-<span id="_CPPv3N27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tEv"></span><span id="_CPPv2N27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a01b7b77213abd502761018352e3c547b"></span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tEv">
+<span id="_CPPv3N27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tEv"></span><span id="_CPPv2N27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorTensorDescriptor_t"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a01b7b77213abd502761018352e3c547b"></span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Default Constructor of the structure hipTensorDescriptor_t </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N27hiptensorTensorDescriptor_t25hiptensorCalculateStridesEv">
-<span id="_CPPv3N27hiptensorTensorDescriptor_t25hiptensorCalculateStridesEv"></span><span id="_CPPv2N27hiptensorTensorDescriptor_t25hiptensorCalculateStridesEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorCalculateStrides"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a624912caa2bdc652b4382eb12a76b478"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorCalculateStrides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N27hiptensorTensorDescriptor_t25hiptensorCalculateStridesEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N27hipTensorTensorDescriptor_t25hipTensorCalculateStridesEv">
+<span id="_CPPv3N27hipTensorTensorDescriptor_t25hipTensorCalculateStridesEv"></span><span id="_CPPv2N27hipTensorTensorDescriptor_t25hipTensorCalculateStridesEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorCalculateStrides"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a624912caa2bdc652b4382eb12a76b478"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorCalculateStrides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N27hipTensorTensorDescriptor_t25hipTensorCalculateStridesEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that returns the size of the tensor based on the input length and strides </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE">
-<span id="_CPPv3I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE"></span><span id="_CPPv2I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structhiptensorTensorDescriptor__t_1a1d5b8edf30aa3b802f1dfaa08d73b465"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE" title="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t::X"><span class="n"><span class="pre">X</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lens</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEE">
+<span id="_CPPv3I0EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEE"></span><span id="_CPPv2I0EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structhipTensorTensorDescriptor__t_1a1d5b8edf30aa3b802f1dfaa08d73b465"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEE" title="hipTensorTensorDescriptor_t::hipTensorTensorDescriptor_t::X"><span class="n"><span class="pre">X</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lens</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that initializes the tensor based on the input lengths </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE">
-<span id="_CPPv3I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE"></span><span id="_CPPv2I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Y</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structhiptensorTensorDescriptor__t_1aa1ba4dbb7e836258c992d54130be8061"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t::X"><span class="n"><span class="pre">X</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lens</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="hiptensorTensorDescriptor_t::hiptensorTensorDescriptor_t::Y"><span class="n"><span class="pre">Y</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN27hiptensorTensorDescriptor_t27hiptensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I00EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE">
+<span id="_CPPv3I00EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE"></span><span id="_CPPv2I00EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Y</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structhipTensorTensorDescriptor__t_1aa1ba4dbb7e836258c992d54130be8061"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorTensorDescriptor_t</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="hipTensorTensorDescriptor_t::hipTensorTensorDescriptor_t::X"><span class="n"><span class="pre">X</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lens</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="hipTensorTensorDescriptor_t::hipTensorTensorDescriptor_t::Y"><span class="n"><span class="pre">Y</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN27hipTensorTensorDescriptor_t27hipTensorTensorDescriptor_tERKNSt6vectorI1XEERKNSt6vectorI1YEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that initializes the tensor based on the input length and strides </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK27hiptensorTensorDescriptor_t26hiptensorGetNumOfDimensionEv">
-<span id="_CPPv3NK27hiptensorTensorDescriptor_t26hiptensorGetNumOfDimensionEv"></span><span id="_CPPv2NK27hiptensorTensorDescriptor_t26hiptensorGetNumOfDimensionEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorGetNumOfDimensionC"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a0d5ac9f3de46cac31e2437aff42d90c9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetNumOfDimension</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hiptensorTensorDescriptor_t26hiptensorGetNumOfDimensionEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK27hipTensorTensorDescriptor_t26hipTensorGetNumOfDimensionEv">
+<span id="_CPPv3NK27hipTensorTensorDescriptor_t26hipTensorGetNumOfDimensionEv"></span><span id="_CPPv2NK27hipTensorTensorDescriptor_t26hipTensorGetNumOfDimensionEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorGetNumOfDimensionC"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a0d5ac9f3de46cac31e2437aff42d90c9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorGetNumOfDimension</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hipTensorTensorDescriptor_t26hipTensorGetNumOfDimensionEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that returns the number of dimensions </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK27hiptensorTensorDescriptor_t23hiptensorGetElementSizeEv">
-<span id="_CPPv3NK27hiptensorTensorDescriptor_t23hiptensorGetElementSizeEv"></span><span id="_CPPv2NK27hiptensorTensorDescriptor_t23hiptensorGetElementSizeEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorGetElementSizeC"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a1f6af1442dd64a11241b4ecf1a102ffe"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetElementSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hiptensorTensorDescriptor_t23hiptensorGetElementSizeEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK27hipTensorTensorDescriptor_t23hipTensorGetElementSizeEv">
+<span id="_CPPv3NK27hipTensorTensorDescriptor_t23hipTensorGetElementSizeEv"></span><span id="_CPPv2NK27hipTensorTensorDescriptor_t23hipTensorGetElementSizeEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorGetElementSizeC"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a1f6af1442dd64a11241b4ecf1a102ffe"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorGetElementSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hipTensorTensorDescriptor_t23hipTensorGetElementSizeEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that returns the total elements size </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK27hiptensorTensorDescriptor_t24hiptensorGetElementSpaceEv">
-<span id="_CPPv3NK27hiptensorTensorDescriptor_t24hiptensorGetElementSpaceEv"></span><span id="_CPPv2NK27hiptensorTensorDescriptor_t24hiptensorGetElementSpaceEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorGetElementSpaceC"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a6ecbb8dce2630692af366d0493cccfb8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetElementSpace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hiptensorTensorDescriptor_t24hiptensorGetElementSpaceEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK27hipTensorTensorDescriptor_t24hipTensorGetElementSpaceEv">
+<span id="_CPPv3NK27hipTensorTensorDescriptor_t24hipTensorGetElementSpaceEv"></span><span id="_CPPv2NK27hipTensorTensorDescriptor_t24hipTensorGetElementSpaceEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorGetElementSpaceC"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a6ecbb8dce2630692af366d0493cccfb8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorGetElementSpace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hipTensorTensorDescriptor_t24hipTensorGetElementSpaceEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that returns the size of the tensor based on the input length and strides </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK27hiptensorTensorDescriptor_t19hiptensorGetLengthsEv">
-<span id="_CPPv3NK27hiptensorTensorDescriptor_t19hiptensorGetLengthsEv"></span><span id="_CPPv2NK27hiptensorTensorDescriptor_t19hiptensorGetLengthsEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorGetLengthsC"></span><span class="target" id="structhiptensorTensorDescriptor__t_1ab63235d3edab8e3a4211185949911594"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetLengths</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hiptensorTensorDescriptor_t19hiptensorGetLengthsEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK27hipTensorTensorDescriptor_t19hipTensorGetLengthsEv">
+<span id="_CPPv3NK27hipTensorTensorDescriptor_t19hipTensorGetLengthsEv"></span><span id="_CPPv2NK27hipTensorTensorDescriptor_t19hipTensorGetLengthsEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorGetLengthsC"></span><span class="target" id="structhipTensorTensorDescriptor__t_1ab63235d3edab8e3a4211185949911594"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorGetLengths</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hipTensorTensorDescriptor_t19hipTensorGetLengthsEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that returns the lengths of the tensor </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK27hiptensorTensorDescriptor_t19hiptensorGetStridesEv">
-<span id="_CPPv3NK27hiptensorTensorDescriptor_t19hiptensorGetStridesEv"></span><span id="_CPPv2NK27hiptensorTensorDescriptor_t19hiptensorGetStridesEv"></span><span id="hiptensorTensorDescriptor_t::hiptensorGetStridesC"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a06675323a32a59bf17a9e775b2b19f4e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorGetStrides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hiptensorTensorDescriptor_t19hiptensorGetStridesEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK27hipTensorTensorDescriptor_t19hipTensorGetStridesEv">
+<span id="_CPPv3NK27hipTensorTensorDescriptor_t19hipTensorGetStridesEv"></span><span id="_CPPv2NK27hipTensorTensorDescriptor_t19hipTensorGetStridesEv"></span><span id="hipTensorTensorDescriptor_t::hipTensorGetStridesC"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a06675323a32a59bf17a9e775b2b19f4e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorGetStrides</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK27hipTensorTensorDescriptor_t19hipTensorGetStridesEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that returns the strides of the tensor </p>
 </dd></dl>
 
@@ -572,8 +572,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N27hiptensorTensorDescriptor_t7ht_typeE">
-<span id="_CPPv3N27hiptensorTensorDescriptor_t7ht_typeE"></span><span id="_CPPv2N27hiptensorTensorDescriptor_t7ht_typeE"></span><span id="hiptensorTensorDescriptor_t::ht_type__hiptensorDataType_t"></span><span class="target" id="structhiptensorTensorDescriptor__t_1a7a39f76942f6d0f87af186daf194b2f2"></span><a class="reference internal" href="#_CPPv419hiptensorDataType_t" title="hiptensorDataType_t"><span class="n"><span class="pre">hiptensorDataType_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_type</span></span></span><a class="headerlink" href="#_CPPv4N27hiptensorTensorDescriptor_t7ht_typeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N27hipTensorTensorDescriptor_t7ht_typeE">
+<span id="_CPPv3N27hipTensorTensorDescriptor_t7ht_typeE"></span><span id="_CPPv2N27hipTensorTensorDescriptor_t7ht_typeE"></span><span id="hipTensorTensorDescriptor_t::ht_type__hipTensorDataType_t"></span><span class="target" id="structhipTensorTensorDescriptor__t_1a7a39f76942f6d0f87af186daf194b2f2"></span><a class="reference internal" href="#_CPPv419hipTensorDataType_t" title="hipTensorDataType_t"><span class="n"><span class="pre">hipTensorDataType_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_type</span></span></span><a class="headerlink" href="#_CPPv4N27hipTensorTensorDescriptor_t7ht_typeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Data type of the tensors enum selection </p>
 </dd></dl>
 
@@ -581,8 +581,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N27hiptensorTensorDescriptor_tlsERNSt7ostreamERK27hiptensorTensorDescriptor_t">
-<span id="_CPPv3N27hiptensorTensorDescriptor_tlsERNSt7ostreamERK27hiptensorTensorDescriptor_t"></span><span id="_CPPv2N27hiptensorTensorDescriptor_tlsERNSt7ostreamERK27hiptensorTensorDescriptor_t"></span><span id="hiptensorTensorDescriptor_t::lshift-operator__osR.hiptensorTensorDescriptor_tCR"></span><span class="target" id="structhiptensorTensorDescriptor__t_1ab375b7161cca1fc269fe88a2380bfe9c"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;&lt;</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">os</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv427hiptensorTensorDescriptor_t" title="hiptensorTensorDescriptor_t"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">desc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N27hiptensorTensorDescriptor_tlsERNSt7ostreamERK27hiptensorTensorDescriptor_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N27hipTensorTensorDescriptor_tlsERNSt7ostreamERK27hipTensorTensorDescriptor_t">
+<span id="_CPPv3N27hipTensorTensorDescriptor_tlsERNSt7ostreamERK27hipTensorTensorDescriptor_t"></span><span id="_CPPv2N27hipTensorTensorDescriptor_tlsERNSt7ostreamERK27hipTensorTensorDescriptor_t"></span><span id="hipTensorTensorDescriptor_t::lshift-operator__osR.hipTensorTensorDescriptor_tCR"></span><span class="target" id="structhipTensorTensorDescriptor__t_1ab375b7161cca1fc269fe88a2380bfe9c"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;&lt;</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">os</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv427hipTensorTensorDescriptor_t" title="hipTensorTensorDescriptor_t"><span class="n"><span class="pre">hipTensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">desc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N27hipTensorTensorDescriptor_tlsERNSt7ostreamERK27hipTensorTensorDescriptor_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that prints the length, strides tensor </p>
 </dd></dl>
 
@@ -620,18 +620,18 @@
 </dd></dl>
 
 </section>
-<section id="hiptensorcontractiondescriptor-t">
-<h2>hiptensorContractionDescriptor_t<a class="headerlink" href="#hiptensorcontractiondescriptor-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorcontractiondescriptor-t">
+<h2>hipTensorContractionDescriptor_t<a class="headerlink" href="#hipTensorcontractiondescriptor-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv432hiptensorContractionDescriptor_t">
-<span id="_CPPv332hiptensorContractionDescriptor_t"></span><span id="_CPPv232hiptensorContractionDescriptor_t"></span><span id="hiptensorContractionDescriptor_t"></span><span class="target" id="structhiptensorContractionDescriptor__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorContractionDescriptor_t</span></span></span><a class="headerlink" href="#_CPPv432hiptensorContractionDescriptor_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv432hipTensorContractionDescriptor_t">
+<span id="_CPPv332hipTensorContractionDescriptor_t"></span><span id="_CPPv232hipTensorContractionDescriptor_t"></span><span id="hipTensorContractionDescriptor_t"></span><span class="target" id="structhipTensorContractionDescriptor__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorContractionDescriptor_t</span></span></span><a class="headerlink" href="#_CPPv432hipTensorContractionDescriptor_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Structure representing a tensor contraction descriptor. </p>
-<p>Constructs a contraction descriptor with all the input tensor descriptors and updates the dimensions on to this structure when passed into the function hiptensorInitContractionDescriptor </p>
+<p>Constructs a contraction descriptor with all the input tensor descriptors and updates the dimensions on to this structure when passed into the function hipTensorInitContractionDescriptor </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N32hiptensorContractionDescriptor_t30hiptensorContractionAttrUpdateEA_PK27hiptensorTensorDescriptor_tA_K8uint32_tKi">
-<span id="_CPPv3N32hiptensorContractionDescriptor_t30hiptensorContractionAttrUpdateEA_PK27hiptensorTensorDescriptor_tA_K8uint32_tKi"></span><span id="_CPPv2N32hiptensorContractionDescriptor_t30hiptensorContractionAttrUpdateEA_PK27hiptensorTensorDescriptor_tA_K8uint32_tKi"></span><span id="hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate__hiptensorTensorDescriptor_tCPA.uint32_tCA.iC"></span><span class="target" id="structhiptensorContractionDescriptor__t_1a05e3a327a72dc9a9c15ccc874e40366f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorContractionAttrUpdate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv427hiptensorTensorDescriptor_t" title="hiptensorTensorDescriptor_t"><span class="n"><span class="pre">hiptensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desc</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tensor_size</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tensor_desc_num</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N32hiptensorContractionDescriptor_t30hiptensorContractionAttrUpdateEA_PK27hiptensorTensorDescriptor_tA_K8uint32_tKi" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N32hipTensorContractionDescriptor_t30hipTensorContractionAttrUpdateEA_PK27hipTensorTensorDescriptor_tA_K8uint32_tKi">
+<span id="_CPPv3N32hipTensorContractionDescriptor_t30hipTensorContractionAttrUpdateEA_PK27hipTensorTensorDescriptor_tA_K8uint32_tKi"></span><span id="_CPPv2N32hipTensorContractionDescriptor_t30hipTensorContractionAttrUpdateEA_PK27hipTensorTensorDescriptor_tA_K8uint32_tKi"></span><span id="hipTensorContractionDescriptor_t::hipTensorContractionAttrUpdate__hipTensorTensorDescriptor_tCPA.uint32_tCA.iC"></span><span class="target" id="structhipTensorContractionDescriptor__t_1a05e3a327a72dc9a9c15ccc874e40366f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorContractionAttrUpdate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv427hipTensorTensorDescriptor_t" title="hipTensorTensorDescriptor_t"><span class="n"><span class="pre">hipTensorTensorDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desc</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tensor_size</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tensor_desc_num</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N32hipTensorContractionDescriptor_t30hipTensorContractionAttrUpdateEA_PK27hipTensorTensorDescriptor_tA_K8uint32_tKi" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that updates the param ht_contract_attr_desc vector </p>
 </dd></dl>
 
@@ -639,14 +639,14 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N32hiptensorContractionDescriptor_t14ht_contract_opE">
-<span id="_CPPv3N32hiptensorContractionDescriptor_t14ht_contract_opE"></span><span id="_CPPv2N32hiptensorContractionDescriptor_t14ht_contract_opE"></span><span id="hiptensorContractionDescriptor_t::ht_contract_op__hiptesnorContractionOperation_t"></span><span class="target" id="structhiptensorContractionDescriptor__t_1aa519e28503665dd716d16f016a089735"></span><a class="reference internal" href="#_CPPv431hiptesnorContractionOperation_t" title="hiptesnorContractionOperation_t"><span class="n"><span class="pre">hiptesnorContractionOperation_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_contract_op</span></span></span><a class="headerlink" href="#_CPPv4N32hiptensorContractionDescriptor_t14ht_contract_opE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N32hipTensorContractionDescriptor_t14ht_contract_opE">
+<span id="_CPPv3N32hipTensorContractionDescriptor_t14ht_contract_opE"></span><span id="_CPPv2N32hipTensorContractionDescriptor_t14ht_contract_opE"></span><span id="hipTensorContractionDescriptor_t::ht_contract_op__hiptesnorContractionOperation_t"></span><span class="target" id="structhipTensorContractionDescriptor__t_1aa519e28503665dd716d16f016a089735"></span><a class="reference internal" href="#_CPPv431hiptesnorContractionOperation_t" title="hiptesnorContractionOperation_t"><span class="n"><span class="pre">hiptesnorContractionOperation_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_contract_op</span></span></span><a class="headerlink" href="#_CPPv4N32hipTensorContractionDescriptor_t14ht_contract_opE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Enum that has the contraction operation(scale/bilinear) </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N32hiptensorContractionDescriptor_t21ht_contract_attr_descE">
-<span id="_CPPv3N32hiptensorContractionDescriptor_t21ht_contract_attr_descE"></span><span id="_CPPv2N32hiptensorContractionDescriptor_t21ht_contract_attr_descE"></span><span id="hiptensorContractionDescriptor_t::ht_contract_attr_desc__std::vector:tensor_attr:"></span><span class="target" id="structhiptensorContractionDescriptor__t_1a8e464c7c3d91c20d172ce8e73a997560"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv411tensor_attr" title="tensor_attr"><span class="n"><span class="pre">tensor_attr</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_contract_attr_desc</span></span></span><a class="headerlink" href="#_CPPv4N32hiptensorContractionDescriptor_t21ht_contract_attr_descE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N32hipTensorContractionDescriptor_t21ht_contract_attr_descE">
+<span id="_CPPv3N32hipTensorContractionDescriptor_t21ht_contract_attr_descE"></span><span id="_CPPv2N32hipTensorContractionDescriptor_t21ht_contract_attr_descE"></span><span id="hipTensorContractionDescriptor_t::ht_contract_attr_desc__std::vector:tensor_attr:"></span><span class="target" id="structhipTensorContractionDescriptor__t_1a8e464c7c3d91c20d172ce8e73a997560"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv411tensor_attr" title="tensor_attr"><span class="n"><span class="pre">tensor_attr</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_contract_attr_desc</span></span></span><a class="headerlink" href="#_CPPv4N32hipTensorContractionDescriptor_t21ht_contract_attr_descE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Vector that represents the length,strides,and size of the input tensors </p>
 </dd></dl>
 
@@ -654,52 +654,52 @@
 </dd></dl>
 
 </section>
-<section id="hiptensorcontractionfind-t">
-<h2>hiptensorContractionFind_t<a class="headerlink" href="#hiptensorcontractionfind-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorcontractionfind-t">
+<h2>hipTensorContractionFind_t<a class="headerlink" href="#hipTensorcontractionfind-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv426hiptensorContractionFind_t">
-<span id="_CPPv326hiptensorContractionFind_t"></span><span id="_CPPv226hiptensorContractionFind_t"></span><span id="hiptensorContractionFind_t"></span><span class="target" id="structhiptensorContractionFind__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorContractionFind_t</span></span></span><a class="headerlink" href="#_CPPv426hiptensorContractionFind_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv426hipTensorContractionFind_t">
+<span id="_CPPv326hipTensorContractionFind_t"></span><span id="_CPPv226hipTensorContractionFind_t"></span><span id="hipTensorContractionFind_t"></span><span class="target" id="structhipTensorContractionFind__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorContractionFind_t</span></span></span><a class="headerlink" href="#_CPPv426hipTensorContractionFind_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Opaque structure representing a candidate. </p>
 <p><dl>
 <dt class="sig sig-object cpp">
 <em><span class="pre">Todo:</span></em></dt>
-<dd><p>Needs to adapt the structure as per the GPU devices in the hipTENSOR future releases.</p>
+<dd><p>Needs to adapt the structure as per the GPU devices in the hipTensor future releases.</p>
 </dd></dl>
 
 </p>
 </dd></dl>
 
 </section>
-<section id="hiptensorcontractionmetrics-t">
-<h2>hiptensorContractionMetrics_t<a class="headerlink" href="#hiptensorcontractionmetrics-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorcontractionmetrics-t">
+<h2>hipTensorContractionMetrics_t<a class="headerlink" href="#hipTensorcontractionmetrics-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv429hiptensorContractionMetrics_t">
-<span id="_CPPv329hiptensorContractionMetrics_t"></span><span id="_CPPv229hiptensorContractionMetrics_t"></span><span id="hiptensorContractionMetrics_t"></span><span class="target" id="structhiptensorContractionMetrics__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorContractionMetrics_t</span></span></span><a class="headerlink" href="#_CPPv429hiptensorContractionMetrics_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv429hipTensorContractionMetrics_t">
+<span id="_CPPv329hipTensorContractionMetrics_t"></span><span id="_CPPv229hipTensorContractionMetrics_t"></span><span id="hipTensorContractionMetrics_t"></span><span class="target" id="structhipTensorContractionMetrics__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorContractionMetrics_t</span></span></span><a class="headerlink" href="#_CPPv429hipTensorContractionMetrics_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>structure representing a plan </p>
 <p>Captures all the perf results: execution time, FLOPS, Transfer speed, and the CK’s contraction instance name </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorContractionMetrics_t8avg_timeE">
-<span id="_CPPv3N29hiptensorContractionMetrics_t8avg_timeE"></span><span id="_CPPv2N29hiptensorContractionMetrics_t8avg_timeE"></span><span id="hiptensorContractionMetrics_t::avg_time__float"></span><span class="target" id="structhiptensorContractionMetrics__t_1a414fc458d09922c011f2e00fa5ffee62"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">avg_time</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorContractionMetrics_t8avg_timeE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorContractionMetrics_t8avg_timeE">
+<span id="_CPPv3N29hipTensorContractionMetrics_t8avg_timeE"></span><span id="_CPPv2N29hipTensorContractionMetrics_t8avg_timeE"></span><span id="hipTensorContractionMetrics_t::avg_time__float"></span><span class="target" id="structhipTensorContractionMetrics__t_1a414fc458d09922c011f2e00fa5ffee62"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">avg_time</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorContractionMetrics_t8avg_timeE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Time to exectued the selected CK’s contraction instance </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorContractionMetrics_t6tflopsE">
-<span id="_CPPv3N29hiptensorContractionMetrics_t6tflopsE"></span><span id="_CPPv2N29hiptensorContractionMetrics_t6tflopsE"></span><span id="hiptensorContractionMetrics_t::tflops__float"></span><span class="target" id="structhiptensorContractionMetrics__t_1a91e02edbddb6c0408ab396c68e50f007"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tflops</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorContractionMetrics_t6tflopsE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorContractionMetrics_t6tflopsE">
+<span id="_CPPv3N29hipTensorContractionMetrics_t6tflopsE"></span><span id="_CPPv2N29hipTensorContractionMetrics_t6tflopsE"></span><span id="hipTensorContractionMetrics_t::tflops__float"></span><span class="target" id="structhipTensorContractionMetrics__t_1a91e02edbddb6c0408ab396c68e50f007"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tflops</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorContractionMetrics_t6tflopsE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>FLOPS returned by the selected CK’s contraction instance </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorContractionMetrics_t14transfer_speedE">
-<span id="_CPPv3N29hiptensorContractionMetrics_t14transfer_speedE"></span><span id="_CPPv2N29hiptensorContractionMetrics_t14transfer_speedE"></span><span id="hiptensorContractionMetrics_t::transfer_speed__float"></span><span class="target" id="structhiptensorContractionMetrics__t_1a1bcb13bd2d8f60f814339ff0e041fd1d"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transfer_speed</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorContractionMetrics_t14transfer_speedE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorContractionMetrics_t14transfer_speedE">
+<span id="_CPPv3N29hipTensorContractionMetrics_t14transfer_speedE"></span><span id="_CPPv2N29hipTensorContractionMetrics_t14transfer_speedE"></span><span id="hipTensorContractionMetrics_t::transfer_speed__float"></span><span class="target" id="structhipTensorContractionMetrics__t_1a1bcb13bd2d8f60f814339ff0e041fd1d"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transfer_speed</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorContractionMetrics_t14transfer_speedE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Transfer speed returned by the CK’s contraction instance </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N29hiptensorContractionMetrics_t11ht_instanceE">
-<span id="_CPPv3N29hiptensorContractionMetrics_t11ht_instanceE"></span><span id="_CPPv2N29hiptensorContractionMetrics_t11ht_instanceE"></span><span id="hiptensorContractionMetrics_t::ht_instance__ss"></span><span class="target" id="structhiptensorContractionMetrics__t_1a597a306c091db7291b9ef3ca649c0bb5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_instance</span></span></span><a class="headerlink" href="#_CPPv4N29hiptensorContractionMetrics_t11ht_instanceE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N29hipTensorContractionMetrics_t11ht_instanceE">
+<span id="_CPPv3N29hipTensorContractionMetrics_t11ht_instanceE"></span><span id="_CPPv2N29hipTensorContractionMetrics_t11ht_instanceE"></span><span id="hipTensorContractionMetrics_t::ht_instance__ss"></span><span class="target" id="structhipTensorContractionMetrics__t_1a597a306c091db7291b9ef3ca649c0bb5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_instance</span></span></span><a class="headerlink" href="#_CPPv4N29hipTensorContractionMetrics_t11ht_instanceE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>CK’s contraction instance name </p>
 </dd></dl>
 
@@ -707,18 +707,18 @@
 </dd></dl>
 
 </section>
-<section id="hiptensorcontractionplan-t">
-<h2>hiptensorContractionPlan_t<a class="headerlink" href="#hiptensorcontractionplan-t" title="Permalink to this heading"></a></h2>
+<section id="hipTensorcontractionplan-t">
+<h2>hipTensorContractionPlan_t<a class="headerlink" href="#hipTensorcontractionplan-t" title="Permalink to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv426hiptensorContractionPlan_t">
-<span id="_CPPv326hiptensorContractionPlan_t"></span><span id="_CPPv226hiptensorContractionPlan_t"></span><span id="hiptensorContractionPlan_t"></span><span class="target" id="structhiptensorContractionPlan__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorContractionPlan_t</span></span></span><a class="headerlink" href="#_CPPv426hiptensorContractionPlan_t" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv426hipTensorContractionPlan_t">
+<span id="_CPPv326hipTensorContractionPlan_t"></span><span id="_CPPv226hipTensorContractionPlan_t"></span><span id="hipTensorContractionPlan_t"></span><span class="target" id="structhipTensorContractionPlan__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorContractionPlan_t</span></span></span><a class="headerlink" href="#_CPPv426hipTensorContractionPlan_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>structure representing a plan </p>
-<p>Constructs a contraction plan with the contractions descriptor passed into the function hiptensorInitContractionPlan </p>
+<p>Constructs a contraction plan with the contractions descriptor passed into the function hipTensorInitContractionPlan </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N26hiptensorContractionPlan_t32hiptensorPrintContractionMetricsEv">
-<span id="_CPPv3N26hiptensorContractionPlan_t32hiptensorPrintContractionMetricsEv"></span><span id="_CPPv2N26hiptensorContractionPlan_t32hiptensorPrintContractionMetricsEv"></span><span id="hiptensorContractionPlan_t::hiptensorPrintContractionMetrics"></span><span class="target" id="structhiptensorContractionPlan__t_1a45f7d4fa4a6857dace2967c8b0346f65"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorPrintContractionMetrics</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N26hiptensorContractionPlan_t32hiptensorPrintContractionMetricsEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N26hipTensorContractionPlan_t32hipTensorPrintContractionMetricsEv">
+<span id="_CPPv3N26hipTensorContractionPlan_t32hipTensorPrintContractionMetricsEv"></span><span id="_CPPv2N26hipTensorContractionPlan_t32hipTensorPrintContractionMetricsEv"></span><span id="hipTensorContractionPlan_t::hipTensorPrintContractionMetrics"></span><span class="target" id="structhipTensorContractionPlan__t_1a45f7d4fa4a6857dace2967c8b0346f65"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hipTensorPrintContractionMetrics</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N26hipTensorContractionPlan_t32hipTensorPrintContractionMetricsEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Function that prints all the perf results of the CK’s contraction instance </p>
 </dd></dl>
 
@@ -726,8 +726,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N26hiptensorContractionPlan_t12ht_plan_descE">
-<span id="_CPPv3N26hiptensorContractionPlan_t12ht_plan_descE"></span><span id="_CPPv2N26hiptensorContractionPlan_t12ht_plan_descE"></span><span id="hiptensorContractionPlan_t::ht_plan_desc__hiptensorContractionDescriptor_t"></span><span class="target" id="structhiptensorContractionPlan__t_1a8c68888b41dd759aca5c0f0ffeba1b94"></span><a class="reference internal" href="#_CPPv432hiptensorContractionDescriptor_t" title="hiptensorContractionDescriptor_t"><span class="n"><span class="pre">hiptensorContractionDescriptor_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_plan_desc</span></span></span><a class="headerlink" href="#_CPPv4N26hiptensorContractionPlan_t12ht_plan_descE" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N26hipTensorContractionPlan_t12ht_plan_descE">
+<span id="_CPPv3N26hipTensorContractionPlan_t12ht_plan_descE"></span><span id="_CPPv2N26hipTensorContractionPlan_t12ht_plan_descE"></span><span id="hipTensorContractionPlan_t::ht_plan_desc__hipTensorContractionDescriptor_t"></span><span class="target" id="structhipTensorContractionPlan__t_1a8c68888b41dd759aca5c0f0ffeba1b94"></span><a class="reference internal" href="#_CPPv432hipTensorContractionDescriptor_t" title="hipTensorContractionDescriptor_t"><span class="n"><span class="pre">hipTensorContractionDescriptor_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ht_plan_desc</span></span></span><a class="headerlink" href="#_CPPv4N26hipTensorContractionPlan_t12ht_plan_descE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Represent the contraction descriptor </p>
 </dd></dl>
 
@@ -742,7 +742,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="apireference.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="functions.html" class="btn btn-neutral float-right" title="hipTENSOR Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="functions.html" class="btn btn-neutral float-right" title="hipTensor Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

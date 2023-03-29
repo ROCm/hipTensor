@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <numeric>
 #include <algorithm>
@@ -18,20 +17,19 @@ int main(int argc, char* argv[])
     typedef float floatTypeCompute;
 
 
-    hiptensorDataType_t typeA = HIPTENSOR_R_32F;
-    hiptensorDataType_t typeB = HIPTENSOR_R_32F;
-    hiptensorDataType_t typeC = HIPTENSOR_R_32F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+    hipTensorDataType_t typeA = hipTensor_R_32F;
+    hipTensorDataType_t typeB = hipTensor_R_32F;
+    hipTensorDataType_t typeC = hipTensor_R_32F;
+    hipTensorComputeType_t typeCompute = hipTensor_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.1f;
-    floatTypeCompute beta  = (floatTypeCompute)1.0f;
+    floatTypeCompute alpha = (floatTypeCompute)1.0f;
+    floatTypeCompute beta  = (floatTypeCompute)0.0f;
 
 #ifdef HT_PRINT_DEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
 #endif
-
     /**********************
-     * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta * C_{m,n,u,v}
+     * Computing: C_{m,n,u,v} = A_{m,n,h,k} B_{h,k,u,v}
      **********************/
 
     std::vector<int> modeC{'m','n','u','v'};
@@ -62,53 +60,55 @@ int main(int argc, char* argv[])
     for (auto mode : modeB)
         b_ks_ns_lengths.push_back(extent[mode]);
 
-    hiptensorHandle_t handle;
-    hiptensorInit(&handle);
+    hipTensorHandle_t handle;
+    hipTensorInit(&handle);
     
     /********************************************
      * Intialise Tensors with the input lengths *
      ********************************************/
-    hiptensorTensorDescriptor_t a_ms_ks;
-    hiptensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA, 
+    hipTensorTensorDescriptor_t a_ms_ks;
+    hipTensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA, 
 				a_ms_ks_lengths.data(), NULL,/*stride*/
-				typeA, HIPTENSOR_OP_IDENTITY);
-#ifdef HT_PRINT_DEBUG
+				typeA, hipTensor_OP_IDENTITY);
+
+#if HT_PRINT_DEBUG
     std::cout << "a_ms_ks: ";
-    a_ms_ks.hiptensorPrintTensorAttributes();
+    a_ms_ks.hipTensorPrintTensorAttributes();
     std::cout << std::endl;
 #endif
 
-    hiptensorTensorDescriptor_t b_ks_ns;
-    hiptensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
-                b_ks_ns_lengths.data(), NULL,/*stride*/
-				typeB, HIPTENSOR_OP_IDENTITY);
-    
-#ifdef HT_PRINT_DEBUG    
+    hipTensorTensorDescriptor_t b_ks_ns;
+    hipTensorInitTensorDescriptor(&handle, &b_ks_ns, nmodeB,
+               b_ks_ns_lengths.data(), NULL,/*stride*/
+				typeB, hipTensor_OP_IDENTITY);
+
+#ifdef HT_PRINT_DEBUG
     std::cout << "b_ks_ns: ";
-    b_ks_ns.hiptensorPrintTensorAttributes();
+    b_ks_ns.hipTensorPrintTensorAttributes();
     std::cout << std::endl;
 #endif
 
-    hiptensorTensorDescriptor_t c_ms_ns;
-    hiptensorInitTensorDescriptor(&handle, 
+    hipTensorTensorDescriptor_t c_ms_ns;
+    hipTensorInitTensorDescriptor(&handle, 
 				&c_ms_ns, nmodeC,
 				c_ms_ns_lengths.data(), NULL,/*stride*/
-                typeC, HIPTENSOR_OP_IDENTITY);
+                typeC, hipTensor_OP_IDENTITY);
 
 #ifdef HT_PRINT_DEBUG
     std::cout << "c_ms_ns: ";
-    c_ms_ns.hiptensorPrintTensorAttributes(); 
+    c_ms_ns.hipTensorPrintTensorAttributes(); 
     std::cout << std::endl;
-#endif
+#endif    
 
     /**********************
      * Allocating data
      **********************/
 
-    size_t elementsA = a_ms_ks.hiptensorGetElementSpace();
-    size_t elementsB = b_ks_ns.hiptensorGetElementSpace();
-    size_t elementsC = c_ms_ns.hiptensorGetElementSpace();
+    size_t elementsA = a_ms_ks.hipTensorGetElementSpace();
+    size_t elementsB = b_ks_ns.hipTensorGetElementSpace();
+    size_t elementsC = c_ms_ns.hipTensorGetElementSpace();
 
+    
     size_t sizeA = sizeof(ADataType) * elementsA;
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeC = sizeof(CDataType) * elementsC;
@@ -130,40 +130,36 @@ int main(int argc, char* argv[])
         A[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;
     for (int64_t i = 0; i < elementsB; i++)
         B[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
-    for (int64_t i = 0; i < elementsC; i++)
-        C[i] = ((float(std::rand()))/float(RAND_MAX) - 0.5)*100;	
 
     /********************************************
      * Transfer the Host Tensor to Device Memory *
      ********************************************/
     hip_check_error(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
     hip_check_error(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    hip_check_error(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
+    hip_check_error(hipMemset(C_d, 0, sizeC));
     
     /************************************************
      * Retrieve the memory alignment for each tensor
      ************************************************/ 
-
     uint32_t alignmentRequirementA;
-    hiptensorGetAlignmentRequirement(&handle,
+    hipTensorGetAlignmentRequirement(&handle,
                           A_d, &a_ms_ks,
                           &alignmentRequirementA);
 #ifdef HT_PRINT_DEBUG    
     std::cout << "Tensor A element space: " << alignmentRequirementA << std::endl;
 #endif
-
     uint32_t alignmentRequirementB;
-    hiptensorGetAlignmentRequirement(&handle,
+    hipTensorGetAlignmentRequirement(&handle,
                           B_d, &b_ks_ns,
                           &alignmentRequirementB);
-#ifdef HT_PRINT_DEBUG    
+#ifdef HT_PRINT_DEBUG
     std::cout << "Tensor B element space: " << alignmentRequirementB << std::endl;
 #endif
     uint32_t alignmentRequirementC;
-    hiptensorGetAlignmentRequirement(&handle,
+    hipTensorGetAlignmentRequirement(&handle,
                           C_d, &c_ms_ns,
                           &alignmentRequirementC);
-#ifdef HT_PRINT_DEBUG    
+#ifdef HT_PRINT_DEBUG
     std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;
 #endif
     
@@ -171,8 +167,8 @@ int main(int argc, char* argv[])
      * Create Contraction Descriptor
      *******************************/
 
-    hiptensorContractionDescriptor_t desc;
-    hiptensorInitContractionDescriptor(&handle,
+    hipTensorContractionDescriptor_t desc;
+    hipTensorInitContractionDescriptor(&handle,
                                     &desc,
                                     &a_ms_ks, modeA.data(), alignmentRequirementA,
                                     &b_ks_ns, modeB.data(), alignmentRequirementB,
@@ -183,72 +179,72 @@ int main(int argc, char* argv[])
     * Set the algorithm to use
     ***************************/
 
-    hiptensorContractionFind_t find;
-    hiptensorInitContractionFind(&handle, 
+    hipTensorContractionFind_t find;
+    hipTensorInitContractionFind(&handle, 
                                 &find,
-                                HIPTENSOR_ALGO_DEFAULT);
+                                hipTensor_ALGO_DEFAULT);
 
    /**********************
     * Query workspace
     **********************/
 
     uint64_t worksize = 0;
-    hiptensorContractionGetWorkspace(&handle,
+    hipTensorContractionGetWorkspace(&handle,
                                     &desc,
                                     &find,
-                                    HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize);
+                                    hipTensor_WORKSPACE_RECOMMENDED, &worksize);
     void *work = nullptr;
 	
    /**************************
     * Create Contraction Plan
     **************************/
 
-    hiptensorContractionPlan_t plan;
-    hiptensorInitContractionPlan(&handle,
+    hipTensorContractionPlan_t plan;
+    hipTensorInitContractionPlan(&handle,
                                 &plan,
                                 &desc,
                                 &find,
                                 worksize);
 
-    hiptensorContraction(&handle,
+    hipTensorContraction(&handle,
                        &plan,
                        (void*) &alpha, A_d, B_d,
                        (void*) &beta,  C_d, C_d,
                        work, worksize, 0 /* stream */);
     
-	plan.hiptensorPrintContractionMetrics();
+	plan.hipTensorPrintContractionMetrics();
     hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
-
-#ifdef HT_PRINT_DEBUG
+    
+#if HT_PRINT_DEBUG
     std::ofstream tensorA, tensorB, tensorC;
     if (elementsA < MAX_ELEMENTS_PRINT_COUNT)
     {
-	    std::cout<<"Tensor A elements:\n";
-        hiptensorPrintArrayElements(A, elementsA);
+        std::cout<<"Tensor A elements:\n";
+        hipTensorPrintArrayElements(A, elementsA);    
         std::cout<<std::endl;
     }
     tensorA.open("tensor_A.txt");
-    hiptensorPrintElementsToFile(tensorA, A, elementsA, ','); 
+    hipTensorPrintElementsToFile(tensorA, A, elementsA, ','); 
     std::cout<<std::endl;
     tensorA.close();
     if (elementsB < MAX_ELEMENTS_PRINT_COUNT)
     {
         std::cout<<"Tensor B elements:\n";
-        hiptensorPrintArrayElements(B, elementsB);
+        hipTensorPrintArrayElements(B, elementsB);    
         std::cout<<std::endl;
     }
     tensorB.open("tensor_B.txt");
-    hiptensorPrintElementsToFile(tensorB, B, elementsB, ','); 
+    hipTensorPrintElementsToFile(tensorB, B, elementsB, ','); 
     std::cout<<std::endl;
     tensorB.close();
     if (elementsC < MAX_ELEMENTS_PRINT_COUNT)
     {
-	    std::cout<<"Tensor C elements:\n";
-	    hiptensorPrintArrayElements(C, elementsC);
-	    std::cout<<std::endl;
+        std::cout<<"Tensor C elements:\n";
+        hipTensorPrintArrayElements(C, elementsC);    
+        std::cout<<std::endl;
     }
-    tensorC.open("tensor_C_bilinear_contraction_results.txt");
-    hiptensorPrintElementsToFile(tensorC, C, elementsC, ','); 
+    tensorC.open("tensor_C_scale_contraction_results.txt");
+    hipTensorPrintElementsToFile(tensorC, C, elementsC, ','); 
     std::cout<<std::endl;
     tensorC.close();
 #endif

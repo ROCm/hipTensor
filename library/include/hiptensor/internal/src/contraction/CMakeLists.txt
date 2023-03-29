@@ -1,6 +1,6 @@
 include_directories(BEFORE
-    ${PROJECT_SOURCE_DIR}/include/hiptensor/ck
-    ${PROJECT_SOURCE_DIR}/include/hiptensor
+    ${PROJECT_SOURCE_DIR}/include/hipTensor/ck
+    ${PROJECT_SOURCE_DIR}/include/hipTensor
     ${PROJECT_SOURCE_DIR}/include/utility
 )
 

@@ -4,27 +4,27 @@ Contraction Operations
 ======================
 
 
-hiptensorInitContractionDescriptor
+hipTensorInitContractionDescriptor
 ----------------------------------
 
-.. doxygenfunction::  hiptensorInitContractionDescriptor
+.. doxygenfunction::  hipTensorInitContractionDescriptor
 
 
-hiptensorInitContractionFind
+hipTensorInitContractionFind
 ----------------------------
 
-.. doxygenfunction::  hiptensorInitContractionFind
+.. doxygenfunction::  hipTensorInitContractionFind
 
 
-hiptensorInitContractionPlan
+hipTensorInitContractionPlan
 ----------------------------
 
-.. doxygenfunction::  hiptensorInitContractionPlan
+.. doxygenfunction::  hipTensorInitContractionPlan
 
 
-hiptensorContraction
+hipTensorContraction
 --------------------
 
-.. doxygenfunction::  hiptensorContraction
+.. doxygenfunction::  hipTensorContraction
 
 

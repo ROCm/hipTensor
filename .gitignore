@@ -5,8 +5,8 @@
 *.obj
 
 # Generated version file
-hiptensor_version.hpp
-hiptensor-version.hpp
+hipTensor_version.hpp
+hipTensor-version.hpp
 
 # Precompiled Headers
 *.gch

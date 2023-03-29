@@ -1,9 +1,9 @@
-.. hipTENSOR documentation master file, created by
+.. hipTensor documentation master file, created by
    sphinx-quickstart on Tue Jul 19 06:46:47 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-hipTENSOR: A High-Performance HIP Library For Tensor Primitives
+hipTensor: A High-Performance HIP Library For Tensor Primitives
 ===============================================================
 
 
