@@ -22,10 +22,7 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
     # propagate the build interface includes to make sure
     # hiptensor includes are captured.
     target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
-    
-    get_target_property(${BINARY_NAME}_HT_INCLUDES hiptensor::hiptensor INCLUDE_DIRECTORIES)
-    target_include_directories(${BINARY_NAME} PRIVATE ${${BINARY_NAME}_HT_INCLUDES})
-    
+  
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
 

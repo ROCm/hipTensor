@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
 
+if(NOT CMAKE_CXX_COMPILER)
+  set(CMAKE_CXX_COMPILER "/opt/rocm/bin/hipcc" CACHE STRING
+    "Choose the type of compiler to build: Default point to hipcc"
+    FORCE)
+endif()
+
 # NOTE: This has to be initialized before the project() command appears
 # Set the default of CMAKE_BUILD_TYPE to be release, unless user specifies with -D.  MSVC_IDE does not use CMAKE_BUILD_TYPE
 if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
@@ -7,6 +13,23 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
 endif()
 message( VERBOSE "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "" FORCE )
+
+if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+  set( CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "Install path prefix, prepended onto install directories" FORCE )
+endif()
+if( NOT CPACK_PACKAGING_INSTALL_PREFIX )
+  set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Install path prefix for packages.")
+  set(CPACK_SET_DESTDIR OFF)
+endif()
+
+# This helps cmake properly find hip-config.cmake
+list( APPEND CMAKE_PREFIX_PATH $ENV{ROCM_PATH} ${ROCM_PATH} /opt/rocm )
+# Append our library helper cmake path and the cmake path for hip (for convenience).
+# Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+
+# Build shared libs
+set(BUILD_SHARED_LIBS ON)
 
 project(hiptensor)
 set(CMAKE_CXX_STANDARD 17)
@@ -20,21 +43,6 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
   option( HIPTENSOR_BUILD_DOCS "Build hipTensor documentation" OFF )
 endif()
-
-if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-  set( CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "Install path prefix, prepended onto install directories" FORCE )
-endif()
-if( NOT CPACK_PACKAGING_INSTALL_PREFIX )
-  set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Install path prefix for packages.")
-  set(CPACK_SET_DESTDIR OFF)
-endif()
-set(BUILD_SHARED_LIBS ON)
-
-# This helps cmake properly find hip-config.cmake
-list( APPEND CMAKE_PREFIX_PATH $ENV{ROCM_PATH} ${ROCM_PATH} /opt/rocm )
-# Append our library helper cmake path and the cmake path for hip (for convenience).
-# Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 # Setup output paths
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
@@ -67,57 +75,44 @@ else()
 endif()
 message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
 
-rocm_setup_version(VERSION 0.2.0)
-
-if(NOT CMAKE_CXX_COMPILER)
-  set(CMAKE_CXX_COMPILER "/opt/rocm/bin/hipcc" CACHE STRING
-    "Choose the type of compiler to build: Default point to the hipcc"
-    FORCE)
-endif()
-
-
-if(NOT CMAKE_INSTALL_PREFIX)
-    set(CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE STRING
-    "Choose the path to be pointed: Default point to /opt/rocm"
-    FORCE)
-endif()
-
-
+# Setup HIP
 find_package( hip REQUIRED )
-set(HIPTENSOR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
-message(STATUS "Build with HIP ${hip_VERSION}")
+message(STATUS "HIP version: ${hip_VERSION}")
 
+# Configure library build
 add_subdirectory(src)
 
+# Configure testing setup
 if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_CLIENTS)
   enable_testing()
   rocm_package_setup_component(clients)
 endif()
 
+# Configure tests build
 if(HIPTENSOR_BUILD_TESTS)
   rocm_package_setup_component(tests PARENT clients)
   add_subdirectory(test)
 endif()
 
+# Configure clients build
 if(HIPTENSOR_BUILD_CLIENTS)
   rocm_package_setup_component(samples PARENT clients)
   add_subdirectory(client_example)
 endif()
 
-
+# Configure docs build
 if(HIPTENSOR_BUILD_DOCS)
   # Add the cmake folder so the FindSphinx module is found
   set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
   add_subdirectory (docs)
 endif()
 
-#Create an interface target for the include only files and call it "hipTENSOR"
-include(CMakePackageConfigHelpers)
+set(hiptensorVersion 0.2.0)
+rocm_setup_version(VERSION ${hiptensorVersion})
 
-set(version 1.0.0)
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfigVersion.cmake"
-    VERSION "${version}"
+    VERSION "${hiptensorVersion}"
     COMPATIBILITY AnyNewerVersion
 )
 
