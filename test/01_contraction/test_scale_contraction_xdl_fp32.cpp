@@ -3,9 +3,11 @@
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
-#include "ht_types.hpp"
-#include "ht_tensor.hpp"
-#include "ht_utility.hpp"
+
+// hipTensor includes
+#include <hiptensor/ht_types.hpp>
+#include <hiptensor/ht_tensor.hpp>
+#include <utility/ht_utility.hpp>
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 

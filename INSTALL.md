@@ -1,4 +1,4 @@
-# Installing hipTENSOR package
+# Installing hiptensor package
 ## Pre-requisites
 ### Docker CMD
 ```bash
