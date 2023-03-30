@@ -1,8 +1,8 @@
 #ifndef HT_TENSOR_HPP
 #define HT_TENSOR_HPP
 
-#include <ht_types.hpp>
-#include <internal/ht_utility.hpp>
+#include "ht_types.hpp"
+#include "internal/ht_utility.hpp"
 
 /**
  * \brief Initializes the hiptensor library

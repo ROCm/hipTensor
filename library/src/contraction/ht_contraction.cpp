@@ -1,5 +1,5 @@
-#include <ht_tensor.hpp>
-#include <include/ht_ck_core.hpp>
+#include "ht_ck_core.hpp"
+#include "ht_tensor.hpp"
 
 hiptensorContractionMetrics_t ht_contract_metrics;
 
