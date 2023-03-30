@@ -1,4 +1,4 @@
-# Installing hipTensor package
+# Installing hiptensor package
 ## Pre-requisites
 ### Docker CMD
 ```bash
@@ -18,10 +18,10 @@ https://github.com/RadeonOpenCompute/rocm-cmake
 ## Build steps
 Create and move to the build directory.
 
-``` bash 
-mkdir build && cd build 
+``` bash
+mkdir build && cd build
 ```
-### Build modes 
+### Build modes
 1. Regular build with the package with build type, AARCH, Compiler, Prefix, and Install paths.
 ```bash
 # Need to specify target ID, example below is gfx908 and gfx90a
@@ -34,7 +34,7 @@ cmake                                                                 \
 -D CMAKE_INSTALL_PREFIX=${PATH_TO_HT_INSTALL_DIRECTORY}               \
 ..
 ```
-2. To build the hipTensor in debug mode for extensive debugging of APIs add the flag -D DEBUG_MODE=ON.
+2. To build the hiptensor in debug mode for extensive debugging of APIs add the flag -D DEBUG_MODE=ON.
 ```bash
 # Need to specify target ID, example below is gfx908 and gfx90a
 cmake                                                                 \

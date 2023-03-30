@@ -3,7 +3,7 @@ INPUT = "@DOXYGEN_INPUT_DIR@"
 #...
 OUTPUT_DIRECTORY = "@DOXYGEN_OUTPUT_DIR@"
 #...
-PROJECT_NAME = "hipTensor"
+PROJECT_NAME = "hiptensor"
 PROJECT_BRIEF = "Adaptation library of tensor contraction with composable_kernel backend"
 MACRO_EXPANSION = YES
 RECURSIVE = YES

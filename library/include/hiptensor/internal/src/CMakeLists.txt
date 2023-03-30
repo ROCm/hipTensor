@@ -5,7 +5,7 @@ rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 add_subdirectory(core)
 add_subdirectory(contraction)
 
-add_library(hipTensor SHARED 
+add_library(hiptensor SHARED
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
         $<TARGET_OBJECTS:ck_core_instance>
@@ -22,7 +22,7 @@ set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 rocm_install_targets(
     TARGETS hiptensor
     EXPORT hiptensorTargets
-    INCLUDE ${PROJECT_SOURCE_DIR}/include
+    INCLUDE ${PROJECT_SOURCE_DIR}/internal/include
 )
 
 rocm_install (EXPORT hiptensorTargets

@@ -1,5 +1,5 @@
 ##
-Client application links to hipTensor library, and therefore hipTensor library needs to be installed before building client applications.
+Client application links to hiptensor library, and therefore hiptensor library needs to be installed before building client applications.
 
 
 ## Build
@@ -17,5 +17,5 @@ cmake                                                                 \
 
 ### Build client example
 ```bash
- make 
+ make
 ```

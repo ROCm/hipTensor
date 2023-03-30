@@ -1,5 +1,5 @@
 
-hipTensor Functions
+hiptensor Functions
 ===================
 
 

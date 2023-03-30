@@ -10,7 +10,7 @@ def runCI =
 {
     nodeDetails, jobName->
 
-    def prj = new rocProject('hipTensor', 'Static Library PreCheckin')
+    def prj = new rocProject('hiptensor', 'Static Library PreCheckin')
 
     def nodes = new dockerNodes(nodeDetails, jobName, prj)
 

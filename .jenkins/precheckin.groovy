@@ -10,7 +10,7 @@ def runCI =
 {
     nodeDetails, jobName->
 
-    def prj = new rocProject('hipTensor', 'precheckin')
+    def prj = new rocProject('hiptensor', 'precheckin')
     prj.paths.build_command = './install -c'
     // Todo: Add CK dependency
     // prj.libraryDependencies = ['rocBLAS']
@@ -56,7 +56,7 @@ ci: {
     propertyList = auxiliary.appendPropertyList(propertyList)
 
     def jobNameList = ["compute-rocm-dkms-no-npi-hipclang":([ubuntu18:['gfx908'],centos7:['gfx908'],centos8:['gfx908'],sles15sp1:['gfx908'],ubuntu20:['gfx90a']])]
-    jobNameList = auxiliary.appendJobNameList(jobNameList, 'hipTensor')
+    jobNameList = auxiliary.appendJobNameList(jobNameList, 'hiptensor')
 
     propertyList.each
     {

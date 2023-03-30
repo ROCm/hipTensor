@@ -3,21 +3,21 @@ Helper Functions
 ================
 
 
-hipTensorInit
+hiptensorInit
 -------------
 
-.. doxygenfunction::  hipTensorInit
+.. doxygenfunction::  hiptensorInit
 
 
-hipTensorInitTensorDescriptor
+hiptensorInitTensorDescriptor
 -----------------------------
 
-.. doxygenfunction::  hipTensorInitTensorDescriptor
+.. doxygenfunction::  hiptensorInitTensorDescriptor
 
 
-hipTensorGetAlignmentRequirement
+hiptensorGetAlignmentRequirement
 --------------------------------
 
-.. doxygenfunction::  hipTensorGetAlignmentRequirement
+.. doxygenfunction::  hiptensorGetAlignmentRequirement
 
 
