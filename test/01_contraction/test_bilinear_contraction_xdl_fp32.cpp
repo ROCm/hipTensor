@@ -6,8 +6,8 @@
 #include <unordered_map>
 
 // hiptensor includes
-#include <hiptensor/ht_tensor.hpp>
-#include <hiptensor/ht_types.hpp>
+#include <ht_tensor.hpp>
+#include <ht_types.hpp>
 #include <internal/ht_utility.hpp>
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
