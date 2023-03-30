@@ -22,7 +22,7 @@ set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 rocm_install_targets(
     TARGETS hiptensor
     EXPORT hiptensorTargets
-    INCLUDE ${PROJECT_SOURCE_DIR}/internal/include
+    INCLUDE ${PROJECT_SOURCE_DIR}/library/include
 )
 
 rocm_install (EXPORT hiptensorTargets

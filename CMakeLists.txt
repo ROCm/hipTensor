@@ -80,7 +80,7 @@ find_package( hip REQUIRED )
 message(STATUS "HIP version: ${hip_VERSION}")
 
 # Configure library build
-add_subdirectory(library/include/hiptensor/internal/src)
+add_subdirectory(library/src)
 
 # Configure testing setup
 if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_CLIENTS)

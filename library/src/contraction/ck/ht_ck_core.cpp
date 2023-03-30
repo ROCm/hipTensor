@@ -13,9 +13,9 @@
 #include <tensor_layout.hpp>
 
 // HipTensor includes
+#include "ht_ck_core.hpp"
+#include "ht_types.hpp"
 #include "ht_utility.hpp"
-#include <ht_ck_core.hpp>
-#include <ht_types.hpp>
 
 using F32 = float;
 using ADataType = F32;
