@@ -1,42 +1,42 @@
-hipTensor Data Types
+hiptensor Data Types
 ====================
 
 
-hipTensorStatus_t
+hiptensorStatus_t
 -----------------
 
-.. doxygenenum::  hipTensorStatus_t
+.. doxygenenum::  hiptensorStatus_t
 
 
-hipTensorDataType_t
+hiptensorDataType_t
 -------------------
 
-.. doxygenenum::  hipTensorDataType_t
+.. doxygenenum::  hiptensorDataType_t
 
 
-hipTensorComputeType_t
+hiptensorComputeType_t
 ----------------------
 
-.. doxygenenum::  hipTensorComputeType_t
+.. doxygenenum::  hiptensorComputeType_t
 
 
-hipTensorOperator_t
+hiptensorOperator_t
 -------------------
 
 
-.. doxygenenum::  hipTensorOperator_t
+.. doxygenenum::  hiptensorOperator_t
 
 
-hipTensorAlgo_t
+hiptensorAlgo_t
 ---------------
 
-.. doxygenenum::  hipTensorAlgo_t
+.. doxygenenum::  hiptensorAlgo_t
 
 
-hipTensorWorksizePreference_t
+hiptensorWorksizePreference_t
 -----------------------------
 
-.. doxygenenum::  hipTensorWorksizePreference_t
+.. doxygenenum::  hiptensorWorksizePreference_t
 
 
 hiptesnorContractionOperation_t
@@ -45,16 +45,16 @@ hiptesnorContractionOperation_t
 .. doxygenenum::  hiptesnorContractionOperation_t
 
 
-hipTensorHandle_t
+hiptensorHandle_t
 -----------------
 
-.. doxygenstruct::  hipTensorHandle_t
+.. doxygenstruct::  hiptensorHandle_t
    :members:
 
-hipTensorTensorDescriptor_t
+hiptensorTensorDescriptor_t
 ---------------------------
 
-.. doxygenstruct::   hipTensorTensorDescriptor_t
+.. doxygenstruct::   hiptensorTensorDescriptor_t
    :members:
 
 
@@ -65,30 +65,30 @@ tensor_attr
    :members:
 
 
-hipTensorContractionDescriptor_t
+hiptensorContractionDescriptor_t
 --------------------------------
 
-.. doxygenstruct::  hipTensorContractionDescriptor_t
+.. doxygenstruct::  hiptensorContractionDescriptor_t
    :members:
 
 
-hipTensorContractionFind_t
+hiptensorContractionFind_t
 --------------------------
 
-.. doxygenstruct::  hipTensorContractionFind_t
+.. doxygenstruct::  hiptensorContractionFind_t
    :members:
 
 
-hipTensorContractionMetrics_t
+hiptensorContractionMetrics_t
 -----------------------------
 
-.. doxygenstruct::  hipTensorContractionMetrics_t
+.. doxygenstruct::  hiptensorContractionMetrics_t
    :members:
 
 
-hipTensorContractionPlan_t
+hiptensorContractionPlan_t
 --------------------------
 
-.. doxygenstruct::  hipTensorContractionPlan_t
+.. doxygenstruct::  hiptensorContractionPlan_t
    :members:
 

@@ -1,13 +1,13 @@
 include_directories(BEFORE
-    ${PROJECT_SOURCE_DIR}/include/hipTensor/ck
-    ${PROJECT_SOURCE_DIR}/include/hipTensor
-    ${PROJECT_SOURCE_DIR}/include/utility
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal/src/contraction/ck
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal
 )
 
 set(CORE_INSTANCE_SOURCE
    ht_tensor.cpp
 )
 
-add_library(core_instance OBJECT ${CORE_INSTANCE_SOURCE}) 
+add_library(core_instance OBJECT ${CORE_INSTANCE_SOURCE})
 target_compile_features(core_instance PUBLIC)
 set_target_properties(core_instance PROPERTIES POSITION_INDEPENDENT_CODE ON)

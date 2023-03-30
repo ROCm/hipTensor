@@ -38,10 +38,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
-  option( HIPTENSOR_BUILD_TESTS "Build hipTensor tests" ON )
-  option( HIPTENSOR_BUILD_CLIENTS "Build hipTensor clients" OFF )
+  option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
+  option( HIPTENSOR_BUILD_CLIENTS "Build hiptensor clients" OFF )
   option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
-  option( HIPTENSOR_BUILD_DOCS "Build hipTensor documentation" OFF )
+  option( HIPTENSOR_BUILD_DOCS "Build hiptensor documentation" OFF )
 endif()
 
 # Setup output paths
@@ -80,7 +80,7 @@ find_package( hip REQUIRED )
 message(STATUS "HIP version: ${hip_VERSION}")
 
 # Configure library build
-add_subdirectory(src)
+add_subdirectory(library/include/hiptensor/internal/src)
 
 # Configure testing setup
 if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_CLIENTS)
@@ -133,7 +133,7 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 rocm_create_package(
     NAME hiptensor
     DESCRIPTION "Adaptation library of tensor contraction with composable_kernel backend"
-    MAINTAINER "hipTensor Maintainer <hiptensor-maintainer@amd.com>"
+    MAINTAINER "hiptensor Maintainer <hiptensor-maintainer@amd.com>"
     LDCONFIG
 )
 
