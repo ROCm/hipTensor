@@ -1,7 +1,8 @@
 #ifndef HT_CK_CORE_HPP_
 #define HT_CK_CORE_HPP_
 
-#include "../ht_types.hpp"
+#include "../../ht_types.hpp"
+#include "../ht_utility.hpp"
 
 hiptensorStatus_t hiptensorCKScaleContraction(
     const hiptensorHandle_t *handle, const hiptensorContractionPlan_t *plan,
