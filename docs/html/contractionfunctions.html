@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contraction Operations &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
+  <title>Contraction Operations &mdash; hiptensor: AMD&#39;s tensor contraction library</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hipTENSOR
+            <a href="index.html" class="icon icon-home"> hiptensor
           </a>
               <div class="version">
                 1.0.0
@@ -50,7 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="overview.html#future-development">Future development</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTENSOR package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hiptensor package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="install.html#pre-requisites">Pre-requisites</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="install.html#docker-cmd">Docker CMD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="install.html#install-the-new-rocm-cmake-version">Install the new rocm-cmake version</a></li>
@@ -74,7 +74,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="apireference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hipTENSOR Data Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hiptensor Data Types</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorstatus-t">hiptensorStatus_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensordatatype-t">hiptensorDataType_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcomputetype-t">hiptensorComputeType_t</a></li>
@@ -91,7 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionplan-t">hiptensorContractionPlan_t</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="reference internal" href="functions.html">hipTENSOR Functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="functions.html">hiptensor Functions</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="helperfunctions.html">Helper Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinit">hiptensorInit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinittensordescriptor">hiptensorInitTensorDescriptor</a></li>
@@ -117,7 +117,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">hipTENSOR</a>
+          <a href="index.html">hiptensor</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -126,7 +126,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="apireference.html">API Reference</a> &raquo;</li>
-          <li><a href="functions.html">hipTENSOR Functions</a> &raquo;</li>
+          <li><a href="functions.html">hiptensor Functions</a> &raquo;</li>
       <li>Contraction Operations</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/contractionfunctions.rst.txt" rel="nofollow"> View page source</a>
@@ -153,27 +153,27 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
+<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hiptensor’s library context. </p></li>
 <li><p><strong>desc</strong> – <strong>[out]</strong> This opaque struct gets filled with the information that encodes the tensor contraction problem. </p></li>
 <li><p><strong>descA</strong> – <strong>[in]</strong> A descriptor that holds the information about the data type, modes and strides of A. </p></li>
 <li><p><strong>modeA</strong> – <strong>[in]</strong> Array with ‘nmodeA’ entries that represent the modes of A. The modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor. </p></li>
-<li><p><strong>alignmentRequirementA</strong> – <strong>[in]</strong> Alignment that hipTENSOR may require for A’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
+<li><p><strong>alignmentRequirementA</strong> – <strong>[in]</strong> Alignment that hiptensor may require for A’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
 <li><p><strong>descB</strong> – <strong>[in]</strong> The B descriptor that holds information about the data type, modes, and strides of B. </p></li>
 <li><p><strong>modeB</strong> – <strong>[in]</strong> Array with ‘nmodeB’ entries that represent the modes of B. The modeB[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor. </p></li>
-<li><p><strong>alignmentRequirementB</strong> – <strong>[in]</strong> Alignment that hipTENSOR may require for B’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
+<li><p><strong>alignmentRequirementB</strong> – <strong>[in]</strong> Alignment that hiptensor may require for B’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
 <li><p><strong>modeC</strong> – <strong>[in]</strong> Array with ‘nmodeC’ entries that represent the modes of C. The modeC[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor. </p></li>
 <li><p><strong>descC</strong> – <strong>[in]</strong> The C descriptor that holds information about the data type, modes, and strides of C. </p></li>
-<li><p><strong>alignmentRequirementC</strong> – <strong>[in]</strong> Alignment that hipTENSOR may require for C’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
+<li><p><strong>alignmentRequirementC</strong> – <strong>[in]</strong> Alignment that hiptensor may require for C’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
 <li><p><strong>modeD</strong> – <strong>[in]</strong> Array with ‘nmodeD’ entries that represent the modes of D (must be identical to modeC for now). The modeD[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor. </p></li>
 <li><p><strong>descD</strong> – <strong>[in]</strong> The D descriptor that holds information about the data type, modes, and strides of D (must be identical to descC for now). </p></li>
-<li><p><strong>alignmentRequirementD</strong> – <strong>[in]</strong> Alignment that hipTENSOR may require for D’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
+<li><p><strong>alignmentRequirementD</strong> – <strong>[in]</strong> Alignment that hiptensor may require for D’s pointer (in bytes); you can use the helper function <a class="reference internal" href="helperfunctions.html#ht__tensor_8hpp_1afe4fd0670d1777eb0421c5dc9613f015"><span class="std std-ref">hiptensorGetAlignmentRequirement</span></a> to determine the best value for a given pointer. </p></li>
 <li><p><strong>typeCompute</strong> – <strong>[in]</strong> Datatype of for the intermediate computation of typeCompute T = A * B. </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return values<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully without error </p></li>
-<li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle or tensor descriptors are not initialized. </p></li>
+<li><p><strong>hiptensor_STATUS_SUCCESS</strong> – The operation completed successfully without error </p></li>
+<li><p><strong>hiptensor_STATUS_NOT_INITIALIZED</strong> – if the handle or tensor descriptors are not initialized. </p></li>
 </ul>
 </dd>
 </dl>
@@ -190,16 +190,16 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
+<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hiptensor’s library context. </p></li>
 <li><p><strong>find</strong> – <strong>[out]</strong> </p></li>
-<li><p><strong>algo</strong> – <strong>[in]</strong> Allows users to select a specific algorithm. HIPTENSOR_ALGO_DEFAULT only supprted by the CK backend. </p></li>
+<li><p><strong>algo</strong> – <strong>[in]</strong> Allows users to select a specific algorithm. hiptensor_ALGO_DEFAULT only supprted by the CK backend. </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return values<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
-<li><p><strong>HIPTENSOR_STATUS_NOT_SUPPORTED</strong> – If a specified algorithm is not supported HIPTENSOR_STATUS_NOT_SUPPORTED is returned. </p></li>
-<li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle or find is not initialized. </p></li>
+<li><p><strong>hiptensor_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
+<li><p><strong>hiptensor_STATUS_NOT_SUPPORTED</strong> – If a specified algorithm is not supported hiptensor_STATUS_NOT_SUPPORTED is returned. </p></li>
+<li><p><strong>hiptensor_STATUS_NOT_INITIALIZED</strong> – if the handle or find is not initialized. </p></li>
 </ul>
 </dd>
 </dl>
@@ -212,12 +212,12 @@
 <dt class="sig sig-object cpp" id="_CPPv428hiptensorInitContractionPlanPK17hiptensorHandle_tP26hiptensorContractionPlan_tPK32hiptensorContractionDescriptor_tPK26hiptensorContractionFind_tK8uint64_t">
 <span id="_CPPv328hiptensorInitContractionPlanPK17hiptensorHandle_tP26hiptensorContractionPlan_tPK32hiptensorContractionDescriptor_tPK26hiptensorContractionFind_tK8uint64_t"></span><span id="_CPPv228hiptensorInitContractionPlanPK17hiptensorHandle_tP26hiptensorContractionPlan_tPK32hiptensorContractionDescriptor_tPK26hiptensorContractionFind_tK8uint64_t"></span><span id="hiptensorInitContractionPlan__hiptensorHandle_tCP.hiptensorContractionPlan_tP.hiptensorContractionDescriptor_tCP.hiptensorContractionFind_tCP.uint64_tC"></span><span class="target" id="ht__tensor_8hpp_1a3016abd66bc7356fe0d042dc0df755da"></span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorStatus_t" title="hiptensorStatus_t"><span class="n"><span class="pre">hiptensorStatus_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hiptensorInitContractionPlan</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv417hiptensorHandle_t" title="hiptensorHandle_t"><span class="n"><span class="pre">hiptensorHandle_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">handle</span></span>, <a class="reference internal" href="datatypes.html#_CPPv426hiptensorContractionPlan_t" title="hiptensorContractionPlan_t"><span class="n"><span class="pre">hiptensorContractionPlan_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">plan</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv432hiptensorContractionDescriptor_t" title="hiptensorContractionDescriptor_t"><span class="n"><span class="pre">hiptensorContractionDescriptor_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desc</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="datatypes.html#_CPPv426hiptensorContractionFind_t" title="hiptensorContractionFind_t"><span class="n"><span class="pre">hiptensorContractionFind_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">find</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workspaceSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428hiptensorInitContractionPlanPK17hiptensorHandle_tP26hiptensorContractionPlan_tPK32hiptensorContractionDescriptor_tPK26hiptensorContractionFind_tK8uint64_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Initializes the contraction plan for a given tensor contraction problem. </p>
-<p>This function applies hipTENSOR’s heuristic to select a candidate for a given tensor contraction problem (encoded by desc). The resulting plan can be reused multiple times as long as the tensor contraction problem remains the same.</p>
+<p>This function applies hiptensor’s heuristic to select a candidate for a given tensor contraction problem (encoded by desc). The resulting plan can be reused multiple times as long as the tensor contraction problem remains the same.</p>
 <p>The plan is created for the active HIP device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
+<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hiptensor’s library context. </p></li>
 <li><p><strong>plan</strong> – <strong>[out]</strong> Opaque handle holding the contraction execution plan (i.e., the candidate that will be executed as well as all it’s runtime parameters for the given tensor contraction problem). </p></li>
 <li><p><strong>desc</strong> – <strong>[in]</strong> This opaque struct encodes the given tensor contraction problem. </p></li>
 <li><p><strong>find</strong> – <strong>[in]</strong> (unused) This opaque struct is used to restrict the search space of viable candidates. </p></li>
@@ -226,8 +226,8 @@
 </dd>
 <dt class="field-even">Return values<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – If a viable candidate has been found. </p></li>
-<li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle or find or desc is not initialized. </p></li>
+<li><p><strong>hiptensor_STATUS_SUCCESS</strong> – If a viable candidate has been found. </p></li>
+<li><p><strong>hiptensor_STATUS_NOT_INITIALIZED</strong> – if the handle or find or desc is not initialized. </p></li>
 </ul>
 </dd>
 </dl>
@@ -266,14 +266,14 @@
 </table>
 </p>
 <p><dl class="simple">
-<dt><strong>[Example]</strong></dt><dd><p>See <a class="reference external" href="https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp">https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp</a> <a class="reference external" href="https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp">https://github.com/AMD-HPC/hipTENSOR/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp</a> for the concrete examples.</p>
+<dt><strong>[Example]</strong></dt><dd><p>See <a class="reference external" href="https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp">https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp</a> <a class="reference external" href="https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp">https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp</a> for the concrete examples.</p>
 </dd>
 </dl>
 </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hipTENSOR’s library context. </p></li>
+<li><p><strong>handle</strong> – <strong>[in]</strong> Opaque handle holding hiptensor’s library context. </p></li>
 <li><p><strong>plan</strong> – <strong>[in]</strong> Opaque handle holding the contraction execution plan. </p></li>
 <li><p><strong>alpha</strong> – <strong>[in]</strong> Scaling for A*B. Its data type is determined by ‘typeCompute’. Pointer to the host memory. </p></li>
 <li><p><strong>A</strong> – <strong>[in]</strong> Pointer to the data corresponding to A in device memory. Pointer to the GPU-accessible memory. </p></li>
@@ -288,9 +288,9 @@
 </dd>
 <dt class="field-even">Return values<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>HIPTENSOR_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
-<li><p><strong>HIPTENSOR_STATUS_NOT_INITIALIZED</strong> – if the handle or pointers are not initialized. </p></li>
-<li><p><strong>HIPTENSOR_STATUS_CK_ERROR</strong> – if some unknown composable_kernel (CK) error has occurred (e.g., no instance supported by inputs). </p></li>
+<li><p><strong>hiptensor_STATUS_SUCCESS</strong> – The operation completed successfully. </p></li>
+<li><p><strong>hiptensor_STATUS_NOT_INITIALIZED</strong> – if the handle or pointers are not initialized. </p></li>
+<li><p><strong>hiptensor_STATUS_CK_ERROR</strong> – if some unknown composable_kernel (CK) error has occurred (e.g., no instance supported by inputs). </p></li>
 </ul>
 </dd>
 </dl>

@@ -1,4 +1,4 @@
-hipTENSOR Data Types
+hiptensor Data Types
 ====================
 
 

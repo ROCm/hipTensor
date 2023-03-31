@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# hipTENSOR documentation build configuration file, created by
+# hiptensor documentation build configuration file, created by
 # sphinx-quickstart on Tue Jul 19 06:46:47 2022.
 #
 # This file is execfile()d with the current directory set to its
@@ -50,7 +50,7 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = u'hipTENSOR'
+project = u'hiptensor'
 copyright = u'2022, Advanced Micro Devices, Inc. All rights reserved'
 author = 'Chaitanya Inumella <Chaitanya.Inumella@amd.com'
 
@@ -119,14 +119,14 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'hipTENSORdoc'
+htmlhelp_basename = 'hiptensordoc'
 
 
-# The “title” for HTML documentation generated with Sphinx’s own templates.
+# The "title" for HTML documentation generated with Sphinx's own templates.
 # This is appended to the <title> tag of individual pages, and used in the
-# navigation bar as the “topmost” element. It defaults
+# navigation bar as the "topmost" element. It defaults
 # to '<project> v<revision> documentation'.
-html_title = "hipTENSOR: AMD's tensor contraction library"
+html_title = "hiptensor: AMD's tensor contraction library"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -157,7 +157,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'hipTENSOR.tex', 'hipTENSOR Documentation',
+    (master_doc, 'hiptensor.tex', 'hiptensor Documentation',
      'Chaitanya Inumella', 'manual'),
 ]
 
@@ -167,7 +167,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'hiptensor', 'hipTENSOR Documentation',
+    (master_doc, 'hiptensor', 'hiptensor Documentation',
      [author], 1)
 ]
 
@@ -178,8 +178,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'hipTENSOR', 'hipTENSOR Documentation',
-     author, 'hipTENSOR', 'One line description of project.',
+    (master_doc, 'hiptensor', 'hiptensor Documentation',
+     author, 'hiptensor', 'One line description of project.',
      'Miscellaneous'),
 ]
 

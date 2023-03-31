@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setting up the client application &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
+  <title>Setting up the client application &mdash; hiptensor: AMD&#39;s tensor contraction library</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hipTENSOR
+            <a href="index.html" class="icon icon-home"> hiptensor
           </a>
               <div class="version">
                 1.0.0
@@ -50,7 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="overview.html#future-development">Future development</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTENSOR package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hiptensor package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="install.html#pre-requisites">Pre-requisites</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="install.html#docker-cmd">Docker CMD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="install.html#install-the-new-rocm-cmake-version">Install the new rocm-cmake version</a></li>
@@ -74,7 +74,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="apireference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hipTENSOR Data Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hiptensor Data Types</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorstatus-t">hiptensorStatus_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensordatatype-t">hiptensorDataType_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcomputetype-t">hiptensorComputeType_t</a></li>
@@ -91,7 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionplan-t">hiptensorContractionPlan_t</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="functions.html">hipTENSOR Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">hiptensor Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="helperfunctions.html">Helper Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinit">hiptensorInit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinittensordescriptor">hiptensorInitTensorDescriptor</a></li>
@@ -117,7 +117,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">hipTENSOR</a>
+          <a href="index.html">hiptensor</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -139,17 +139,17 @@
   <section id="setting-up-the-client-application">
 <h1>Setting up the client application<a class="headerlink" href="#setting-up-the-client-application" title="Permalink to this heading"></a></h1>
 <div class="line-block">
-<div class="line">Assuming hipTENSOR has be installed to the path specified in the ${CMAKE_INSTALL_PREFIX} while building the hipTENSOR package.</div>
+<div class="line">Assuming hiptensor has be installed to the path specified in the ${CMAKE_INSTALL_PREFIX} while building the hiptensor package.</div>
 <div class="line">Update the environment variables as mentioned below.</div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export HIPTENSOR_ROOT=${CMAKE_INSTALL_PREFIX}</span>
-<span class="go">export LD_LIBRARY_PATH=${HIPTENSOR_ROOT}/lib/:${LD_LIBRARY_PATH}</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export hiptensor_ROOT=${CMAKE_INSTALL_PREFIX}</span>
+<span class="go">export LD_LIBRARY_PATH=${hiptensor_ROOT}/lib/:${LD_LIBRARY_PATH}</span>
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line">If we store the following code in a file called contraction.cpp, we can compile it via the following command:</div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">hipcc contraction.cpp -L${HIPTENSOR_ROOT}/lib/ -I${HIPTENSOR_ROOT}/include -std=c++17 -lhiptensor -o contraction</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">hipcc contraction.cpp -L${hiptensor_ROOT}/lib/ -I${hiptensor_ROOT}/include -std=c++17 -lhiptensor -o contraction</span>
 </pre></div>
 </div>
 <div class="line-block">
