@@ -22,7 +22,10 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
     # propagate the build interface includes to make sure
     # hiptensor includes are captured.
     target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
-  
+    target_include_directories(${BINARY_NAME} PRIVATE
+                               ${CMAKE_CURRENT_SOURCE_DIR}
+                               ${PROJECT_SOURCE_DIR}/library/include)
+
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
 
@@ -35,7 +38,7 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
     COMPONENT tests
     )
 
-    # Add to testing manifest    
+    # Add to testing manifest
     get_target_property(EXE_NAME ${BINARY_NAME} RUNTIME_OUTPUT_NAME)
     if(EXE_NAME STREQUAL "EXE_NAME-NOTFOUND")
         get_target_property(EXE_NAME ${BINARY_NAME} OUTPUT_NAME)
@@ -44,7 +47,7 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
         endif()
     endif()
     file(APPEND "${INSTALL_TEST_FILE}" "add_test(${BINARY_NAME} \"../${BINARY_NAME}\")\n")
-    
+
 endfunction()
 
 add_subdirectory(01_contraction)

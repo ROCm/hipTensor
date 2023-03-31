@@ -1,3 +1,9 @@
+include_directories(BEFORE
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal/ck
+)
+
 set(CK_CORE_SOURCE
    ht_ck_core.cpp
 )

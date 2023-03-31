@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; hipTENSOR: AMD&#39;s tensor contraction library</title>
+  <title>Overview &mdash; hiptensor: AMD&#39;s tensor contraction library</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installing hipTENSOR package" href="install.html" />
+    <link rel="next" title="Installing hiptensor package" href="install.html" />
     <link rel="prev" title="Getting Started" href="gettingstarted.html" /> 
 </head>
 
@@ -29,7 +29,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> hipTENSOR
+            <a href="index.html" class="icon icon-home"> hiptensor
           </a>
               <div class="version">
                 1.0.0
@@ -51,7 +51,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#future-development">Future development</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hipTENSOR package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing hiptensor package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="install.html#pre-requisites">Pre-requisites</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="install.html#docker-cmd">Docker CMD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="install.html#install-the-new-rocm-cmake-version">Install the new rocm-cmake version</a></li>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="apireference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hipTENSOR Data Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datatypes.html">hiptensor Data Types</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorstatus-t">hiptensorStatus_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensordatatype-t">hiptensorDataType_t</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcomputetype-t">hiptensorComputeType_t</a></li>
@@ -92,7 +92,7 @@
 <li class="toctree-l3"><a class="reference internal" href="datatypes.html#hiptensorcontractionplan-t">hiptensorContractionPlan_t</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="functions.html">hipTENSOR Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">hiptensor Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="helperfunctions.html">Helper Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinit">hiptensorInit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="helperfunctions.html#hiptensorinittensordescriptor">hiptensorInitTensorDescriptor</a></li>
@@ -118,7 +118,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">hipTENSOR</a>
+          <a href="index.html">hiptensor</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -143,15 +143,15 @@
 <div class="line"><strong>Advanced Micro Devices, Inc’s tensor contraction library.</strong></div>
 </div>
 <ul class="simple">
-<li><p>Sources and binaries can be found at <a class="reference external" href="https://github.com/AMD-HPC/hipTENSOR">hipTENSOR GitHub repo</a>.</p></li>
+<li><p>Sources and binaries can be found at <a class="reference external" href="https://github.com/AMD-HPC/hiptensor">hiptensor GitHub repo</a>.</p></li>
 <li><p>Backend package can be found at <a class="reference external" href="https://github.com/ROCmSoftwarePlatform/composable_kernel">composable_kernel GitHub repo</a>.</p></li>
-<li><p>This package implement a first tensor contraction using hipTENSOR. Our code will compute the following operation using single-precision arithmetic.</p></li>
+<li><p>This package implement a first tensor contraction using hiptensor. Our code will compute the following operation using single-precision arithmetic.</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[D_{M0,M1,N0,N1} = \alpha A_{M0,M1,K0,K1}B_{N0,N1,K0,K1} + \beta C_{M0,M1,N0,N1}\]</div>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
-<p>hipTENSOR is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.</p>
+<p>hiptensor is a high-performance HIP library for tensor primitives based on the composable kernels, which is a set of C++ templates that provide the ability to generate high-performance assembly kernels for mathematical operations.</p>
 </section>
 <section id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h2>
@@ -181,7 +181,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gettingstarted.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="install.html" class="btn btn-neutral float-right" title="Installing hipTENSOR package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Installing hiptensor package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

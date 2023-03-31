@@ -1,23 +1,23 @@
 DOC Generation
 ==============
 
-| This section describes the generation of documentation for the hipTENSOR package with the Doxygen, Sphinx, and breathe extensions.
-  
+| This section describes the generation of documentation for the hiptensor package with the Doxygen, Sphinx, and breathe extensions.
+
 Pre-requisites
 --------------
-| All the pre-requistes need to be installed in the docker before generating the documentation for the hipTENSOR package.
+| All the pre-requistes need to be installed in the docker before generating the documentation for the hiptensor package.
 
 * Install Doxygen modules.
 
 .. code-block:: console
-  
+
    sudo apt-get install doxygen doxygen-doc
 
 
 * Install Latex dependencies required for the doucmentation.
 
 .. code-block:: console
-  
+
    sudo apt-get install texlive-latex-extra
    sudo apt-get install latexmk
 
@@ -26,11 +26,11 @@ Pre-requisites
 * Install the python-3.9 virtual environment and activate the environment
 
 .. code-block:: console
-  
+
    sudo apt-get install python3.9-venv
- 
-.. warning:: 
-   In a few linux environments, a few errors encounterd in installing the package. 
+
+.. warning::
+   In a few linux environments, a few errors encounterd in installing the package.
    Follow the steps to resolve those errors as mentioned in the `website  <https://askubuntu.com/questions/1402410/sub-process-usr-bin-dpkg-returned-an-error-code-1-while-upgrading-python3-10>`_.
 
 * Create and activate the virtual environment and the install the requirments.txt in the docs folders of the package.
@@ -48,7 +48,7 @@ Building the documentation
 | Initiate the doucmenation of the package using the flag -D BUILD_DOC = ON in cmake arguments as mentioned below.
 
 .. code-block:: console
-   
+
    # Need to specify target ID, example below is gfx908 and gfx90a
    cmake                                                                 \
    -D BUILD_DEV=OFF                                                      \
@@ -60,7 +60,7 @@ Building the documentation
    -D BUILD_DOC=ON                                                       \
    ..
 
-| Build the hipTENSOR packages with the same the make command.
+| Build the hiptensor packages with the same the make command.
 
 .. code-block:: console
 
@@ -73,6 +73,6 @@ HTML and PDF documentation
 | After intiating the steps in the earlier mentioned sections, the final documenation available the following paths.
 
 .. code-block:: console
-    
+
    HTML:        ${CMAKE_BINARY_DIR}/docs/sphinx
    PDF/Latex:   ${CMAKE_BINARY_DIR}/docs/sphinx/latex

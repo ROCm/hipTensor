@@ -1,7 +1,7 @@
 include_directories(BEFORE
-    ${PROJECT_SOURCE_DIR}/include/hiptensor/ck
-    ${PROJECT_SOURCE_DIR}/include/hiptensor
-    ${PROJECT_SOURCE_DIR}/include/utility
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal
+    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal/ck
 )
 
 set(CONTRACTION_INSTANCE_SOURCE
