@@ -1,8 +1,8 @@
-#include "ht/ht_tensor.hpp"
-#include "ht/ht_types.hpp"
-#include "ht/ht_utility.hpp"
 #include <algorithm>
 #include <fstream>
+#include <hiptensor/ht_tensor.hpp>
+#include <hiptensor/ht_types.hpp>
+#include <hiptensor/internal/ht_utility.hpp>
 #include <iostream>
 #include <iterator>
 #include <numeric>
