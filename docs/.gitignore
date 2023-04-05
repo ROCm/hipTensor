@@ -1,0 +1,7 @@
+.doxygen/docBin
+.sphinx/_toc.yml
+_build
+_doxygen
+_images
+_static
+_templates
