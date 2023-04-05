@@ -1,8 +1,0 @@
-# Python 3.6+ required
-sphinx==5.0.2
-breathe==4.34.0
-docutils<0.19
-sphinx_rtd_theme==1.0.0
-sphinx-mdinclude==0.5.1
-myst-parser==0.18.0
-

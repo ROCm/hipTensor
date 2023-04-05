@@ -1,16 +1,8 @@
-.. hiptensor documentation master file, created by
-   sphinx-quickstart on Tue Jul 19 06:46:47 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+============================================================================
 hiptensor: A High-Performance HIP Library For Tensor Primitives
-===============================================================
+============================================================================
 
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   gettingstarted
-   apireference
-
+hiptensor is AMD's C++ library for accelerating tensor primitives based on the composable kernels,
+which aims to provide a programming model for writing performance critical kernels for machine learning
+workloads across multiple architectures including GPUs, CPUs, etc, through general purpose kernel 
+languages, like HIP C++.
