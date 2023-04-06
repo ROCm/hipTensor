@@ -69,9 +69,7 @@ int main(int argc, char *argv[]) {
                                 typeA, hiptensor_OP_IDENTITY);
 
 #if !NDEBUG
-  std::cout << "a_ms_ks: ";
-  a_ms_ks.hiptensorPrintTensorAttributes();
-  std::cout << std::endl;
+  std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
 #endif
 
   hiptensorTensorDescriptor_t b_ks_ns;
@@ -80,9 +78,7 @@ int main(int argc, char *argv[]) {
                                 typeB, hiptensor_OP_IDENTITY);
 
 #if !NDEBUG
-  std::cout << "b_ks_ns: ";
-  b_ks_ns.hiptensorPrintTensorAttributes();
-  std::cout << std::endl;
+  std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
 #endif
 
   hiptensorTensorDescriptor_t c_ms_ns;
@@ -91,9 +87,7 @@ int main(int argc, char *argv[]) {
                                 typeC, hiptensor_OP_IDENTITY);
 
 #if !NDEBUG
-  std::cout << "c_ms_ns: ";
-  c_ms_ns.hiptensorPrintTensorAttributes();
-  std::cout << std::endl;
+  std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
 #endif
 
   /**********************
