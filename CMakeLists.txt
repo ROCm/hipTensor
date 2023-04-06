@@ -39,7 +39,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
-  option( HIPTENSOR_BUILD_CLIENTS "Build hiptensor clients" OFF )
+  option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" OFF )
   option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
   option( HIPTENSOR_BUILD_DOCS "Build hiptensor documentation" OFF )
 endif()
@@ -97,7 +97,7 @@ endif()
 # Configure clients build
 if(HIPTENSOR_BUILD_CLIENTS)
   rocm_package_setup_component(samples PARENT clients)
-  add_subdirectory(client_example)
+  add_subdirectory(samples)
 endif()
 
 # Configure docs build
