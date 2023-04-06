@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   floatTypeCompute alpha = (floatTypeCompute)1.1f;
   floatTypeCompute beta = (floatTypeCompute)1.0f;
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
 #endif
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   hiptensorInitTensorDescriptor(&handle, &a_ms_ks, nmodeA,
                                 a_ms_ks_lengths.data(), NULL, /*stride*/
                                 typeA, hiptensor_OP_IDENTITY);
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "a_ms_ks: ";
   a_ms_ks.hiptensorPrintTensorAttributes();
   std::cout << std::endl;
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
                                 b_ks_ns_lengths.data(), NULL, /*stride*/
                                 typeB, hiptensor_OP_IDENTITY);
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "b_ks_ns: ";
   b_ks_ns.hiptensorPrintTensorAttributes();
   std::cout << std::endl;
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
                                 c_ms_ns_lengths.data(), NULL, /*stride*/
                                 typeC, hiptensor_OP_IDENTITY);
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "c_ms_ns: ";
   c_ms_ns.hiptensorPrintTensorAttributes();
   std::cout << std::endl;
@@ -147,20 +147,20 @@ int main(int argc, char *argv[]) {
   uint32_t alignmentRequirementA;
   hiptensorGetAlignmentRequirement(&handle, A_d, &a_ms_ks,
                                    &alignmentRequirementA);
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "Tensor A element space: " << alignmentRequirementA << std::endl;
 #endif
 
   uint32_t alignmentRequirementB;
   hiptensorGetAlignmentRequirement(&handle, B_d, &b_ks_ns,
                                    &alignmentRequirementB);
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "Tensor B element space: " << alignmentRequirementB << std::endl;
 #endif
   uint32_t alignmentRequirementC;
   hiptensorGetAlignmentRequirement(&handle, C_d, &c_ms_ns,
                                    &alignmentRequirementC);
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "Tensor C element space: " << alignmentRequirementC << std::endl;
 #endif
 
@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
   plan.hiptensorPrintContractionMetrics();
   hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::ofstream tensorA, tensorB, tensorC;
   if (elementsA < MAX_ELEMENTS_PRINT_COUNT) {
     std::cout << "Tensor A elements:\n";
