@@ -65,7 +65,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
-  option( HIPTENSOR_BUILD_CLIENTS "Build hiptensor clients" OFF )
+  option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" OFF )
   option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
   option( HIPTENSOR_BUILD_DOCS "Build hiptensor documentation" OFF )
 endif()
@@ -102,29 +102,11 @@ endif()
 message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
 
 # Setup HIP
-find_package( hip REQUIRED )
+find_package(hip REQUIRED )
 message(STATUS "HIP version: ${hip_VERSION}")
 
 # Configure library build
 add_subdirectory(library/src)
-
-# Configure testing setup
-if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_CLIENTS)
-  enable_testing()
-  rocm_package_setup_component(clients)
-endif()
-
-# Configure tests build
-if(HIPTENSOR_BUILD_TESTS)
-  rocm_package_setup_component(tests PARENT clients)
-  add_subdirectory(test)
-endif()
-
-# Configure clients build
-if(HIPTENSOR_BUILD_CLIENTS)
-  rocm_package_setup_component(samples PARENT clients)
-  add_subdirectory(client_example)
-endif()
 
 # Configure docs build
 if(HIPTENSOR_BUILD_DOCS)
@@ -163,3 +145,20 @@ rocm_create_package(
     LDCONFIG
 )
 
+# Configure testing setup
+if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_SAMPLES)
+  enable_testing()
+  rocm_package_setup_component(clients)
+endif()
+
+# Configure tests build
+if(HIPTENSOR_BUILD_TESTS)
+  rocm_package_setup_component(tests PARENT clients)
+  add_subdirectory(test)
+endif()
+
+# Configure samples build
+if(HIPTENSOR_BUILD_SAMPLES)
+  rocm_package_setup_component(samples PARENT clients)
+  add_subdirectory(samples)
+endif()

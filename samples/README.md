@@ -4,8 +4,8 @@ Client application links to hiptensor library, and therefore hiptensor library n
 
 ## Build
 ```bash
-mkdir -p client_example/build
-cd client_example/build
+mkdir -p samples/build
+cd samples/build
 ```
 
 ```bash
