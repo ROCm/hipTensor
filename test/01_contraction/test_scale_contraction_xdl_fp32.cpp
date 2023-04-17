@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
   floatTypeCompute alpha = (floatTypeCompute)1.0f;
   floatTypeCompute beta = (floatTypeCompute)0.0f;
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
 #endif
   /**********************
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
                                 a_ms_ks_lengths.data(), NULL, /*stride*/
                                 typeA, hiptensor_OP_IDENTITY);
 
-#if HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
 #endif
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
                                 b_ks_ns_lengths.data(), NULL, /*stride*/
                                 typeB, hiptensor_OP_IDENTITY);
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
 #endif
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
                                 c_ms_ns_lengths.data(), NULL, /*stride*/
                                 typeC, hiptensor_OP_IDENTITY);
 
-#ifdef HT_PRINT_DEBUG
+#if !NDEBUG
   std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
 #endif
 
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
   plan.hiptensorPrintContractionMetrics();
   hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
 
-#if HT_PRINT_DEBUG
+#if !NDEBUG
   std::ofstream tensorA, tensorB, tensorC;
   if (elementsA < MAX_ELEMENTS_PRINT_COUNT) {
     std::cout << "Tensor A elements:\n";
