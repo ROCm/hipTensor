@@ -93,8 +93,9 @@ else()
     project(hiptensor_app)
     add_compile_options(-std=c++17)
 
-    # Requires linking installed hipTensor library
-    find_package(hiptensor 0.2.0 REQUIRED COMPONENTS hiptensor)
+    # Requires linking installed composable kernel and hipTensor library
+    find_package(composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_operations )
+    find_package(hiptensor 0.2.0 REQUIRED PATHS /opt/rocm /opt/rocm/hiptensor $ENV{HIPTENSOR_DIR}/lib/cmake COMPONENTS hiptensor)
 
     # This helps cmake properly find hip-config.cmake
     list( APPEND CMAKE_PREFIX_PATH $ENV{ROCM_PATH} ${ROCM_PATH} /opt/rocm )

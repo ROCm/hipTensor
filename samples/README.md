@@ -9,9 +9,10 @@ cd samples/build
 ```
 
 ```bash
+hiptensor_DIR=${PATH_TO_HIPTENSOR_INSTALL_DIRECTORY}                  \
+CK_DIR=${PATH_TO_CK_INSTALL_DIRECTORY}                                \
 cmake                                                                 \
 -D CMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc                             \
--D CMAKE_PREFIX_PATH="/opt/rocm;${PATH_TO_CK_INSTALL_DIRECTORY}"      \
 ..
 ```
 
