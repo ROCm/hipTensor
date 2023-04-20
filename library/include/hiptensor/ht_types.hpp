@@ -93,6 +93,15 @@ typedef enum {
   hiptensor_R_64F = 3,  ///< real as a double
 } hiptensorDataType_t;
 
+typedef enum {
+  HIPTENSOR_LOG_LEVEL_OFF = 0,
+  HIPTENSOR_LOG_LEVEL_ERROR = 1,
+  HIPTENSOR_LOG_LEVEL_PERF_TRACE = 2,
+  HIPTENSOR_LOG_LEVEL_PERF_HINT = 4,
+  HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE = 8,
+  HIPTENSOR_LOG_LEVEL_API_TRACE = 16
+} hiptensorLogLevel_t;
+
 /**
  * \brief Encodes hiptensor's compute type
  * \note Only the hiptensor_COMPUTE_32F compute is supported.
@@ -305,5 +314,16 @@ struct hiptensorContractionPlan_t {
                                               perf results of the CK's
                                               contraction instance */
 };
+
+/**
+ * \brief Logging callback
+ *
+ * The specified callback is invoked whenever logging is enabled and information
+ * is logged.
+ *
+ */
+typedef void (*hiptensorLoggerCallback_t)(int32_t logContext,
+                                          const char *funcName,
+                                          const char *msg);
 
 #endif

@@ -275,4 +275,17 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
                                        uint64_t workspaceSize,
                                        hipStream_t stream);
 
+hiptensorStatus_t
+hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback);
+
+hiptensorStatus_t hiptensorLoggerSetFile(FILE *file);
+
+hiptensorStatus_t hiptensorLoggerOpenFile(const char *logFile);
+
+hiptensorStatus_t hiptensorLoggerSetLevel(int32_t level);
+
+hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask);
+
+hiptensorStatus_t hiptensorLoggerForceDisable();
+
 #endif

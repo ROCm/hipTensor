@@ -26,6 +26,8 @@
 #include "ht_tensor.hpp"
 #include "ht_tensor_generator_utility.hpp"
 
+#include "../include/logger.hpp"
+
 hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle) {
   if (!handle)
     return HIPTENSOR_STATUS_NOT_INITIALIZED;
@@ -186,3 +188,42 @@ std::ostream &operator<<(std::ostream &os,
 
   return os;
 }
+
+void printHexAddress(char *str, void *obj) {
+  // Format string as hex
+  // Width in hex = 8 Byte * 2 = 16
+  // Cast obj to
+  sprintf(str, "%0*lX", 2 * (int)sizeof(void *), (unsigned long long)obj);
+}
+
+hiptensorStatus_t
+hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback) {
+  auto &logger = hiptensor::Logger::instance();
+  auto loggerResult = logger->setCallback(callback);
+
+  auto result = hiptensor_STATUS_SUCCESS;
+  if (loggerResult == hiptensor::Logger::LOGGER_BAD_CALLBACK) {
+    // Invalid callback was given
+    result = hiptensor_STATUS_INVALID_VALUE;
+  }
+
+  char buff[32];
+
+  char buff2[512];
+  sprintf(buff2, "callback=%s", buff);
+
+  logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE,
+                     "hiptensorLoggerSetCallback", buff2);
+
+  return result;
+}
+
+hiptensorStatus_t hiptensorLoggerSetFile(FILE *file) {}
+
+hiptensorStatus_t hiptensorLoggerOpenFile(const char *logFile) {}
+
+hiptensorStatus_t hiptensorLoggerSetLevel(int32_t level) {}
+
+hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask) {}
+
+hiptensorStatus_t hiptensorLoggerForceDisable() {}
