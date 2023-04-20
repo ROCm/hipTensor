@@ -117,6 +117,206 @@ hiptensorStatus_t hiptensorFillCKContractionMetrics(
   return HIPTENSOR_STATUS_SUCCESS;
 }
 
+template <typename T> struct MetaTraits;
+
+using ck::index_t;
+template <index_t NumDimM, index_t NumDimN, index_t NumDimK, typename ADataType,
+          typename BDataType, typename DsDataType, typename EDataType,
+          typename AElementwiseOperation, typename BElementwiseOperation,
+          typename CDEElementwiseOperation>
+struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
+    NumDimM, NumDimN, NumDimK, ADataType, BDataType, std::tuple<DsDataType>,
+    EDataType, AElementwiseOperation, BElementwiseOperation,
+    CDEElementwiseOperation>> {
+  constexpr static index_t DimsM = NumDimM;
+  constexpr static index_t DimsN = NumDimN;
+  constexpr static index_t DimsK = NumDimK;
+  using ADataT = ADataType;
+  using BDataT = BDataType;
+  using DDataT = DsDataType;
+  using EDataT = EDataType;
+  using AOp = AElementwiseOperation;
+  using BOp = BElementwiseOperation;
+  using CDEOp = CDEElementwiseOperation;
+};
+
+struct KernelLauncher {
+  template <index_t NumDimM, index_t NumDimN, index_t NumDimK,
+            typename ADataType, typename BDataType, typename DsDataType,
+            typename EDataType, typename AElementwiseOperation,
+            typename BElementwiseOperation>
+  KernelLauncher(
+      std::unique_ptr<ck::tensor_operation::device::DeviceContractionMultipleD<
+          NumDimM, NumDimN, NumDimK, ADataType, BDataType,
+          std::tuple<DsDataType>, EDataType, AElementwiseOperation,
+          BElementwiseOperation, ck::tensor_operation::element_wise::Bilinear>>
+          &deviceOp,
+      const hiptensorContractionPlan_t *plan, const void *alpha, const void *A,
+      const void *B, const void *beta, const void *C, void *D) {
+    // Initialize the argument pointer
+    const auto a_element_op = AElementwiseOperation{};
+    const auto b_element_op = BElementwiseOperation{};
+
+    const auto cde_element_op = ck::tensor_operation::element_wise::Bilinear{
+        *(F32 *)alpha, *(F32 *)beta};
+
+    mArgPtr = std::move(deviceOp->MakeArgumentPointer(
+        A, B, std::array<const void *, 1>{C}, D,
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()),
+        std::array<std::vector<ck::index_t>, 1>{std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end())},
+        std::array<std::vector<ck::index_t>, 1>{std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end())},
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()),
+        a_element_op, b_element_op, cde_element_op));
+
+    // Initialize the invoker
+    mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
+
+    // Get the kernel name
+    mKernelName = deviceOp->GetTypeString();
+
+    // Fill problem metrics
+    mM = std::accumulate(
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
+        ck::index_t{1}, std::multiplies<ck::index_t>{});
+
+    mN = std::accumulate(
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM +
+            NumDimN,
+        ck::index_t{1}, std::multiplies<ck::index_t>{});
+
+    mK = std::accumulate(
+        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM,
+        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM +
+            NumDimK,
+        ck::index_t{1}, std::multiplies<ck::index_t>{});
+
+    // Byte count
+    mBytes = sizeof(ADataType) * mM * mK + sizeof(BDataType) * mK * mN +
+             sizeof(CDataType) * mM * mN + sizeof(DDataType) * mM * mN;
+
+    mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+  }
+
+  template <index_t NumDimM, index_t NumDimN, index_t NumDimK,
+            typename ADataType, typename BDataType, typename DsDataType,
+            typename EDataType, typename AElementwiseOperation,
+            typename BElementwiseOperation>
+  KernelLauncher(
+      std::unique_ptr<ck::tensor_operation::device::DeviceContractionMultipleD<
+          NumDimM, NumDimN, NumDimK, ADataType, BDataType,
+          std::tuple<DsDataType>, EDataType, AElementwiseOperation,
+          BElementwiseOperation, ck::tensor_operation::element_wise::Scale>>
+          &deviceOp,
+      const hiptensorContractionPlan_t *plan, const void *alpha, const void *A,
+      const void *B, const void *beta, const void *C, void *D) {
+    // Initialize the argument pointer
+    const auto a_element_op = AElementwiseOperation{};
+    const auto b_element_op = BElementwiseOperation{};
+
+    const auto cde_element_op =
+        ck::tensor_operation::element_wise::Scale{*(F32 *)alpha};
+
+    mArgPtr = std::move(deviceOp->MakeArgumentPointer(
+        A, B, std::array<const void *, 0>{}, D,
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()),
+        std::array<std::vector<ck::index_t>, 0>{},
+        std::array<std::vector<ck::index_t>, 0>{},
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()),
+        std::vector<ck::index_t>(
+            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
+            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()),
+        a_element_op, b_element_op, cde_element_op));
+
+    // Initialize the invoker
+    mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
+
+    // Get the kernel name
+    mKernelName = deviceOp->GetTypeString();
+
+    // Fill problem metrics
+    mM = std::accumulate(
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
+        ck::index_t{1}, std::multiplies<ck::index_t>{});
+
+    mN = std::accumulate(
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
+        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM +
+            NumDimN,
+        ck::index_t{1}, std::multiplies<ck::index_t>{});
+
+    mK = std::accumulate(
+        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM,
+        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM +
+            NumDimK,
+        ck::index_t{1}, std::multiplies<ck::index_t>{});
+
+    // Byte count
+    mBytes = sizeof(ADataType) * mM * mK + sizeof(BDataType) * mK * mN +
+             sizeof(DDataType) * mM * mN;
+
+    mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+  }
+
+  float operator()(StreamConfig const &streamConfig = StreamConfig{nullptr,
+                                                                   true}) {
+    if (!mValid) {
+#ifdef HT_DEBUG_MODE
+      std::cout << op->mKernelName() << " does not support this problem"
+                << std::endl;
+#endif
+      return -1.0f;
+    }
+
+    return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
+  }
+
+  bool isValid() const { return mValid; }
+
+  std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
+  std::unique_ptr<ck::tensor_operation::device::BaseInvoker> mInvokerPtr;
+  std::string mKernelName;
+
+  index_t mM, mN, mK;
+  index_t mBytes;
+  bool mValid;
+};
+
 hiptensorStatus_t hiptensorCKScaleContraction(
     const hiptensorHandle_t *handle, const hiptensorContractionPlan_t *plan,
     hiptensorContractionMetrics_t *ht_contract_metrics, const void *alpha,
