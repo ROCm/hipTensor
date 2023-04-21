@@ -27,6 +27,7 @@
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <type_traits>
 #include <vector>
 
 // CK includes
@@ -48,145 +49,80 @@ using BDataType = F32;
 using CDataType = F32;
 using DDataType = F32;
 
-static constexpr ck::index_t NumDimM = 2;
-static constexpr ck::index_t NumDimN = 2;
-static constexpr ck::index_t NumDimK = 2;
-
-using PassThrough = ck::tensor_operation::element_wise::PassThrough;
-using Scale = ck::tensor_operation::element_wise::Scale;
-using Bilinear = ck::tensor_operation::element_wise::Bilinear;
-
-using AElementOp = PassThrough;
-using BElementOp = PassThrough;
-using CDEScaleElementOp = Scale;
-using CDEBilinearElementOp = Bilinear;
-
-using ContractionScaleOp =
-    ck::tensor_operation::device::DeviceContractionMultipleD<
-        NumDimM, NumDimN, NumDimK, ADataType, BDataType, ck::Tuple<>, DDataType,
-        ck::tensor_operation::element_wise::PassThrough,
-        ck::tensor_operation::element_wise::PassThrough,
-        ck::tensor_operation::element_wise::Scale>;
-
-using ContractionBilinearOp =
-    ck::tensor_operation::device::DeviceContractionMultipleD<
-        NumDimM, NumDimN, NumDimK, ADataType, BDataType, ck::Tuple<CDataType>,
-        DDataType, ck::tensor_operation::element_wise::PassThrough,
-        ck::tensor_operation::element_wise::PassThrough,
-        ck::tensor_operation::element_wise::Bilinear>;
-
-hiptensorStatus_t hiptensorFillCKContractionMetrics(
-    const hiptensorContractionPlan_t *plan,
-    hiptensorContractionMetrics_t *ht_contract_metrics,
-    const hiptesnorContractionOperation_t contractionOp) {
-  ck::index_t M = std::accumulate(
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
-      ck::index_t{1}, std::multiplies<ck::index_t>{});
-
-  ck::index_t N = std::accumulate(
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM +
-          NumDimN,
-      ck::index_t{1}, std::multiplies<ck::index_t>{});
-
-  ck::index_t K = std::accumulate(
-      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM,
-      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM +
-          NumDimK,
-      ck::index_t{1}, std::multiplies<ck::index_t>{});
-
-  std::size_t flop = std::size_t(2) * M * N * K;
-  std::size_t num_btype;
-
-  if (contractionOp == hiptensor_CONTRACTION_BILINEAR) {
-    num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N +
-                sizeof(CDataType) * M * N + sizeof(DDataType) * M * N;
-  } else if (contractionOp == hiptensor_CONTRACTION_SCALE) {
-    num_btype = sizeof(ADataType) * M * K + sizeof(BDataType) * K * N +
-                sizeof(DDataType) * M * N;
-  } else {
-    std::cout << "Input Contraction operation not supported by CK" << std::endl;
-    return HIPTENSOR_STATUS_CK_ERROR;
-  }
-
-  ht_contract_metrics->tflops =
-      static_cast<float>(flop) / 1.E9 / ht_contract_metrics->avg_time;
-  ht_contract_metrics->transfer_speed =
-      num_btype / 1.E6 / ht_contract_metrics->avg_time;
-  return HIPTENSOR_STATUS_SUCCESS;
-}
-
 template <typename T> struct MetaTraits;
 
 using ck::index_t;
-template <index_t NumDimM, index_t NumDimN, index_t NumDimK, typename ADataType,
-          typename BDataType, typename DsDataType, typename EDataType,
-          typename AElementwiseOperation, typename BElementwiseOperation,
-          typename CDEElementwiseOperation>
+template <index_t NumDimsM, index_t NumDimsN, index_t NumDimsK,
+          typename ADataType, typename BDataType, typename DsDataType,
+          typename EDataType, typename AElementwiseOperation,
+          typename BElementwiseOperation>
 struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-    NumDimM, NumDimN, NumDimK, ADataType, BDataType, std::tuple<DsDataType>,
+    NumDimsM, NumDimsN, NumDimsK, ADataType, BDataType, ck::Tuple<DsDataType>,
     EDataType, AElementwiseOperation, BElementwiseOperation,
-    CDEElementwiseOperation>> {
-  constexpr static index_t DimsM = NumDimM;
-  constexpr static index_t DimsN = NumDimN;
-  constexpr static index_t DimsK = NumDimK;
+    ck::tensor_operation::element_wise::Bilinear>> {
+  constexpr static index_t DimsM = NumDimsM;
+  constexpr static index_t DimsN = NumDimsN;
+  constexpr static index_t DimsK = NumDimsK;
   using ADataT = ADataType;
   using BDataT = BDataType;
   using DDataT = DsDataType;
   using EDataT = EDataType;
   using AOp = AElementwiseOperation;
   using BOp = BElementwiseOperation;
-  using CDEOp = CDEElementwiseOperation;
+  using CDEOp = ck::tensor_operation::element_wise::Bilinear;
+};
+
+template <index_t NumDimsM, index_t NumDimsN, index_t NumDimsK,
+          typename ADataType, typename BDataType, typename EDataType,
+          typename AElementwiseOperation, typename BElementwiseOperation>
+struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
+    NumDimsM, NumDimsN, NumDimsK, ADataType, BDataType, ck::Tuple<>, EDataType,
+    AElementwiseOperation, BElementwiseOperation,
+    ck::tensor_operation::element_wise::Scale>> {
+  constexpr static index_t DimsM = NumDimsM;
+  constexpr static index_t DimsN = NumDimsN;
+  constexpr static index_t DimsK = NumDimsK;
+  using ADataT = ADataType;
+  using BDataT = BDataType;
+  using EDataT = EDataType;
+  using AOp = AElementwiseOperation;
+  using BOp = BElementwiseOperation;
+  using CDEOp = ck::tensor_operation::element_wise::Scale;
 };
 
 struct KernelLauncher {
-  template <index_t NumDimM, index_t NumDimN, index_t NumDimK,
-            typename ADataType, typename BDataType, typename DsDataType,
-            typename EDataType, typename AElementwiseOperation,
-            typename BElementwiseOperation>
-  KernelLauncher(
-      std::unique_ptr<ck::tensor_operation::device::DeviceContractionMultipleD<
-          NumDimM, NumDimN, NumDimK, ADataType, BDataType,
-          std::tuple<DsDataType>, EDataType, AElementwiseOperation,
-          BElementwiseOperation, ck::tensor_operation::element_wise::Bilinear>>
-          &deviceOp,
-      const hiptensorContractionPlan_t *plan, const void *alpha, const void *A,
-      const void *B, const void *beta, const void *C, void *D) {
+  // Override for BilinearContraction
+  template <typename DeviceOp,
+            typename std::enable_if_t<
+                std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                               ck::tensor_operation::element_wise::Bilinear>,
+                void *> = nullptr>
+  KernelLauncher(DeviceOp *deviceOp, void const *alpha, void const *A,
+                 void const *B, void const *beta, void const *D, void *E,
+                 std::vector<index_t> const &a_ms_ns_lengths,
+                 std::vector<index_t> const &a_ms_ks_strides,
+                 std::vector<index_t> const &b_ns_ks_lengths,
+                 std::vector<index_t> const &b_ns_ks_strides,
+                 std::vector<std::vector<index_t>> const &ds_ms_ns_lengths,
+                 std::vector<std::vector<index_t>> const &ds_ms_ns_strides,
+                 std::vector<index_t> const &e_ms_ns_lengths,
+                 std::vector<index_t> const &e_ms_ns_strides)
+      : a_ms_ns_lengths_(a_ms_ns_lengths), a_ms_ks_strides_(a_ms_ks_strides),
+        b_ns_ks_lengths_(b_ns_ks_lengths), b_ns_ks_strides_(b_ns_ks_strides),
+        ds_ms_ns_lengths_(ds_ms_ns_lengths),
+        ds_ms_ns_strides_(ds_ms_ns_strides), e_ms_ns_lengths_(e_ms_ns_lengths),
+        e_ms_ns_strides_(e_ms_ns_strides) {
+    using Traits = MetaTraits<DeviceOp>;
+
     // Initialize the argument pointer
-    const auto a_element_op = AElementwiseOperation{};
-    const auto b_element_op = BElementwiseOperation{};
-
-    const auto cde_element_op = ck::tensor_operation::element_wise::Bilinear{
-        *(F32 *)alpha, *(F32 *)beta};
-
     mArgPtr = std::move(deviceOp->MakeArgumentPointer(
-        A, B, std::array<const void *, 1>{C}, D,
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()),
-        std::array<std::vector<ck::index_t>, 1>{std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end())},
-        std::array<std::vector<ck::index_t>, 1>{std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end())},
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()),
-        a_element_op, b_element_op, cde_element_op));
+        A, B, std::array<const void *, 1>{D}, E, a_ms_ns_lengths,
+        a_ms_ks_strides, b_ns_ks_lengths, b_ns_ks_strides,
+        std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths[0]},
+        std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides[0]},
+        e_ms_ns_lengths, e_ms_ns_strides, typename Traits::AOp{},
+        typename Traits::BOp{},
+        typename Traits::CDEOp{*(F32 *)alpha, *(F32 *)beta}));
 
     // Initialize the invoker
     mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -195,72 +131,52 @@ struct KernelLauncher {
     mKernelName = deviceOp->GetTypeString();
 
     // Fill problem metrics
-    mM = std::accumulate(
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
-        ck::index_t{1}, std::multiplies<ck::index_t>{});
+    mM = std::accumulate(e_ms_ns_lengths.begin(),
+                         e_ms_ns_lengths.begin() + Traits::DimsM,
+                         ck::index_t{1}, std::multiplies<ck::index_t>{});
 
-    mN = std::accumulate(
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM +
-            NumDimN,
-        ck::index_t{1}, std::multiplies<ck::index_t>{});
+    mN =
+        std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                        e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                        ck::index_t{1}, std::multiplies<ck::index_t>{});
 
-    mK = std::accumulate(
-        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM,
-        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM +
-            NumDimK,
-        ck::index_t{1}, std::multiplies<ck::index_t>{});
+    mK =
+        std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                        e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                        ck::index_t{1}, std::multiplies<ck::index_t>{});
 
     // Byte count
-    mBytes = sizeof(ADataType) * mM * mK + sizeof(BDataType) * mK * mN +
-             sizeof(CDataType) * mM * mN + sizeof(DDataType) * mM * mN;
+    mBytes = sizeof(typename Traits::ADataT) * mM * mK +
+             sizeof(typename Traits::BDataT) * mK * mN +
+             sizeof(typename Traits::DDataT) * mM * mN +
+             sizeof(typename Traits::EDataT) * mM * mN;
 
     mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
   }
 
-  template <index_t NumDimM, index_t NumDimN, index_t NumDimK,
-            typename ADataType, typename BDataType, typename DsDataType,
-            typename EDataType, typename AElementwiseOperation,
-            typename BElementwiseOperation>
-  KernelLauncher(
-      std::unique_ptr<ck::tensor_operation::device::DeviceContractionMultipleD<
-          NumDimM, NumDimN, NumDimK, ADataType, BDataType,
-          std::tuple<DsDataType>, EDataType, AElementwiseOperation,
-          BElementwiseOperation, ck::tensor_operation::element_wise::Scale>>
-          &deviceOp,
-      const hiptensorContractionPlan_t *plan, const void *alpha, const void *A,
-      const void *B, const void *beta, const void *C, void *D) {
+  template <typename DeviceOp,
+            typename std::enable_if_t<
+                std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                               ck::tensor_operation::element_wise::Scale>,
+                void *> = nullptr>
+  KernelLauncher(DeviceOp *deviceOp, void const *alpha, void const *A,
+                 void const *B, void *E,
+                 std::vector<index_t> const &a_ms_ns_lengths,
+                 std::vector<index_t> const &a_ms_ks_strides,
+                 std::vector<index_t> const &b_ns_ks_lengths,
+                 std::vector<index_t> const &b_ns_ks_strides,
+                 std::vector<index_t> const &e_ms_ns_lengths,
+                 std::vector<index_t> const &e_ms_ns_strides) {
+    using Traits = MetaTraits<DeviceOp>;
+
     // Initialize the argument pointer
-    const auto a_element_op = AElementwiseOperation{};
-    const auto b_element_op = BElementwiseOperation{};
-
-    const auto cde_element_op =
-        ck::tensor_operation::element_wise::Scale{*(F32 *)alpha};
-
     mArgPtr = std::move(deviceOp->MakeArgumentPointer(
-        A, B, std::array<const void *, 0>{}, D,
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()),
+        A, B, std::array<const void *, 0>{}, E, a_ms_ns_lengths,
+        a_ms_ks_strides, b_ns_ks_lengths, b_ns_ks_strides,
         std::array<std::vector<ck::index_t>, 0>{},
-        std::array<std::vector<ck::index_t>, 0>{},
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()),
-        a_element_op, b_element_op, cde_element_op));
+        std::array<std::vector<ck::index_t>, 0>{}, e_ms_ns_lengths,
+        e_ms_ns_strides, typename Traits::AOp{}, typename Traits::BOp{},
+        typename Traits::CDEOp{*(F32 *)alpha}));
 
     // Initialize the invoker
     mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -269,26 +185,24 @@ struct KernelLauncher {
     mKernelName = deviceOp->GetTypeString();
 
     // Fill problem metrics
-    mM = std::accumulate(
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
-        ck::index_t{1}, std::multiplies<ck::index_t>{});
+    mM = std::accumulate(e_ms_ns_lengths.begin(),
+                         e_ms_ns_lengths.begin() + Traits::DimsM,
+                         ck::index_t{1}, std::multiplies<ck::index_t>{});
 
-    mN = std::accumulate(
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM,
-        plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin() + NumDimM +
-            NumDimN,
-        ck::index_t{1}, std::multiplies<ck::index_t>{});
+    mN =
+        std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                        e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                        ck::index_t{1}, std::multiplies<ck::index_t>{});
 
-    mK = std::accumulate(
-        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM,
-        plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin() + NumDimM +
-            NumDimK,
-        ck::index_t{1}, std::multiplies<ck::index_t>{});
+    mK =
+        std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
+                        a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                        ck::index_t{1}, std::multiplies<ck::index_t>{});
 
     // Byte count
-    mBytes = sizeof(ADataType) * mM * mK + sizeof(BDataType) * mK * mN +
-             sizeof(DDataType) * mM * mN;
+    mBytes = sizeof(typename Traits::ADataT) * mM * mK +
+             sizeof(typename Traits::BDataT) * mK * mN +
+             sizeof(typename Traits::EDataT) * mM * mN;
 
     mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
   }
@@ -308,154 +222,25 @@ struct KernelLauncher {
 
   bool isValid() const { return mValid; }
 
-  std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
-  std::unique_ptr<ck::tensor_operation::device::BaseInvoker> mInvokerPtr;
-  std::string mKernelName;
+  std::vector<index_t> a_ms_ns_lengths_;
+  std::vector<index_t> a_ms_ks_strides_;
+  std::vector<index_t> b_ns_ks_lengths_;
+  std::vector<index_t> b_ns_ks_strides_;
+  std::vector<std::vector<index_t>> ds_ms_ns_lengths_;
+  std::vector<std::vector<index_t>> ds_ms_ns_strides_;
+  std::vector<index_t> e_ms_ns_lengths_;
+  std::vector<index_t> e_ms_ns_strides_;
 
   index_t mM, mN, mK;
   index_t mBytes;
   bool mValid;
+
+  std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
+  std::unique_ptr<ck::tensor_operation::device::BaseInvoker> mInvokerPtr;
+  std::string mKernelName;
 };
 
-hiptensorStatus_t hiptensorCKScaleContraction(
-    const hiptensorHandle_t *handle, const hiptensorContractionPlan_t *plan,
-    hiptensorContractionMetrics_t *ht_contract_metrics, const void *alpha,
-    const void *A, const void *B, const void *beta, const void *C, void *D,
-    void *workspace, uint64_t workspaceSize, hipStream_t stream) {
-  if (!handle || !ht_contract_metrics || !A || !B || !D)
-    return HIPTENSOR_STATUS_NOT_INITIALIZED;
-
-  std::string best_op_name;
-  bool found = false;
-  int best_op_id = -1;
-  float best_ave_time = 0;
-  float best_tflops = 0;
-  float best_gb_per_sec = 0;
-
-  memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
-
-#ifdef HT_DEBUG_MODE
-  std::cout << "Tensor A lengths: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()));
-  std::cout << ", strides: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()));
-  std::cout << ", size: "
-            << plan->ht_plan_desc.ht_contract_attr_desc[0].tensor_size
-            << std::endl;
-
-  std::cout << "Tensor B lengths: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()));
-  std::cout << ", strides: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()));
-  std::cout << ", size: "
-            << plan->ht_plan_desc.ht_contract_attr_desc[1].tensor_size
-            << std::endl;
-
-  std::cout << "Tensor C lengths: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()));
-  std::cout << ", strides: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()));
-  std::cout << ", size: "
-            << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size
-            << std::endl;
-#endif
-
-  auto contraction_scale = [&](auto &op_layout) {
-    if (!op_layout)
-      return HIPTENSOR_STATUS_NOT_INITIALIZED;
-
-    using ContractionInstance = decltype(op_layout);
-    ContractionInstance op = std::move(op_layout);
-
-    const auto a_element_op = AElementOp{};
-    const auto b_element_op = BElementOp{};
-
-    const auto cde_element_op = CDEScaleElementOp{*(F32 *)alpha};
-    auto argument_ptr = op->MakeArgumentPointer(
-        A, B, std::array<const void *, 0>{}, D,
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()),
-        std::array<std::vector<ck::index_t>, 0>{},
-        std::array<std::vector<ck::index_t>, 0>{},
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()),
-        a_element_op, b_element_op, cde_element_op);
-
-    auto invoker_ptr = op->MakeInvokerPointer();
-    std::string op_name = op->GetTypeString();
-
-    if (!op->IsSupportedArgument(argument_ptr.get())) {
-#ifdef HT_DEBUG_MODE
-      std::cout << op->GetTypeString() << " does not support this problem"
-                << std::endl;
-#endif
-      return HIPTENSOR_STATUS_CK_ERROR;
-    }
-
-    ht_contract_metrics->avg_time =
-        invoker_ptr->Run(argument_ptr.get(), StreamConfig{nullptr, true});
-    hiptensorFillCKContractionMetrics(plan, ht_contract_metrics,
-                                      plan->ht_plan_desc.ht_contract_op);
-    return HIPTENSOR_STATUS_SUCCESS;
-  };
-
-  const auto op_scale_ptrs =
-      ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-          ContractionScaleOp>::GetInstances();
-
-  std::cout << "Run all instances and do timing" << std::endl;
-
-  for (int i = 0; i < op_scale_ptrs.size(); ++i) {
-    auto &op_ptr = op_scale_ptrs[i];
-    contraction_scale(op_ptr);
-    if (ht_contract_metrics->tflops > best_tflops) {
-      found = true;
-      best_op_id = i;
-      best_op_name = op_ptr->GetTypeString();
-      best_tflops = ht_contract_metrics->tflops;
-      best_ave_time = ht_contract_metrics->avg_time;
-      best_gb_per_sec = ht_contract_metrics->transfer_speed;
-    }
-  }
-
-#ifdef HT_DEBUG_MODE
-  std::cout << "Best Perf: " << best_ave_time << " ms, " << best_tflops
-            << " TFlops, " << best_gb_per_sec << " GB/s, " << best_op_name
-            << std::endl;
-#endif
-
-  auto &contract_op_ptr = op_scale_ptrs[best_op_id];
-  ht_contract_metrics->ht_instance = contract_op_ptr->GetTypeString();
-  contraction_scale(contract_op_ptr);
-  return HIPTENSOR_STATUS_SUCCESS;
-}
-hiptensorStatus_t hiptensorCKBilinearContraction(
+hiptensorStatus_t hiptensorCKContraction(
     const hiptensorHandle_t *handle, const hiptensorContractionPlan_t *plan,
     hiptensorContractionMetrics_t *ht_contract_metrics, const void *alpha,
     const void *A, const void *B, const void *beta, const void *C, void *D,
@@ -473,39 +258,51 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
 
   memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
+  auto a_ms_ns_lengths = std::vector<ck::index_t>(
+      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
+      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end());
+
+  auto a_ms_ks_strides = std::vector<ck::index_t>(
+      plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
+      plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end());
+
+  auto b_ns_ks_lengths = std::vector<ck::index_t>(
+      plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
+      plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end());
+
+  auto b_ns_ks_strides = std::vector<ck::index_t>(
+      plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
+      plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end());
+
+  auto e_ms_ns_lengths = std::vector<ck::index_t>(
+      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
+      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end());
+
+  auto e_ms_ns_strides = std::vector<ck::index_t>(
+      plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
+      plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end());
+
 #ifdef HT_DEBUG_MODE
   std::cout << "Tensor A lengths: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()));
+  hiptensorPrintVectorElements<ck::index_t>(a_ms_ns_lengths);
   std::cout << ", strides: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()));
+  hiptensorPrintVectorElements<ck::index_t>(a_ms_ks_strides);
   std::cout << ", size: "
             << plan->ht_plan_desc.ht_contract_attr_desc[0].tensor_size
             << std::endl;
 
   std::cout << "Tensor B lengths: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()));
+  hiptensorPrintVectorElements<ck::index_t>(b_ns_ks_lengths);
   std::cout << ", strides: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()));
+  hiptensorPrintVectorElements<ck::index_t>(b_ns_ks_strides);
   std::cout << ", size: "
             << plan->ht_plan_desc.ht_contract_attr_desc[1].tensor_size
             << std::endl;
 
   std::cout << "Tensor C lengths: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()));
+  hiptensorPrintVectorElements<ck::index_t>(e_ms_ns_lengths);
   std::cout << ", strides: ";
-  hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
-      plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-      plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()));
+  hiptensorPrintVectorElements<ck::index_t>(e_ms_ns_strides);
   std::cout << ", size: "
             << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size
             << std::endl;
@@ -514,102 +311,140 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
   hip_check_error(
       hipMalloc(static_cast<void **>(&output),
                 plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size));
+
   hip_check_error(hipMemset(
       output, 0, plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size));
 
-  auto contraction_bilinear = [&](auto &op_layout) {
-    if (!op_layout)
-      return HIPTENSOR_STATUS_NOT_INITIALIZED;
+  std::vector<KernelLauncher> solutions;
 
-    using ContractionInstance = decltype(op_layout);
-    ContractionInstance op = std::move(op_layout);
+  if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_BILINEAR) {
+    // Use this generic lambda to initialize the bilinear kernels.
+    auto initBilinearSolutions = [&](auto const &v) {
+      for (auto &opPtr : v) {
+        solutions.push_back(KernelLauncher(
+            opPtr.get(), alpha, A, B, beta, C, output, a_ms_ns_lengths,
+            a_ms_ks_strides, b_ns_ks_lengths, b_ns_ks_strides,
+            std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
+            std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
+            e_ms_ns_lengths, e_ms_ns_strides));
+      }
+    };
 
-    const auto a_element_op = AElementOp{};
-    const auto b_element_op = BElementOp{};
+    // if(ADataType == F32 && BDataType == F32 && CDataType == F32 && DDataType
+    // == F32)
+    {
+      using ContractionBilinearOp =
+          ck::tensor_operation::device::DeviceContractionMultipleD<
+              2, 2, 2, F32, F32, ck::Tuple<F32>, F32,
+              ck::tensor_operation::element_wise::PassThrough,
+              ck::tensor_operation::element_wise::PassThrough,
+              ck::tensor_operation::element_wise::Bilinear>;
 
-    const auto cde_element_op =
-        CDEBilinearElementOp{*(F32 *)alpha, *(F32 *)beta};
-
-    auto argument_ptr = op->MakeArgumentPointer(
-        A, B, std::array<const void *, 1>{C}, output,
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[0].strides.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[1].strides.end()),
-        std::array<std::vector<ck::index_t>, 1>{std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end())},
-        std::array<std::vector<ck::index_t>, 1>{std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end())},
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].lens.end()),
-        std::vector<ck::index_t>(
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
-            plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end()),
-        a_element_op, b_element_op, cde_element_op);
-
-    auto invoker_ptr = op->MakeInvokerPointer();
-    std::string op_name = op->GetTypeString();
-
-    if (!op->IsSupportedArgument(argument_ptr.get())) {
-#ifdef HT_DEBUG_MODE
-      std::cout << op->GetTypeString() << " does not support this problem"
-                << std::endl;
-#endif
-      return HIPTENSOR_STATUS_CK_ERROR;
+      initBilinearSolutions(ck::tensor_operation::device::instance::
+                                DeviceOperationInstanceFactory<
+                                    ContractionBilinearOp>::GetInstances());
     }
+    // else if(ADataType == F64 && BDataType == F64 && CDataType == F64 &&
+    // DDataType == F64)
+    //{
+    //  using ContractionBilinearOp =
+    //  ck::tensor_operation::device::DeviceContractionMultipleD<
+    //      2, 2, 2, F64, F64, ck::Tuple<F64>, F64,
+    //      ck::tensor_operation::element_wise::PassThrough,
+    //      ck::tensor_operation::element_wise::PassThrough,
+    //      ck::tensor_operation::element_wise::Bilinear>;
 
-    ht_contract_metrics->avg_time =
-        invoker_ptr->Run(argument_ptr.get(), StreamConfig{nullptr, true});
-    hiptensorFillCKContractionMetrics(plan, ht_contract_metrics,
-                                      plan->ht_plan_desc.ht_contract_op);
-    return HIPTENSOR_STATUS_SUCCESS;
-  };
+    // initBilinearSolutions(
+    //     ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
+    //     ContractionBilinearOp>::GetInstances());
+    //}
+  } else if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
+    // Use this generic lambda to initialize the bilinear kernels.
+    auto initScaleSolutions = [&](auto const &v) {
+      for (auto &opPtr : v) {
+        solutions.push_back(KernelLauncher(opPtr.get(), alpha, A, B, D,
+                                           a_ms_ns_lengths, a_ms_ks_strides,
+                                           b_ns_ks_lengths, b_ns_ks_strides,
+                                           e_ms_ns_lengths, e_ms_ns_strides));
+      }
+    };
 
-  const auto op_bilinear_ptrs =
-      ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-          ContractionBilinearOp>::GetInstances();
+    // if(ADataType == F32 && BDataType == F32 && CDataType == F32 && DDataType
+    // == F32)
+    {
+      using ContractionScaleOp =
+          ck::tensor_operation::device::DeviceContractionMultipleD<
+              2, 2, 2, F32, F32, ck::Tuple<>, F32,
+              ck::tensor_operation::element_wise::PassThrough,
+              ck::tensor_operation::element_wise::PassThrough,
+              ck::tensor_operation::element_wise::Scale>;
 
-#ifdef HT_DEBUG_MODE
+      initScaleSolutions(ck::tensor_operation::device::instance::
+                             DeviceOperationInstanceFactory<
+                                 ContractionScaleOp>::GetInstances());
+    }
+    // if(ADataType == F64 && BDataType == F64 && CDataType == F64 && DDataType
+    // == F64)
+    //  {
+    //      using ContractionScaleOp =
+    //          ck::tensor_operation::device::DeviceContractionMultipleD<
+    //              2, 2, 2, F64, F64, ck::Tuple<>, F64,
+    //              ck::tensor_operation::element_wise::PassThrough,
+    //              ck::tensor_operation::element_wise::PassThrough,
+    //              ck::tensor_operation::element_wise::Scale>;
+
+    //     initScaleSolutions(
+    //         ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
+    //         ContractionScaleOp>::GetInstances());
+    // }
+  }
+
+  /// Dispatching end
+
+  // Now we can launch the kernels and get the metrics.
+
   std::cout << "Run all instances and do timing" << std::endl;
-#endif
 
-  for (int i = 0; i < op_bilinear_ptrs.size(); ++i) {
-    auto &op_ptr = op_bilinear_ptrs[i];
-    contraction_bilinear(op_ptr);
-    if (ht_contract_metrics->tflops > best_tflops) {
-      found = true;
-      best_op_id = i;
-      best_op_name = op_ptr->GetTypeString();
-      best_tflops = ht_contract_metrics->tflops;
-      best_ave_time = ht_contract_metrics->avg_time;
-      best_gb_per_sec = ht_contract_metrics->transfer_speed;
+  for (int i = 0; i < solutions.size(); ++i) {
+    auto &solution = solutions[i];
+
+    if (solution.isValid()) {
+      auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
+      auto bytes = solution.mBytes;
+
+      auto time = solution();
+
+      hiptensorContractionMetrics_t metrics = {
+          time, // avg time
+          static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
+          static_cast<float>(solution.mBytes) / static_cast<float>(1.E6) /
+              time,            //
+          solution.mKernelName // name
+      };
+
+      if (metrics.tflops > best_tflops) {
+        found = true;
+        best_op_id = i;
+        best_op_name = metrics.ht_instance;
+        best_tflops = metrics.tflops;
+        best_ave_time = metrics.avg_time;
+        best_gb_per_sec = metrics.transfer_speed;
+      }
     }
   }
-#ifdef HT_DEBUG_MODE
-  std::cout << "Best Perf: " << best_ave_time << " ms, " << best_tflops
-            << " TFlops, " << best_gb_per_sec << " GB/s, " << best_op_name
-            << std::endl;
-#endif
-  auto &contract_op_ptr = op_bilinear_ptrs[best_op_id];
-  ht_contract_metrics->ht_instance = contract_op_ptr->GetTypeString();
-  contraction_bilinear(contract_op_ptr);
 
-  hip_check_error(hipMemcpy(
-      D, output, plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size,
-      hipMemcpyDeviceToDevice));
+  if (found) {
+    *ht_contract_metrics = {best_ave_time, best_tflops, best_gb_per_sec,
+                            best_op_name};
+  }
 
-  if (output)
+  if (output) {
+    hip_check_error(hipMemcpy(
+        D, output, plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size,
+        hipMemcpyDeviceToDevice));
+
     hip_check_error(hipFree(output));
-  return HIPTENSOR_STATUS_SUCCESS;
+  }
+
+  return hiptensor_STATUS_SUCCESS;
 }

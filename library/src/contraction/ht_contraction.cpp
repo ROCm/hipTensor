@@ -98,22 +98,28 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
                                        const void *C, void *D, void *workspace,
                                        uint64_t workspaceSize,
                                        hipStream_t stream) {
-  if (!handle || !A || !B || !D)
+  if (!handle || !A || !B || !D) {
     return HIPTENSOR_STATUS_NOT_INITIALIZED;
-
-  if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
-    hiptensorCKScaleContraction(handle, plan, &ht_contract_metrics, alpha, A, B,
-                                NULL, NULL, D, workspace, workspaceSize,
-                                stream);
-  } else if (plan->ht_plan_desc.ht_contract_op ==
-             hiptensor_CONTRACTION_BILINEAR) {
-    hiptensorCKBilinearContraction(handle, plan, &ht_contract_metrics, alpha, A,
-                                   B, beta, C, D, workspace, workspaceSize,
-                                   stream);
-  } else {
-    std::cout << "Contraction operation not permitted" << std::endl;
-    return HIPTENSOR_STATUS_CK_ERROR;
   }
+
+  hiptensorCKContraction(handle, plan, &ht_contract_metrics, alpha, A, B, beta,
+                         C, D, workspace, workspaceSize, stream);
+
+  //   if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
+  //     hiptensorCKScaleContraction(handle, plan, &ht_contract_metrics, alpha,
+  //     A, B,
+  //                                 NULL, NULL, D, workspace, workspaceSize,
+  //                                 stream);
+  //   } else if (plan->ht_plan_desc.ht_contract_op ==
+  //              hiptensor_CONTRACTION_BILINEAR) {
+  //     hiptensorCKBilinearContraction(handle, plan, &ht_contract_metrics,
+  //     alpha, A,
+  //                                    B, beta, C, D, workspace, workspaceSize,
+  //                                    stream);
+  //   } else {
+  //     std::cout << "Contraction operation not permitted" << std::endl;
+  //     return hiptensor_STATUS_CK_ERROR;
+  //   }
   return HIPTENSOR_STATUS_SUCCESS;
 }
 
