@@ -167,8 +167,8 @@ typedef enum {
  * hiptensorContractionGetWorkspace
  */
 typedef enum {
-  hiptensor_CONTRACTION_SCALE = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
-  hiptensor_CONTRACTION_BILINEAR =
+  HIPTENSOR_CONTRACTION_SCALE = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
+  HIPTENSOR_CONTRACTION_BILINEAR =
       1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
 } hiptesnorContractionOperation_t;
 

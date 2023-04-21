@@ -50,9 +50,9 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(
                                        3);
 
   if (!descD)
-    desc->ht_contract_op = hiptensor_CONTRACTION_SCALE;
+    desc->ht_contract_op = HIPTENSOR_CONTRACTION_SCALE;
   else
-    desc->ht_contract_op = hiptensor_CONTRACTION_BILINEAR;
+    desc->ht_contract_op = HIPTENSOR_CONTRACTION_BILINEAR;
 
   return HIPTENSOR_STATUS_SUCCESS;
 }

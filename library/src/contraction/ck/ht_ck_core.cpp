@@ -44,10 +44,7 @@
 #include "ht_utility.hpp"
 
 using F32 = float;
-using ADataType = F32;
-using BDataType = F32;
-using CDataType = F32;
-using DDataType = F32;
+using F64 = double;
 
 template <typename T> struct MetaTraits;
 
@@ -311,7 +308,7 @@ hiptensorStatus_t hiptensorCKContraction(
 
   std::vector<KernelLauncher> solutions;
 
-  if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_BILINEAR) {
+  if (plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR) {
     // Use this generic lambda to initialize the bilinear kernels.
     auto initBilinearSolutions = [&](auto const &v) {
       for (auto &opPtr : v) {
@@ -352,7 +349,7 @@ hiptensorStatus_t hiptensorCKContraction(
     //     ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
     //     ContractionBilinearOp>::GetInstances());
     //}
-  } else if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
+  } else if (plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE) {
     // Use this generic lambda to initialize the bilinear kernels.
     auto initScaleSolutions = [&](auto const &v) {
       for (auto &opPtr : v) {
@@ -438,5 +435,5 @@ hiptensorStatus_t hiptensorCKContraction(
     hip_check_error(hipFree(output));
   }
 
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
