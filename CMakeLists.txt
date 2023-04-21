@@ -133,12 +133,17 @@ if(HIPTENSOR_BUILD_DOCS)
   add_subdirectory (docs)
 endif()
 
-set(hiptensorVersion 0.2.0)
-rocm_setup_version(VERSION ${hiptensorVersion})
+# Versioning via rocm-cmake
+set ( VERSION_STRING "0.2.0" )
+rocm_setup_version( VERSION ${VERSION_STRING} )
+
+# configure a header file to pass the CMake version settings to the source
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library/include/hiptensor/internal/hiptensor-version.hpp.in"
+               "${CMAKE_CURRENT_SOURCE_DIR}/library/include/hiptensor/hiptensor-version.hpp" )
 
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfigVersion.cmake"
-    VERSION "${hiptensorVersion}"
+    VERSION "${VERSION_STRING}"
     COMPATIBILITY AnyNewerVersion
 )
 
