@@ -28,15 +28,15 @@
 
 hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle) {
   if (!handle)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   else if (hipInit(0) == hipErrorInvalidDevice)
-    return hiptensor_STATUS_ROCM_ERROR;
+    return HIPTENSOR_STATUS_ROCM_ERROR;
 
   else if (hipInit(0) == hipErrorInvalidValue)
-    return hiptensor_STATUS_INVALID_VALUE;
+    return HIPTENSOR_STATUS_INVALID_VALUE;
 
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorInitTensorDescriptor(
@@ -44,11 +44,11 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(
     const uint32_t numModes, const int64_t lens[], const int64_t strides[],
     hiptensorDataType_t dataType, hiptensorOperator_t unaryOp) {
   if (!handle || !desc)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   if (((!lens) && (!strides)) || dataType != hiptensor_R_32F ||
       unaryOp != hiptensor_OP_IDENTITY)
-    return hiptensor_STATUS_INVALID_VALUE;
+    return HIPTENSOR_STATUS_INVALID_VALUE;
 
   using descType = float;
   int ht_index = 0;
@@ -70,23 +70,56 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(
         std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
   desc->ht_type = dataType;
 
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
+}
+
+const char* hiptensorGetErrorString(const hiptensorStatus_t error) {
+    if (error == HIPTENSOR_STATUS_SUCCESS)
+    return "HIPTENSOR_STATUS_SUCCESS";
+  else if (error == HIPTENSOR_STATUS_NOT_INITIALIZED)
+    return "HIPTENSOR_STATUS_NOT_INITIALIZED";
+  else if (error == HIPTENSOR_STATUS_ALLOC_FAILED)
+    return "HIPTENSOR_STATUS_ALLOC_FAILED";
+  else if (error == HIPTENSOR_STATUS_INVALID_VALUE)
+    return "HIPTENSOR_STATUS_INVALID_VALUE";
+  else if (error == HIPTENSOR_STATUS_ARCH_MISMATCH)
+    return "HIPTENSOR_STATUS_ARCH_MISMATCH";
+  else if (error == HIPTENSOR_STATUS_MAPPING_ERROR)
+    return "HIPTENSOR_STATUS_MAPPING_ERROR";
+  else if (error == HIPTENSOR_STATUS_EXECUTION_FAILED)
+    return "HIPTENSOR_STATUS_EXECUTION_FAILED";
+  else if (error == HIPTENSOR_STATUS_INTERNAL_ERROR)
+    return "HIPTENSOR_STATUS_INTERNAL_ERROR";
+  else if (error == HIPTENSOR_STATUS_NOT_SUPPORTED)
+    return "HIPTENSOR_STATUS_NOT_SUPPORTED";
+  else if (error == HIPTENSOR_STATUS_LICENSE_ERROR)
+    return "HIPTENSOR_STATUS_LICENSE_ERROR";
+  else if (error == HIPTENSOR_STATUS_CK_ERROR)
+    return "HIPTENSOR_STATUS_CK_ERROR";
+  else if (error == HIPTENSOR_STATUS_ROCM_ERROR)
+    return "HIPTENSOR_STATUS_ROCM_ERROR";
+  else if (error == HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE)
+    return "HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE";
+  else if (error == HIPTENSOR_STATUS_INSUFFICIENT_DRIVER)
+    return "HIPTENSOR_STATUS_INSUFFICIENT_DRIVER";
+  else if (error == HIPTENSOR_STATUS_IO_ERROR)
+    return "HIPTENSOR_STATUS_IO_ERROR";
 }
 
 hiptensorStatus_t hiptensorGetAlignmentRequirement(
     const hiptensorHandle_t *handle, const void *ptr,
     const hiptensorTensorDescriptor_t *desc, uint32_t *alignmentRequirement) {
   if (!handle || !desc)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   if (desc->ht_type != hiptensor_R_32F)
-    return hiptensor_STATUS_INVALID_VALUE;
+    return HIPTENSOR_STATUS_INVALID_VALUE;
 
   using descType = float;
 
   *alignmentRequirement = sizeof(descType) * desc->hiptensorGetElementSpace();
 
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 void hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate(
