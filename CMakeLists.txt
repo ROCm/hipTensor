@@ -102,7 +102,7 @@ endif()
 message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
 
 # Setup HIP
-find_package( hip REQUIRED )
+find_package(hip REQUIRED )
 message(STATUS "HIP version: ${hip_VERSION}")
 
 # Configure library build
@@ -162,4 +162,3 @@ rocm_create_package(
     MAINTAINER "hiptensor Maintainer <hiptensor-maintainer@amd.com>"
     LDCONFIG
 )
-

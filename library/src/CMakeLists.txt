@@ -52,6 +52,6 @@ rocm_install_targets(
 
 rocm_install (EXPORT hiptensorTargets
     FILE hiptensorTargets.cmake
-    NAMESPACE hip::
+    NAMESPACE hiptensor::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hiptensor
 )

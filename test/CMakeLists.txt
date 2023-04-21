@@ -42,10 +42,8 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
     message( STATUS "adding hiptensor test: ${BINARY_NAME}")
     add_executable(${BINARY_NAME} ${FILE_NAME})
 
-    # Test is similar to a client, however is built
-    # under the hiptensor project. Therefore at build time,
-    # propagate the build interface includes to make sure
-    # hiptensor includes are captured.
+    # Test must propagate the build interface includes to make sure
+    # hiptensor includes are captured at runtime.
     target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}

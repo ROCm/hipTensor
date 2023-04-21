@@ -4,14 +4,14 @@ Client application links to hiptensor library, and therefore hiptensor library n
 
 ## Build
 ```bash
-mkdir -p client_example/build
-cd client_example/build
+mkdir -p samples/build
+cd samples/build
 ```
 
 ```bash
-cmake                                                                 \
--D CMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc                             \
--D CMAKE_PREFIX_PATH="/opt/rocm;${PATH_TO_CK_INSTALL_DIRECTORY}"      \
+cmake                                                                                                  \
+-D CMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc                                                              \
+-D CMAKE_PREFIX_PATH="/opt/rocm;${PATH_TO_HIPTENSOR_INSTALL_DIRECTORY};${PATH_TO_CK_INSTALL_DIRECTORY} \
 ..
 ```
 
