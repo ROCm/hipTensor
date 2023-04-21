@@ -107,14 +107,14 @@ hiptensorStatus_t hiptensorFillCKContractionMetrics(
                 sizeof(DDataType) * M * N;
   } else {
     std::cout << "Input Contraction operation not supported by CK" << std::endl;
-    return hiptensor_STATUS_CK_ERROR;
+    return HIPTENSOR_STATUS_CK_ERROR;
   }
 
   ht_contract_metrics->tflops =
       static_cast<float>(flop) / 1.E9 / ht_contract_metrics->avg_time;
   ht_contract_metrics->transfer_speed =
       num_btype / 1.E6 / ht_contract_metrics->avg_time;
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorCKScaleContraction(
@@ -123,7 +123,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(
     const void *A, const void *B, const void *beta, const void *C, void *D,
     void *workspace, uint64_t workspaceSize, hipStream_t stream) {
   if (!handle || !ht_contract_metrics || !A || !B || !D)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   std::string best_op_name;
   bool found = false;
@@ -174,7 +174,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(
 
   auto contraction_scale = [&](auto &op_layout) {
     if (!op_layout)
-      return hiptensor_STATUS_NOT_INITIALIZED;
+      return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     using ContractionInstance = decltype(op_layout);
     ContractionInstance op = std::move(op_layout);
@@ -215,14 +215,14 @@ hiptensorStatus_t hiptensorCKScaleContraction(
       std::cout << op->GetTypeString() << " does not support this problem"
                 << std::endl;
 #endif
-      return hiptensor_STATUS_CK_ERROR;
+      return HIPTENSOR_STATUS_CK_ERROR;
     }
 
     ht_contract_metrics->avg_time =
         invoker_ptr->Run(argument_ptr.get(), StreamConfig{nullptr, true});
     hiptensorFillCKContractionMetrics(plan, ht_contract_metrics,
                                       plan->ht_plan_desc.ht_contract_op);
-    return hiptensor_STATUS_SUCCESS;
+    return HIPTENSOR_STATUS_SUCCESS;
   };
 
   const auto op_scale_ptrs =
@@ -253,7 +253,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(
   auto &contract_op_ptr = op_scale_ptrs[best_op_id];
   ht_contract_metrics->ht_instance = contract_op_ptr->GetTypeString();
   contraction_scale(contract_op_ptr);
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 hiptensorStatus_t hiptensorCKBilinearContraction(
     const hiptensorHandle_t *handle, const hiptensorContractionPlan_t *plan,
@@ -261,7 +261,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
     const void *A, const void *B, const void *beta, const void *C, void *D,
     void *workspace, uint64_t workspaceSize, hipStream_t stream) {
   if (!handle || !ht_contract_metrics || !A || !B || !D)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   std::string best_op_name;
   bool found = false;
@@ -319,7 +319,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
 
   auto contraction_bilinear = [&](auto &op_layout) {
     if (!op_layout)
-      return hiptensor_STATUS_NOT_INITIALIZED;
+      return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     using ContractionInstance = decltype(op_layout);
     ContractionInstance op = std::move(op_layout);
@@ -366,14 +366,14 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
       std::cout << op->GetTypeString() << " does not support this problem"
                 << std::endl;
 #endif
-      return hiptensor_STATUS_CK_ERROR;
+      return HIPTENSOR_STATUS_CK_ERROR;
     }
 
     ht_contract_metrics->avg_time =
         invoker_ptr->Run(argument_ptr.get(), StreamConfig{nullptr, true});
     hiptensorFillCKContractionMetrics(plan, ht_contract_metrics,
                                       plan->ht_plan_desc.ht_contract_op);
-    return hiptensor_STATUS_SUCCESS;
+    return HIPTENSOR_STATUS_SUCCESS;
   };
 
   const auto op_bilinear_ptrs =
@@ -411,5 +411,5 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
 
   if (output)
     hip_check_error(hipFree(output));
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
