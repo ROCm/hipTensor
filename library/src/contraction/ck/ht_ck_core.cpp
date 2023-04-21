@@ -248,14 +248,6 @@ hiptensorStatus_t hiptensorCKContraction(
   if (!handle || !ht_contract_metrics || !A || !B || !D)
     return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-  std::string best_op_name;
-  bool found = false;
-  int best_op_id = -1;
-  float best_ave_time = 0;
-  float best_tflops = 0;
-  float best_gb_per_sec = 0;
-  void *output;
-
   memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
   auto a_ms_ns_lengths = std::vector<ck::index_t>(
@@ -307,6 +299,8 @@ hiptensorStatus_t hiptensorCKContraction(
             << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size
             << std::endl;
 #endif
+
+  void *output;
 
   hip_check_error(
       hipMalloc(static_cast<void **>(&output),
@@ -405,8 +399,11 @@ hiptensorStatus_t hiptensorCKContraction(
 
   std::cout << "Run all instances and do timing" << std::endl;
 
-  for (int i = 0; i < solutions.size(); ++i) {
-    auto &solution = solutions[i];
+  std::string best_op_name;
+  bool found = false;
+  hiptensorContractionMetrics_t bestFound = {0, 0, 0, ""};
+
+  for (auto &solution : solutions) {
 
     if (solution.isValid()) {
       auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
@@ -422,20 +419,15 @@ hiptensorStatus_t hiptensorCKContraction(
           solution.mKernelName // name
       };
 
-      if (metrics.tflops > best_tflops) {
+      if (metrics.tflops > bestFound.tflops) {
         found = true;
-        best_op_id = i;
-        best_op_name = metrics.ht_instance;
-        best_tflops = metrics.tflops;
-        best_ave_time = metrics.avg_time;
-        best_gb_per_sec = metrics.transfer_speed;
+        bestFound = metrics;
       }
     }
   }
 
   if (found) {
-    *ht_contract_metrics = {best_ave_time, best_tflops, best_gb_per_sec,
-                            best_op_name};
+    *ht_contract_metrics = bestFound;
   }
 
   if (output) {
