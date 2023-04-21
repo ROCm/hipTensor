@@ -41,7 +41,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(
 
 {
   if (!handle || !desc || !descA || !descB || !descC)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   const hiptensorTensorDescriptor_t *ht_input_descs[] = {descA, descB, descC};
   const uint32_t alignmentRequriement_arr[] = {
@@ -54,21 +54,21 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(
   else
     desc->ht_contract_op = hiptensor_CONTRACTION_BILINEAR;
 
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
                                                hiptensorContractionFind_t *find,
                                                const hiptensorAlgo_t algo) {
   if (!handle || !find)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   if (algo != hiptensor_ALGO_DEFAULT) {
     std::cout << "CK algorithm not supported" << std::endl;
-    return hiptensor_STATUS_INTERNAL_ERROR;
+    return HIPTENSOR_STATUS_INTERNAL_ERROR;
   }
 
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t
@@ -77,7 +77,7 @@ hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
                                  const hiptensorContractionFind_t *find,
                                  const hiptensorWorksizePreference_t pref,
                                  uint64_t *workspaceSize) {
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorInitContractionPlan(
@@ -85,10 +85,10 @@ hiptensorStatus_t hiptensorInitContractionPlan(
     const hiptensorContractionDescriptor_t *desc,
     const hiptensorContractionFind_t *find, const uint64_t workspaceSize) {
   if (!handle || !plan || !desc)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   plan->ht_plan_desc = *desc;
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
@@ -99,7 +99,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
                                        uint64_t workspaceSize,
                                        hipStream_t stream) {
   if (!handle || !A || !B || !D)
-    return hiptensor_STATUS_NOT_INITIALIZED;
+    return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
   if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
     hiptensorCKScaleContraction(handle, plan, &ht_contract_metrics, alpha, A, B,
@@ -112,9 +112,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
                                    stream);
   } else {
     std::cout << "Contraction operation not permitted" << std::endl;
-    return hiptensor_STATUS_CK_ERROR;
+    return HIPTENSOR_STATUS_CK_ERROR;
   }
-  return hiptensor_STATUS_SUCCESS;
+  return HIPTENSOR_STATUS_SUCCESS;
 }
 
 void hiptensorContractionPlan_t::hiptensorPrintContractionMetrics() {

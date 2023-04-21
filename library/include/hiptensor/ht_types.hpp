@@ -41,41 +41,41 @@
  */
 typedef enum {
   /** The operation completed successfully.*/
-  hiptensor_STATUS_SUCCESS = 0,
+  HIPTENSOR_STATUS_SUCCESS = 0,
   /** The opaque data structure was not initialized.*/
-  hiptensor_STATUS_NOT_INITIALIZED = 1,
+  HIPTENSOR_STATUS_NOT_INITIALIZED = 1,
   /** Resource allocation failed inside the hiptensor library.*/
-  hiptensor_STATUS_ALLOC_FAILED = 3,
+  HIPTENSOR_STATUS_ALLOC_FAILED = 3,
   /** An unsupported value or parameter was passed to the function (indicates an
      user error).*/
-  hiptensor_STATUS_INVALID_VALUE = 7,
+  HIPTENSOR_STATUS_INVALID_VALUE = 7,
   /** Indicates that the device is either not ready, or the target architecture
      is not supported.*/
-  hiptensor_STATUS_ARCH_MISMATCH = 8,
+  HIPTENSOR_STATUS_ARCH_MISMATCH = 8,
   /** An access to GPU memory space failed, which is usually caused by a failure
      to bind a texture.*/
-  hiptensor_STATUS_MAPPING_ERROR = 11,
+  HIPTENSOR_STATUS_MAPPING_ERROR = 11,
   /** The GPU program failed to execute. This is often caused by a launch
      failure of the kernel on the GPU, which can be caused by multiple
      reasons.*/
-  hiptensor_STATUS_EXECUTION_FAILED = 13,
+  HIPTENSOR_STATUS_EXECUTION_FAILED = 13,
   /** An internal hiptensor error has occurred.*/
-  hiptensor_STATUS_INTERNAL_ERROR = 14,
+  HIPTENSOR_STATUS_INTERNAL_ERROR = 14,
   /** The requested operation is not supported.*/
-  hiptensor_STATUS_NOT_SUPPORTED = 15,
+  HIPTENSOR_STATUS_NOT_SUPPORTED = 15,
   /** The functionality requested requires some license and an error was
      detected when trying to check the current licensing.*/
-  hiptensor_STATUS_LICENSE_ERROR = 16,
+  HIPTENSOR_STATUS_LICENSE_ERROR = 16,
   /** A call to CUBLAS did not succeed.*/
-  hiptensor_STATUS_CK_ERROR = 17,
+  HIPTENSOR_STATUS_CK_ERROR = 17,
   /** Some unknown hiptensor error has occurred.*/
-  hiptensor_STATUS_ROCM_ERROR = 18,
+  HIPTENSOR_STATUS_ROCM_ERROR = 18,
   /** The provided workspace was insufficient.*/
-  hiptensor_STATUS_INSUFFICIENT_WORKSPACE = 19,
+  HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE = 19,
   /** Indicates that the driver version is insufficient.*/
-  hiptensor_STATUS_INSUFFICIENT_DRIVER = 20,
+  HIPTENSOR_STATUS_INSUFFICIENT_DRIVER = 20,
   /** Indicates an error related to file I/O.*/
-  hiptensor_STATUS_IO_ERROR = 21,
+  HIPTENSOR_STATUS_IO_ERROR = 21,
 } hiptensorStatus_t;
 
 /**

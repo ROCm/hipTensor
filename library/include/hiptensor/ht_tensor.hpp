@@ -41,7 +41,7 @@
  *
  * \param[out] handle Pointer to hiptensorHandle_t
  *
- * \returns hiptensor_STATUS_SUCCESS on success and an error code otherwise
+ * \returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
  * \remarks blocking, no reentrant, and thread-safe
  */
 
@@ -62,8 +62,8 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle);
  * element of the corresponding tensor in a lazy fashion (i.e., the algorithm
  * uses this tensor as its operand only once). The original data of this tensor
  * remains unchanged. \pre extent and stride arrays must each contain at least
- * sizeof(int64_t) * numModes bytes \retval hiptensor_STATUS_SUCCESS The
- * operation completed successfully. \retval hiptensor_STATUS_NOT_INITIALIZED if
+ * sizeof(int64_t) * numModes bytes \retval HIPTENSOR_STATUS_SUCCESS The
+ * operation completed successfully. \retval HIPTENSOR_STATUS_NOT_INITIALIZED if
  * the handle is not initialized. \remarks non-blocking, no reentrant, and
  * thread-safe
  */
@@ -72,15 +72,23 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(
     const hiptensorHandle_t *handle, hiptensorTensorDescriptor_t *desc,
     const uint32_t numModes, const int64_t lens[], const int64_t strides[],
     hiptensorDataType_t dataType, hiptensorOperator_t unaryOp);
+
+/**
+ * \brief Returns the description string for an error code
+ * \param[in] error Error code to convert to string.
+ * \retval the error string.
+ */
+const char* hiptensorGetErrorString(const hiptensorStatus_t error);
+
 /**
  * \brief Computes the minimal alignment requirement for a given pointer and
  * descriptor \param[in] handle Opaque handle holding hiptensor's library
  * context. \param[in] ptr Raw pointer to the data of the respective tensor.
  * \param[in] desc Tensor descriptor for ptr.
  * \param[out] alignmentRequirement Largest alignment requirement that ptr can
- * fulfill (in bytes). \retval hiptensor_STATUS_SUCCESS The operation completed
- * successfully. \retval hiptensor_STATUS_NOT_INITIALIZED if the handle is not
- * initialized. \retval hiptensor_STATUS_INVALID_VALUE  if the unsupported
+ * fulfill (in bytes). \retval HIPTENSOR_STATUS_SUCCESS The operation completed
+ * successfully. \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not
+ * initialized. \retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported
  * datatype is passed.
  */
 
@@ -128,8 +136,8 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(
  * may require for D's pointer (in bytes); you can use the helper function \ref
  * hiptensorGetAlignmentRequirement to determine the best value for a given
  * pointer. \param[in] typeCompute Datatype of for the intermediate computation
- * of typeCompute T = A * B. \retval hiptensor_STATUS_SUCCESS The operation
- * completed successfully without error \retval hiptensor_STATUS_NOT_INITIALIZED
+ * of typeCompute T = A * B. \retval HIPTENSOR_STATUS_SUCCESS The operation
+ * completed successfully without error \retval HIPTENSOR_STATUS_NOT_INITIALIZED
  * if the handle or tensor descriptors are not initialized.
  */
 
@@ -158,10 +166,10 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(
  * \param[out] find
  * \param[in] algo Allows users to select a specific algorithm.
  * hiptensor_ALGO_DEFAULT only supprted by the CK backend. \retval
- * hiptensor_STATUS_SUCCESS The operation completed successfully. \retval
- * hiptensor_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
- * hiptensor_STATUS_NOT_SUPPORTED is returned. \retval
- * hiptensor_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
+ * HIPTENSOR_STATUS_SUCCESS The operation completed successfully. \retval
+ * HIPTENSOR_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
+ * HIPTENSOR_STATUS_NOT_SUPPORTED is returned. \retval
+ * HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
  */
 
 hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
@@ -197,8 +205,8 @@ hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
  * opaque struct is used to restrict the search space of viable candidates.
  * \param[in] workspaceSize (unused) Available workspace size (in bytes).
  *
- * \retval hiptensor_STATUS_SUCCESS If a viable candidate has been found.
- * \retval hiptensor_STATUS_NOT_INITIALIZED if the handle or find or desc is not
+ * \retval HIPTENSOR_STATUS_SUCCESS If a viable candidate has been found.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find or desc is not
  * initialized.
  */
 
@@ -252,10 +260,10 @@ hiptensorStatus_t hiptensorInitContractionPlan(
  https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp
  * for the concrete examples.
  *
- * \retval hiptensor_STATUS_SUCCESS The operation completed successfully.
- * \retval hiptensor_STATUS_NOT_INITIALIZED if the handle or pointers are not
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or pointers are not
  initialized.
- * \retval hiptensor_STATUS_CK_ERROR if some unknown composable_kernel (CK)
+ * \retval HIPTENSOR_STATUS_CK_ERROR if some unknown composable_kernel (CK)
  error has occurred (e.g., no instance supported by inputs).
  */
 
