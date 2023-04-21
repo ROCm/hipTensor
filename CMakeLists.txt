@@ -108,6 +108,24 @@ message(STATUS "HIP version: ${hip_VERSION}")
 # Configure library build
 add_subdirectory(library/src)
 
+# Configure testing setup
+if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_SAMPLES)
+  enable_testing()
+  rocm_package_setup_component(clients)
+endif()
+
+# Configure tests build
+if(HIPTENSOR_BUILD_TESTS)
+  rocm_package_setup_component(tests PARENT clients)
+  add_subdirectory(test)
+endif()
+
+# Configure clients build
+if(HIPTENSOR_BUILD_SAMPLES)
+  rocm_package_setup_component(samples PARENT clients)
+  add_subdirectory(samples)
+endif()
+
 # Configure docs build
 if(HIPTENSOR_BUILD_DOCS)
   # Add the cmake folder so the FindSphinx module is found
@@ -144,21 +162,3 @@ rocm_create_package(
     MAINTAINER "hiptensor Maintainer <hiptensor-maintainer@amd.com>"
     LDCONFIG
 )
-
-# Configure testing setup
-if(HIPTENSOR_BUILD_TESTS OR HIPTENSOR_BUILD_SAMPLES)
-  enable_testing()
-  rocm_package_setup_component(clients)
-endif()
-
-# Configure tests build
-if(HIPTENSOR_BUILD_TESTS)
-  rocm_package_setup_component(tests PARENT clients)
-  add_subdirectory(test)
-endif()
-
-# Configure samples build
-if(HIPTENSOR_BUILD_SAMPLES)
-  rocm_package_setup_component(samples PARENT clients)
-  add_subdirectory(samples)
-endif()
