@@ -32,7 +32,7 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     else if(hipInit(0) == hipErrorInvalidDevice)
-        return HIPTENSOR_STATUS_ROCM_ERROR;
+        return HIPTENSOR_STATUS_HIP_ERROR;
 
     else if(hipInit(0) == hipErrorInvalidValue)
         return HIPTENSOR_STATUS_INVALID_VALUE;
@@ -90,20 +90,16 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error)
         return "HIPTENSOR_STATUS_INVALID_VALUE";
     else if(error == HIPTENSOR_STATUS_ARCH_MISMATCH)
         return "HIPTENSOR_STATUS_ARCH_MISMATCH";
-    else if(error == HIPTENSOR_STATUS_MAPPING_ERROR)
-        return "HIPTENSOR_STATUS_MAPPING_ERROR";
     else if(error == HIPTENSOR_STATUS_EXECUTION_FAILED)
         return "HIPTENSOR_STATUS_EXECUTION_FAILED";
     else if(error == HIPTENSOR_STATUS_INTERNAL_ERROR)
         return "HIPTENSOR_STATUS_INTERNAL_ERROR";
     else if(error == HIPTENSOR_STATUS_NOT_SUPPORTED)
         return "HIPTENSOR_STATUS_NOT_SUPPORTED";
-    else if(error == HIPTENSOR_STATUS_LICENSE_ERROR)
-        return "HIPTENSOR_STATUS_LICENSE_ERROR";
     else if(error == HIPTENSOR_STATUS_CK_ERROR)
         return "HIPTENSOR_STATUS_CK_ERROR";
-    else if(error == HIPTENSOR_STATUS_ROCM_ERROR)
-        return "HIPTENSOR_STATUS_ROCM_ERROR";
+    else if(error == HIPTENSOR_STATUS_HIP_ERROR)
+        return "HIPTENSOR_STATUS_HIP_ERROR";
     else if(error == HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE)
         return "HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE";
     else if(error == HIPTENSOR_STATUS_INSUFFICIENT_DRIVER)

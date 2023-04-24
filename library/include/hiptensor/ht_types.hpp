@@ -53,9 +53,6 @@ typedef enum
     /** Indicates that the device is either not ready, or the target architecture
      is not supported.*/
     HIPTENSOR_STATUS_ARCH_MISMATCH = 8,
-    /** An access to GPU memory space failed, which is usually caused by a failure
-     to bind a texture.*/
-    HIPTENSOR_STATUS_MAPPING_ERROR = 11,
     /** The GPU program failed to execute. This is often caused by a launch
      failure of the kernel on the GPU, which can be caused by multiple
      reasons.*/
@@ -64,13 +61,10 @@ typedef enum
     HIPTENSOR_STATUS_INTERNAL_ERROR = 14,
     /** The requested operation is not supported.*/
     HIPTENSOR_STATUS_NOT_SUPPORTED = 15,
-    /** The functionality requested requires some license and an error was
-     detected when trying to check the current licensing.*/
-    HIPTENSOR_STATUS_LICENSE_ERROR = 16,
     /** A call to CUBLAS did not succeed.*/
     HIPTENSOR_STATUS_CK_ERROR = 17,
     /** Some unknown hiptensor error has occurred.*/
-    HIPTENSOR_STATUS_ROCM_ERROR = 18,
+    HIPTENSOR_STATUS_HIP_ERROR = 18,
     /** The provided workspace was insufficient.*/
     HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE = 19,
     /** Indicates that the driver version is insufficient.*/
