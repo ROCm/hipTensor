@@ -28,67 +28,75 @@
 
 hiptensorContractionMetrics_t ht_contract_metrics;
 
-hiptensorStatus_t hiptensorInitContractionDescriptor(
-    const hiptensorHandle_t *handle, hiptensorContractionDescriptor_t *desc,
-    const hiptensorTensorDescriptor_t *descA, const int32_t modeA[],
-    const uint32_t alignmentRequirementA,
-    const hiptensorTensorDescriptor_t *descB, const int32_t modeB[],
-    const uint32_t alignmentRequirementB,
-    const hiptensorTensorDescriptor_t *descC, const int32_t modeC[],
-    const uint32_t alignmentRequirementC,
-    const hiptensorTensorDescriptor_t *descD, const int32_t modeD[],
-    const uint32_t alignmentRequirementD, hiptensorComputeType_t typeCompute)
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
+                                                     hiptensorContractionDescriptor_t*  desc,
+                                                     const hiptensorTensorDescriptor_t* descA,
+                                                     const int32_t                      modeA[],
+                                                     const uint32_t alignmentRequirementA,
+                                                     const hiptensorTensorDescriptor_t* descB,
+                                                     const int32_t                      modeB[],
+                                                     const uint32_t alignmentRequirementB,
+                                                     const hiptensorTensorDescriptor_t* descC,
+                                                     const int32_t                      modeC[],
+                                                     const uint32_t alignmentRequirementC,
+                                                     const hiptensorTensorDescriptor_t* descD,
+                                                     const int32_t                      modeD[],
+                                                     const uint32_t         alignmentRequirementD,
+                                                     hiptensorComputeType_t typeCompute)
 
 {
-  if (!handle || !desc || !descA || !descB || !descC)
-    return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    if(!handle || !desc || !descA || !descB || !descC)
+        return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-  const hiptensorTensorDescriptor_t *ht_input_descs[] = {descA, descB, descC};
-  const uint32_t alignmentRequriement_arr[] = {
-      alignmentRequirementA, alignmentRequirementB, alignmentRequirementC};
-  desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequriement_arr,
-                                       3);
+    const hiptensorTensorDescriptor_t* ht_input_descs[] = {descA, descB, descC};
+    const uint32_t                     alignmentRequriement_arr[]
+        = {alignmentRequirementA, alignmentRequirementB, alignmentRequirementC};
+    desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequriement_arr, 3);
 
-  if (!descD)
-    desc->ht_contract_op = HIPTENSOR_CONTRACTION_SCALE;
-  else
-    desc->ht_contract_op = HIPTENSOR_CONTRACTION_BILINEAR;
+    if(!descD)
+        desc->ht_contract_op = HIPTENSOR_CONTRACTION_SCALE;
+    else
+        desc->ht_contract_op = HIPTENSOR_CONTRACTION_BILINEAR;
 
-  return HIPTENSOR_STATUS_SUCCESS;
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
-                                               hiptensorContractionFind_t *find,
-                                               const hiptensorAlgo_t algo) {
-  if (!handle || !find)
-    return HIPTENSOR_STATUS_NOT_INITIALIZED;
+hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
+                                               hiptensorContractionFind_t* find,
+                                               const hiptensorAlgo_t       algo)
+{
+    if(!handle || !find)
+        return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-  if (algo != hiptensor_ALGO_DEFAULT) {
-    std::cout << "CK algorithm not supported" << std::endl;
-    return HIPTENSOR_STATUS_INTERNAL_ERROR;
-  }
+    if(algo != HIPTENSOR_ALGO_DEFAULT)
+    {
+        std::cout << "CK algorithm not supported" << std::endl;
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+    }
 
-  return HIPTENSOR_STATUS_SUCCESS;
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t
-hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
-                                 const hiptensorContractionDescriptor_t *desc,
-                                 const hiptensorContractionFind_t *find,
-                                 const hiptensorWorksizePreference_t pref,
-                                 uint64_t *workspaceSize) {
-  return HIPTENSOR_STATUS_SUCCESS;
+hiptensorStatus_t hiptensorContractionGetWorkspace(const hiptensorHandle_t*                handle,
+                                                   const hiptensorContractionDescriptor_t* desc,
+                                                   const hiptensorContractionFind_t*       find,
+                                                   const hiptensorWorksizePreference_t     pref,
+                                                   uint64_t* workspaceSize)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionPlan(
-    const hiptensorHandle_t *handle, hiptensorContractionPlan_t *plan,
-    const hiptensorContractionDescriptor_t *desc,
-    const hiptensorContractionFind_t *find, const uint64_t workspaceSize) {
-  if (!handle || !plan || !desc)
-    return HIPTENSOR_STATUS_NOT_INITIALIZED;
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
+                                               hiptensorContractionPlan_t*             plan,
+                                               const hiptensorContractionDescriptor_t* desc,
+                                               const hiptensorContractionFind_t*       find,
+                                               const uint64_t workspaceSize)
+{
+    if(!handle || !plan || !desc)
+        return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-  plan->ht_plan_desc = *desc;
-  return HIPTENSOR_STATUS_SUCCESS;
+    plan->ht_plan_desc = *desc;
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
@@ -123,9 +131,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
   return HIPTENSOR_STATUS_SUCCESS;
 }
 
-void hiptensorContractionPlan_t::hiptensorPrintContractionMetrics() {
-  std::cout << "Perf: " << ht_contract_metrics.avg_time << " ms, "
-            << ht_contract_metrics.tflops << " TFlops, "
-            << ht_contract_metrics.transfer_speed << " GB/s, "
-            << ht_contract_metrics.ht_instance << std::endl;
+void hiptensorContractionPlan_t::hiptensorPrintContractionMetrics()
+{
+    std::cout << "Perf: " << ht_contract_metrics.avg_time << " ms, " << ht_contract_metrics.tflops
+              << " TFlops, " << ht_contract_metrics.transfer_speed << " GB/s, "
+              << ht_contract_metrics.ht_instance << std::endl;
 }

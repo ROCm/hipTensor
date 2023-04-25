@@ -45,7 +45,7 @@
  * \remarks blocking, no reentrant, and thread-safe
  */
 
-hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle);
+hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle);
 
 /**
  * \brief Initializes a tensor descriptor
@@ -68,10 +68,13 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle);
  * thread-safe
  */
 
-hiptensorStatus_t hiptensorInitTensorDescriptor(
-    const hiptensorHandle_t *handle, hiptensorTensorDescriptor_t *desc,
-    const uint32_t numModes, const int64_t lens[], const int64_t strides[],
-    hiptensorDataType_t dataType, hiptensorOperator_t unaryOp);
+hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
+                                                hiptensorTensorDescriptor_t* desc,
+                                                const uint32_t               numModes,
+                                                const int64_t                lens[],
+                                                const int64_t                strides[],
+                                                hiptensorDataType_t          dataType,
+                                                hiptensorOperator_t          unaryOp);
 
 /**
  * \brief Returns the description string for an error code
@@ -92,9 +95,10 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error);
  * datatype is passed.
  */
 
-hiptensorStatus_t hiptensorGetAlignmentRequirement(
-    const hiptensorHandle_t *handle, const void *ptr,
-    const hiptensorTensorDescriptor_t *desc, uint32_t *alignmentRequirement);
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
+                                                   const void*                        ptr,
+                                                   const hiptensorTensorDescriptor_t* desc,
+                                                   uint32_t* alignmentRequirement);
 
 /**
  * \brief Describes the tensor contraction problem of the form: \f[ D = \alpha
@@ -141,16 +145,21 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(
  * if the handle or tensor descriptors are not initialized.
  */
 
-hiptensorStatus_t hiptensorInitContractionDescriptor(
-    const hiptensorHandle_t *handle, hiptensorContractionDescriptor_t *desc,
-    const hiptensorTensorDescriptor_t *descA, const int32_t modeA[],
-    const uint32_t alignmentRequirementA,
-    const hiptensorTensorDescriptor_t *descB, const int32_t modeB[],
-    const uint32_t alignmentRequirementB,
-    const hiptensorTensorDescriptor_t *descC, const int32_t modeC[],
-    const uint32_t alignmentRequirementC,
-    const hiptensorTensorDescriptor_t *descD, const int32_t modeD[],
-    const uint32_t alignmentRequirementD, hiptensorComputeType_t typeCompute);
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
+                                                     hiptensorContractionDescriptor_t*  desc,
+                                                     const hiptensorTensorDescriptor_t* descA,
+                                                     const int32_t                      modeA[],
+                                                     const uint32_t alignmentRequirementA,
+                                                     const hiptensorTensorDescriptor_t* descB,
+                                                     const int32_t                      modeB[],
+                                                     const uint32_t alignmentRequirementB,
+                                                     const hiptensorTensorDescriptor_t* descC,
+                                                     const int32_t                      modeC[],
+                                                     const uint32_t alignmentRequirementC,
+                                                     const hiptensorTensorDescriptor_t* descD,
+                                                     const int32_t                      modeD[],
+                                                     const uint32_t         alignmentRequirementD,
+                                                     hiptensorComputeType_t typeCompute);
 
 /**
  * \brief Limits the search space of viable candidates (a.k.a. algorithms)
@@ -165,26 +174,25 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(
  * \param[in] handle Opaque handle holding hiptensor's library context.
  * \param[out] find
  * \param[in] algo Allows users to select a specific algorithm.
- * hiptensor_ALGO_DEFAULT only supprted by the CK backend. \retval
+ * HIPTENSOR_ALGO_DEFAULT only supprted by the CK backend. \retval
  * HIPTENSOR_STATUS_SUCCESS The operation completed successfully. \retval
  * HIPTENSOR_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
  * HIPTENSOR_STATUS_NOT_SUPPORTED is returned. \retval
  * HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
  */
 
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
-                                               hiptensorContractionFind_t *find,
-                                               const hiptensorAlgo_t algo);
+hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
+                                               hiptensorContractionFind_t* find,
+                                               const hiptensorAlgo_t       algo);
 
 /*TODO: Stub API. Not in use as per CK backend.Need to adapt based on the future
  * implementations
  */
-hiptensorStatus_t
-hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
-                                 const hiptensorContractionDescriptor_t *desc,
-                                 const hiptensorContractionFind_t *find,
-                                 const hiptensorWorksizePreference_t pref,
-                                 uint64_t *workspaceSize);
+hiptensorStatus_t hiptensorContractionGetWorkspace(const hiptensorHandle_t*                handle,
+                                                   const hiptensorContractionDescriptor_t* desc,
+                                                   const hiptensorContractionFind_t*       find,
+                                                   const hiptensorWorksizePreference_t     pref,
+                                                   uint64_t* workspaceSize);
 
 /**
  * \brief Initializes the contraction plan for a given tensor contraction
@@ -210,10 +218,11 @@ hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
  * initialized.
  */
 
-hiptensorStatus_t hiptensorInitContractionPlan(
-    const hiptensorHandle_t *handle, hiptensorContractionPlan_t *plan,
-    const hiptensorContractionDescriptor_t *desc,
-    const hiptensorContractionFind_t *find, const uint64_t workspaceSize);
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
+                                               hiptensorContractionPlan_t*             plan,
+                                               const hiptensorContractionDescriptor_t* desc,
+                                               const hiptensorContractionFind_t*       find,
+                                               const uint64_t workspaceSize);
 /**
  * \brief This routine computes the tensor contraction \f[ D = alpha * A * B +
  beta * C \f]
@@ -267,12 +276,16 @@ hiptensorStatus_t hiptensorInitContractionPlan(
  error has occurred (e.g., no instance supported by inputs).
  */
 
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
-                                       const hiptensorContractionPlan_t *plan,
-                                       const void *alpha, const void *A,
-                                       const void *B, const void *beta,
-                                       const void *C, void *D, void *workspace,
-                                       uint64_t workspaceSize,
-                                       hipStream_t stream);
+hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
+                                       const hiptensorContractionPlan_t* plan,
+                                       const void*                       alpha,
+                                       const void*                       A,
+                                       const void*                       B,
+                                       const void*                       beta,
+                                       const void*                       C,
+                                       void*                             D,
+                                       void*                             workspace,
+                                       uint64_t                          workspaceSize,
+                                       hipStream_t                       stream);
 
 #endif
