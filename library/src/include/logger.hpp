@@ -70,7 +70,7 @@ namespace hiptensor
         Status_t setCallback(Callback_t callbackFunc);
         int32_t  getLogMask() const;
         Status_t setLogMask(int32_t mask);
-        Status_t setLogLevel(int32_t level);
+        Status_t setLogLevel(LogLevel_t level);
         void     disable();
         void     enable();
 

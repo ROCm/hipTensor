@@ -252,7 +252,7 @@ hiptensorStatus_t hiptensorLoggerSetFile(FILE* file)
     logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerSetFile", msg);
 
     // Check logger callback result
-    auto loggerResult = logger->writeToStream(callback);
+    auto loggerResult = logger->writeToStream(file);
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
         sprintf(msg,
@@ -289,7 +289,7 @@ hiptensorStatus_t hiptensorLoggerOpenFile(const char* logFile)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorLoggerSetLevel(int32_t level)
+hiptensorStatus_t hiptensorLoggerSetLevel(hiptensorLogLevel_t level)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -300,7 +300,7 @@ hiptensorStatus_t hiptensorLoggerSetLevel(int32_t level)
     logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerSetLevel", msg);
 
     // Check logger level
-    auto loggerResult = logger->setLogLevel(level);
+    auto loggerResult = logger->setLogLevel(Logger::LogLevel_t(level));
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
         sprintf(msg, "level=0x%02X (%s)", (unsigned int)level, logger->statusString(loggerResult));

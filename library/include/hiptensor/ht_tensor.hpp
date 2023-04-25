@@ -45,7 +45,7 @@
  * \remarks blocking, no reentrant, and thread-safe
  */
 
-hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle);
+hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle);
 
 /**
  * \brief Initializes a tensor descriptor
@@ -68,10 +68,13 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t *handle);
  * thread-safe
  */
 
-hiptensorStatus_t hiptensorInitTensorDescriptor(
-    const hiptensorHandle_t *handle, hiptensorTensorDescriptor_t *desc,
-    const uint32_t numModes, const int64_t lens[], const int64_t strides[],
-    hiptensorDataType_t dataType, hiptensorOperator_t unaryOp);
+hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
+                                                hiptensorTensorDescriptor_t* desc,
+                                                const uint32_t               numModes,
+                                                const int64_t                lens[],
+                                                const int64_t                strides[],
+                                                hiptensorDataType_t          dataType,
+                                                hiptensorOperator_t          unaryOp);
 
 /**
  * \brief Returns the description string for an error code
@@ -92,9 +95,10 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error);
  * datatype is passed.
  */
 
-hiptensorStatus_t hiptensorGetAlignmentRequirement(
-    const hiptensorHandle_t *handle, const void *ptr,
-    const hiptensorTensorDescriptor_t *desc, uint32_t *alignmentRequirement);
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
+                                                   const void*                        ptr,
+                                                   const hiptensorTensorDescriptor_t* desc,
+                                                   uint32_t* alignmentRequirement);
 
 /**
  * \brief Describes the tensor contraction problem of the form: \f[ D = \alpha
@@ -141,16 +145,21 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(
  * if the handle or tensor descriptors are not initialized.
  */
 
-hiptensorStatus_t hiptensorInitContractionDescriptor(
-    const hiptensorHandle_t *handle, hiptensorContractionDescriptor_t *desc,
-    const hiptensorTensorDescriptor_t *descA, const int32_t modeA[],
-    const uint32_t alignmentRequirementA,
-    const hiptensorTensorDescriptor_t *descB, const int32_t modeB[],
-    const uint32_t alignmentRequirementB,
-    const hiptensorTensorDescriptor_t *descC, const int32_t modeC[],
-    const uint32_t alignmentRequirementC,
-    const hiptensorTensorDescriptor_t *descD, const int32_t modeD[],
-    const uint32_t alignmentRequirementD, hiptensorComputeType_t typeCompute);
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
+                                                     hiptensorContractionDescriptor_t*  desc,
+                                                     const hiptensorTensorDescriptor_t* descA,
+                                                     const int32_t                      modeA[],
+                                                     const uint32_t alignmentRequirementA,
+                                                     const hiptensorTensorDescriptor_t* descB,
+                                                     const int32_t                      modeB[],
+                                                     const uint32_t alignmentRequirementB,
+                                                     const hiptensorTensorDescriptor_t* descC,
+                                                     const int32_t                      modeC[],
+                                                     const uint32_t alignmentRequirementC,
+                                                     const hiptensorTensorDescriptor_t* descD,
+                                                     const int32_t                      modeD[],
+                                                     const uint32_t         alignmentRequirementD,
+                                                     hiptensorComputeType_t typeCompute);
 
 /**
  * \brief Limits the search space of viable candidates (a.k.a. algorithms)
@@ -172,19 +181,18 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(
  * HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
  */
 
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
-                                               hiptensorContractionFind_t *find,
-                                               const hiptensorAlgo_t algo);
+hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
+                                               hiptensorContractionFind_t* find,
+                                               const hiptensorAlgo_t       algo);
 
 /*TODO: Stub API. Not in use as per CK backend.Need to adapt based on the future
  * implementations
  */
-hiptensorStatus_t
-hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
-                                 const hiptensorContractionDescriptor_t *desc,
-                                 const hiptensorContractionFind_t *find,
-                                 const hiptensorWorksizePreference_t pref,
-                                 uint64_t *workspaceSize);
+hiptensorStatus_t hiptensorContractionGetWorkspace(const hiptensorHandle_t*                handle,
+                                                   const hiptensorContractionDescriptor_t* desc,
+                                                   const hiptensorContractionFind_t*       find,
+                                                   const hiptensorWorksizePreference_t     pref,
+                                                   uint64_t* workspaceSize);
 
 /**
  * \brief Initializes the contraction plan for a given tensor contraction
@@ -210,10 +218,11 @@ hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
  * initialized.
  */
 
-hiptensorStatus_t hiptensorInitContractionPlan(
-    const hiptensorHandle_t *handle, hiptensorContractionPlan_t *plan,
-    const hiptensorContractionDescriptor_t *desc,
-    const hiptensorContractionFind_t *find, const uint64_t workspaceSize);
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
+                                               hiptensorContractionPlan_t*             plan,
+                                               const hiptensorContractionDescriptor_t* desc,
+                                               const hiptensorContractionFind_t*       find,
+                                               const uint64_t workspaceSize);
 /**
  * \brief This routine computes the tensor contraction \f[ D = alpha * A * B +
  beta * C \f]
@@ -267,25 +276,71 @@ hiptensorStatus_t hiptensorInitContractionPlan(
  error has occurred (e.g., no instance supported by inputs).
  */
 
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
-                                       const hiptensorContractionPlan_t *plan,
-                                       const void *alpha, const void *A,
-                                       const void *B, const void *beta,
-                                       const void *C, void *D, void *workspace,
-                                       uint64_t workspaceSize,
-                                       hipStream_t stream);
+hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
+                                       const hiptensorContractionPlan_t* plan,
+                                       const void*                       alpha,
+                                       const void*                       A,
+                                       const void*                       B,
+                                       const void*                       beta,
+                                       const void*                       C,
+                                       void*                             D,
+                                       void*                             workspace,
+                                       uint64_t                          workspaceSize,
+                                       hipStream_t                       stream);
 
-hiptensorStatus_t
-hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback);
+/**
+ * \brief Registers a callback function that will be invoked by logger calls.
+ * Note: Functionally additive to existing logging functionality.
+ *
+ * \param[in] callback This parameter is the callback function pointer provided to the logger.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given callback is invalid.
+ */
+hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback);
 
-hiptensorStatus_t hiptensorLoggerSetFile(FILE *file);
+/**
+ * \brief Registers a file output stream to redirect logging output to.
+ * Note: File stream must be open and writable in text mode.
+ *
+ * \param[in] file This parameter is a file stream pointer provided to the logger.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_IO_ERROR if the output file is not valid (defaults back to stdout).
+ */
+hiptensorStatus_t hiptensorLoggerSetFile(FILE* file);
 
-hiptensorStatus_t hiptensorLoggerOpenFile(const char *logFile);
+/**
+ * \brief Redirects log output to a file given by the user.
+ *
+ * \param[in] logFile This parameter is a file name (relative to binary) or full path to redirect logger output.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_IO_ERROR if the output file is not valid (defaults back to stdout).
+ */
+hiptensorStatus_t hiptensorLoggerOpenFile(const char* logFile);
 
-hiptensorStatus_t hiptensorLoggerSetLevel(int32_t level);
+/**
+ * \brief User-specified logging level. Logs in other contexts will not be recorded.
+ *
+ * \param[in] level This parameter is the logging level to be enforced.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given log level is invalid.
+ */
+hiptensorStatus_t hiptensorLoggerSetLevel(hiptensorLogLevel_t level);
 
+/**
+ * \brief User-specified logging mask. A mask may be a binary OR combination of
+ * several log levels together. Logs in other contexts will not be recorded.
+ *
+ * \param[in] level This parameter is the logging mask to be enforced.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given log mask is invalid.
+ */
 hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask);
 
+/**
+ * \brief Disables logging.
+ *
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ */
 hiptensorStatus_t hiptensorLoggerForceDisable();
 
 #endif

@@ -41,6 +41,11 @@ hiptensorContractionOperation_t
 
 .. doxygenenum::  hiptesnorContractionOperation_t
 
+hiptensorLogLevel_t
+-------------------------------
+
+.. doxygenenum::  hiptensorLogLevel_t
+
 hiptensorHandle_t
 -----------------
 
@@ -123,3 +128,36 @@ hiptensorContraction
 --------------------
 
 .. doxygenfunction::  hiptensorContraction
+
+Logging Functions
+=================
+
+hiptensorLoggerSetCallback
+--------------------------
+
+.. doxygenfunction::  hiptensorLoggerSetCallback
+
+hiptensorLoggerSetFile
+----------------------
+
+.. doxygenfunction::  hiptensorLoggerSetFile
+
+hiptensorLoggerOpenFile
+-----------------------
+
+.. doxygenfunction::  hiptensorLoggerOpenFile
+
+hiptensorLoggerSetLevel
+-----------------------
+
+.. doxygenfunction::  hiptensorLoggerSetLevel
+
+hiptensorLoggerSetMask
+----------------------
+
+.. doxygenfunction::  hiptensorLoggerSetMask
+
+hiptensorLoggerForceDisable
+---------------------------
+
+.. doxygenfunction::  hiptensorLoggerForceDisable

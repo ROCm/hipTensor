@@ -114,19 +114,19 @@ namespace hiptensor
         return mLogMask;
     }
 
-    Logger::Status_t Logger::setLogLevel(int32_t level)
+    Logger::Status_t Logger::setLogLevel(LogLevel_t level)
     {
         std::scoped_lock lock(mMutex);
         switch(level)
         {
         // Only accept discretized log level
-        case(int32_t)LogLevel_t::LOG_LEVEL_ERROR:
-        case(int32_t)LogLevel_t::LOG_LEVEL_PERF_TRACE:
-        case(int32_t)LogLevel_t::LOG_LEVEL_PERF_HINT:
-        case(int32_t)LogLevel_t::LOG_LEVEL_HEURISTICS_TRACE:
-        case(int32_t)LogLevel_t::LOG_LEVEL_API_TRACE:
+        case LogLevel_t::LOG_LEVEL_ERROR:
+        case LogLevel_t::LOG_LEVEL_PERF_TRACE:
+        case LogLevel_t::LOG_LEVEL_PERF_HINT:
+        case LogLevel_t::LOG_LEVEL_HEURISTICS_TRACE:
+        case LogLevel_t::LOG_LEVEL_API_TRACE:
         {
-            mLogMask = level;
+            mLogMask = (int32_t)level;
             return Status_t::SUCCESS;
         }
         default:
