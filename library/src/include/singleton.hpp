@@ -29,15 +29,19 @@
 
 #include <memory>
 
-namespace hiptensor {
+namespace hiptensor
+{
 
-template <typename T> class LazySingleton {
-public:
-  static inline std::unique_ptr<T> const &instance() {
-    static auto sInstance = std::make_unique<T>();
-    return sInstance;
-  }
-};
+    template <typename T>
+    class LazySingleton
+    {
+    public:
+        static inline std::unique_ptr<T> const& instance()
+        {
+            static auto sInstance = std::make_unique<T>();
+            return sInstance;
+        }
+    };
 
 } // namespace hiptensor
 
