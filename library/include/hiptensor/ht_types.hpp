@@ -167,7 +167,21 @@ typedef enum
 {
     HIPTENSOR_CONTRACTION_SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
     HIPTENSOR_CONTRACTION_BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
-} hiptesnorContractionOperation_t;
+} hiptensorContractionOperation_t;
+
+/**
+ * \brief This enum decides the logging context.
+ * \details The logger output of certain contexts maybe contrained to these levels.
+ */
+typedef enum
+{
+    HIPTENSOR_LOG_LEVEL_OFF              = 0,
+    HIPTENSOR_LOG_LEVEL_ERROR            = 1,
+    HIPTENSOR_LOG_LEVEL_PERF_TRACE       = 2,
+    HIPTENSOR_LOG_LEVEL_PERF_HINT        = 4,
+    HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE = 8,
+    HIPTENSOR_LOG_LEVEL_API_TRACE        = 16
+} hiptensorLogLevel_t;
 
 /**
  * \brief Opaque structure holding hiptensor's library context.
@@ -255,8 +269,9 @@ struct tensor_attr
  */
 struct hiptensorContractionDescriptor_t
 {
-    hiptesnorContractionOperation_t ht_contract_op; /*!<Enum that has the contraction
-                         operation(scale/bilinear)*/
+    /*!<Enum that has the contraction operation(scale/bilinear)*/
+    hiptensorContractionOperation_t ht_contract_op;
+
     std::vector<tensor_attr>
          ht_contract_attr_desc; /*!<Vector that represents the length,strides,and
                                 size of the input tensors*/
@@ -307,5 +322,16 @@ struct hiptensorContractionPlan_t
                                               perf results of the CK's
                                               contraction instance */
 };
+
+/**
+ * \brief Logging callback
+ *
+ * The specified callback is invoked whenever logging is enabled and information
+ * is logged.
+ *
+ */
+typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
+                                          const char* funcName,
+                                          const char* msg);
 
 #endif

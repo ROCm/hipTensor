@@ -77,13 +77,13 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t
-hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t *handle,
-                                     const hiptensorContractionDescriptor_t *desc,
-                                     const hiptensorContractionFind_t *find,
-                                     const hiptensorWorksizePreference_t pref,
-                                     uint64_t *workspaceSize) {
-  return HIPTENSOR_STATUS_SUCCESS;
+hiptensorStatus_t hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+                                                       const hiptensorContractionDescriptor_t* desc,
+                                                       const hiptensorContractionFind_t*       find,
+                                                       const hiptensorWorksizePreference_t     pref,
+                                                       uint64_t* workspaceSize)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
@@ -99,36 +99,52 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t *handle,
-                                       const hiptensorContractionPlan_t *plan,
-                                       const void *alpha, const void *A,
-                                       const void *B, const void *beta,
-                                       const void *C, void *D, void *workspace,
-                                       uint64_t workspaceSize,
-                                       hipStream_t stream) {
-  if (!handle || !A || !B || !D) {
-    return HIPTENSOR_STATUS_NOT_INITIALIZED;
-  }
+hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
+                                       const hiptensorContractionPlan_t* plan,
+                                       const void*                       alpha,
+                                       const void*                       A,
+                                       const void*                       B,
+                                       const void*                       beta,
+                                       const void*                       C,
+                                       void*                             D,
+                                       void*                             workspace,
+                                       uint64_t                          workspaceSize,
+                                       hipStream_t                       stream)
+{
+    if(!handle || !A || !B || !D)
+    {
+        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
-  hiptensorCKContraction(handle, plan, &ht_contract_metrics, alpha, A, B, beta,
-                         C, D, workspace, workspaceSize, stream);
+    hiptensorCKContraction(handle,
+                           plan,
+                           &ht_contract_metrics,
+                           alpha,
+                           A,
+                           B,
+                           beta,
+                           C,
+                           D,
+                           workspace,
+                           workspaceSize,
+                           stream);
 
-  //   if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
-  //     hiptensorCKScaleContraction(handle, plan, &ht_contract_metrics, alpha,
-  //     A, B,
-  //                                 NULL, NULL, D, workspace, workspaceSize,
-  //                                 stream);
-  //   } else if (plan->ht_plan_desc.ht_contract_op ==
-  //              hiptensor_CONTRACTION_BILINEAR) {
-  //     hiptensorCKBilinearContraction(handle, plan, &ht_contract_metrics,
-  //     alpha, A,
-  //                                    B, beta, C, D, workspace, workspaceSize,
-  //                                    stream);
-  //   } else {
-  //     std::cout << "Contraction operation not permitted" << std::endl;
-  //     return hiptensor_STATUS_CK_ERROR;
-  //   }
-  return HIPTENSOR_STATUS_SUCCESS;
+    //   if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
+    //     hiptensorCKScaleContraction(handle, plan, &ht_contract_metrics, alpha,
+    //     A, B,
+    //                                 NULL, NULL, D, workspace, workspaceSize,
+    //                                 stream);
+    //   } else if (plan->ht_plan_desc.ht_contract_op ==
+    //              hiptensor_CONTRACTION_BILINEAR) {
+    //     hiptensorCKBilinearContraction(handle, plan, &ht_contract_metrics,
+    //     alpha, A,
+    //                                    B, beta, C, D, workspace, workspaceSize,
+    //                                    stream);
+    //   } else {
+    //     std::cout << "Contraction operation not permitted" << std::endl;
+    //     return hiptensor_STATUS_CK_ERROR;
+    //   }
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 void hiptensorContractionPlan_t::hiptensorPrintContractionMetrics()
