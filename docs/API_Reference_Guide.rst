@@ -91,6 +91,11 @@ hiptensorContractionPlan_t
 Helper Functions
 ================
 
+hiptensorGetVersion
+-------------------
+
+.. doxygenfunction::  hiptensorGetVersion
+
 hiptensorInit
 -------------
 
@@ -105,6 +110,11 @@ hiptensorGetAlignmentRequirement
 --------------------------------
 
 .. doxygenfunction::  hiptensorGetAlignmentRequirement
+
+hiptensorGetErrorString
+-----------------------
+
+.. doxygenfunction::  hiptensorGetErrorString
 
 Contraction Operations
 ======================
@@ -128,6 +138,11 @@ hiptensorContraction
 --------------------
 
 .. doxygenfunction::  hiptensorContraction
+
+hipTensorContractionGetWorkspaceSize
+------------------------------------
+
+.. doxygenfunction::  hipTensorContractionGetWorkspaceSize
 
 Logging Functions
 =================
