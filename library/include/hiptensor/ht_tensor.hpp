@@ -176,15 +176,24 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
                                                hiptensorContractionFind_t *find,
                                                const hiptensorAlgo_t algo);
 
-/*TODO: Stub API. Not in use as per CK backend.Need to adapt based on the future
- * implementations
+/**
+ * \brief Determines the required workspaceSize for a given tensor contraction
+ *
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[in] desc This opaque struct encodes the tensor contraction problem.
+ * \param[in] find This opaque struct restricts the search space of viable candidates.
+ * \param[in] pref This parameter influences the size of the workspace.
+ * \param[out] workspaceSize The workspace size (in bytes) that is required for the given tensor contraction.
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
  */
 hiptensorStatus_t
-hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
-                                 const hiptensorContractionDescriptor_t *desc,
-                                 const hiptensorContractionFind_t *find,
-                                 const hiptensorWorksizePreference_t pref,
-                                 uint64_t *workspaceSize);
+hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t *handle,
+                                     const hiptensorContractionDescriptor_t *desc,
+                                     const hiptensorContractionFind_t *find,
+                                     const hiptensorWorksizePreference_t pref,
+                                     uint64_t *workspaceSize);
 
 /**
  * \brief Initializes the contraction plan for a given tensor contraction

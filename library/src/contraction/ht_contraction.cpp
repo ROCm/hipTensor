@@ -72,11 +72,11 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t *handle,
 }
 
 hiptensorStatus_t
-hiptensorContractionGetWorkspace(const hiptensorHandle_t *handle,
-                                 const hiptensorContractionDescriptor_t *desc,
-                                 const hiptensorContractionFind_t *find,
-                                 const hiptensorWorksizePreference_t pref,
-                                 uint64_t *workspaceSize) {
+hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t *handle,
+                                     const hiptensorContractionDescriptor_t *desc,
+                                     const hiptensorContractionFind_t *find,
+                                     const hiptensorWorksizePreference_t pref,
+                                     uint64_t *workspaceSize) {
   return HIPTENSOR_STATUS_SUCCESS;
 }
 

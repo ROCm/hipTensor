@@ -134,7 +134,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(
 
   memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
   std::cout << "Tensor A lengths: ";
   hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
       plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
@@ -211,7 +211,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(
     std::string op_name = op->GetTypeString();
 
     if (!op->IsSupportedArgument(argument_ptr.get())) {
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
       std::cout << op->GetTypeString() << " does not support this problem"
                 << std::endl;
 #endif
@@ -244,7 +244,7 @@ hiptensorStatus_t hiptensorCKScaleContraction(
     }
   }
 
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
   std::cout << "Best Perf: " << best_ave_time << " ms, " << best_tflops
             << " TFlops, " << best_gb_per_sec << " GB/s, " << best_op_name
             << std::endl;
@@ -273,7 +273,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
 
   memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
   std::cout << "Tensor A lengths: ";
   hiptensorPrintVectorElements<ck::index_t>(std::vector<ck::index_t>(
       plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
@@ -362,7 +362,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
     std::string op_name = op->GetTypeString();
 
     if (!op->IsSupportedArgument(argument_ptr.get())) {
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
       std::cout << op->GetTypeString() << " does not support this problem"
                 << std::endl;
 #endif
@@ -380,7 +380,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
       ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
           ContractionBilinearOp>::GetInstances();
 
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
   std::cout << "Run all instances and do timing" << std::endl;
 #endif
 
@@ -396,7 +396,7 @@ hiptensorStatus_t hiptensorCKBilinearContraction(
       best_gb_per_sec = ht_contract_metrics->transfer_speed;
     }
   }
-#ifdef HT_DEBUG_MODE
+#if !NDEBUG
   std::cout << "Best Perf: " << best_ave_time << " ms, " << best_tflops
             << " TFlops, " << best_gb_per_sec << " GB/s, " << best_op_name
             << std::endl;

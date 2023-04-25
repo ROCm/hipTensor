@@ -149,9 +149,9 @@ typedef enum {
 /**
  * \brief This enum gives users finer control over the suggested workspace
  * \details This enum gives users finer control over the amount of workspace
- * that is suggested by hiptensorContractionGetWorkspace. \warning Not supported
- * by the current composable_kernel backend. Need to adapt in the future
- * releases.
+ * that is suggested by hipTensorContractionGetWorkspaceSize. \warning Not
+ * supported by the current composable_kernel backend. Need to adapt in the
+ * future releases.
  *
  */
 typedef enum {
@@ -164,7 +164,7 @@ typedef enum {
 /**
  * \brief This enum decides the over the operation based on the inputs.
  * \details This enum decides the operation based on the in puts passed in the
- * hiptensorContractionGetWorkspace
+ * hipTensorContractionGetWorkspaceSize
  */
 typedef enum {
   hiptensor_CONTRACTION_SCALE = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$

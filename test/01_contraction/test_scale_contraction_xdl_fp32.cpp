@@ -193,8 +193,8 @@ int main(int argc, char *argv[]) {
    **********************/
 
   uint64_t worksize = 0;
-  hiptensorContractionGetWorkspace(&handle, &desc, &find,
-                                   hiptensor_WORKSPACE_RECOMMENDED, &worksize);
+  hipTensorContractionGetWorkspaceSize(&handle, &desc, &find,
+                                       hiptensor_WORKSPACE_RECOMMENDED, &worksize);
   void *work = nullptr;
 
   /**************************
