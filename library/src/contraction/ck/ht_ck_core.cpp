@@ -207,10 +207,10 @@ struct KernelLauncher {
   float operator()(StreamConfig const &streamConfig = StreamConfig{nullptr,
                                                                    true}) {
     if (!mValid) {
-#ifdef HT_DEBUG_MODE
+#ifdef !NDEBUG
       std::cout << op->mKernelName() << " does not support this problem"
                 << std::endl;
-#endif
+#endif // !NDEBUG
       return -1.0f;
     }
 
@@ -271,7 +271,7 @@ hiptensorStatus_t hiptensorCKContraction(
       plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
       plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end());
 
-#ifdef HT_DEBUG_MODE
+#ifdef !NDEBUG
   std::cout << "Tensor A lengths: ";
   hiptensorPrintVectorElements<ck::index_t>(a_ms_ns_lengths);
   std::cout << ", strides: ";
@@ -295,7 +295,7 @@ hiptensorStatus_t hiptensorCKContraction(
   std::cout << ", size: "
             << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size
             << std::endl;
-#endif
+#endif // !NDEBUG
 
   void *output;
 
@@ -393,7 +393,6 @@ hiptensorStatus_t hiptensorCKContraction(
   /// Dispatching end
 
   // Now we can launch the kernels and get the metrics.
-
   std::cout << "Run all instances and do timing" << std::endl;
 
   std::string best_op_name;
