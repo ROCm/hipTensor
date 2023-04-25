@@ -31,54 +31,69 @@
 
 #include <mutex>
 
-namespace hiptensor {
-class Logger : public LazySingleton<Logger> {
-private:
-  using Callback_t = void (*)(int32_t logLevel, const char *funcName,
-                              const char *msg);
+namespace hiptensor
+{
+    class Logger : public LazySingleton<Logger>
+    {
+    private:
+        using Callback_t = void (*)(int32_t logLevel, const char* funcName, const char* msg);
 
-public:
-  enum Status_t : int32_t {
-    LOGGER_SUCCESS = 0,
-    LOGGER_BAD_FILE_NAME,
-    LOGGER_BAD_FILE_STREAM,
-    LOGGER_BAD_CALLBACK,
-    LOGGER_BAD_LOG_MASK,
-    LOGGER_FILE_OPEN_FAILED,
-  };
+    public:
+        enum struct Status_t : int32_t
+        {
+            SUCCESS = 0,
+            INVALID_FILE_NAME,
+            INVALID_FILE_STREAM,
+            INVALID_CALLBACK,
+            INVALID_LOG_MASK,
+            INVALID_LOG_LEVEL,
+            FILE_OPEN_FAILED,
+        };
 
-  // For static initialization
-  friend std::unique_ptr<Logger> std::make_unique<Logger>();
+        enum struct LogLevel_t : int32_t
+        {
+            LOG_LEVEL_OFF              = 0,
+            LOG_LEVEL_ERROR            = 1,
+            LOG_LEVEL_PERF_TRACE       = 2,
+            LOG_LEVEL_PERF_HINT        = 4,
+            LOG_LEVEL_HEURISTICS_TRACE = 8,
+            LOG_LEVEL_API_TRACE        = 16
+        };
 
-  Logger();
-  ~Logger();
+        // For static initialization
+        friend std::unique_ptr<Logger> std::make_unique<Logger>();
 
-  Status_t writeToStream(FILE *stream);
-  Status_t openFileStream(const char *fileName);
-  Status_t setCallback(Callback_t callbackFunc);
-  int32_t getLogMask() const;
-  Status_t setLogMask(int32_t mask);
-  void disable();
-  void enable();
+        ~Logger();
 
-  Status_t logMessage(int32_t context, const char *apiFuncName,
-                      const char *message);
+        Status_t writeToStream(FILE* stream);
+        Status_t openFileStream(const char* fileName);
+        Status_t setCallback(Callback_t callbackFunc);
+        int32_t  getLogMask() const;
+        Status_t setLogMask(int32_t mask);
+        Status_t setLogLevel(int32_t level);
+        void     disable();
+        void     enable();
 
-private:
-  static const char *timeStamp();
-  static int32_t appPid();
-  static const char *contextString(int32_t context);
+        Status_t logMessage(int32_t context, const char* apiFuncName, const char* message);
 
-private:
-  bool mEnabled;
-  bool mOwnsStream;
+        static const char* statusString(Status_t status);
 
-  int32_t mLogMask;
-  FILE *mWriteStream;
-  Callback_t mCallback;
+    private:
+        Logger();
+        static const char* timeStamp();
+        static int32_t     appPid();
+        static const char* contextString(LogLevel_t context);
 
-  mutable std::mutex mMutex;
-};
+    private:
+        bool mEnabled;
+        bool mOwnsStream;
+
+        int32_t    mLogMask;
+        FILE*      mWriteStream;
+        Callback_t mCallback;
+
+        mutable std::mutex mMutex;
+    };
 
 } // namespace hiptensor
 
