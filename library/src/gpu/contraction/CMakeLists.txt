@@ -17,10 +17,6 @@ set(CK_CONTRACTION_INSTANCE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_mnn_instance.cpp
 )
 
-
-get_target_property(composable_kernel_INCLUDES composable_kernel::device_operations INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "CK LBS: ${composable_kernel_INCLUDES}")
-
 add_library(ck_contraction_instances OBJECT ${CK_CONTRACTION_INSTANCE_SOURCES})
 target_include_directories(ck_contraction_instances PRIVATE ${composable_kernel_INCLUDES})
 set_target_properties(ck_contraction_instances PROPERTIES POSITION_INDEPENDENT_CODE ON)

@@ -24,24 +24,25 @@
  *
  *******************************************************************************/
 
-/**
- * \brief Returns the version number of hipTensor library
- * \retval Version no calculated as major * 10000 + minor * 100 + patch
- */
+#ifndef HIPTENSOR_SINGLETON_HPP
+#define HIPTENSOR_SINGLETON_HPP
 
-#ifndef HIPTENSOR_VERSION_HPP_
-#define HIPTENSOR_VERSION_HPP_
+#include <memory>
 
-// clang-format off
-#define HIPTENSOR_VERSION_MAJOR       @hiptensor_VERSION_MAJOR@
-#define HIPTENSOR_VERSION_MINOR       @hiptensor_VERSION_MINOR@
-#define HIPTENSOR_VERSION_PATCH       @hiptensor_VERSION_PATCH@
-// clang-format on
-
-inline size_t hiptensorGetVersion()
+namespace hiptensor
 {
-    return HIPTENSOR_VERSION_MAJOR * 10000 + HIPTENSOR_VERSION_MINOR * 100
-           + HIPTENSOR_VERSION_PATCH;
-}
 
-#endif // HIPTENSOR_VERSION_HPP_
+    template <typename T>
+    class LazySingleton
+    {
+    public:
+        static inline std::unique_ptr<T> const& instance()
+        {
+            static auto sInstance = std::make_unique<T>();
+            return sInstance;
+        }
+    };
+
+} // namespace hiptensor
+
+#endif // HIPTENSOR_SINGLETON_HPP

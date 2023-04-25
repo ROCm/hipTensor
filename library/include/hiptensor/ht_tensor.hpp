@@ -197,12 +197,11 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
  * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
  * \retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
  */
-hiptensorStatus_t
-hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t *handle,
-                                     const hiptensorContractionDescriptor_t *desc,
-                                     const hiptensorContractionFind_t *find,
-                                     const hiptensorWorksizePreference_t pref,
-                                     uint64_t *workspaceSize);
+hiptensorStatus_t hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+                                                       const hiptensorContractionDescriptor_t* desc,
+                                                       const hiptensorContractionFind_t*       find,
+                                                       const hiptensorWorksizePreference_t     pref,
+                                                       uint64_t* workspaceSize);
 
 /**
  * \brief Initializes the contraction plan for a given tensor contraction
@@ -298,4 +297,59 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                        uint64_t                          workspaceSize,
                                        hipStream_t                       stream);
 
-#endif
+/**
+ * \brief Registers a callback function that will be invoked by logger calls.
+ * Note: Functionally additive to existing logging functionality.
+ *
+ * \param[in] callback This parameter is the callback function pointer provided to the logger.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given callback is invalid.
+ */
+hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback);
+
+/**
+ * \brief Registers a file output stream to redirect logging output to.
+ * Note: File stream must be open and writable in text mode.
+ *
+ * \param[in] file This parameter is a file stream pointer provided to the logger.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_IO_ERROR if the output file is not valid (defaults back to stdout).
+ */
+hiptensorStatus_t hiptensorLoggerSetFile(FILE* file);
+
+/**
+ * \brief Redirects log output to a file given by the user.
+ *
+ * \param[in] logFile This parameter is a file name (relative to binary) or full path to redirect logger output.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_IO_ERROR if the output file is not valid (defaults back to stdout).
+ */
+hiptensorStatus_t hiptensorLoggerOpenFile(const char* logFile);
+
+/**
+ * \brief User-specified logging level. Logs in other contexts will not be recorded.
+ *
+ * \param[in] level This parameter is the logging level to be enforced.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given log level is invalid.
+ */
+hiptensorStatus_t hiptensorLoggerSetLevel(hiptensorLogLevel_t level);
+
+/**
+ * \brief User-specified logging mask. A mask may be a binary OR combination of
+ * several log levels together. Logs in other contexts will not be recorded.
+ *
+ * \param[in] level This parameter is the logging mask to be enforced.
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given log mask is invalid.
+ */
+hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask);
+
+/**
+ * \brief Disables logging.
+ *
+ * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+ */
+hiptensorStatus_t hiptensorLoggerForceDisable();
+
+#endif // HT_TENSOR_HPP

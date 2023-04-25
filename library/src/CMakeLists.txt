@@ -27,22 +27,37 @@
 find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_operations )
 rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
+# Don't link to consume ck instances, however will customize and create our own.
+# Make the ck includes visible so we can build instances.
+get_target_property(composable_kernel_INCLUDES composable_kernel::device_operations INTERFACE_INCLUDE_DIRECTORIES)
+
 add_subdirectory(core)
 add_subdirectory(contraction)
 add_subdirectory(gpu/contraction)
+
+set(HIPTENSOR_CORE_SOURCES
+   ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
+)
+
+add_library(hiptensor_core_api OBJECT ${HIPTENSOR_CORE_SOURCES})
+target_compile_features(hiptensor_core_api PUBLIC)
+set_target_properties(hiptensor_core_api PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+
 
 add_library(hiptensor SHARED
 	    $<TARGET_OBJECTS:core_instance>
 	    $<TARGET_OBJECTS:contraction_instance>
         $<TARGET_OBJECTS:ck_core_instance>
         $<TARGET_OBJECTS:ck_contraction_instances>
+        $<TARGET_OBJECTS:hiptensor_core_api>
         )
 
 add_library(hiptensor::hiptensor ALIAS hiptensor)
 
 target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
 
-# Users of hiptensor will need HIP and CK libs
+# Users of hiptensor will need HIP libs
 target_link_libraries(hiptensor INTERFACE hip::device hip::host)
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
