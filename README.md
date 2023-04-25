@@ -23,7 +23,7 @@ python3 -m sphinx -T -E -b html -d _build/doctrees -D language=en . _build/html
 ## Future development <br>
   - Adapt the library to adapt the arbitrary input tensor layouts and type computes.
   - Adapt the hiptensorContractionFind API to different set of available algorithms on the different accelerators.
-  - Adapt the hiptensorContractionGetWorkspace API as per the future backends.
+  - Adapt the hipTensorContractionGetWorkspaceSize API as per the future backends.
   - Also, to adapt the library to handle for the FP64 tensors support. <br>
     (Pending due to compiler issue: [SWDEV-335738]( https://ontrack-internal.amd.com/browse/SWDEV-335738 )).
   - Need to make few modularisation in the ck part of the core logic handling all the datatypes.
