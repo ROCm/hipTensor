@@ -34,7 +34,7 @@ hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     else if(hipInit(0) == hipErrorInvalidDevice)
-        return HIPTENSOR_STATUS_ROCM_ERROR;
+        return HIPTENSOR_STATUS_HIP_ERROR;
 
     else if(hipInit(0) == hipErrorInvalidValue)
         return HIPTENSOR_STATUS_INVALID_VALUE;
@@ -53,7 +53,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     if(!handle || !desc)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    if(((!lens) && (!strides)) || dataType != hiptensor_R_32F || unaryOp != hiptensor_OP_IDENTITY)
+    if(((!lens) && (!strides)) || dataType != HIPTENSOR_R_32F || unaryOp != HIPTENSOR_OP_IDENTITY)
         return HIPTENSOR_STATUS_INVALID_VALUE;
 
     using descType = float;
@@ -92,20 +92,16 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error)
         return "HIPTENSOR_STATUS_INVALID_VALUE";
     else if(error == HIPTENSOR_STATUS_ARCH_MISMATCH)
         return "HIPTENSOR_STATUS_ARCH_MISMATCH";
-    else if(error == HIPTENSOR_STATUS_MAPPING_ERROR)
-        return "HIPTENSOR_STATUS_MAPPING_ERROR";
     else if(error == HIPTENSOR_STATUS_EXECUTION_FAILED)
         return "HIPTENSOR_STATUS_EXECUTION_FAILED";
     else if(error == HIPTENSOR_STATUS_INTERNAL_ERROR)
         return "HIPTENSOR_STATUS_INTERNAL_ERROR";
     else if(error == HIPTENSOR_STATUS_NOT_SUPPORTED)
         return "HIPTENSOR_STATUS_NOT_SUPPORTED";
-    else if(error == HIPTENSOR_STATUS_LICENSE_ERROR)
-        return "HIPTENSOR_STATUS_LICENSE_ERROR";
     else if(error == HIPTENSOR_STATUS_CK_ERROR)
         return "HIPTENSOR_STATUS_CK_ERROR";
-    else if(error == HIPTENSOR_STATUS_ROCM_ERROR)
-        return "HIPTENSOR_STATUS_ROCM_ERROR";
+    else if(error == HIPTENSOR_STATUS_HIP_ERROR)
+        return "HIPTENSOR_STATUS_HIP_ERROR";
     else if(error == HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE)
         return "HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE";
     else if(error == HIPTENSOR_STATUS_INSUFFICIENT_DRIVER)
@@ -124,7 +120,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     if(!handle || !desc)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    if(desc->ht_type != hiptensor_R_32F)
+    if(desc->ht_type != HIPTENSOR_R_32F)
         return HIPTENSOR_STATUS_INVALID_VALUE;
 
     using descType = float;
@@ -154,7 +150,7 @@ void hiptensorTensorDescriptor_t::hiptensorCalculateStrides()
     mStrides.resize(mLens.size(), 0);
     if(mStrides.empty())
         return;
-
+        
     mStrides.back() = 1;
     std::partial_sum(
         mLens.rbegin(), mLens.rend() - 1, mStrides.rbegin() + 1, std::multiplies<std::size_t>());
@@ -205,7 +201,6 @@ std::ostream& operator<<(std::ostream& os, const hiptensorTensorDescriptor_t& de
     os << "}";
 
     return os;
-}
 
 void printHexAddress(char* str, void const* obj)
 {
