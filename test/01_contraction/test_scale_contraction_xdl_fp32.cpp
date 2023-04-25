@@ -30,8 +30,8 @@
 #include <unordered_map>
 
 // hiptensor includes
-#include <hiptensor/ht_tensor.hpp>
-#include <hiptensor/ht_types.hpp>
+#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/ht_utility.hpp>
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
    **********************/
 
     uint64_t worksize = 0;
-    hiptensorContractionGetWorkspace(
+    hiptensorContractionGetWorkspaceSize(
         &handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize);
     void* work = nullptr;
 

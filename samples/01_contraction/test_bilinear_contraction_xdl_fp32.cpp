@@ -25,8 +25,8 @@
  *******************************************************************************/
 #include <algorithm>
 #include <fstream>
-#include <hiptensor/ht_tensor.hpp>
-#include <hiptensor/ht_types.hpp>
+#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/ht_utility.hpp>
 #include <iostream>
 #include <iterator>
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
    **********************/
 
     uint64_t worksize = 0;
-    hiptensorContractionGetWorkspace(
+    hiptensorContractionGetWorkspaceSize(
         &handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize);
     void* work = nullptr;
 
