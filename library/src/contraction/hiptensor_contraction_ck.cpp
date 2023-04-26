@@ -117,6 +117,20 @@ struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
 
 struct KernelLauncher
 {
+    using InitArgsFuncT = std::function<void(void const*,
+                                             void const*,
+                                             void const*,
+                                             void const*,
+                                             void const*,
+                                             void*,
+                                             std::vector<index_t> const&,
+                                             std::vector<index_t> const&,
+                                             std::vector<index_t> const&,
+                                             std::vector<index_t> const&,
+                                             std::vector<std::vector<index_t>> const&,
+                                             std::vector<std::vector<index_t>> const&,
+                                             std::vector<index_t> const&,
+                                             std::vector<index_t> const&)>;
     // Override for BilinearContraction
     template <
         typename DeviceOp,
@@ -124,79 +138,77 @@ struct KernelLauncher
                                                  ck::tensor_operation::element_wise::Bilinear>,
                                   void*>
         = nullptr>
-    KernelLauncher(DeviceOp*                                deviceOp,
-                   void const*                              alpha,
-                   void const*                              A,
-                   void const*                              B,
-                   void const*                              beta,
-                   void const*                              D,
-                   void*                                    E,
-                   std::vector<index_t> const&              a_ms_ns_lengths,
-                   std::vector<index_t> const&              a_ms_ks_strides,
-                   std::vector<index_t> const&              b_ns_ks_lengths,
-                   std::vector<index_t> const&              b_ns_ks_strides,
-                   std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                   std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                   std::vector<index_t> const&              e_ms_ns_lengths,
-                   std::vector<index_t> const&              e_ms_ns_strides)
-        : a_ms_ns_lengths_(a_ms_ns_lengths)
-        , a_ms_ks_strides_(a_ms_ks_strides)
-        , b_ns_ks_lengths_(b_ns_ks_lengths)
-        , b_ns_ks_strides_(b_ns_ks_strides)
-        , ds_ms_ns_lengths_(ds_ms_ns_lengths)
-        , ds_ms_ns_strides_(ds_ms_ns_strides)
-        , e_ms_ns_lengths_(e_ms_ns_lengths)
-        , e_ms_ns_strides_(e_ms_ns_strides)
+    KernelLauncher(DeviceOp* deviceOp)
+        : mM(0)
+        , mN(0)
+        , mK(0)
+        , mBytes(0)
+        , mValid(false)
     {
-        using Traits = MetaTraits<DeviceOp>;
+        mInitArgs = [this, deviceOp](void const*                              alpha,
+                                     void const*                              A,
+                                     void const*                              B,
+                                     void const*                              beta,
+                                     void const*                              D,
+                                     void*                                    E,
+                                     std::vector<index_t> const&              a_ms_ns_lengths,
+                                     std::vector<index_t> const&              a_ms_ks_strides,
+                                     std::vector<index_t> const&              b_ns_ks_lengths,
+                                     std::vector<index_t> const&              b_ns_ks_strides,
+                                     std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
+                                     std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
+                                     std::vector<index_t> const&              e_ms_ns_lengths,
+                                     std::vector<index_t> const&              e_ms_ns_strides) {
+            using Traits = MetaTraits<DeviceOp>;
 
-        // Initialize the argument pointer
-        mArgPtr = std::move(deviceOp->MakeArgumentPointer(
-            A,
-            B,
-            std::array<const void*, 1>{D},
-            E,
-            a_ms_ns_lengths,
-            a_ms_ks_strides,
-            b_ns_ks_lengths,
-            b_ns_ks_strides,
-            std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths[0]},
-            std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides[0]},
-            e_ms_ns_lengths,
-            e_ms_ns_strides,
-            typename Traits::AOp{},
-            typename Traits::BOp{},
-            typename Traits::CDEOp{*(F32*)alpha, *(F32*)beta}));
+            // Initialize the argument pointer
+            mArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                A,
+                B,
+                std::array<const void*, 1>{D},
+                E,
+                a_ms_ns_lengths,
+                a_ms_ks_strides,
+                b_ns_ks_lengths,
+                b_ns_ks_strides,
+                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths[0]},
+                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides[0]},
+                e_ms_ns_lengths,
+                e_ms_ns_strides,
+                typename Traits::AOp{},
+                typename Traits::BOp{},
+                typename Traits::CDEOp{*(F32*)alpha, *(F32*)beta}));
 
-        // Initialize the invoker
-        mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
+            // Initialize the invoker
+            mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
-        // Get the kernel name
-        mKernelName = deviceOp->GetTypeString();
+            // Get the kernel name
+            mKernelName = deviceOp->GetTypeString();
 
-        // Fill problem metrics
-        mM = std::accumulate(e_ms_ns_lengths.begin(),
-                             e_ms_ns_lengths.begin() + Traits::DimsM,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
+            // Fill problem metrics
+            mM = std::accumulate(e_ms_ns_lengths.begin(),
+                                 e_ms_ns_lengths.begin() + Traits::DimsM,
+                                 ck::index_t{1},
+                                 std::multiplies<ck::index_t>{});
 
-        mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                             e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
+            mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                 e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                                 ck::index_t{1},
+                                 std::multiplies<ck::index_t>{});
 
-        mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                             e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
+            mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                 e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                                 ck::index_t{1},
+                                 std::multiplies<ck::index_t>{});
 
-        // Byte count
-        mBytes = sizeof(typename Traits::ADataT) * mM * mK
-                 + sizeof(typename Traits::BDataT) * mK * mN
-                 + sizeof(typename Traits::DDataT) * mM * mN
-                 + sizeof(typename Traits::EDataT) * mM * mN;
+            // Byte count
+            mBytes = sizeof(typename Traits::ADataT) * mM * mK
+                     + sizeof(typename Traits::BDataT) * mK * mN
+                     + sizeof(typename Traits::DDataT) * mM * mN
+                     + sizeof(typename Traits::EDataT) * mM * mN;
 
-        mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+            mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+        };
     }
 
     template <typename DeviceOp,
@@ -204,22 +216,27 @@ struct KernelLauncher
                                                        ck::tensor_operation::element_wise::Scale>,
                                         void*>
               = nullptr>
-    KernelLauncher(DeviceOp*                   deviceOp,
-                   void const*                 alpha,
-                   void const*                 A,
-                   void const*                 B,
-                   void*                       E,
-                   std::vector<index_t> const& a_ms_ns_lengths,
-                   std::vector<index_t> const& a_ms_ks_strides,
-                   std::vector<index_t> const& b_ns_ks_lengths,
-                   std::vector<index_t> const& b_ns_ks_strides,
-                   std::vector<index_t> const& e_ms_ns_lengths,
-                   std::vector<index_t> const& e_ms_ns_strides)
+    KernelLauncher(DeviceOp* deviceOp)
     {
-        using Traits = MetaTraits<DeviceOp>;
+        mInitArgs = [this, deviceOp](void const*                              alpha,
+                                     void const*                              A,
+                                     void const*                              B,
+                                     void const*                              beta,
+                                     void const*                              D,
+                                     void*                                    E,
+                                     std::vector<index_t> const&              a_ms_ns_lengths,
+                                     std::vector<index_t> const&              a_ms_ks_strides,
+                                     std::vector<index_t> const&              b_ns_ks_lengths,
+                                     std::vector<index_t> const&              b_ns_ks_strides,
+                                     std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
+                                     std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
+                                     std::vector<index_t> const&              e_ms_ns_lengths,
+                                     std::vector<index_t> const&              e_ms_ns_strides) {
+            using Traits = MetaTraits<DeviceOp>;
 
-        // Initialize the argument pointer
-        mArgPtr = std::move(deviceOp->MakeArgumentPointer(A,
+            // Initialize the argument pointer
+            mArgPtr
+                = std::move(deviceOp->MakeArgumentPointer(A,
                                                           B,
                                                           std::array<const void*, 0>{},
                                                           E,
@@ -235,38 +252,89 @@ struct KernelLauncher
                                                           typename Traits::BOp{},
                                                           typename Traits::CDEOp{*(F32*)alpha}));
 
-        // Initialize the invoker
-        mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
+            // Initialize the invoker
+            mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
-        // Get the kernel name
-        mKernelName = deviceOp->GetTypeString();
+            // Get the kernel name
+            mKernelName = deviceOp->GetTypeString();
 
-        // Fill problem metrics
-        mM = std::accumulate(e_ms_ns_lengths.begin(),
-                             e_ms_ns_lengths.begin() + Traits::DimsM,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
+            // Fill problem metrics
+            mM = std::accumulate(e_ms_ns_lengths.begin(),
+                                 e_ms_ns_lengths.begin() + Traits::DimsM,
+                                 ck::index_t{1},
+                                 std::multiplies<ck::index_t>{});
 
-        mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                             e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
+            mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                 e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                                 ck::index_t{1},
+                                 std::multiplies<ck::index_t>{});
 
-        mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
-                             a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
+            mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
+                                 a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                                 ck::index_t{1},
+                                 std::multiplies<ck::index_t>{});
 
-        // Byte count
-        mBytes = sizeof(typename Traits::ADataT) * mM * mK
-                 + sizeof(typename Traits::BDataT) * mK * mN
-                 + sizeof(typename Traits::EDataT) * mM * mN;
+            // Byte count
+            mBytes = sizeof(typename Traits::ADataT) * mM * mK
+                     + sizeof(typename Traits::BDataT) * mK * mN
+                     + sizeof(typename Traits::EDataT) * mM * mN;
 
-        mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+            mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+        };
     }
 
     float operator()(StreamConfig const& streamConfig = StreamConfig{nullptr, true})
     {
+        if(!mArgPtr || !mInvokerPtr)
+        {
+#if !NDEBUG
+            std::cout << op->mKernelName() << " is not initialized" << std::endl;
+#endif // !NDEBUG
+            return -1.0f;
+        }
+
+        if(!mValid)
+        {
+#if !NDEBUG
+            std::cout << op->mKernelName() << " does not support this problem" << std::endl;
+#endif // !NDEBUG
+            return -1.0f;
+        }
+
+        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
+    }
+
+    float operator()(void const*                              alpha,
+                     void const*                              A,
+                     void const*                              B,
+                     void const*                              beta,
+                     void const*                              D,
+                     void*                                    E,
+                     std::vector<index_t> const&              a_ms_ns_lengths,
+                     std::vector<index_t> const&              a_ms_ks_strides,
+                     std::vector<index_t> const&              b_ns_ks_lengths,
+                     std::vector<index_t> const&              b_ns_ks_strides,
+                     std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
+                     std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
+                     std::vector<index_t> const&              e_ms_ns_lengths,
+                     std::vector<index_t> const&              e_ms_ns_strides,
+                     StreamConfig const& streamConfig = StreamConfig{nullptr, true})
+    {
+        mInitArgs(alpha,
+                  A,
+                  B,
+                  beta,
+                  D,
+                  E,
+                  a_ms_ns_lengths,
+                  a_ms_ks_strides,
+                  b_ns_ks_lengths,
+                  b_ns_ks_strides,
+                  ds_ms_ns_lengths,
+                  ds_ms_ns_strides,
+                  e_ms_ns_lengths,
+                  e_ms_ns_strides);
+
         if(!mValid)
         {
 #if !NDEBUG
@@ -283,15 +351,6 @@ struct KernelLauncher
         return mValid;
     }
 
-    std::vector<index_t>              a_ms_ns_lengths_;
-    std::vector<index_t>              a_ms_ks_strides_;
-    std::vector<index_t>              b_ns_ks_lengths_;
-    std::vector<index_t>              b_ns_ks_strides_;
-    std::vector<std::vector<index_t>> ds_ms_ns_lengths_;
-    std::vector<std::vector<index_t>> ds_ms_ns_strides_;
-    std::vector<index_t>              e_ms_ns_lengths_;
-    std::vector<index_t>              e_ms_ns_strides_;
-
     index_t mM, mN, mK;
     index_t mBytes;
     bool    mValid;
@@ -299,6 +358,7 @@ struct KernelLauncher
     std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
     std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
     std::string                                                 mKernelName;
+    InitArgsFuncT                                               mInitArgs;
 };
 
 hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handle,
@@ -372,37 +432,24 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     std::vector<KernelLauncher> solutions;
 
+    // Use this generic lambda to initialize kernel solutions.
+    auto initSolutions = [&solutions](auto const& v) {
+        for(auto& opPtr : v)
+        {
+            solutions.push_back(KernelLauncher(opPtr.get()));
+        }
+    };
+
+    auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
+    auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
+    auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
+    auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
+
     if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR)
     {
-        // Use this generic lambda to initialize the bilinear kernels.
-        auto initBilinearSolutions = [&](auto const& v) {
-            for(auto& opPtr : v)
-            {
-                solutions.push_back(
-                    KernelLauncher(opPtr.get(),
-                                   alpha,
-                                   A,
-                                   B,
-                                   beta,
-                                   C,
-                                   output,
-                                   a_ms_ns_lengths,
-                                   a_ms_ks_strides,
-                                   b_ns_ks_lengths,
-                                   b_ns_ks_strides,
-                                   std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
-                                   std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
-                                   e_ms_ns_lengths,
-                                   e_ms_ns_strides));
-            }
-        };
-
-        auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
-        auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
-        auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
-        auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
-
-        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
+        if(ADataType == HIP_R_32F 
+           && BDataType == HIP_R_32F 
+           && CDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
             using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
@@ -417,11 +464,12 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>;
 
-            initBilinearSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionBilinearOp>::GetInstances());
+            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
+                          ContractionBilinearOp>::GetInstances());
         }
-        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
+        else if(ADataType == HIP_R_64F 
+                && BDataType == HIP_R_64F 
+                && CDataType == HIP_R_64F
                 && DDataType == HIP_R_64F)
         {
             using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
@@ -436,37 +484,15 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>;
 
-            initBilinearSolutions(
+            initSolutions(
                 ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
                     ContractionBilinearOp>::GetInstances());
         }
     }
     else if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE)
     {
-        // Use this generic lambda to initialize the bilinear kernels.
-        auto initScaleSolutions = [&](auto const& v) {
-            for(auto& opPtr : v)
-            {
-                solutions.push_back(KernelLauncher(opPtr.get(),
-                                                   alpha,
-                                                   A,
-                                                   B,
-                                                   D,
-                                                   a_ms_ns_lengths,
-                                                   a_ms_ks_strides,
-                                                   b_ns_ks_lengths,
-                                                   b_ns_ks_strides,
-                                                   e_ms_ns_lengths,
-                                                   e_ms_ns_strides));
-            }
-        };
-
-        auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
-        auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
-        auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
-        auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
-
-        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
+        if(ADataType == HIP_R_32F 
+           && BDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
             using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
@@ -481,11 +507,11 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>;
 
-            initScaleSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionScaleOp>::GetInstances());
+            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
+                          ContractionScaleOp>::GetInstances());
         }
-        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
+        else if(ADataType == HIP_R_64F 
+                && BDataType == HIP_R_64F 
                 && DDataType == HIP_R_64F)
         {
             using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
@@ -500,7 +526,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>;
 
-            initScaleSolutions(
+            initSolutions(
                 ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
                     ContractionScaleOp>::GetInstances());
         }
@@ -523,7 +549,20 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
             auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
             auto bytes = solution.mBytes;
 
-            auto time = solution();
+            auto time = solution(alpha,
+                                 A,
+                                 B,
+                                 beta,
+                                 C,
+                                 output,
+                                 a_ms_ns_lengths,
+                                 a_ms_ks_strides,
+                                 b_ns_ks_lengths,
+                                 b_ns_ks_strides,
+                                 std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
+                                 std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
+                                 e_ms_ns_lengths,
+                                 e_ms_ns_strides);
 
             hiptensorContractionMetrics_t metrics = {
                 time, // avg time
