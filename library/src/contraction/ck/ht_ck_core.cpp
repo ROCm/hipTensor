@@ -39,8 +39,8 @@
 #include <tensor_layout.hpp>
 
 // HipTensor includes
+#include "hiptensor_types.hpp"
 #include "ht_ck_core.hpp"
-#include "ht_types.hpp"
 #include "ht_utility.hpp"
 
 using F32 = float;
@@ -268,7 +268,7 @@ struct KernelLauncher
     {
         if(!mValid)
         {
-#ifdef !NDEBUG
+#if !NDEBUG
             std::cout << op->mKernelName() << " does not support this problem" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
@@ -342,7 +342,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
         = std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[2].strides.begin(),
                                    plan->ht_plan_desc.ht_contract_attr_desc[2].strides.end());
 
-#ifdef !NDEBUG
+#if !NDEBUG
     std::cout << "Tensor A lengths: ";
     hiptensorPrintVectorElements<ck::index_t>(a_ms_ns_lengths);
     std::cout << ", strides: ";

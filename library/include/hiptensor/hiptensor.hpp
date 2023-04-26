@@ -26,7 +26,7 @@
 #ifndef HT_TENSOR_HPP
 #define HT_TENSOR_HPP
 
-#include "ht_types.hpp"
+#include "hiptensor_types.hpp"
 #include "internal/ht_utility.hpp"
 
 /**
@@ -197,7 +197,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
  * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
  * \retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
  */
-hiptensorStatus_t hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
                                                        const hiptensorContractionDescriptor_t* desc,
                                                        const hiptensorContractionFind_t*       find,
                                                        const hiptensorWorksizePreference_t     pref,
