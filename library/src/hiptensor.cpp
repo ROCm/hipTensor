@@ -24,8 +24,6 @@
  *
  *******************************************************************************/
 #include "hiptensor.hpp"
-#include "internal/ht_tensor_generator_utility.hpp"
-
 #include "include/logger.hpp"
 
 hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
