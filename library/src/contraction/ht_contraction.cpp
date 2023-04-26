@@ -23,8 +23,8 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include "hiptensor.hpp"
 #include "ht_ck_core.hpp"
-#include "ht_tensor.hpp"
 
 hiptensorContractionMetrics_t ht_contract_metrics;
 
@@ -77,7 +77,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hipTensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
                                                        const hiptensorContractionDescriptor_t* desc,
                                                        const hiptensorContractionFind_t*       find,
                                                        const hiptensorWorksizePreference_t     pref,

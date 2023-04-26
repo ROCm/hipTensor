@@ -26,7 +26,7 @@
 #ifndef HT_CK_CORE_HPP_
 #define HT_CK_CORE_HPP_
 
-#include "../../ht_types.hpp"
+#include "../../hiptensor_types.hpp"
 #include "../ht_utility.hpp"
 
 hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handle,
