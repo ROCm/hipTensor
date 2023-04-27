@@ -27,7 +27,7 @@
 #define HT_TENSOR_HPP
 
 #include "hiptensor_types.hpp"
-#include "internal/ht_utility.hpp"
+#include "internal/hiptensor_utility.hpp"
 
 /**
  * \brief Initializes the hiptensor library

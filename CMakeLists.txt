@@ -65,7 +65,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
-  option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" OFF )
+  option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
   option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
   option( HIPTENSOR_BUILD_DOCS "Build hiptensor documentation" OFF )
 endif()
