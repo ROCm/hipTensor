@@ -270,7 +270,7 @@ struct KernelLauncher
         if(!mValid)
         {
 #if !NDEBUG
-            std::cout << op->mKernelName() << " does not support this problem" << std::endl;
+            std::cout << mKernelName << " does not support this problem" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
         }
