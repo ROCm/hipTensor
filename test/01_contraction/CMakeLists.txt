@@ -24,5 +24,5 @@
  #
  ###############################################################################
 
-add_hiptensor_test(scale_contraction_xdl_fp32 test_scale_contraction_xdl_fp32.cpp)
-add_hiptensor_test(bilinear_contraction_xdl_fp32 test_bilinear_contraction_xdl_fp32.cpp)
+add_hiptensor_test(scale_contraction_f32_test scale_contraction_f32.cpp)
+add_hiptensor_test(bilinear_contraction_f32_test bilinear_contraction_f32.cpp)

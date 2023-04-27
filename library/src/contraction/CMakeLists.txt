@@ -24,17 +24,18 @@
  #
  ###############################################################################
 
-include_directories(BEFORE
-    ${PROJECT_SOURCE_DIR}/library/include/hiptensor
-    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal
-    ${PROJECT_SOURCE_DIR}/library/include/hiptensor/internal/ck
+# Don't link to consume ck instances, however will customize and create our own.
+# Make the ck includes visible so we can build instances.
+get_target_property(composable_kernel_INCLUDES composable_kernel::device_operations INTERFACE_INCLUDE_DIRECTORIES)
+
+set(HIPTENSOR_CONTRACTION_SOURCES
+   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction_ck.cpp
 )
 
-set(CONTRACTION_INSTANCE_SOURCE
-   ht_contraction.cpp
-)
+add_library(hiptensor_contraction OBJECT ${HIPTENSOR_CONTRACTION_SOURCES})
+target_include_directories(hiptensor_contraction PRIVATE ${composable_kernel_INCLUDES})
+target_link_libraries(hiptensor_contraction PRIVATE hip::host)
+set_target_properties(hiptensor_contraction PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-add_library(contraction_instance OBJECT ${CONTRACTION_INSTANCE_SOURCE})
-set_target_properties(contraction_instance PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
-add_subdirectory(ck)
+add_subdirectory(device)
