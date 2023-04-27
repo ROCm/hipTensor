@@ -517,13 +517,6 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
-    void* output;
-
-    hip_check_error(hipMalloc(static_cast<void**>(&output),
-                              plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size));
-
-    hip_check_error(hipMemset(output, 0, plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size));
-
     std::vector<KernelLauncher> solutions;
 
     // Use this generic lambda to initialize kernel solutions.
@@ -644,7 +637,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                              B,
                              beta,
                              C,
-                             output,
+                             D,
                              a_ms_ns_lengths,
                              a_ms_ks_strides,
                              b_ns_ks_lengths,
@@ -677,16 +670,6 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     if(found)
     {
         *ht_contract_metrics = bestFound;
-    }
-
-    if(output)
-    {
-        hip_check_error(hipMemcpy(D,
-                                  output,
-                                  plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size,
-                                  hipMemcpyDeviceToDevice));
-
-        hip_check_error(hipFree(output));
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
