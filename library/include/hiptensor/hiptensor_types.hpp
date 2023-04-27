@@ -33,6 +33,8 @@
 #include <utility>
 #include <vector>
 
+#include <hip/hip_common.h>
+
 /**
  * \brief hiptensor status type returns
  * \details The type is used for function status returns. All hiptensor library
@@ -76,18 +78,10 @@ typedef enum
 /**
  * \brief hiptensorDataType_t is an enumeration of the types supported by
  * hiptensor libraries. hiptensor supports real FP16, BF16, FP32 input types.
- * \note Only HIPTENSOR_R_32F is supported.
- * \todo Other datatypes support to be added in the next hiptensor library
- * releases.
+ * \note Only HIP_R_32F and HIP_R_64F are currently supported.
  *
  */
-typedef enum
-{
-    HIPTENSOR_R_16F  = 0, ///< real as a half
-    HIPTENSOR_R_16BF = 1, ///< real as a nv_bfloat16
-    HIPTENSOR_R_32F  = 2, ///< real as a float
-    HIPTENSOR_R_64F  = 3, ///< real as a double
-} hiptensorDataType_t;
+using hiptensorDataType_t = hipDataType;
 
 /**
  * \brief Encodes hiptensor's compute type

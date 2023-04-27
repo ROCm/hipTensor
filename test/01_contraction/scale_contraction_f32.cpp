@@ -43,9 +43,9 @@ int main(int argc, char* argv[])
     typedef float CDataType;
     typedef float floatTypeCompute;
 
-    hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
-    hiptensorDataType_t    typeB       = HIPTENSOR_R_32F;
-    hiptensorDataType_t    typeC       = HIPTENSOR_R_32F;
+    hiptensorDataType_t    typeA       = HIP_R_32F;
+    hiptensorDataType_t    typeB       = HIP_R_32F;
+    hiptensorDataType_t    typeC       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
     floatTypeCompute alpha = (floatTypeCompute)1.0f;
