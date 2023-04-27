@@ -41,15 +41,15 @@ int main(int argc, char* argv[])
     typedef double ADataType;
     typedef double BDataType;
     typedef double CDataType;
-    typedef float floatTypeCompute;
+    typedef double doubleTypeCompute;
 
     hiptensorDataType_t    typeA       = HIPTENSOR_R_64F;
     hiptensorDataType_t    typeB       = HIPTENSOR_R_64F;
     hiptensorDataType_t    typeC       = HIPTENSOR_R_64F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_64F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
-    floatTypeCompute beta  = (floatTypeCompute)0.0f;
+    doubleTypeCompute alpha = (doubleTypeCompute)1.0;
+    doubleTypeCompute beta  = (doubleTypeCompute)0.0;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;

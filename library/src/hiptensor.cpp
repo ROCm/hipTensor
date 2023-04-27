@@ -122,7 +122,10 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     if(!((desc->ht_type == HIPTENSOR_R_32F)  || (desc->ht_type == HIPTENSOR_R_64F)))
         return HIPTENSOR_STATUS_INVALID_VALUE;
 
-    *alignmentRequirement = sizeof(desc->ht_type) * desc->hiptensorGetElementSpace();
+    if(desc->ht_type == HIPTENSOR_R_32F)
+        *alignmentRequirement = sizeof(float) * desc->hiptensorGetElementSpace();
+    else
+        *alignmentRequirement = sizeof(double) * desc->hiptensorGetElementSpace();
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
