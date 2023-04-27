@@ -25,4 +25,5 @@
  ###############################################################################
 
 add_hiptensor_test(scale_contraction_f32_test scale_contraction_f32.cpp)
+add_hiptensor_test(scale_contraction_f64_test scale_contraction_f64.cpp)
 add_hiptensor_test(bilinear_contraction_f32_test bilinear_contraction_f32.cpp)
