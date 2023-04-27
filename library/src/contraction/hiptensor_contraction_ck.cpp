@@ -51,6 +51,7 @@ template <typename T>
 struct MetaTraits;
 
 using ck::index_t;
+
 template <index_t NumDimsM,
           index_t NumDimsN,
           index_t NumDimsK,
@@ -117,7 +118,8 @@ struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
 
 struct KernelLauncher
 {
-    using InitArgsFuncT = std::function<void(void const*,
+    using InitArgsFuncT = std::function<void(KernelLauncher&,
+                                             void const*,
                                              void const*,
                                              void const*,
                                              void const*,
@@ -131,38 +133,72 @@ struct KernelLauncher
                                              std::vector<std::vector<index_t>> const&,
                                              std::vector<index_t> const&,
                                              std::vector<index_t> const&)>;
-    // Override for BilinearContraction
+
+    // Due to unique_ptr ownership of members,
+    // KernelLaunchers should also be considered unique.
+    // This means disabling default and copy ctor
+    KernelLauncher()                      = delete;
+    KernelLauncher(KernelLauncher const&) = delete;
+    ~KernelLauncher()                     = default;
+
+    // Move ctor will inherit the other launcher's
+    // members.
+    KernelLauncher(KernelLauncher&& other)
+        : mM(other.mM)
+        , mN(other.mN)
+        , mK(other.mK)
+        , mBytes(other.mBytes)
+        , mKernelName(other.mKernelName)
+        , mValid(other.mValid)
+        , mDeviceOp(std::move(other.mDeviceOp))
+        , mArgPtr(std::move(other.mArgPtr))
+        , mInvokerPtr(std::move(other.mInvokerPtr))
+        , mInitArgs(other.mInitArgs)
+    {
+    }
+
+    /// This class is intended to receive DeviceOp kernel pointers from
+    /// the CK generator. Wrap ownership of the CK kernel with generated
+    /// arg and invoke pointers, such that invokation of these kernels
+    /// is handled entirely in the operator() overloads.
+
     template <
         typename DeviceOp,
         typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
                                                  ck::tensor_operation::element_wise::Bilinear>,
                                   void*>
         = nullptr>
-    KernelLauncher(DeviceOp* deviceOp)
+    KernelLauncher(std::unique_ptr<DeviceOp>&& deviceOp)
         : mM(0)
         , mN(0)
         , mK(0)
         , mBytes(0)
         , mValid(false)
+        , mDeviceOp(deviceOp.release()) // Take ownership, but store as opaque BaseOperator ptr
     {
-        mInitArgs = [this, deviceOp](void const*                              alpha,
-                                     void const*                              A,
-                                     void const*                              B,
-                                     void const*                              beta,
-                                     void const*                              D,
-                                     void*                                    E,
-                                     std::vector<index_t> const&              a_ms_ns_lengths,
-                                     std::vector<index_t> const&              a_ms_ks_strides,
-                                     std::vector<index_t> const&              b_ns_ks_lengths,
-                                     std::vector<index_t> const&              b_ns_ks_strides,
-                                     std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                                     std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                                     std::vector<index_t> const&              e_ms_ns_lengths,
-                                     std::vector<index_t> const&              e_ms_ns_strides) {
+        mInitArgs = [](KernelLauncher&                          launcher,
+                       void const*                              alpha,
+                       void const*                              A,
+                       void const*                              B,
+                       void const*                              beta,
+                       void const*                              D,
+                       void*                                    E,
+                       std::vector<index_t> const&              a_ms_ns_lengths,
+                       std::vector<index_t> const&              a_ms_ks_strides,
+                       std::vector<index_t> const&              b_ns_ks_lengths,
+                       std::vector<index_t> const&              b_ns_ks_strides,
+                       std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
+                       std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
+                       std::vector<index_t> const&              e_ms_ns_lengths,
+                       std::vector<index_t> const&              e_ms_ns_strides) {
             using Traits = MetaTraits<DeviceOp>;
 
+            // Promote to derived class for necessary functions such as
+            // MakeArgumentPointer and MakeInvokerPointer.
+            auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
+
             // Initialize the argument pointer
-            mArgPtr = std::move(deviceOp->MakeArgumentPointer(
+            launcher.mArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,
                 B,
                 std::array<const void*, 1>{D},
@@ -180,34 +216,35 @@ struct KernelLauncher
                 typename Traits::CDEOp{*(F32*)alpha, *(F32*)beta}));
 
             // Initialize the invoker
-            mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
+            launcher.mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
             // Get the kernel name
-            mKernelName = deviceOp->GetTypeString();
+            launcher.mKernelName = deviceOp->GetTypeString();
 
             // Fill problem metrics
-            mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                 e_ms_ns_lengths.begin() + Traits::DimsM,
-                                 ck::index_t{1},
-                                 std::multiplies<ck::index_t>{});
+            launcher.mM = std::accumulate(e_ms_ns_lengths.begin(),
+                                          e_ms_ns_lengths.begin() + Traits::DimsM,
+                                          ck::index_t{1},
+                                          std::multiplies<ck::index_t>{});
 
-            mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                 e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                                 ck::index_t{1},
-                                 std::multiplies<ck::index_t>{});
+            launcher.mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                                          ck::index_t{1},
+                                          std::multiplies<ck::index_t>{});
 
-            mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                 e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                                 ck::index_t{1},
-                                 std::multiplies<ck::index_t>{});
+            launcher.mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                                          ck::index_t{1},
+                                          std::multiplies<ck::index_t>{});
 
             // Byte count
-            mBytes = sizeof(typename Traits::ADataT) * mM * mK
-                     + sizeof(typename Traits::BDataT) * mK * mN
-                     + sizeof(typename Traits::DDataT) * mM * mN
-                     + sizeof(typename Traits::EDataT) * mM * mN;
+            launcher.mBytes = sizeof(typename Traits::ADataT) * launcher.mM * launcher.mK
+                              + sizeof(typename Traits::BDataT) * launcher.mK * launcher.mN
+                              + sizeof(typename Traits::DDataT) * launcher.mM * launcher.mN
+                              + sizeof(typename Traits::EDataT) * launcher.mM * launcher.mN;
 
-            mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+            // Arg test
+            launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
         };
     }
 
@@ -216,26 +253,37 @@ struct KernelLauncher
                                                        ck::tensor_operation::element_wise::Scale>,
                                         void*>
               = nullptr>
-    KernelLauncher(DeviceOp* deviceOp)
+    KernelLauncher(std::unique_ptr<DeviceOp>&& deviceOp)
+        : mM(0)
+        , mN(0)
+        , mK(0)
+        , mBytes(0)
+        , mValid(false)
+        , mDeviceOp(deviceOp.release()) // Take ownership, but store as opaque BaseOperator ptr
     {
-        mInitArgs = [this, deviceOp](void const*                              alpha,
-                                     void const*                              A,
-                                     void const*                              B,
-                                     void const*                              beta,
-                                     void const*                              D,
-                                     void*                                    E,
-                                     std::vector<index_t> const&              a_ms_ns_lengths,
-                                     std::vector<index_t> const&              a_ms_ks_strides,
-                                     std::vector<index_t> const&              b_ns_ks_lengths,
-                                     std::vector<index_t> const&              b_ns_ks_strides,
-                                     std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                                     std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                                     std::vector<index_t> const&              e_ms_ns_lengths,
-                                     std::vector<index_t> const&              e_ms_ns_strides) {
+        mInitArgs = [](KernelLauncher&                          launcher,
+                       void const*                              alpha,
+                       void const*                              A,
+                       void const*                              B,
+                       void const*                              beta,
+                       void const*                              D,
+                       void*                                    E,
+                       std::vector<index_t> const&              a_ms_ns_lengths,
+                       std::vector<index_t> const&              a_ms_ks_strides,
+                       std::vector<index_t> const&              b_ns_ks_lengths,
+                       std::vector<index_t> const&              b_ns_ks_strides,
+                       std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
+                       std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
+                       std::vector<index_t> const&              e_ms_ns_lengths,
+                       std::vector<index_t> const&              e_ms_ns_strides) {
             using Traits = MetaTraits<DeviceOp>;
 
+            // Promote to derived class for necessary functions such as
+            // MakeArgumentPointer and MakeInvokerPointer.
+            auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
+
             // Initialize the argument pointer
-            mArgPtr
+            launcher.mArgPtr
                 = std::move(deviceOp->MakeArgumentPointer(A,
                                                           B,
                                                           std::array<const void*, 0>{},
@@ -253,42 +301,81 @@ struct KernelLauncher
                                                           typename Traits::CDEOp{*(F32*)alpha}));
 
             // Initialize the invoker
-            mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
+            launcher.mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
             // Get the kernel name
-            mKernelName = deviceOp->GetTypeString();
+            launcher.mKernelName = deviceOp->GetTypeString();
 
             // Fill problem metrics
-            mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                 e_ms_ns_lengths.begin() + Traits::DimsM,
-                                 ck::index_t{1},
-                                 std::multiplies<ck::index_t>{});
+            launcher.mM = std::accumulate(e_ms_ns_lengths.begin(),
+                                          e_ms_ns_lengths.begin() + Traits::DimsM,
+                                          ck::index_t{1},
+                                          std::multiplies<ck::index_t>{});
 
-            mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                 e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                                 ck::index_t{1},
-                                 std::multiplies<ck::index_t>{});
+            launcher.mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                                          ck::index_t{1},
+                                          std::multiplies<ck::index_t>{});
 
-            mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
-                                 a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                                 ck::index_t{1},
-                                 std::multiplies<ck::index_t>{});
+            launcher.mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
+                                          a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                                          ck::index_t{1},
+                                          std::multiplies<ck::index_t>{});
 
             // Byte count
-            mBytes = sizeof(typename Traits::ADataT) * mM * mK
-                     + sizeof(typename Traits::BDataT) * mK * mN
-                     + sizeof(typename Traits::EDataT) * mM * mN;
+            launcher.mBytes = sizeof(typename Traits::ADataT) * launcher.mM * launcher.mK
+                              + sizeof(typename Traits::BDataT) * launcher.mK * launcher.mN
+                              + sizeof(typename Traits::EDataT) * launcher.mM * launcher.mN;
 
-            mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
+            // Arg test
+            launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
         };
     }
 
-    float operator()(StreamConfig const& streamConfig = StreamConfig{nullptr, true})
+    bool initArgs(void const*                              alpha,
+                  void const*                              A,
+                  void const*                              B,
+                  void const*                              beta,
+                  void const*                              D,
+                  void*                                    E,
+                  std::vector<index_t> const&              a_ms_ns_lengths,
+                  std::vector<index_t> const&              a_ms_ks_strides,
+                  std::vector<index_t> const&              b_ns_ks_lengths,
+                  std::vector<index_t> const&              b_ns_ks_strides,
+                  std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
+                  std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
+                  std::vector<index_t> const&              e_ms_ns_lengths,
+                  std::vector<index_t> const&              e_ms_ns_strides)
+    {
+        if(mDeviceOp)
+        {
+            mInitArgs(*this,
+                      alpha,
+                      A,
+                      B,
+                      beta,
+                      D,
+                      E,
+                      a_ms_ns_lengths,
+                      a_ms_ks_strides,
+                      b_ns_ks_lengths,
+                      b_ns_ks_strides,
+                      ds_ms_ns_lengths,
+                      ds_ms_ns_strides,
+                      e_ms_ns_lengths,
+                      e_ms_ns_strides);
+
+            return mValid;
+        }
+        return false;
+    }
+
+    float operator()(StreamConfig const& streamConfig = StreamConfig{})
     {
         if(!mArgPtr || !mInvokerPtr)
         {
 #if !NDEBUG
-            std::cout << op->mKernelName() << " is not initialized" << std::endl;
+            std::cout << deviceOp->GetTypeString() << " is not initialized" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
         }
@@ -296,7 +383,7 @@ struct KernelLauncher
         if(!mValid)
         {
 #if !NDEBUG
-            std::cout << op->mKernelName() << " does not support this problem" << std::endl;
+            std::cout << mKernelName << " does not support this problem" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
         }
@@ -318,24 +405,22 @@ struct KernelLauncher
                      std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
                      std::vector<index_t> const&              e_ms_ns_lengths,
                      std::vector<index_t> const&              e_ms_ns_strides,
-                     StreamConfig const& streamConfig = StreamConfig{nullptr, true})
+                     StreamConfig const&                      streamConfig = StreamConfig{})
     {
-        mInitArgs(alpha,
-                  A,
-                  B,
-                  beta,
-                  D,
-                  E,
-                  a_ms_ns_lengths,
-                  a_ms_ks_strides,
-                  b_ns_ks_lengths,
-                  b_ns_ks_strides,
-                  ds_ms_ns_lengths,
-                  ds_ms_ns_strides,
-                  e_ms_ns_lengths,
-                  e_ms_ns_strides);
-
-        if(!mValid)
+        if(!initArgs(alpha,
+                     A,
+                     B,
+                     beta,
+                     D,
+                     E,
+                     a_ms_ns_lengths,
+                     a_ms_ks_strides,
+                     b_ns_ks_lengths,
+                     b_ns_ks_strides,
+                     ds_ms_ns_lengths,
+                     ds_ms_ns_strides,
+                     e_ms_ns_lengths,
+                     e_ms_ns_strides))
         {
 #if !NDEBUG
             std::cout << mKernelName << " does not support this problem" << std::endl;
@@ -355,6 +440,7 @@ struct KernelLauncher
     index_t mBytes;
     bool    mValid;
 
+    std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
     std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
     std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
     std::string                                                 mKernelName;
@@ -374,11 +460,19 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                                          uint64_t                          workspaceSize,
                                          hipStream_t                       stream)
 {
-    if(!handle || !ht_contract_metrics || !A || !B || !D)
+    if(handle == nullptr || plan == nullptr || ht_contract_metrics == nullptr || alpha == nullptr
+       || A == nullptr || B == nullptr
+       || ((beta == nullptr || C == nullptr)
+           && plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR)
+       || D == nullptr)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
     memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
+    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
+    // Therefore the conversion to ck::index_t is required.
     auto a_ms_ns_lengths
         = std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
                                    plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end());
@@ -405,21 +499,21 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
 #if !NDEBUG
     std::cout << "Tensor A lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>(a_ms_ns_lengths);
+    hiptensorPrintVectorElements(a_ms_ns_lengths);
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>(a_ms_ks_strides);
+    hiptensorPrintVectorElements(a_ms_ks_strides);
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[0].tensor_size << std::endl;
 
     std::cout << "Tensor B lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>(b_ns_ks_lengths);
+    hiptensorPrintVectorElements(b_ns_ks_lengths);
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>(b_ns_ks_strides);
+    hiptensorPrintVectorElements(b_ns_ks_strides);
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[1].tensor_size << std::endl;
 
     std::cout << "Tensor C lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>(e_ms_ns_lengths);
+    hiptensorPrintVectorElements(e_ms_ns_lengths);
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>(e_ms_ns_strides);
+    hiptensorPrintVectorElements(e_ms_ns_strides);
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
@@ -433,10 +527,12 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     std::vector<KernelLauncher> solutions;
 
     // Use this generic lambda to initialize kernel solutions.
-    auto initSolutions = [&solutions](auto const& v) {
+    // Kernels from the generator (v) are consumed to create
+    // solutions which will be invoked to solve the contraction.
+    auto initSolutions = [&solutions](auto&& v) {
         for(auto& opPtr : v)
         {
-            solutions.push_back(KernelLauncher(opPtr.get()));
+            solutions.push_back(KernelLauncher(std::move(opPtr)));
         }
     };
 
@@ -543,26 +639,25 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     for(auto& solution : solutions)
     {
-
-        if(solution.isValid())
+        if(solution.initArgs(alpha,
+                             A,
+                             B,
+                             beta,
+                             C,
+                             output,
+                             a_ms_ns_lengths,
+                             a_ms_ks_strides,
+                             b_ns_ks_lengths,
+                             b_ns_ks_strides,
+                             std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
+                             std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
+                             e_ms_ns_lengths,
+                             e_ms_ns_strides))
         {
+            // Make sure to time the kernels
+            auto time  = solution(StreamConfig{nullptr, true});
             auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
             auto bytes = solution.mBytes;
-
-            auto time = solution(alpha,
-                                 A,
-                                 B,
-                                 beta,
-                                 C,
-                                 output,
-                                 a_ms_ns_lengths,
-                                 a_ms_ks_strides,
-                                 b_ns_ks_lengths,
-                                 b_ns_ks_strides,
-                                 std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
-                                 std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
-                                 e_ms_ns_lengths,
-                                 e_ms_ns_strides);
 
             hiptensorContractionMetrics_t metrics = {
                 time, // avg time
