@@ -573,9 +573,8 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>;
 
-            initSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionBilinearOp>::GetInstances());
+            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
+                          ContractionBilinearOp>::GetInstances());
         }
     }
     else if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE)
@@ -615,9 +614,8 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>;
 
-            initSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionScaleOp>::GetInstances());
+            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
+                          ContractionScaleOp>::GetInstances());
         }
     }
 
@@ -648,7 +646,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                              e_ms_ns_strides))
         {
             // Make sure to time the kernels
-            auto time  = solution(StreamConfig{nullptr, true});
+            auto time  = solution(StreamConfig{stream, true});
             auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
             auto bytes = solution.mBytes;
 
