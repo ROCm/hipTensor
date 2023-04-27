@@ -254,6 +254,7 @@ private:
  */
 struct tensor_attr
 {
+    hiptensorDataType_t ht_type;
     std::vector<std::size_t> lens; /*!< Represent the lengths of the descriptor */
     std::vector<std::size_t> strides; /*!< Represent the strides of the descriptor */
     std::size_t              tensor_size; /*!< Represent the allocated size of the tensor*/

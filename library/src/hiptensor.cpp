@@ -135,7 +135,8 @@ void hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate(
 {
     for(int index = 0; index < tensor_desc_num; index++)
     {
-        ht_contract_attr_desc.push_back({desc[index]->hiptensorGetLengths(),
+        ht_contract_attr_desc.push_back({desc[index]->ht_type,
+                                         desc[index]->hiptensorGetLengths(),
                                          desc[index]->hiptensorGetStrides(),
                                          tensor_size[index]});
     }
