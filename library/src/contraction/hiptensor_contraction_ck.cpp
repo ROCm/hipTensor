@@ -40,412 +40,11 @@
 #include <tensor_layout.hpp>
 
 // HipTensor includes
+#include "contraction_meta_traits.hpp"
+#include "contraction_solution.hpp"
 #include "hiptensor_contraction_ck.hpp"
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
-
-using F32 = float;
-using F64 = double;
-
-template <typename T>
-struct MetaTraits;
-
-using ck::index_t;
-
-template <index_t NumDimsM,
-          index_t NumDimsN,
-          index_t NumDimsK,
-          typename ADataType,
-          typename BDataType,
-          typename DsDataType,
-          typename EDataType,
-          typename AElementwiseOperation,
-          typename BElementwiseOperation>
-struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-    NumDimsM,
-    NumDimsN,
-    NumDimsK,
-    ADataType,
-    BDataType,
-    ck::Tuple<DsDataType>,
-    EDataType,
-    AElementwiseOperation,
-    BElementwiseOperation,
-    ck::tensor_operation::element_wise::Bilinear>>
-{
-    constexpr static index_t DimsM = NumDimsM;
-    constexpr static index_t DimsN = NumDimsN;
-    constexpr static index_t DimsK = NumDimsK;
-    using ADataT                   = ADataType;
-    using BDataT                   = BDataType;
-    using DDataT                   = DsDataType;
-    using EDataT                   = EDataType;
-    using AOp                      = AElementwiseOperation;
-    using BOp                      = BElementwiseOperation;
-    using CDEOp                    = ck::tensor_operation::element_wise::Bilinear;
-};
-
-template <index_t NumDimsM,
-          index_t NumDimsN,
-          index_t NumDimsK,
-          typename ADataType,
-          typename BDataType,
-          typename EDataType,
-          typename AElementwiseOperation,
-          typename BElementwiseOperation>
-struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-    NumDimsM,
-    NumDimsN,
-    NumDimsK,
-    ADataType,
-    BDataType,
-    ck::Tuple<>,
-    EDataType,
-    AElementwiseOperation,
-    BElementwiseOperation,
-    ck::tensor_operation::element_wise::Scale>>
-{
-    constexpr static index_t DimsM = NumDimsM;
-    constexpr static index_t DimsN = NumDimsN;
-    constexpr static index_t DimsK = NumDimsK;
-    using ADataT                   = ADataType;
-    using BDataT                   = BDataType;
-    using EDataT                   = EDataType;
-    using AOp                      = AElementwiseOperation;
-    using BOp                      = BElementwiseOperation;
-    using CDEOp                    = ck::tensor_operation::element_wise::Scale;
-};
-
-struct KernelLauncher
-{
-    using InitArgsFuncT = std::function<void(KernelLauncher&,
-                                             void const*,
-                                             void const*,
-                                             void const*,
-                                             void const*,
-                                             void const*,
-                                             void*,
-                                             std::vector<index_t> const&,
-                                             std::vector<index_t> const&,
-                                             std::vector<index_t> const&,
-                                             std::vector<index_t> const&,
-                                             std::vector<std::vector<index_t>> const&,
-                                             std::vector<std::vector<index_t>> const&,
-                                             std::vector<index_t> const&,
-                                             std::vector<index_t> const&)>;
-
-    // Due to unique_ptr ownership of members,
-    // KernelLaunchers should also be considered unique.
-    // This means disabling default and copy ctor
-    KernelLauncher()                      = delete;
-    KernelLauncher(KernelLauncher const&) = delete;
-    ~KernelLauncher()                     = default;
-
-    // Move ctor will inherit the other launcher's
-    // members.
-    KernelLauncher(KernelLauncher&& other)
-        : mM(other.mM)
-        , mN(other.mN)
-        , mK(other.mK)
-        , mBytes(other.mBytes)
-        , mKernelName(other.mKernelName)
-        , mValid(other.mValid)
-        , mDeviceOp(std::move(other.mDeviceOp))
-        , mArgPtr(std::move(other.mArgPtr))
-        , mInvokerPtr(std::move(other.mInvokerPtr))
-        , mInitArgs(other.mInitArgs)
-    {
-    }
-
-    /// This class is intended to receive DeviceOp kernel pointers from
-    /// the CK generator. Wrap ownership of the CK kernel with generated
-    /// arg and invoke pointers, such that invokation of these kernels
-    /// is handled entirely in the operator() overloads.
-
-    template <
-        typename DeviceOp,
-        typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                 ck::tensor_operation::element_wise::Bilinear>,
-                                  void*>
-        = nullptr>
-    KernelLauncher(std::unique_ptr<DeviceOp>&& deviceOp)
-        : mM(0)
-        , mN(0)
-        , mK(0)
-        , mBytes(0)
-        , mValid(false)
-        , mDeviceOp(deviceOp.release()) // Take ownership, but store as opaque BaseOperator ptr
-    {
-        mInitArgs = [](KernelLauncher&                          launcher,
-                       void const*                              alpha,
-                       void const*                              A,
-                       void const*                              B,
-                       void const*                              beta,
-                       void const*                              D,
-                       void*                                    E,
-                       std::vector<index_t> const&              a_ms_ns_lengths,
-                       std::vector<index_t> const&              a_ms_ks_strides,
-                       std::vector<index_t> const&              b_ns_ks_lengths,
-                       std::vector<index_t> const&              b_ns_ks_strides,
-                       std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                       std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                       std::vector<index_t> const&              e_ms_ns_lengths,
-                       std::vector<index_t> const&              e_ms_ns_strides) {
-            using Traits = MetaTraits<DeviceOp>;
-
-            // Promote to derived class for necessary functions such as
-            // MakeArgumentPointer and MakeInvokerPointer.
-            auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
-
-            // Initialize the argument pointer
-            launcher.mArgPtr = std::move(deviceOp->MakeArgumentPointer(
-                A,
-                B,
-                std::array<const void*, 1>{D},
-                E,
-                a_ms_ns_lengths,
-                a_ms_ks_strides,
-                b_ns_ks_lengths,
-                b_ns_ks_strides,
-                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths[0]},
-                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides[0]},
-                e_ms_ns_lengths,
-                e_ms_ns_strides,
-                typename Traits::AOp{},
-                typename Traits::BOp{},
-                typename Traits::CDEOp{*(F32*)alpha, *(F32*)beta}));
-
-            // Initialize the invoker
-            launcher.mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-            // Get the kernel name
-            launcher.mKernelName = deviceOp->GetTypeString();
-
-            // Fill problem metrics
-            launcher.mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                          e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
-
-            launcher.mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
-
-            launcher.mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
-
-            // Byte count
-            launcher.mBytes = sizeof(typename Traits::ADataT) * launcher.mM * launcher.mK
-                              + sizeof(typename Traits::BDataT) * launcher.mK * launcher.mN
-                              + sizeof(typename Traits::DDataT) * launcher.mM * launcher.mN
-                              + sizeof(typename Traits::EDataT) * launcher.mM * launcher.mN;
-
-            // Arg test
-            launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
-        };
-    }
-
-    template <typename DeviceOp,
-              typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                       ck::tensor_operation::element_wise::Scale>,
-                                        void*>
-              = nullptr>
-    KernelLauncher(std::unique_ptr<DeviceOp>&& deviceOp)
-        : mM(0)
-        , mN(0)
-        , mK(0)
-        , mBytes(0)
-        , mValid(false)
-        , mDeviceOp(deviceOp.release()) // Take ownership, but store as opaque BaseOperator ptr
-    {
-        mInitArgs = [](KernelLauncher&                          launcher,
-                       void const*                              alpha,
-                       void const*                              A,
-                       void const*                              B,
-                       void const*                              beta,
-                       void const*                              D,
-                       void*                                    E,
-                       std::vector<index_t> const&              a_ms_ns_lengths,
-                       std::vector<index_t> const&              a_ms_ks_strides,
-                       std::vector<index_t> const&              b_ns_ks_lengths,
-                       std::vector<index_t> const&              b_ns_ks_strides,
-                       std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                       std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                       std::vector<index_t> const&              e_ms_ns_lengths,
-                       std::vector<index_t> const&              e_ms_ns_strides) {
-            using Traits = MetaTraits<DeviceOp>;
-
-            // Promote to derived class for necessary functions such as
-            // MakeArgumentPointer and MakeInvokerPointer.
-            auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
-
-            // Initialize the argument pointer
-            launcher.mArgPtr
-                = std::move(deviceOp->MakeArgumentPointer(A,
-                                                          B,
-                                                          std::array<const void*, 0>{},
-                                                          E,
-                                                          a_ms_ns_lengths,
-                                                          a_ms_ks_strides,
-                                                          b_ns_ks_lengths,
-                                                          b_ns_ks_strides,
-                                                          std::array<std::vector<ck::index_t>, 0>{},
-                                                          std::array<std::vector<ck::index_t>, 0>{},
-                                                          e_ms_ns_lengths,
-                                                          e_ms_ns_strides,
-                                                          typename Traits::AOp{},
-                                                          typename Traits::BOp{},
-                                                          typename Traits::CDEOp{*(F32*)alpha}));
-
-            // Initialize the invoker
-            launcher.mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-            // Get the kernel name
-            launcher.mKernelName = deviceOp->GetTypeString();
-
-            // Fill problem metrics
-            launcher.mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                          e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
-
-            launcher.mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
-
-            launcher.mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
-                                          a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
-
-            // Byte count
-            launcher.mBytes = sizeof(typename Traits::ADataT) * launcher.mM * launcher.mK
-                              + sizeof(typename Traits::BDataT) * launcher.mK * launcher.mN
-                              + sizeof(typename Traits::EDataT) * launcher.mM * launcher.mN;
-
-            // Arg test
-            launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
-        };
-    }
-
-    bool initArgs(void const*                              alpha,
-                  void const*                              A,
-                  void const*                              B,
-                  void const*                              beta,
-                  void const*                              D,
-                  void*                                    E,
-                  std::vector<index_t> const&              a_ms_ns_lengths,
-                  std::vector<index_t> const&              a_ms_ks_strides,
-                  std::vector<index_t> const&              b_ns_ks_lengths,
-                  std::vector<index_t> const&              b_ns_ks_strides,
-                  std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                  std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                  std::vector<index_t> const&              e_ms_ns_lengths,
-                  std::vector<index_t> const&              e_ms_ns_strides)
-    {
-        if(mDeviceOp)
-        {
-            mInitArgs(*this,
-                      alpha,
-                      A,
-                      B,
-                      beta,
-                      D,
-                      E,
-                      a_ms_ns_lengths,
-                      a_ms_ks_strides,
-                      b_ns_ks_lengths,
-                      b_ns_ks_strides,
-                      ds_ms_ns_lengths,
-                      ds_ms_ns_strides,
-                      e_ms_ns_lengths,
-                      e_ms_ns_strides);
-
-            return mValid;
-        }
-        return false;
-    }
-
-    float operator()(StreamConfig const& streamConfig = StreamConfig{})
-    {
-        if(!mArgPtr || !mInvokerPtr)
-        {
-#if !NDEBUG
-            std::cout << deviceOp->GetTypeString() << " is not initialized" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        if(!mValid)
-        {
-#if !NDEBUG
-            std::cout << mKernelName << " does not support this problem" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
-    }
-
-    float operator()(void const*                              alpha,
-                     void const*                              A,
-                     void const*                              B,
-                     void const*                              beta,
-                     void const*                              D,
-                     void*                                    E,
-                     std::vector<index_t> const&              a_ms_ns_lengths,
-                     std::vector<index_t> const&              a_ms_ks_strides,
-                     std::vector<index_t> const&              b_ns_ks_lengths,
-                     std::vector<index_t> const&              b_ns_ks_strides,
-                     std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                     std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                     std::vector<index_t> const&              e_ms_ns_lengths,
-                     std::vector<index_t> const&              e_ms_ns_strides,
-                     StreamConfig const&                      streamConfig = StreamConfig{})
-    {
-        if(!initArgs(alpha,
-                     A,
-                     B,
-                     beta,
-                     D,
-                     E,
-                     a_ms_ns_lengths,
-                     a_ms_ks_strides,
-                     b_ns_ks_lengths,
-                     b_ns_ks_strides,
-                     ds_ms_ns_lengths,
-                     ds_ms_ns_strides,
-                     e_ms_ns_lengths,
-                     e_ms_ns_strides))
-        {
-#if !NDEBUG
-            std::cout << mKernelName << " does not support this problem" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
-    }
-
-    bool isValid() const
-    {
-        return mValid;
-    }
-
-    index_t mM, mN, mK;
-    index_t mBytes;
-    bool    mValid;
-
-    std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
-    std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
-    std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
-    std::string                                                 mKernelName;
-    InitArgsFuncT                                               mInitArgs;
-};
 
 hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handle,
                                          const hiptensorContractionPlan_t* plan,
@@ -517,7 +116,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
-    std::vector<KernelLauncher> solutions;
+    std::vector<hiptensor::ContractionSolution> solutions;
 
     // Use this generic lambda to initialize kernel solutions.
     // Kernels from the generator (v) are consumed to create
@@ -525,7 +124,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     auto initSolutions = [&solutions](auto&& v) {
         for(auto& opPtr : v)
         {
-            solutions.push_back(KernelLauncher(std::move(opPtr)));
+            solutions.push_back(hiptensor::ContractionSolution(std::move(opPtr)));
         }
     };
 
@@ -545,10 +144,10 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 2,
                 2,
                 2,
-                F32,
-                F32,
-                ck::Tuple<F32>,
-                F32,
+                float,
+                float,
+                ck::Tuple<float>,
+                float,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>;
@@ -565,10 +164,10 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 2,
                 2,
                 2,
-                F64,
-                F64,
-                ck::Tuple<F64>,
-                F64,
+                double,
+                double,
+                ck::Tuple<double>,
+                double,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>;
@@ -587,10 +186,10 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 2,
                 2,
                 2,
-                F32,
-                F32,
+                float,
+                float,
                 ck::Tuple<>,
-                F32,
+                float,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>;
@@ -606,10 +205,10 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 2,
                 2,
                 2,
-                F64,
-                F64,
+                double,
+                double,
                 ck::Tuple<>,
-                F64,
+                double,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>;
