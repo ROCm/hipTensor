@@ -146,17 +146,6 @@ typedef enum
 } hiptensorWorksizePreference_t;
 
 /**
- * \brief This enum decides the over the operation based on the inputs.
- * \details This enum decides the operation based on the in puts passed in the
- * hipTensorContractionGetWorkspaceSize
- */
-typedef enum
-{
-    HIPTENSOR_CONTRACTION_SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
-    HIPTENSOR_CONTRACTION_BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
-} hiptensorContractionOperation_t;
-
-/**
  * \brief This enum decides the logging context.
  * \details The logger output of certain contexts maybe contrained to these levels.
  */
@@ -260,7 +249,7 @@ struct tensor_attr
 struct hiptensorContractionDescriptor_t
 {
     /*!<Enum that has the contraction operation(scale/bilinear)*/
-    hiptensorContractionOperation_t ht_contract_op;
+    int32_t ht_contract_op;
 
     std::vector<tensor_attr>
          ht_contract_attr_desc; /*!<Vector that represents the length,strides,and

@@ -68,6 +68,9 @@ namespace hiptensor
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
 
+            // This specialization is for bilinear contraction
+            launcher.mOpId = ContractionOpId_t::BILINEAR;
+
             // Initialize the argument pointer
             launcher.mArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,
@@ -152,6 +155,9 @@ namespace hiptensor
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
 
+            // This specialization is for scale contraction
+            launcher.mOpId = ContractionOpId_t::SCALE;
+
             // Initialize the argument pointer
             launcher.mArgPtr
                 = std::move(deviceOp->MakeArgumentPointer(A,
@@ -200,6 +206,41 @@ namespace hiptensor
             // Arg test
             launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
         };
+    }
+
+    template <ck::index_t NumDimM,
+              ck::index_t NumDimN,
+              ck::index_t NumDimK,
+              typename ADataType,
+              typename BDataType,
+              typename DsDataType,
+              typename EDataType,
+              typename AElementwiseOperation,
+              typename BElementwiseOperation,
+              typename CDEElementwiseOperation>
+    std::vector<hiptensor::ContractionSolution> enumerateContractionSolutions()
+    {
+        using ContractionOp
+            = ck::tensor_operation::device::DeviceContractionMultipleD<NumDimM,
+                                                                       NumDimN,
+                                                                       NumDimK,
+                                                                       ADataType,
+                                                                       BDataType,
+                                                                       DsDataType,
+                                                                       EDataType,
+                                                                       AElementwiseOperation,
+                                                                       BElementwiseOperation,
+                                                                       CDEElementwiseOperation>;
+
+        using Factory
+            = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
+
+        std::vector<hiptensor::ContractionSolution> result;
+        for(auto& opPtr : Factory::GetInstances())
+        {
+            result.push_back(hiptensor::ContractionSolution(std::move(opPtr)));
+        }
+        return result;
     }
 
 } // namespace hiptensor

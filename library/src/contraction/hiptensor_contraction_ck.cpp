@@ -62,7 +62,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     if(handle == nullptr || plan == nullptr || ht_contract_metrics == nullptr || alpha == nullptr
        || A == nullptr || B == nullptr
        || ((beta == nullptr || C == nullptr)
-           && plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR)
+           && plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::BILINEAR)
        || D == nullptr)
     {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
@@ -118,29 +118,19 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     std::vector<hiptensor::ContractionSolution> solutions;
 
-    // Use this generic lambda to initialize kernel solutions.
-    // Kernels from the generator (v) are consumed to create
-    // solutions which will be invoked to solve the contraction.
-    auto initSolutions = [&solutions](auto&& v) {
-        for(auto& opPtr : v)
-        {
-            solutions.push_back(hiptensor::ContractionSolution(std::move(opPtr)));
-        }
-    };
-
     auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
     auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
     auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
     auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
 
-    if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR)
+    if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::BILINEAR)
     {
         if(ADataType == HIP_R_32F 
            && BDataType == HIP_R_32F 
            && CDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
-            using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
@@ -150,17 +140,18 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 float,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Bilinear>;
+                ck::tensor_operation::element_wise::Bilinear>();
 
-            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                          ContractionBilinearOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(bilinearSolutions.begin()),
+                             std::make_move_iterator(bilinearSolutions.end()));
         }
         else if(ADataType == HIP_R_64F 
                 && BDataType == HIP_R_64F 
                 && CDataType == HIP_R_64F
                 && DDataType == HIP_R_64F)
         {
-            using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
@@ -170,19 +161,20 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 double,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Bilinear>;
+                ck::tensor_operation::element_wise::Bilinear>();
 
-            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                          ContractionBilinearOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(bilinearSolutions.begin()),
+                             std::make_move_iterator(bilinearSolutions.end()));
         }
     }
-    else if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE)
+    else if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::SCALE)
     {
         if(ADataType == HIP_R_32F 
            && BDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
-            using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto scaleSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
@@ -192,16 +184,17 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 float,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Scale>;
+                ck::tensor_operation::element_wise::Scale>();
 
-            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                          ContractionScaleOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(scaleSolutions.begin()),
+                             std::make_move_iterator(scaleSolutions.end()));
         }
         else if(ADataType == HIP_R_64F 
                 && BDataType == HIP_R_64F 
                 && DDataType == HIP_R_64F)
         {
-            using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto scaleSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
@@ -211,17 +204,18 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 double,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Scale>;
+                ck::tensor_operation::element_wise::Scale>();
 
-            initSolutions(ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                          ContractionScaleOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(scaleSolutions.begin()),
+                             std::make_move_iterator(scaleSolutions.end()));
         }
     }
 
     /// Dispatching end
 
     // Now we can launch the kernels and get the metrics.
-    std::cout << "Run all instances and do timing" << std::endl;
+    std::cout << "Run all instances and do timing: " << solutions.size() << std::endl;
 
     std::string                   best_op_name;
     bool                          found     = false;

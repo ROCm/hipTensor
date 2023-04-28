@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 // CK includes
 #include <contraction_bilinear.hpp>
@@ -40,6 +41,18 @@
 
 namespace hiptensor
 {
+
+    /**
+     * \brief This enum decides the over the operation based on the inputs.
+     * \details This enum decides the operation based on the in puts passed in the
+     * hipTensorContractionGetWorkspaceSize
+     */
+    enum struct ContractionOpId_t : int32_t
+    {
+        SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
+        BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
+        UNKNOWN,
+    };
 
     struct ContractionSolution
     {
@@ -128,16 +141,29 @@ namespace hiptensor
 
         bool isValid() const;
 
-        ck::index_t   mM, mN, mK;
-        ck::index_t   mBytes;
-        bool          mValid;
-        std::string   mKernelName;
-        InitArgsFuncT mInitArgs;
+        ck::index_t       mM, mN, mK;
+        ck::index_t       mBytes;
+        bool              mValid;
+        std::string       mKernelName;
+        ContractionOpId_t mOpId;
 
+        InitArgsFuncT                                               mInitArgs;
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
         std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
     };
+
+    template <ck::index_t NumDimM,
+              ck::index_t NumDimN,
+              ck::index_t NumDimK,
+              typename ADataType,
+              typename BDataType,
+              typename DsDataType,
+              typename EDataType,
+              typename AElementwiseOperation,
+              typename BElementwiseOperation,
+              typename CDEElementwiseOperation>
+    std::vector<hiptensor::ContractionSolution> enumerateContractionSolutions();
 
 } // namespace hiptensor
 

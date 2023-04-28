@@ -36,6 +36,7 @@ namespace hiptensor
         , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mKernelName(other.mKernelName)
+        , mOpId(other.mOpId)
         , mInitArgs(other.mInitArgs)
         , mDeviceOp(std::move(other.mDeviceOp))
         , mArgPtr(std::move(other.mArgPtr))
@@ -54,8 +55,9 @@ namespace hiptensor
             mBytes      = other.mBytes;
             mValid      = other.mValid;
             mKernelName = other.mKernelName;
-            mInitArgs   = other.mInitArgs;
+            mOpId       = other.mOpId;
 
+            mInitArgs   = other.mInitArgs;
             mDeviceOp   = std::move(other.mDeviceOp);
             mArgPtr     = std::move(other.mArgPtr);
             mInvokerPtr = std::move(other.mInvokerPtr);
@@ -104,7 +106,7 @@ namespace hiptensor
 
     float ContractionSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
-        if(!mArgPtr || !mInvokerPtr)
+        if(!mArgPtr || !mInvokerPtr || mOpId == ContractionOpId_t::UNKNOWN)
         {
 #if !NDEBUG
             std::cout << deviceOp->GetTypeString() << " is not initialized" << std::endl;
