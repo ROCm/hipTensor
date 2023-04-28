@@ -46,18 +46,24 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                                      hiptensorComputeType_t typeCompute)
 
 {
-    if(!handle || !desc || !descA || !descB || !descC)
+    if(!handle || !desc || !descA || !descB || !descD)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
     const hiptensorTensorDescriptor_t* ht_input_descs[]           = {descA, descB, descC, descD};
     const uint32_t                     alignmentRequirement_arr[] = {
         alignmentRequirementA, alignmentRequirementB, alignmentRequirementC, alignmentRequirementD};
     desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequirement_arr, 4);
 
-    if(!descD)
+    if(descC == nullptr || modeC == nullptr)
+    {
         desc->ht_contract_op = (int32_t)hiptensor::ContractionOpId_t::SCALE;
+    }
     else
+    {
         desc->ht_contract_op = (int32_t)hiptensor::ContractionOpId_t::BILINEAR;
+    }
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -130,21 +136,6 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                            workspaceSize,
                            stream);
 
-    //   if (plan->ht_plan_desc.ht_contract_op == hiptensor_CONTRACTION_SCALE) {
-    //     hiptensorCKScaleContraction(handle, plan, &ht_contract_metrics, alpha,
-    //     A, B,
-    //                                 NULL, NULL, D, workspace, workspaceSize,
-    //                                 stream);
-    //   } else if (plan->ht_plan_desc.ht_contract_op ==
-    //              hiptensor_CONTRACTION_BILINEAR) {
-    //     hiptensorCKBilinearContraction(handle, plan, &ht_contract_metrics,
-    //     alpha, A,
-    //                                    B, beta, C, D, workspace, workspaceSize,
-    //                                    stream);
-    //   } else {
-    //     std::cout << "Contraction operation not permitted" << std::endl;
-    //     return hiptensor_STATUS_CK_ERROR;
-    //   }
     return HIPTENSOR_STATUS_SUCCESS;
 }
 

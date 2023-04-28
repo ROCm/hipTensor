@@ -60,11 +60,20 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 hiptensorOperator_t          unaryOp)
 {
     if(!handle || !desc)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
+<<<<<<< HEAD
     if(((!lens) && (!strides)) || (!(dataType == HIP_R_32F) || (dataType == HIP_R_64F))
        || unaryOp != HIPTENSOR_OP_IDENTITY)
+=======
+    if((!lens && !strides) || ((dataType != HIPTENSOR_R_32F) && (dataType != HIPTENSOR_R_64F))
+       || unaryOp != HIPTENSOR_OP_IDENTITY)
+    {
+>>>>>>> Fix contraction scale kernel dispatching
         return HIPTENSOR_STATUS_INVALID_VALUE;
+    }
 
     using descType = float;
     int ht_index   = 0;
@@ -76,15 +85,22 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     {
         ht_lens.push_back(lens[index]);
         if(strides)
+        {
             ht_strides.push_back(strides[index]);
+        }
     }
     if(!strides)
+    {
         *desc
             = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
+    }
     else
+    {
         *desc = hiptensorTensorDescriptor_t(
             std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
             std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
+    }
+
     desc->ht_type = dataType;
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -128,15 +144,31 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
                                                    uint32_t* alignmentRequirement)
 {
     if(!handle || !desc)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
+<<<<<<< HEAD
     if(!((desc->ht_type == HIP_R_32F) || (desc->ht_type == HIP_R_64F)))
+=======
+    if(!((desc->ht_type == HIPTENSOR_R_32F) || (desc->ht_type == HIPTENSOR_R_64F)))
+    {
+>>>>>>> Fix contraction scale kernel dispatching
         return HIPTENSOR_STATUS_INVALID_VALUE;
+    }
 
+<<<<<<< HEAD
     if(desc->ht_type == HIP_R_32F)
+=======
+    if(desc->ht_type == HIPTENSOR_R_32F)
+    {
+>>>>>>> Fix contraction scale kernel dispatching
         *alignmentRequirement = sizeof(float) * desc->hiptensorGetElementSpace();
+    }
     else
+    {
         *alignmentRequirement = sizeof(double) * desc->hiptensorGetElementSpace();
+    }
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -148,12 +180,18 @@ void hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate(
 {
     for(int index = 0; index < tensor_desc_num; index++)
     {
-        ht_contract_attr_desc.push_back({desc[index]->ht_type,
-                                         desc[index]->hiptensorGetLengths(),
-                                         desc[index]->hiptensorGetStrides(),
-                                         tensor_size[index]});
+        if(desc[index] != nullptr)
+        {
+            ht_contract_attr_desc.push_back({desc[index]->ht_type,
+                                             desc[index]->hiptensorGetLengths(),
+                                             desc[index]->hiptensorGetStrides(),
+                                             tensor_size[index]});
+        }
+        else
+        {
+            ht_contract_attr_desc.push_back({});
+        }
     }
-    return;
 }
 
 void hiptensorTensorDescriptor_t::hiptensorCalculateStrides()
@@ -161,7 +199,9 @@ void hiptensorTensorDescriptor_t::hiptensorCalculateStrides()
     mStrides.clear();
     mStrides.resize(mLens.size(), 0);
     if(mStrides.empty())
+    {
         return;
+    }
 
     mStrides.back() = 1;
     std::partial_sum(
