@@ -88,8 +88,8 @@ int main(int argc, char* argv[])
     for(auto mode : modeB)
         b_ks_ns_lengths.push_back(extent[mode]);
 
-    hiptensorHandle_t handle;
-    hiptensorInit(&handle);
+    hiptensorHandle_t* handle;
+    hiptensorCreate(handle);
 
     /********************************************
    * Intialise Tensors with the input lengths *

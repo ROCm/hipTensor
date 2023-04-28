@@ -180,9 +180,11 @@ typedef enum
 /**
  * \brief Opaque structure holding hiptensor's library context.
  */
-typedef struct
-{ /*TODO: Discuss the struct members */
-} hiptensorHandle_t;
+typedef struct hiptensorHandle_t
+{ /*TODO: Discuss the struct members and replace constructor/destructor*/
+    hiptensorHandle_t()  = default;
+    ~hiptensorHandle_t() = default;
+};
 
 /**
  * \brief Structure representing a tensor descriptor with the given lengths, and
@@ -248,7 +250,7 @@ private:
  */
 struct tensor_attr
 {
-    hiptensorDataType_t ht_type;
+    hiptensorDataType_t      ht_type;
     std::vector<std::size_t> lens; /*!< Represent the lengths of the descriptor */
     std::vector<std::size_t> strides; /*!< Represent the strides of the descriptor */
     std::size_t              tensor_size; /*!< Represent the allocated size of the tensor*/
