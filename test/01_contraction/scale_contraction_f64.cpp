@@ -43,9 +43,9 @@ int main(int argc, char* argv[])
     typedef double CDataType;
     typedef double doubleTypeCompute;
 
-    hiptensorDataType_t    typeA       = HIPTENSOR_R_64F;
-    hiptensorDataType_t    typeB       = HIPTENSOR_R_64F;
-    hiptensorDataType_t    typeC       = HIPTENSOR_R_64F;
+    hipDataType            typeA       = HIP_R_64F;
+    hipDataType            typeB       = HIP_R_64F;
+    hipDataType            typeC       = HIP_R_64F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_64F;
 
     doubleTypeCompute alpha = (doubleTypeCompute)1.0;
@@ -85,14 +85,14 @@ int main(int argc, char* argv[])
     for(auto mode : modeB)
         b_ks_ns_lengths.push_back(extent[mode]);
 
-    hiptensorHandle_t handle;
-    hiptensorInit(&handle);
+    hiptensorHandle_t* handle;
+    hiptensorCreate(&handle);
 
     /********************************************
    * Intialise Tensors with the input lengths *
    ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks;
-    hiptensorInitTensorDescriptor(&handle,
+    hiptensorInitTensorDescriptor(handle,
                                   &a_ms_ks,
                                   nmodeA,
                                   a_ms_ks_lengths.data(),
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 #endif
 
     hiptensorTensorDescriptor_t b_ks_ns;
-    hiptensorInitTensorDescriptor(&handle,
+    hiptensorInitTensorDescriptor(handle,
                                   &b_ks_ns,
                                   nmodeB,
                                   b_ks_ns_lengths.data(),
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 #endif
 
     hiptensorTensorDescriptor_t c_ms_ns;
-    hiptensorInitTensorDescriptor(&handle,
+    hiptensorInitTensorDescriptor(handle,
                                   &c_ms_ns,
                                   nmodeC,
                                   c_ms_ns_lengths.data(),
@@ -171,20 +171,20 @@ int main(int argc, char* argv[])
    * Retrieve the memory alignment for each tensor
    ************************************************/
     uint32_t alignmentRequirementA;
-    hiptensorGetAlignmentRequirement(&handle, A_d, &a_ms_ks, &alignmentRequirementA);
+    hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA);
 
     uint32_t alignmentRequirementB;
-    hiptensorGetAlignmentRequirement(&handle, B_d, &b_ks_ns, &alignmentRequirementB);
+    hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB);
 
     uint32_t alignmentRequirementC;
-    hiptensorGetAlignmentRequirement(&handle, C_d, &c_ms_ns, &alignmentRequirementC);
+    hiptensorGetAlignmentRequirement(handle, C_d, &c_ms_ns, &alignmentRequirementC);
 
     /*******************************
    * Create Contraction Descriptor
    *******************************/
 
     hiptensorContractionDescriptor_t desc;
-    hiptensorInitContractionDescriptor(&handle,
+    hiptensorInitContractionDescriptor(handle,
                                        &desc,
                                        &a_ms_ks,
                                        modeA.data(),
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
    ***************************/
 
     hiptensorContractionFind_t find;
-    hiptensorInitContractionFind(&handle, &find, HIPTENSOR_ALGO_DEFAULT);
+    hiptensorInitContractionFind(handle, &find, HIPTENSOR_ALGO_DEFAULT);
 
     /**********************
    * Query workspace
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
 
     uint64_t worksize = 0;
     hiptensorContractionGetWorkspaceSize(
-        &handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize);
+        handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize);
     void* work = nullptr;
 
     /**************************
@@ -220,9 +220,9 @@ int main(int argc, char* argv[])
    **************************/
 
     hiptensorContractionPlan_t plan;
-    hiptensorInitContractionPlan(&handle, &plan, &desc, &find, worksize);
+    hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize);
 
-    hiptensorContraction(&handle,
+    hiptensorContraction(handle,
                          &plan,
                          (void*)&alpha,
                          A_d,

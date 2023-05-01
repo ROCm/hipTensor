@@ -30,14 +30,25 @@
 #include "internal/hiptensor_utility.hpp"
 
 /**
- * \brief Initializes the hiptensor library
+ * \brief Allocates an instance of hiptensorHandle_t on the heap and updates the handle pointer
  *
  * \details The device associated with a particular hiptensor handle is assumed
- * to remain unchanged after the hiptensorInit() call. In order for the
+ * to remain unchanged after the hiptensorCreate() call. In order for the
  * hiptensor library to use a different device, the application must set the new
  * device to be used by calling hipInit(0) and then create another hiptensor
  * handle, which will be associated with the new device, by calling
- * hiptensorInit().
+ * hiptensorCreate().
+ *
+ * \param[out] handle Pointer to hiptensorHandle_t pointer
+ *
+ * \returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
+ * \remarks blocking, no reentrant, and thread-safe
+ */
+
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle);
+
+/**
+ * \brief De-allocates the instance of hiptensorHandle_t
  *
  * \param[out] handle Pointer to hiptensorHandle_t
  *
@@ -45,7 +56,7 @@
  * \remarks blocking, no reentrant, and thread-safe
  */
 
-hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle);
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle);
 
 /**
  * \brief Initializes a tensor descriptor
@@ -73,7 +84,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
                                                 const int64_t                strides[],
-                                                hiptensorDataType_t          dataType,
+                                                hipDataType                  dataType,
                                                 hiptensorOperator_t          unaryOp);
 
 /**

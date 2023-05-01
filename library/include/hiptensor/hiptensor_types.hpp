@@ -33,6 +33,9 @@
 #include <utility>
 #include <vector>
 
+#include <hip/hip_common.h>
+#include <hip/library_types.h>
+
 /**
  * \brief hiptensor status type returns
  * \details The type is used for function status returns. All hiptensor library
@@ -72,22 +75,6 @@ typedef enum
     /** Indicates an error related to file I/O.*/
     HIPTENSOR_STATUS_IO_ERROR = 21,
 } hiptensorStatus_t;
-
-/**
- * \brief hiptensorDataType_t is an enumeration of the types supported by
- * hiptensor libraries. hiptensor supports real FP16, BF16, FP32 input types.
- * \note Only HIPTENSOR_R_32F is supported.
- * \todo Other datatypes support to be added in the next hiptensor library
- * releases.
- *
- */
-typedef enum
-{
-    HIPTENSOR_R_16F  = 0, ///< real as a half
-    HIPTENSOR_R_16BF = 1, ///< real as a nv_bfloat16
-    HIPTENSOR_R_32F  = 2, ///< real as a float
-    HIPTENSOR_R_64F  = 3, ///< real as a double
-} hiptensorDataType_t;
 
 /**
  * \brief Encodes hiptensor's compute type
@@ -186,9 +173,11 @@ typedef enum
 /**
  * \brief Opaque structure holding hiptensor's library context.
  */
-typedef struct
-{ /*TODO: Discuss the struct members */
-} hiptensorHandle_t;
+struct hiptensorHandle_t
+{ /*TODO: Discuss the struct members and replace constructor/destructor*/
+    hiptensorHandle_t()  = default;
+    ~hiptensorHandle_t() = default;
+};
 
 /**
  * \brief Structure representing a tensor descriptor with the given lengths, and
@@ -222,7 +211,7 @@ struct hiptensorTensorDescriptor_t
     } /*!< Function that initializes the tensor based on the input length and
        strides */
 
-    hiptensorDataType_t ht_type; /*!< Data type of the tensors enum selection */
+    hipDataType ht_type; /*!< Data type of the tensors enum selection */
 
     std::size_t
         hiptensorGetNumOfDimension() const; /*!< Function that returns the number of dimensions */
@@ -254,7 +243,7 @@ private:
  */
 struct tensor_attr
 {
-    hiptensorDataType_t ht_type;
+    hipDataType              ht_type;
     std::vector<std::size_t> lens; /*!< Represent the lengths of the descriptor */
     std::vector<std::size_t> strides; /*!< Represent the strides of the descriptor */
     std::size_t              tensor_size; /*!< Represent the allocated size of the tensor*/
