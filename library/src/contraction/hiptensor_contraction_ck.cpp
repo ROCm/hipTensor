@@ -402,8 +402,8 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
         auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
         auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
 
-        if(ADataType == HIPTENSOR_R_32F && BDataType == HIPTENSOR_R_32F &&
-           CDataType == HIPTENSOR_R_32F && DDataType == HIPTENSOR_R_32F)
+        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
+           && DDataType == HIP_R_32F)
         {
             using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
                 2,
@@ -421,19 +421,24 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
                     ContractionBilinearOp>::GetInstances());
         }
-        else if(ADataType == HIPTENSOR_R_64F && BDataType == HIPTENSOR_R_64F &&
-                CDataType == HIPTENSOR_R_64F && DDataType == HIPTENSOR_R_64F)
+        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
+                && DDataType == HIP_R_64F)
         {
-            using ContractionBilinearOp =
-                ck::tensor_operation::device::DeviceContractionMultipleD<
-                2, 2, 2, F64, F64, ck::Tuple<F64>, F64,
+            using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+                2,
+                2,
+                2,
+                F64,
+                F64,
+                ck::Tuple<F64>,
+                F64,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>;
 
             initBilinearSolutions(
                 ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                ContractionBilinearOp>::GetInstances());
+                    ContractionBilinearOp>::GetInstances());
         }
     }
     else if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE)
@@ -461,8 +466,8 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
         auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
         auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
 
-        if(ADataType == HIPTENSOR_R_32F && BDataType == HIPTENSOR_R_32F &&
-           CDataType == HIPTENSOR_R_32F && DDataType == HIPTENSOR_R_32F)
+        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
+           && DDataType == HIP_R_32F)
         {
             using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
                 2,
@@ -480,19 +485,24 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
                     ContractionScaleOp>::GetInstances());
         }
-        else if(ADataType == HIPTENSOR_R_64F && BDataType == HIPTENSOR_R_64F &&
-                CDataType == HIPTENSOR_R_64F && DDataType == HIPTENSOR_R_64F)
+        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
+                && DDataType == HIP_R_64F)
         {
-            using ContractionScaleOp =
-                ck::tensor_operation::device::DeviceContractionMultipleD<
-                2, 2, 2, F64, F64, ck::Tuple<>, F64,
+            using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+                2,
+                2,
+                2,
+                F64,
+                F64,
+                ck::Tuple<>,
+                F64,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>;
 
             initScaleSolutions(
                 ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                ContractionScaleOp>::GetInstances());
+                    ContractionScaleOp>::GetInstances());
         }
     }
 

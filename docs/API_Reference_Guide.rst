@@ -11,10 +11,6 @@ hiptensorStatus_t
 
 .. doxygenenum::  hiptensorStatus_t
 
-hiptensorDataType_t
--------------------
-
-.. doxygenenum::  hiptensorDataType_t
 
 hiptensorComputeType_t
 ----------------------
@@ -96,10 +92,15 @@ hiptensorGetVersion
 
 .. doxygenfunction::  hiptensorGetVersion
 
-hiptensorInit
+hiptensorCreate
 -------------
 
-.. doxygenfunction::  hiptensorInit
+.. doxygenfunction::  hiptensorCreate
+
+hiptensorDestroy
+-------------
+
+.. doxygenfunction::  hiptensorDestroy
 
 hiptensorInitTensorDescriptor
 -----------------------------

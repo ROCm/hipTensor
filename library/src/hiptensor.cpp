@@ -26,16 +26,27 @@
 #include "hiptensor.hpp"
 #include "include/logger.hpp"
 
-hiptensorStatus_t hiptensorInit(hiptensorHandle_t* handle)
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
-    if(!handle)
+    (*handle) = new hiptensorHandle_t;
+
+    auto hip_status = hipInit(0);
+
+    if(!(*handle))
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    else if(hipInit(0) == hipErrorInvalidDevice)
+    else if(hip_status == hipErrorInvalidDevice)
         return HIPTENSOR_STATUS_HIP_ERROR;
 
-    else if(hipInit(0) == hipErrorInvalidValue)
+    else if(hip_status == hipErrorInvalidValue)
         return HIPTENSOR_STATUS_INVALID_VALUE;
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
+{
+    delete handle;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -45,14 +56,14 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
                                                 const int64_t                strides[],
-                                                hiptensorDataType_t          dataType,
+                                                hipDataType                  dataType,
                                                 hiptensorOperator_t          unaryOp)
 {
     if(!handle || !desc)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    if(((!lens) && (!strides)) || (!(dataType == HIPTENSOR_R_32F) || (dataType == HIPTENSOR_R_64F))
-        || unaryOp != HIPTENSOR_OP_IDENTITY)
+    if(((!lens) && (!strides)) || (!(dataType == HIP_R_32F) || (dataType == HIP_R_64F))
+       || unaryOp != HIPTENSOR_OP_IDENTITY)
         return HIPTENSOR_STATUS_INVALID_VALUE;
 
     using descType = float;
@@ -119,10 +130,10 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     if(!handle || !desc)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    if(!((desc->ht_type == HIPTENSOR_R_32F)  || (desc->ht_type == HIPTENSOR_R_64F)))
+    if(!((desc->ht_type == HIP_R_32F) || (desc->ht_type == HIP_R_64F)))
         return HIPTENSOR_STATUS_INVALID_VALUE;
 
-    if(desc->ht_type == HIPTENSOR_R_32F)
+    if(desc->ht_type == HIP_R_32F)
         *alignmentRequirement = sizeof(float) * desc->hiptensorGetElementSpace();
     else
         *alignmentRequirement = sizeof(double) * desc->hiptensorGetElementSpace();
