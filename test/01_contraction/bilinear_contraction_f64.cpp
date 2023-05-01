@@ -44,9 +44,9 @@ int main(int argc, char* argv[])
     typedef double CDataType;
     typedef double doubleTypeCompute;
 
-    hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
-    hiptensorDataType_t    typeB       = HIPTENSOR_R_32F;
-    hiptensorDataType_t    typeC       = HIPTENSOR_R_32F;
+    hipDataType            typeA       = HIP_R_64F;
+    hipDataType            typeB       = HIP_R_64F;
+    hipDataType            typeC       = HIP_R_64F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
     doubleTypeCompute alpha = (doubleTypeCompute)1.1f;
@@ -88,8 +88,8 @@ int main(int argc, char* argv[])
     for(auto mode : modeB)
         b_ks_ns_lengths.push_back(extent[mode]);
 
-    hiptensorHandle_t** handle;
-    hiptensorCreate(handle);
+    hiptensorHandle_t* handle;
+    hiptensorCreate(&handle);
 
     /********************************************
    * Intialise Tensors with the input lengths *
@@ -159,11 +159,11 @@ int main(int argc, char* argv[])
    * Initialize data
    *******************/
     for(int64_t i = 0; i < elementsA; i++)
-        A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        A[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
     for(int64_t i = 0; i < elementsB; i++)
-        B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        B[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
     for(int64_t i = 0; i < elementsC; i++)
-        C[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        C[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
 
     /********************************************
    * Transfer the Host Tensor to Device Memory *
