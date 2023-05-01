@@ -92,10 +92,15 @@ hiptensorGetVersion
 
 .. doxygenfunction::  hiptensorGetVersion
 
-hiptensorInit
+hiptensorCreate
 -------------
 
-.. doxygenfunction::  hiptensorInit
+.. doxygenfunction::  hiptensorCreate
+
+hiptensorDestroy
+-------------
+
+.. doxygenfunction::  hiptensorDestroy
 
 hiptensorInitTensorDescriptor
 -----------------------------
