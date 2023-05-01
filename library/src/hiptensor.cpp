@@ -28,11 +28,11 @@
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
-    handle[0] = new hiptensorHandle_t;
+    (*handle) = new hiptensorHandle_t;
 
     auto hip_status = hipInit(0);
 
-    if(!handle)
+    if(!(*handle))
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     else if(hip_status == hipErrorInvalidDevice)
