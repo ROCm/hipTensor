@@ -28,34 +28,6 @@
 #include <fstream>
 #include <hip/hip_runtime.h>
 
-#ifndef CHECK_HIP_ERROR
-#define CHECK_HIP_ERROR(status)                   \
-    if(status != hipSuccess)                      \
-    {                                             \
-        fprintf(stderr,                           \
-                "hip error: '%s'(%d) at %s:%d\n", \
-                hipGetErrorString(status),        \
-                status,                           \
-                __FILE__,                         \
-                __LINE__);                        \
-        exit(EXIT_FAILURE);                       \
-    }
-#endif
-
-#ifndef CHECK_HIPTENSOR_ERROR
-#define CHECK_HIPTENSOR_ERROR(status)             \
-    if(status != HIPTENSOR_STATUS_SUCCESS)        \
-    {                                             \
-        fprintf(stderr,                           \
-                "hip error: '%s'(%d) at %s:%d\n", \
-                hiptensorGetErrorString(status),  \
-                status,                           \
-                __FILE__,                         \
-                __LINE__);                        \
-        exit(EXIT_FAILURE);                       \
-    }
-#endif
-
 inline void hip_check_error(hipError_t x)
 {
     if(x != hipSuccess)
