@@ -34,6 +34,7 @@
 #include <vector>
 
 #include <hip/hip_common.h>
+#include <hip/library_types.h>
 
 /**
  * \brief hiptensor status type returns
@@ -74,14 +75,6 @@ typedef enum
     /** Indicates an error related to file I/O.*/
     HIPTENSOR_STATUS_IO_ERROR = 21,
 } hiptensorStatus_t;
-
-/**
- * \brief hiptensorDataType_t is an enumeration of the types supported by
- * hiptensor libraries. hiptensor supports real FP16, BF16, FP32 input types.
- * \note Only HIP_R_32F and HIP_R_64F are currently supported.
- *
- */
-using hiptensorDataType_t = hipDataType;
 
 /**
  * \brief Encodes hiptensor's compute type
@@ -180,7 +173,7 @@ typedef enum
 /**
  * \brief Opaque structure holding hiptensor's library context.
  */
-typedef struct hiptensorHandle_t
+struct hiptensorHandle_t
 { /*TODO: Discuss the struct members and replace constructor/destructor*/
     hiptensorHandle_t()  = default;
     ~hiptensorHandle_t() = default;
@@ -218,7 +211,7 @@ struct hiptensorTensorDescriptor_t
     } /*!< Function that initializes the tensor based on the input length and
        strides */
 
-    hiptensorDataType_t ht_type; /*!< Data type of the tensors enum selection */
+    hipDataType ht_type; /*!< Data type of the tensors enum selection */
 
     std::size_t
         hiptensorGetNumOfDimension() const; /*!< Function that returns the number of dimensions */
@@ -250,7 +243,7 @@ private:
  */
 struct tensor_attr
 {
-    hiptensorDataType_t      ht_type;
+    hipDataType              ht_type;
     std::vector<std::size_t> lens; /*!< Represent the lengths of the descriptor */
     std::vector<std::size_t> strides; /*!< Represent the strides of the descriptor */
     std::size_t              tensor_size; /*!< Represent the allocated size of the tensor*/

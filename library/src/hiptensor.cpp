@@ -28,11 +28,11 @@
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
-    &handle = new hiptensorHandle_t;
+    handle[0] = new hiptensorHandle_t;
 
     auto hip_status = hipInit(0);
 
-    if(!_handle)
+    if(!handle)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
     else if(hip_status == hipErrorInvalidDevice)
@@ -47,6 +47,8 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
 {
     delete handle;
+
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
@@ -54,7 +56,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
                                                 const int64_t                strides[],
-                                                hiptensorDataType_t          dataType,
+                                                hipDataType                  dataType,
                                                 hiptensorOperator_t          unaryOp)
 {
     if(!handle || !desc)
@@ -131,7 +133,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     if(!((desc->ht_type == HIP_R_32F) || (desc->ht_type == HIP_R_64F)))
         return HIPTENSOR_STATUS_INVALID_VALUE;
 
-    if(desc->ht_type == HIPTENSOR_R_32F)
+    if(desc->ht_type == HIP_R_32F)
         *alignmentRequirement = sizeof(float) * desc->hiptensorGetElementSpace();
     else
         *alignmentRequirement = sizeof(double) * desc->hiptensorGetElementSpace();

@@ -11,10 +11,6 @@ hiptensorStatus_t
 
 .. doxygenenum::  hiptensorStatus_t
 
-hiptensorDataType_t
--------------------
-
-.. doxygenenum::  hiptensorDataType_t
 
 hiptensorComputeType_t
 ----------------------

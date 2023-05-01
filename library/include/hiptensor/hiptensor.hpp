@@ -84,7 +84,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
                                                 const int64_t                strides[],
-                                                hiptensorDataType_t          dataType,
+                                                hipDataType                  dataType,
                                                 hiptensorOperator_t          unaryOp);
 
 /**
