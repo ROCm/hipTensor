@@ -38,88 +38,44 @@
 #include <element_wise_operation.hpp>
 
 #include "contraction_meta_traits.hpp"
+#include "contraction_solution_params.hpp"
 
 namespace hiptensor
 {
-
-    /**
-     * \brief This enum decides the over the operation based on the inputs.
-     * \details This enum decides the operation based on the in puts passed in the
-     * hipTensorContractionGetWorkspaceSize
-     */
-    enum struct ContractionOpId_t : int32_t
+    class ContractionSolution
     {
-        SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
-        BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
-        UNKNOWN,
-    };
-
-    struct ContractionSolution
-    {
-        using InitArgsFuncT = std::function<void(ContractionSolution&,
-                                                 void const*,
-                                                 void const*,
-                                                 void const*,
-                                                 void const*,
-                                                 void const*,
-                                                 void*,
-                                                 std::vector<ck::index_t> const&,
-                                                 std::vector<ck::index_t> const&,
-                                                 std::vector<ck::index_t> const&,
-                                                 std::vector<ck::index_t> const&,
-                                                 std::vector<std::vector<ck::index_t>> const&,
-                                                 std::vector<std::vector<ck::index_t>> const&,
-                                                 std::vector<ck::index_t> const&,
-                                                 std::vector<ck::index_t> const&)>;
-
+    public:
         // Due to unique_ptr ownership of members,
         // ContractionSolutions should also be considered unique.
         // This means disabling default and copy ctor
         ContractionSolution()                                      = delete;
         ContractionSolution(ContractionSolution const&)            = delete;
-        ~ContractionSolution()                                     = default;
+        virtual ~ContractionSolution()                             = default;
         ContractionSolution& operator=(ContractionSolution const&) = delete;
 
-        // Move ctor / assignement will inherit the other launcher's
-        // members.
+        // This class is intended to receive DeviceOp kernel pointers from
+        // the CK generator and take ownership.
+        ContractionSolution(std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
+                            std::unique_ptr<ContractionSolutionParams>&&                  params);
         ContractionSolution(ContractionSolution&& other);
         ContractionSolution& operator=(ContractionSolution&& other);
 
-        /// This class is intended to receive DeviceOp kernel pointers from
-        /// the CK generator. Wrap ownership of the CK kernel with generated
-        /// arg and invoke pointers, such that invokation of these kernels
-        /// is handled entirely in the operator() overloads.
-
-        template <
-            typename DeviceOp,
-            typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                     ck::tensor_operation::element_wise::Bilinear>,
-                                      void*>
-            = nullptr>
-        ContractionSolution(std::unique_ptr<DeviceOp>&& deviceOp);
-
-        template <
-            typename DeviceOp,
-            typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                     ck::tensor_operation::element_wise::Scale>,
-                                      void*>
-            = nullptr>
-        ContractionSolution(std::unique_ptr<DeviceOp>&& deviceOp);
-
-        bool initArgs(void const*                                  alpha,
-                      void const*                                  A,
-                      void const*                                  B,
-                      void const*                                  beta,
-                      void const*                                  D,
-                      void*                                        E,
-                      std::vector<ck::index_t> const&              a_ms_ns_lengths,
-                      std::vector<ck::index_t> const&              a_ms_ks_strides,
-                      std::vector<ck::index_t> const&              b_ns_ks_lengths,
-                      std::vector<ck::index_t> const&              b_ns_ks_strides,
-                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-                      std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                      std::vector<ck::index_t> const&              e_ms_ns_strides);
+        // Must specialize incoming arg handling
+        virtual bool initArgs(void const*                                  alpha,
+                              void const*                                  A,
+                              void const*                                  B,
+                              void const*                                  beta,
+                              void const*                                  D,
+                              void*                                        E,
+                              std::vector<ck::index_t> const&              a_ms_ns_lengths,
+                              std::vector<ck::index_t> const&              a_ms_ks_strides,
+                              std::vector<ck::index_t> const&              b_ns_ks_lengths,
+                              std::vector<ck::index_t> const&              b_ns_ks_strides,
+                              std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
+                              std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
+                              std::vector<ck::index_t> const&              e_ms_ns_lengths,
+                              std::vector<ck::index_t> const&              e_ms_ns_strides)
+            = 0;
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});
 
@@ -141,13 +97,17 @@ namespace hiptensor
 
         bool isValid() const;
 
-        ck::index_t       mM, mN, mK;
-        ck::index_t       mBytes;
-        bool              mValid;
-        std::string       mKernelName;
-        ContractionOpId_t mOpId;
+        std::unique_ptr<ContractionSolutionParams> const& params() const;
 
-        InitArgsFuncT                                               mInitArgs;
+    protected:
+        // Derived runtime arguments
+        ck::index_t mM, mN, mK;
+        ck::index_t mBytes;
+        bool        mValid;
+        std::string mKernelName;
+
+        // Kernel Params
+        std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
         std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
@@ -163,7 +123,7 @@ namespace hiptensor
               typename AElementwiseOperation,
               typename BElementwiseOperation,
               typename CDEElementwiseOperation>
-    std::vector<hiptensor::ContractionSolution> enumerateContractionSolutions();
+    std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions();
 
 } // namespace hiptensor
 

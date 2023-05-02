@@ -29,6 +29,19 @@
 namespace hiptensor
 {
 
+    ContractionSolution::ContractionSolution(
+        std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
+        std::unique_ptr<ContractionSolutionParams>&&                  params)
+        : mM(0)
+        , mN(0)
+        , mK(0)
+        , mBytes(0)
+        , mValid(false)
+        , mDeviceOp(std::move(deviceOp))
+        , mParams(std::move(params))
+    {
+    }
+
     ContractionSolution::ContractionSolution(ContractionSolution&& other)
         : mM(other.mM)
         , mN(other.mN)
@@ -36,9 +49,8 @@ namespace hiptensor
         , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mKernelName(other.mKernelName)
-        , mOpId(other.mOpId)
-        , mInitArgs(other.mInitArgs)
         , mDeviceOp(std::move(other.mDeviceOp))
+        , mParams(std::move(other.mParams))
         , mArgPtr(std::move(other.mArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
     {
@@ -55,9 +67,8 @@ namespace hiptensor
             mBytes      = other.mBytes;
             mValid      = other.mValid;
             mKernelName = other.mKernelName;
-            mOpId       = other.mOpId;
 
-            mInitArgs   = other.mInitArgs;
+            mParams     = std::move(other.mParams);
             mDeviceOp   = std::move(other.mDeviceOp);
             mArgPtr     = std::move(other.mArgPtr);
             mInvokerPtr = std::move(other.mInvokerPtr);
@@ -65,48 +76,9 @@ namespace hiptensor
         return *this;
     }
 
-    bool
-        ContractionSolution::initArgs(void const*                                  alpha,
-                                      void const*                                  A,
-                                      void const*                                  B,
-                                      void const*                                  beta,
-                                      void const*                                  D,
-                                      void*                                        E,
-                                      std::vector<ck::index_t> const&              a_ms_ns_lengths,
-                                      std::vector<ck::index_t> const&              a_ms_ks_strides,
-                                      std::vector<ck::index_t> const&              b_ns_ks_lengths,
-                                      std::vector<ck::index_t> const&              b_ns_ks_strides,
-                                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-                                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-                                      std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                                      std::vector<ck::index_t> const&              e_ms_ns_strides)
-    {
-        if(mDeviceOp)
-        {
-            mInitArgs(*this,
-                      alpha,
-                      A,
-                      B,
-                      beta,
-                      D,
-                      E,
-                      a_ms_ns_lengths,
-                      a_ms_ks_strides,
-                      b_ns_ks_lengths,
-                      b_ns_ks_strides,
-                      ds_ms_ns_lengths,
-                      ds_ms_ns_strides,
-                      e_ms_ns_lengths,
-                      e_ms_ns_strides);
-
-            return mValid;
-        }
-        return false;
-    }
-
     float ContractionSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
-        if(!mArgPtr || !mInvokerPtr || mOpId == ContractionOpId_t::UNKNOWN)
+        if(!mArgPtr || !mInvokerPtr || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
         {
 #if !NDEBUG
             std::cout << deviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -169,6 +141,11 @@ namespace hiptensor
     bool ContractionSolution::isValid() const
     {
         return mValid;
+    }
+
+    std::unique_ptr<ContractionSolutionParams> const& ContractionSolution::params() const
+    {
+        return mParams;
     }
 
 } // namespace hiptensor
