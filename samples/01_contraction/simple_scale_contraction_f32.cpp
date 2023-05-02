@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
     std::cout << "Tensor B element space: " << alignmentRequirementB << std::endl;
 #endif
     uint32_t alignmentRequirementD;
-    hiptensorGetAlignmentRequirement(&handle, D_d, &d_ms_ns, &alignmentRequirementD);
+    hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD);
 #if !NDEBUG
     std::cout << "Tensor D element space: " << alignmentRequirementD << std::endl;
 #endif
