@@ -29,6 +29,7 @@ rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
 include_directories(BEFORE
     ${PROJECT_SOURCE_DIR}/library/include/hiptensor
+    ${PROJECT_SOURCE_DIR}/library/src/include
 )
 
 # Generates hiptensor_contraction and hiptensor_contraction_instances

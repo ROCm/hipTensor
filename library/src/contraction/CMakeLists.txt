@@ -29,6 +29,7 @@
 get_target_property(composable_kernel_INCLUDES composable_kernel::device_operations INTERFACE_INCLUDE_DIRECTORIES)
 
 set(HIPTENSOR_CONTRACTION_SOURCES
+   ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction_ck.cpp
 )

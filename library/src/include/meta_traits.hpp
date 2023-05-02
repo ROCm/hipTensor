@@ -23,24 +23,18 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HT_CK_CORE_HPP_
-#define HT_CK_CORE_HPP_
 
-#include <vector>
+#ifndef HIPTENSOR_META_TRAITS_HPP
+#define HIPTENSOR_META_TRAITS_HPP
 
-#include "hiptensor_types.hpp"
+namespace hiptensor
+{
 
-hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handle,
-                                         const hiptensorContractionPlan_t* plan,
-                                         hiptensorContractionMetrics_t*    ht_contract_metrics,
-                                         const void*                       alpha,
-                                         const void*                       A,
-                                         const void*                       B,
-                                         const void*                       beta,
-                                         const void*                       C,
-                                         void*                             D,
-                                         void*                             workspace,
-                                         uint64_t                          workspaceSize,
-                                         hipStream_t                       stream);
+    // Placeholder for building traits on any type T
+    // Use partial or full specialization for any class.
+    template <typename T>
+    struct MetaTraits;
 
-#endif
+} // namespace hiptensor
+
+#endif // HIPTENSOR_META_TRAITS_HPP
