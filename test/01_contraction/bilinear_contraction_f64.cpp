@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     hipDataType            typeA       = HIP_R_64F;
     hipDataType            typeB       = HIP_R_64F;
     hipDataType            typeC       = HIP_R_64F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_64F;
 
     doubleTypeCompute alpha = (doubleTypeCompute)1.1f;
     doubleTypeCompute beta  = (doubleTypeCompute)1.0f;
