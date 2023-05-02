@@ -72,7 +72,6 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
     // Therefore the conversion to ck::index_t is required.
-
     auto a_ms_ns_lengths
         = std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
                                    plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end());
