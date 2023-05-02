@@ -363,4 +363,12 @@ hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask);
  */
 hiptensorStatus_t hiptensorLoggerForceDisable();
 
+/**
+ * \brief Query HIP runtime version.
+ *
+ * \retval -1 if the operation failed.
+ * \retval Integer HIP runtime version if the operation succeeded.
+ */
+int hiptensorGetHiprtVersion();
+
 #endif // HT_TENSOR_HPP
