@@ -248,11 +248,11 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 solution->kernelName() // name
             };
 
-            if(metrics.tflops > bestFound.tflops)
-            {
-                found     = true;
-                bestFound = metrics;
-            }
+            // if(metrics.tflops > bestFound.tflops)
+            // {
+            //     found     = true;
+            //     bestFound = metrics;
+            // }
         }
     }
 
