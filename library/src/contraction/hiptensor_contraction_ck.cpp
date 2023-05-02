@@ -40,266 +40,11 @@
 #include <tensor_layout.hpp>
 
 // HipTensor includes
+#include "contraction_meta_traits.hpp"
+#include "contraction_solution.hpp"
 #include "hiptensor_contraction_ck.hpp"
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
-
-using F32 = float;
-using F64 = double;
-
-template <typename T>
-struct MetaTraits;
-
-using ck::index_t;
-template <index_t NumDimsM,
-          index_t NumDimsN,
-          index_t NumDimsK,
-          typename ADataType,
-          typename BDataType,
-          typename DsDataType,
-          typename EDataType,
-          typename AElementwiseOperation,
-          typename BElementwiseOperation>
-struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-    NumDimsM,
-    NumDimsN,
-    NumDimsK,
-    ADataType,
-    BDataType,
-    ck::Tuple<DsDataType>,
-    EDataType,
-    AElementwiseOperation,
-    BElementwiseOperation,
-    ck::tensor_operation::element_wise::Bilinear>>
-{
-    constexpr static index_t DimsM = NumDimsM;
-    constexpr static index_t DimsN = NumDimsN;
-    constexpr static index_t DimsK = NumDimsK;
-    using ADataT                   = ADataType;
-    using BDataT                   = BDataType;
-    using DDataT                   = DsDataType;
-    using EDataT                   = EDataType;
-    using AOp                      = AElementwiseOperation;
-    using BOp                      = BElementwiseOperation;
-    using CDEOp                    = ck::tensor_operation::element_wise::Bilinear;
-};
-
-template <index_t NumDimsM,
-          index_t NumDimsN,
-          index_t NumDimsK,
-          typename ADataType,
-          typename BDataType,
-          typename EDataType,
-          typename AElementwiseOperation,
-          typename BElementwiseOperation>
-struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-    NumDimsM,
-    NumDimsN,
-    NumDimsK,
-    ADataType,
-    BDataType,
-    ck::Tuple<>,
-    EDataType,
-    AElementwiseOperation,
-    BElementwiseOperation,
-    ck::tensor_operation::element_wise::Scale>>
-{
-    constexpr static index_t DimsM = NumDimsM;
-    constexpr static index_t DimsN = NumDimsN;
-    constexpr static index_t DimsK = NumDimsK;
-    using ADataT                   = ADataType;
-    using BDataT                   = BDataType;
-    using EDataT                   = EDataType;
-    using AOp                      = AElementwiseOperation;
-    using BOp                      = BElementwiseOperation;
-    using CDEOp                    = ck::tensor_operation::element_wise::Scale;
-};
-
-struct KernelLauncher
-{
-    // Override for BilinearContraction
-    template <
-        typename DeviceOp,
-        typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                 ck::tensor_operation::element_wise::Bilinear>,
-                                  void*>
-        = nullptr>
-    KernelLauncher(DeviceOp*                                deviceOp,
-                   void const*                              alpha,
-                   void const*                              A,
-                   void const*                              B,
-                   void const*                              beta,
-                   void const*                              D,
-                   void*                                    E,
-                   std::vector<index_t> const&              a_ms_ns_lengths,
-                   std::vector<index_t> const&              a_ms_ks_strides,
-                   std::vector<index_t> const&              b_ns_ks_lengths,
-                   std::vector<index_t> const&              b_ns_ks_strides,
-                   std::vector<std::vector<index_t>> const& ds_ms_ns_lengths,
-                   std::vector<std::vector<index_t>> const& ds_ms_ns_strides,
-                   std::vector<index_t> const&              e_ms_ns_lengths,
-                   std::vector<index_t> const&              e_ms_ns_strides)
-        : a_ms_ns_lengths_(a_ms_ns_lengths)
-        , a_ms_ks_strides_(a_ms_ks_strides)
-        , b_ns_ks_lengths_(b_ns_ks_lengths)
-        , b_ns_ks_strides_(b_ns_ks_strides)
-        , ds_ms_ns_lengths_(ds_ms_ns_lengths)
-        , ds_ms_ns_strides_(ds_ms_ns_strides)
-        , e_ms_ns_lengths_(e_ms_ns_lengths)
-        , e_ms_ns_strides_(e_ms_ns_strides)
-    {
-        using Traits = MetaTraits<DeviceOp>;
-
-        // Initialize the argument pointer
-        mArgPtr = std::move(deviceOp->MakeArgumentPointer(
-            A,
-            B,
-            std::array<const void*, 1>{D},
-            E,
-            a_ms_ns_lengths,
-            a_ms_ks_strides,
-            b_ns_ks_lengths,
-            b_ns_ks_strides,
-            std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths[0]},
-            std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides[0]},
-            e_ms_ns_lengths,
-            e_ms_ns_strides,
-            typename Traits::AOp{},
-            typename Traits::BOp{},
-            typename Traits::CDEOp{*(F32*)alpha, *(F32*)beta}));
-
-        // Initialize the invoker
-        mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-        // Get the kernel name
-        mKernelName = deviceOp->GetTypeString();
-
-        // Fill problem metrics
-        mM = std::accumulate(e_ms_ns_lengths.begin(),
-                             e_ms_ns_lengths.begin() + Traits::DimsM,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
-
-        mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                             e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
-
-        mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                             e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
-
-        // Byte count
-        mBytes = sizeof(typename Traits::ADataT) * mM * mK
-                 + sizeof(typename Traits::BDataT) * mK * mN
-                 + sizeof(typename Traits::DDataT) * mM * mN
-                 + sizeof(typename Traits::EDataT) * mM * mN;
-
-        mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
-    }
-
-    template <typename DeviceOp,
-              typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                       ck::tensor_operation::element_wise::Scale>,
-                                        void*>
-              = nullptr>
-    KernelLauncher(DeviceOp*                   deviceOp,
-                   void const*                 alpha,
-                   void const*                 A,
-                   void const*                 B,
-                   void*                       E,
-                   std::vector<index_t> const& a_ms_ns_lengths,
-                   std::vector<index_t> const& a_ms_ks_strides,
-                   std::vector<index_t> const& b_ns_ks_lengths,
-                   std::vector<index_t> const& b_ns_ks_strides,
-                   std::vector<index_t> const& e_ms_ns_lengths,
-                   std::vector<index_t> const& e_ms_ns_strides)
-    {
-        using Traits = MetaTraits<DeviceOp>;
-
-        // Initialize the argument pointer
-        mArgPtr = std::move(deviceOp->MakeArgumentPointer(A,
-                                                          B,
-                                                          std::array<const void*, 0>{},
-                                                          E,
-                                                          a_ms_ns_lengths,
-                                                          a_ms_ks_strides,
-                                                          b_ns_ks_lengths,
-                                                          b_ns_ks_strides,
-                                                          std::array<std::vector<ck::index_t>, 0>{},
-                                                          std::array<std::vector<ck::index_t>, 0>{},
-                                                          e_ms_ns_lengths,
-                                                          e_ms_ns_strides,
-                                                          typename Traits::AOp{},
-                                                          typename Traits::BOp{},
-                                                          typename Traits::CDEOp{*(F32*)alpha}));
-
-        // Initialize the invoker
-        mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-        // Get the kernel name
-        mKernelName = deviceOp->GetTypeString();
-
-        // Fill problem metrics
-        mM = std::accumulate(e_ms_ns_lengths.begin(),
-                             e_ms_ns_lengths.begin() + Traits::DimsM,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
-
-        mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                             e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
-
-        mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
-                             a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                             ck::index_t{1},
-                             std::multiplies<ck::index_t>{});
-
-        // Byte count
-        mBytes = sizeof(typename Traits::ADataT) * mM * mK
-                 + sizeof(typename Traits::BDataT) * mK * mN
-                 + sizeof(typename Traits::EDataT) * mM * mN;
-
-        mValid = deviceOp->IsSupportedArgument(mArgPtr.get());
-    }
-
-    float operator()(StreamConfig const& streamConfig = StreamConfig{nullptr, true})
-    {
-        if(!mValid)
-        {
-#if !NDEBUG
-            std::cout << mKernelName << " does not support this problem" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
-    }
-
-    bool isValid() const
-    {
-        return mValid;
-    }
-
-    std::vector<index_t>              a_ms_ns_lengths_;
-    std::vector<index_t>              a_ms_ks_strides_;
-    std::vector<index_t>              b_ns_ks_lengths_;
-    std::vector<index_t>              b_ns_ks_strides_;
-    std::vector<std::vector<index_t>> ds_ms_ns_lengths_;
-    std::vector<std::vector<index_t>> ds_ms_ns_strides_;
-    std::vector<index_t>              e_ms_ns_lengths_;
-    std::vector<index_t>              e_ms_ns_strides_;
-
-    index_t mM, mN, mK;
-    index_t mBytes;
-    bool    mValid;
-
-    std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
-    std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
-    std::string                                                 mKernelName;
-};
 
 hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handle,
                                          const hiptensorContractionPlan_t* plan,
@@ -314,11 +59,19 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                                          uint64_t                          workspaceSize,
                                          hipStream_t                       stream)
 {
-    if(!handle || !ht_contract_metrics || !A || !B || !D)
+    if(handle == nullptr || plan == nullptr || ht_contract_metrics == nullptr || alpha == nullptr
+       || A == nullptr || B == nullptr
+       || ((beta == nullptr || C == nullptr)
+           && plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::BILINEAR)
+       || D == nullptr)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
     memset(ht_contract_metrics, 0, sizeof(hiptensorContractionMetrics_t));
 
+    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
+    // Therefore the conversion to ck::index_t is required.
     auto a_ms_ns_lengths
         = std::vector<ck::index_t>(plan->ht_plan_desc.ht_contract_attr_desc[0].lens.begin(),
                                    plan->ht_plan_desc.ht_contract_attr_desc[0].lens.end());
@@ -345,171 +98,124 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
 #if !NDEBUG
     std::cout << "Tensor A lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>(a_ms_ns_lengths);
+    hiptensorPrintVectorElements(a_ms_ns_lengths);
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>(a_ms_ks_strides);
+    hiptensorPrintVectorElements(a_ms_ks_strides);
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[0].tensor_size << std::endl;
 
     std::cout << "Tensor B lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>(b_ns_ks_lengths);
+    hiptensorPrintVectorElements(b_ns_ks_lengths);
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>(b_ns_ks_strides);
+    hiptensorPrintVectorElements(b_ns_ks_strides);
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[1].tensor_size << std::endl;
 
     std::cout << "Tensor C lengths: ";
-    hiptensorPrintVectorElements<ck::index_t>(e_ms_ns_lengths);
+    hiptensorPrintVectorElements(e_ms_ns_lengths);
     std::cout << ", strides: ";
-    hiptensorPrintVectorElements<ck::index_t>(e_ms_ns_strides);
+    hiptensorPrintVectorElements(e_ms_ns_strides);
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
-    void* output;
+    std::vector<hiptensor::ContractionSolution> solutions;
 
-    hip_check_error(hipMalloc(static_cast<void**>(&output),
-                              plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size));
+    auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
+    auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
+    auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
+    auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
 
-    hip_check_error(hipMemset(output, 0, plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size));
-
-    std::vector<KernelLauncher> solutions;
-
-    if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_BILINEAR)
+    if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::BILINEAR)
     {
-        // Use this generic lambda to initialize the bilinear kernels.
-        auto initBilinearSolutions = [&](auto const& v) {
-            for(auto& opPtr : v)
-            {
-                solutions.push_back(
-                    KernelLauncher(opPtr.get(),
-                                   alpha,
-                                   A,
-                                   B,
-                                   beta,
-                                   C,
-                                   output,
-                                   a_ms_ns_lengths,
-                                   a_ms_ks_strides,
-                                   b_ns_ks_lengths,
-                                   b_ns_ks_strides,
-                                   std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
-                                   std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
-                                   e_ms_ns_lengths,
-                                   e_ms_ns_strides));
-            }
-        };
-
-        auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
-        auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
-        auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
-        auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
-
-        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
+        if(ADataType == HIP_R_32F 
+           && BDataType == HIP_R_32F 
+           && CDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
-            using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
-                F32,
-                F32,
-                ck::Tuple<F32>,
-                F32,
+                float,
+                float,
+                ck::Tuple<float>,
+                float,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Bilinear>;
+                ck::tensor_operation::element_wise::Bilinear>();
 
-            initBilinearSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionBilinearOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(bilinearSolutions.begin()),
+                             std::make_move_iterator(bilinearSolutions.end()));
         }
-        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
+        else if(ADataType == HIP_R_64F 
+                && BDataType == HIP_R_64F 
+                && CDataType == HIP_R_64F
                 && DDataType == HIP_R_64F)
         {
-            using ContractionBilinearOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
-                F64,
-                F64,
-                ck::Tuple<F64>,
-                F64,
+                double,
+                double,
+                ck::Tuple<double>,
+                double,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Bilinear>;
+                ck::tensor_operation::element_wise::Bilinear>();
 
-            initBilinearSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionBilinearOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(bilinearSolutions.begin()),
+                             std::make_move_iterator(bilinearSolutions.end()));
         }
     }
-    else if(plan->ht_plan_desc.ht_contract_op == HIPTENSOR_CONTRACTION_SCALE)
+    else if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::SCALE)
     {
-        // Use this generic lambda to initialize the bilinear kernels.
-        auto initScaleSolutions = [&](auto const& v) {
-            for(auto& opPtr : v)
-            {
-                solutions.push_back(KernelLauncher(opPtr.get(),
-                                                   alpha,
-                                                   A,
-                                                   B,
-                                                   D,
-                                                   a_ms_ns_lengths,
-                                                   a_ms_ks_strides,
-                                                   b_ns_ks_lengths,
-                                                   b_ns_ks_strides,
-                                                   e_ms_ns_lengths,
-                                                   e_ms_ns_strides));
-            }
-        };
-
-        auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
-        auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
-        auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
-        auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
-
-        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
+        if(ADataType == HIP_R_32F 
+           && BDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
-            using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto scaleSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
-                F32,
-                F32,
+                float,
+                float,
                 ck::Tuple<>,
-                F32,
+                float,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Scale>;
+                ck::tensor_operation::element_wise::Scale>();
 
-            initScaleSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionScaleOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(scaleSolutions.begin()),
+                             std::make_move_iterator(scaleSolutions.end()));
         }
-        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
+        else if(ADataType == HIP_R_64F 
+                && BDataType == HIP_R_64F 
                 && DDataType == HIP_R_64F)
         {
-            using ContractionScaleOp = ck::tensor_operation::device::DeviceContractionMultipleD<
+            auto scaleSolutions = hiptensor::enumerateContractionSolutions<
                 2,
                 2,
                 2,
-                F64,
-                F64,
+                double,
+                double,
                 ck::Tuple<>,
-                F64,
+                double,
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Scale>;
+                ck::tensor_operation::element_wise::Scale>();
 
-            initScaleSolutions(
-                ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<
-                    ContractionScaleOp>::GetInstances());
+            solutions.insert(solutions.end(),
+                             std::make_move_iterator(scaleSolutions.begin()),
+                             std::make_move_iterator(scaleSolutions.end()));
         }
     }
 
     /// Dispatching end
 
     // Now we can launch the kernels and get the metrics.
-    std::cout << "Run all instances and do timing" << std::endl;
+    std::cout << "Run all instances and do timing: " << solutions.size() << std::endl;
 
     std::string                   best_op_name;
     bool                          found     = false;
@@ -517,13 +223,25 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     for(auto& solution : solutions)
     {
-
-        if(solution.isValid())
+        if(solution.initArgs(alpha,
+                             A,
+                             B,
+                             beta,
+                             C,
+                             D,
+                             a_ms_ns_lengths,
+                             a_ms_ks_strides,
+                             b_ns_ks_lengths,
+                             b_ns_ks_strides,
+                             std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
+                             std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
+                             e_ms_ns_lengths,
+                             e_ms_ns_strides))
         {
+            // Make sure to time the kernels
+            auto time  = solution(StreamConfig{stream, true});
             auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
             auto bytes = solution.mBytes;
-
-            auto time = solution();
 
             hiptensorContractionMetrics_t metrics = {
                 time, // avg time
@@ -543,16 +261,6 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     if(found)
     {
         *ht_contract_metrics = bestFound;
-    }
-
-    if(output)
-    {
-        hip_check_error(hipMemcpy(D,
-                                  output,
-                                  plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size,
-                                  hipMemcpyDeviceToDevice));
-
-        hip_check_error(hipFree(output));
     }
 
     return HIPTENSOR_STATUS_SUCCESS;

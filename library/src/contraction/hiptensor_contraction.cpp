@@ -23,6 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include "contraction_solution.hpp"
 #include "hiptensor.hpp"
 #include "hiptensor_contraction_ck.hpp"
 
@@ -48,15 +49,15 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     if(!handle || !desc || !descA || !descB || !descC)
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-    const hiptensorTensorDescriptor_t* ht_input_descs[] = {descA, descB, descC};
-    const uint32_t                     alignmentRequriement_arr[]
-        = {alignmentRequirementA, alignmentRequirementB, alignmentRequirementC};
-    desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequriement_arr, 3);
+    const hiptensorTensorDescriptor_t* ht_input_descs[]           = {descA, descB, descC, descD};
+    const uint32_t                     alignmentRequirement_arr[] = {
+        alignmentRequirementA, alignmentRequirementB, alignmentRequirementC, alignmentRequirementD};
+    desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequirement_arr, 4);
 
     if(!descD)
-        desc->ht_contract_op = HIPTENSOR_CONTRACTION_SCALE;
+        desc->ht_contract_op = (int32_t)hiptensor::ContractionOpId_t::SCALE;
     else
-        desc->ht_contract_op = HIPTENSOR_CONTRACTION_BILINEAR;
+        desc->ht_contract_op = (int32_t)hiptensor::ContractionOpId_t::BILINEAR;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
