@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 #endif
 
     hiptensorTensorDescriptor_t d_ms_ns;
-    hiptensorInitTensorDescriptor(&handle,
+    hiptensorInitTensorDescriptor(handle,
                                   &d_ms_ns,
                                   nmodeD,
                                   d_ms_ns_lengths.data(),
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB);
 
     uint32_t alignmentRequirementD;
-    hiptensorGetAlignmentRequirement(&handle, D_d, &d_ms_ns, &alignmentRequirementD);
+    hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD);
 
     /*******************************
    * Create Contraction Descriptor

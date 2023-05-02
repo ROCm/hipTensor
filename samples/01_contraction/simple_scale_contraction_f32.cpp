@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 #endif
 
     hiptensorTensorDescriptor_t d_ms_ns;
-    hiptensorInitTensorDescriptor(&handle,
+    hiptensorInitTensorDescriptor(handle,
                                   &d_ms_ns,
                                   nmodeD,
                                   d_ms_ns_lengths.data(),
