@@ -206,7 +206,6 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                                   BDataType,
                                   CDataType,
                                   DDataType,
-
                                   hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
                                   hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
                                   (hiptensor::ContractionOpId_t)plan->ht_plan_desc.ht_contract_op);
