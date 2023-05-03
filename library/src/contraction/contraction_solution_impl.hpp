@@ -106,9 +106,6 @@ namespace hiptensor
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
-            // Get the kernel name
-            Base::mKernelName = deviceOp->GetTypeString();
-
             // Fill problem metrics
             Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
                                        e_ms_ns_lengths.begin() + Traits::DimsM,
@@ -194,9 +191,6 @@ namespace hiptensor
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-            // Get the kernel name
-            Base::mKernelName = deviceOp->GetTypeString();
 
             // Fill problem metrics
             Base::mM = std::accumulate(e_ms_ns_lengths.begin(),

@@ -29,6 +29,7 @@
 
 #include <functional>
 #include <memory>
+#include <tuple>
 #include <vector>
 
 // CK includes
@@ -95,18 +96,31 @@ namespace hiptensor
                          std::vector<ck::index_t> const&              e_ms_ns_strides,
                          StreamConfig const& streamConfig = StreamConfig{});
 
+        /// Accessors
+
+        // Problem can be solved with this kernel
         bool isValid() const;
 
+        // Run-time solution parameters
         std::unique_ptr<ContractionSolutionParams> const& params() const;
 
+        // Unique ID for the kernel
         size_t uuid() const;
+
+        // Problem dimensions
+        std::tuple<ck::index_t, ck::index_t, ck::index_t> problemDims() const;
+
+        // Byte count
+        ck::index_t problemBytes() const;
+
+        // Kernel's name encoding
+        std::string kernelName() const;
 
     protected:
         // Derived runtime arguments
         ck::index_t mM, mN, mK;
         ck::index_t mBytes;
         bool        mValid;
-        std::string mKernelName;
 
         // Kernel Params
         std::unique_ptr<ContractionSolutionParams>                  mParams;

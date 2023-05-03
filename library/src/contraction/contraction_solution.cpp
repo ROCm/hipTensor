@@ -48,7 +48,6 @@ namespace hiptensor
         , mK(other.mK)
         , mBytes(other.mBytes)
         , mValid(other.mValid)
-        , mKernelName(other.mKernelName)
         , mDeviceOp(std::move(other.mDeviceOp))
         , mParams(std::move(other.mParams))
         , mArgPtr(std::move(other.mArgPtr))
@@ -64,9 +63,8 @@ namespace hiptensor
             mN = other.mN;
             mK = other.mK;
 
-            mBytes      = other.mBytes;
-            mValid      = other.mValid;
-            mKernelName = other.mKernelName;
+            mBytes = other.mBytes;
+            mValid = other.mValid;
 
             mParams     = std::move(other.mParams);
             mDeviceOp   = std::move(other.mDeviceOp);
@@ -155,6 +153,21 @@ namespace hiptensor
         size_t             value;
         converter >> std::hex >> value;
         return value;
+    }
+
+    std::tuple<ck::index_t, ck::index_t, ck::index_t> ContractionSolution::problemDims() const
+    {
+        return std::make_tuple(mM, mN, mK);
+    }
+
+    ck::index_t ContractionSolution::problemBytes() const
+    {
+        return mBytes;
+    }
+
+    std::string ContractionSolution::kernelName() const
+    {
+        return mDeviceOp->GetTypeString();
     }
 
 } // namespace hiptensor

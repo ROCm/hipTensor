@@ -236,22 +236,24 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                               e_ms_ns_strides))
         {
             // Make sure to time the kernels
-            auto time = (*solution)(StreamConfig{stream, true});
-            //auto flops = std::size_t(2) * solution->mM * solution->mN * solution->mK;
-            //auto bytes = solution->mBytes;
+            auto    time = (*solution)(StreamConfig{stream, true});
+            int32_t m, n, k;
+            std::tie(m, n, k) = solution->problemDims();
+            auto flops        = std::size_t(2) * m * n * k;
+            auto bytes        = solution->problemBytes();
 
-            // hiptensorContractionMetrics_t metrics = {
-            //     time, // avg time
-            //     static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
-            //     static_cast<float>(solution->mBytes) / static_cast<float>(1.E6) / time, //
-            //     solution->mKernelName // name
-            // };
+            hiptensorContractionMetrics_t metrics = {
+                time, // avg time
+                static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
+                static_cast<float>(bytes) / static_cast<float>(1.E6) / time, //
+                solution->kernelName() // name
+            };
 
-            // if(metrics.tflops > bestFound.tflops)
-            // {
-            //     found     = true;
-            //     bestFound = metrics;
-            // }
+            if(metrics.tflops > bestFound.tflops)
+            {
+                found     = true;
+                bestFound = metrics;
+            }
         }
     }
 
