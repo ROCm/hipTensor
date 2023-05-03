@@ -64,6 +64,12 @@ namespace hiptensor
 
 } // namespace hiptensor
 
+namespace std
+{
+    ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const& op);
+
+} // namespace std
+
 #include "types_impl.hpp"
 
 #endif // HIPTENSOR_LIBRARY_TYPES_HPP
