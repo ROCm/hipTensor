@@ -51,11 +51,22 @@ namespace hiptensor
         void operator()(std::size_t& seed, T const& t, Ts const&... ts)
         {
             seed ^= std::hash<T>{}(t) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            operator()(seed, ts...);
+            if constexpr(sizeof...(ts) > 0)
+            {
+                operator()(seed, ts...);
+            }
         }
-        void operator()(std::size_t seed)
+
+        template <typename T, typename... Ts>
+        void printArgs(T const& t, Ts const&... ts)
         {
-            return;
+            std::cout << t << ", ";
+            printArgs(ts...);
+        }
+        template <typename T>
+        void printArgs(T const& t)
+        {
+            std::cout << t << std::endl;
         }
     };
 

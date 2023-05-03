@@ -27,27 +27,48 @@
 #ifndef HIPTENSOR_CONTRACTION_SOLUTION_REGISTRY_HPP
 #define HIPTENSOR_CONTRACTION_SOLUTION_REGISTRY_HPP
 
-#include "hash.hpp"
+#include <memory>
+#include <unordered_map>
+#include <vector>
+
+#include "contraction_solution.hpp"
+#include "types.hpp"
 
 namespace hiptensor
 {
     class ContractionSolutionRegistry
     {
+    public:
         ContractionSolutionRegistry()  = default;
         ~ContractionSolutionRegistry() = default;
 
-        void registerSolutions(std::vector<ContractionSolution>&& solutions)
-        {
-            foreach(auto&& soln : solutions)
-            {
-                // Hash contraction solutions into categories.
-                auto hash = Hash<ContractionSolution>{}(soln);
-                mSolutionHash[hash].push_back(std::move(soln));
-            }
-        }
+        ContractionSolutionRegistry(ContractionSolutionRegistry const&)            = delete;
+        ContractionSolutionRegistry(ContractionSolutionRegistry&&)                 = delete;
+        ContractionSolutionRegistry* operator=(ContractionSolutionRegistry const&) = delete;
+        ContractionSolutionRegistry* operator=(ContractionSolutionRegistry&&)      = delete;
 
-        std::unordered_map<std::size_t, std::vector<ContractionSolution>> mSolutionHash;
-    }
+        // Import contraction solutions for the registry to manage
+        void registerSolutions(std::vector<std::unique_ptr<ContractionSolution>>&& solutions);
+
+        std::vector<ContractionSolution*> querySolutions(int32_t             dimsM,
+                                                         int32_t             dimsN,
+                                                         int32_t             dimsK,
+                                                         hipDataType         typeA,
+                                                         hipDataType         typeB,
+                                                         hipDataType         typeC,
+                                                         hipDataType         typeD,
+                                                         hiptensorOperator_t opA,
+                                                         hiptensorOperator_t opB,
+                                                         ContractionOpId_t   opCDE);
+
+        ContractionSolution* querySolution(size_t solutionUid);
+
+        std::vector<ContractionSolution*> allSolutions();
+
+    private:
+        std::unordered_map<std::size_t, std::unique_ptr<ContractionSolution>> mAllSolutions;
+        std::unordered_map<std::size_t, std::vector<ContractionSolution*>>    mSolutionHash;
+    };
 
 } // namespace hiptensor
 

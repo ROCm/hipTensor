@@ -42,6 +42,7 @@
 // HipTensor includes
 #include "contraction_meta_traits.hpp"
 #include "contraction_solution.hpp"
+#include "contraction_solution_registry.hpp"
 #include "hiptensor_contraction_ck.hpp"
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
@@ -116,7 +117,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
-    std::vector<std::unique_ptr<hiptensor::ContractionSolution>> solutions;
+    hiptensor::ContractionSolutionRegistry registry;
 
     auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
     auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
@@ -140,9 +141,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(bilinearSolutions.begin()),
-                             std::make_move_iterator(bilinearSolutions.end()));
+            registry.registerSolutions(std::move(bilinearSolutions));
         }
         else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
                 && DDataType == HIP_R_64F)
@@ -159,9 +158,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(bilinearSolutions.begin()),
-                             std::make_move_iterator(bilinearSolutions.end()));
+            registry.registerSolutions(std::move(bilinearSolutions));
         }
     }
     else if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::SCALE)
@@ -180,9 +177,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(scaleSolutions.begin()),
-                             std::make_move_iterator(scaleSolutions.end()));
+            registry.registerSolutions(std::move(scaleSolutions));
         }
         else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && DDataType == HIP_R_64F)
         {
@@ -198,13 +193,23 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(scaleSolutions.begin()),
-                             std::make_move_iterator(scaleSolutions.end()));
+            registry.registerSolutions(std::move(scaleSolutions));
         }
     }
 
     /// Dispatching end
+    auto solutions
+        = registry.querySolutions(2,
+                                  2,
+                                  2,
+                                  ADataType,
+                                  BDataType,
+                                  CDataType,
+                                  DDataType,
+
+                                  hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
+                                  hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
+                                  (hiptensor::ContractionOpId_t)plan->ht_plan_desc.ht_contract_op);
 
     // Now we can launch the kernels and get the metrics.
     std::cout << "Run all instances and do timing: " << solutions.size() << std::endl;
