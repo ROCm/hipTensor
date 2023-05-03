@@ -99,6 +99,8 @@ namespace hiptensor
 
         std::unique_ptr<ContractionSolutionParams> const& params() const;
 
+        size_t uuid() const;
+
     protected:
         // Derived runtime arguments
         ck::index_t mM, mN, mK;

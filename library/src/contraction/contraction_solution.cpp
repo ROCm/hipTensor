@@ -148,4 +148,13 @@ namespace hiptensor
         return mParams;
     }
 
+    size_t ContractionSolution::uuid() const
+    {
+        // Convert CK uid string into binary.
+        std::istringstream converter(mDeviceOp->GetTypeIdHashCode());
+        size_t             value;
+        converter >> std::hex >> value;
+        return value;
+    }
+
 } // namespace hiptensor
