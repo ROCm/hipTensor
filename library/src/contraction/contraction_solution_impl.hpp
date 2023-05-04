@@ -30,49 +30,63 @@
 #include <numeric>
 
 #include "contraction_solution.hpp"
+#include "hash.hpp"
+
+namespace std
+{
+    template <>
+    struct std::hash<hiptensor::ContractionSolution>
+    {
+        std::size_t operator()(hiptensor::ContractionSolution const& s) const noexcept
+        {
+            return std::hash<hiptensor::ContractionSolutionParams>{}(*s.params());
+        }
+    };
+}
 
 namespace hiptensor
 {
+    template <typename DeviceOp, typename Enabler = void>
+    class ContractionSolutionImpl;
 
-    template <
-        typename DeviceOp,
-        typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                 ck::tensor_operation::element_wise::Bilinear>,
-                                  void*> /*= nullptr*/>
-    ContractionSolution::ContractionSolution(std::unique_ptr<DeviceOp>&& deviceOp)
-        : mM(0)
-        , mN(0)
-        , mK(0)
-        , mBytes(0)
-        , mValid(false)
-        , mDeviceOp(deviceOp.release()) // Take ownership, but store as opaque BaseOperator ptr
+    template <typename DeviceOp>
+    class ContractionSolutionImpl<
+        DeviceOp,
+        std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::Bilinear>>>
+        : public ContractionSolution
     {
-        mInitArgs = [](ContractionSolution&                         launcher,
-                       void const*                                  alpha,
-                       void const*                                  A,
-                       void const*                                  B,
-                       void const*                                  beta,
-                       void const*                                  D,
-                       void*                                        E,
-                       std::vector<ck::index_t> const&              a_ms_ns_lengths,
-                       std::vector<ck::index_t> const&              a_ms_ks_strides,
-                       std::vector<ck::index_t> const&              b_ns_ks_lengths,
-                       std::vector<ck::index_t> const&              b_ns_ks_strides,
-                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-                       std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                       std::vector<ck::index_t> const&              e_ms_ns_strides) {
+    public:
+        ContractionSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
+            : ContractionSolution(std::move(deviceOp),
+                                  std::make_unique<ContractionSolutionParamsImpl<DeviceOp>>())
+        {
+        }
+
+        bool initArgs(void const*                                  alpha,
+                      void const*                                  A,
+                      void const*                                  B,
+                      void const*                                  beta,
+                      void const*                                  D,
+                      void*                                        E,
+                      std::vector<ck::index_t> const&              a_ms_ns_lengths,
+                      std::vector<ck::index_t> const&              a_ms_ks_strides,
+                      std::vector<ck::index_t> const&              b_ns_ks_lengths,
+                      std::vector<ck::index_t> const&              b_ns_ks_strides,
+                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
+                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
+                      std::vector<ck::index_t> const&              e_ms_ns_lengths,
+                      std::vector<ck::index_t> const&              e_ms_ns_strides) override
+        {
+            using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
-            auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
-
-            // This specialization is for bilinear contraction
-            launcher.mOpId = ContractionOpId_t::BILINEAR;
+            auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Initialize the argument pointer
-            launcher.mArgPtr = std::move(deviceOp->MakeArgumentPointer(
+            Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,
                 B,
                 std::array<const void*, 1>{D},
@@ -90,76 +104,75 @@ namespace hiptensor
                 typename Traits::CDEOp{*(float*)alpha, *(float*)beta}));
 
             // Initialize the invoker
-            launcher.mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-            // Get the kernel name
-            launcher.mKernelName = deviceOp->GetTypeString();
+            Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
             // Fill problem metrics
-            launcher.mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                          e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
+            Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
+                                       e_ms_ns_lengths.begin() + Traits::DimsM,
+                                       ck::index_t{1},
+                                       std::multiplies<ck::index_t>{});
 
-            launcher.mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
+            Base::mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                       e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                                       ck::index_t{1},
+                                       std::multiplies<ck::index_t>{});
 
-            launcher.mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
+            Base::mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                       e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                                       ck::index_t{1},
+                                       std::multiplies<ck::index_t>{});
 
             // Byte count
-            launcher.mBytes = sizeof(typename Traits::ADataT) * launcher.mM * launcher.mK
-                              + sizeof(typename Traits::BDataT) * launcher.mK * launcher.mN
-                              + sizeof(typename Traits::DDataT) * launcher.mM * launcher.mN
-                              + sizeof(typename Traits::EDataT) * launcher.mM * launcher.mN;
+            Base::mBytes = sizeof(typename Traits::ADataT) * Base::mM * Base::mK
+                           + sizeof(typename Traits::BDataT) * Base::mK * Base::mN
+                           + sizeof(typename Traits::DDataT) * Base::mM * Base::mN
+                           + sizeof(typename Traits::EDataT) * Base::mM * Base::mN;
 
             // Arg test
-            launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
-        };
-    }
+            Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());
 
-    template <typename DeviceOp,
-              typename std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                                       ck::tensor_operation::element_wise::Scale>,
-                                        void*> /* = nullptr */>
-    ContractionSolution::ContractionSolution(std::unique_ptr<DeviceOp>&& deviceOp)
-        : mM(0)
-        , mN(0)
-        , mK(0)
-        , mBytes(0)
-        , mValid(false)
-        , mDeviceOp(deviceOp.release()) // Take ownership, but store as opaque BaseOperator ptr
+            return mValid;
+        }
+    };
+
+    template <typename DeviceOp>
+    class ContractionSolutionImpl<
+        DeviceOp,
+        std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::Scale>>>
+        : public ContractionSolution
     {
-        mInitArgs = [](ContractionSolution&                         launcher,
-                       void const*                                  alpha,
-                       void const*                                  A,
-                       void const*                                  B,
-                       void const*                                  beta,
-                       void const*                                  D,
-                       void*                                        E,
-                       std::vector<ck::index_t> const&              a_ms_ns_lengths,
-                       std::vector<ck::index_t> const&              a_ms_ks_strides,
-                       std::vector<ck::index_t> const&              b_ns_ks_lengths,
-                       std::vector<ck::index_t> const&              b_ns_ks_strides,
-                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-                       std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                       std::vector<ck::index_t> const&              e_ms_ns_strides) {
+    public:
+        ContractionSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
+            : ContractionSolution(std::move(deviceOp),
+                                  std::make_unique<ContractionSolutionParamsImpl<DeviceOp>>())
+        {
+        }
+
+        bool initArgs(void const*                                  alpha,
+                      void const*                                  A,
+                      void const*                                  B,
+                      void const*                                  beta,
+                      void const*                                  D,
+                      void*                                        E,
+                      std::vector<ck::index_t> const&              a_ms_ns_lengths,
+                      std::vector<ck::index_t> const&              a_ms_ks_strides,
+                      std::vector<ck::index_t> const&              b_ns_ks_lengths,
+                      std::vector<ck::index_t> const&              b_ns_ks_strides,
+                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
+                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
+                      std::vector<ck::index_t> const&              e_ms_ns_lengths,
+                      std::vector<ck::index_t> const&              e_ms_ns_strides) override
+        {
+            using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
-            auto* deviceOp = dynamic_cast<DeviceOp*>(launcher.mDeviceOp.get());
-
-            // This specialization is for scale contraction
-            launcher.mOpId = ContractionOpId_t::SCALE;
+            auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Initialize the argument pointer
-            launcher.mArgPtr
+            Base::mArgPtr
                 = std::move(deviceOp->MakeArgumentPointer(A,
                                                           B,
                                                           std::array<const void*, 0>{},
@@ -177,36 +190,35 @@ namespace hiptensor
                                                           typename Traits::CDEOp{*(float*)alpha}));
 
             // Initialize the invoker
-            launcher.mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
-
-            // Get the kernel name
-            launcher.mKernelName = deviceOp->GetTypeString();
+            Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
             // Fill problem metrics
-            launcher.mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                          e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
+            Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
+                                       e_ms_ns_lengths.begin() + Traits::DimsM,
+                                       ck::index_t{1},
+                                       std::multiplies<ck::index_t>{});
 
-            launcher.mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                          e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
+            Base::mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
+                                       e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+                                       ck::index_t{1},
+                                       std::multiplies<ck::index_t>{});
 
-            launcher.mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
-                                          a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
-                                          ck::index_t{1},
-                                          std::multiplies<ck::index_t>{});
+            Base::mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
+                                       a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+                                       ck::index_t{1},
+                                       std::multiplies<ck::index_t>{});
 
             // Byte count
-            launcher.mBytes = sizeof(typename Traits::ADataT) * launcher.mM * launcher.mK
-                              + sizeof(typename Traits::BDataT) * launcher.mK * launcher.mN
-                              + sizeof(typename Traits::EDataT) * launcher.mM * launcher.mN;
+            Base::mBytes = sizeof(typename Traits::ADataT) * Base::mM * Base::mK
+                           + sizeof(typename Traits::BDataT) * Base::mK * Base::mN
+                           + sizeof(typename Traits::EDataT) * Base::mM * Base::mN;
 
             // Arg test
-            launcher.mValid = deviceOp->IsSupportedArgument(launcher.mArgPtr.get());
-        };
-    }
+            Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());
+
+            return Base::mValid;
+        }
+    };
 
     template <ck::index_t NumDimM,
               ck::index_t NumDimN,
@@ -218,7 +230,7 @@ namespace hiptensor
               typename AElementwiseOperation,
               typename BElementwiseOperation,
               typename CDEElementwiseOperation>
-    std::vector<hiptensor::ContractionSolution> enumerateContractionSolutions()
+    std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions()
     {
         using ContractionOp
             = ck::tensor_operation::device::DeviceContractionMultipleD<NumDimM,
@@ -235,10 +247,11 @@ namespace hiptensor
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
 
-        std::vector<hiptensor::ContractionSolution> result;
+        std::vector<std::unique_ptr<hiptensor::ContractionSolution>> result;
         for(auto& opPtr : Factory::GetInstances())
         {
-            result.push_back(hiptensor::ContractionSolution(std::move(opPtr)));
+            result.push_back(std::make_unique<hiptensor::ContractionSolutionImpl<ContractionOp>>(
+                std::move(opPtr)));
         }
         return result;
     }

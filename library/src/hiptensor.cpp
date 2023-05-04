@@ -178,7 +178,7 @@ void hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate(
         }
         else
         {
-            ht_contract_attr_desc.push_back({});
+            ht_contract_attr_desc.push_back({(hipDataType)-1, {}, {}, 0});
         }
     }
 }
