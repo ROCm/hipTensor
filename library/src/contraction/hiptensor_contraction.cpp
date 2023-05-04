@@ -72,8 +72,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                                                hiptensorContractionFind_t* find,
                                                const hiptensorAlgo_t       algo)
 {
-    if(!handle || !find)
+    if(handle == nullptr || find == nullptr)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
     if(algo != HIPTENSOR_ALGO_DEFAULT)
     {

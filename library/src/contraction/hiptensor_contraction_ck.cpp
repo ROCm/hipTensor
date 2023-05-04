@@ -42,6 +42,7 @@
 // HipTensor includes
 #include "contraction_meta_traits.hpp"
 #include "contraction_solution.hpp"
+#include "contraction_solution_registry.hpp"
 #include "hiptensor_contraction_ck.hpp"
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
@@ -116,7 +117,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
-    std::vector<hiptensor::ContractionSolution> solutions;
+    hiptensor::ContractionSolutionRegistry registry;
 
     auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
     auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
@@ -125,9 +126,7 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::BILINEAR)
     {
-        if(ADataType == HIP_R_32F 
-           && BDataType == HIP_R_32F 
-           && CDataType == HIP_R_32F
+        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
            && DDataType == HIP_R_32F)
         {
             auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
@@ -142,13 +141,9 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(bilinearSolutions.begin()),
-                             std::make_move_iterator(bilinearSolutions.end()));
+            registry.registerSolutions(std::move(bilinearSolutions));
         }
-        else if(ADataType == HIP_R_64F 
-                && BDataType == HIP_R_64F 
-                && CDataType == HIP_R_64F
+        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
                 && DDataType == HIP_R_64F)
         {
             auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
@@ -163,16 +158,12 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Bilinear>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(bilinearSolutions.begin()),
-                             std::make_move_iterator(bilinearSolutions.end()));
+            registry.registerSolutions(std::move(bilinearSolutions));
         }
     }
     else if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::SCALE)
     {
-        if(ADataType == HIP_R_32F 
-           && BDataType == HIP_R_32F
-           && DDataType == HIP_R_32F)
+        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && DDataType == HIP_R_32F)
         {
             auto scaleSolutions = hiptensor::enumerateContractionSolutions<
                 2,
@@ -186,13 +177,9 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(scaleSolutions.begin()),
-                             std::make_move_iterator(scaleSolutions.end()));
+            registry.registerSolutions(std::move(scaleSolutions));
         }
-        else if(ADataType == HIP_R_64F 
-                && BDataType == HIP_R_64F 
-                && DDataType == HIP_R_64F)
+        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && DDataType == HIP_R_64F)
         {
             auto scaleSolutions = hiptensor::enumerateContractionSolutions<
                 2,
@@ -206,13 +193,22 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
                 ck::tensor_operation::element_wise::PassThrough,
                 ck::tensor_operation::element_wise::Scale>();
 
-            solutions.insert(solutions.end(),
-                             std::make_move_iterator(scaleSolutions.begin()),
-                             std::make_move_iterator(scaleSolutions.end()));
+            registry.registerSolutions(std::move(scaleSolutions));
         }
     }
 
     /// Dispatching end
+    auto solutions
+        = registry.querySolutions(2,
+                                  2,
+                                  2,
+                                  ADataType,
+                                  BDataType,
+                                  CDataType,
+                                  DDataType,
+                                  hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
+                                  hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
+                                  (hiptensor::ContractionOpId_t)plan->ht_plan_desc.ht_contract_op);
 
     // Now we can launch the kernels and get the metrics.
     std::cout << "Run all instances and do timing: " << solutions.size() << std::endl;
@@ -223,31 +219,33 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
 
     for(auto& solution : solutions)
     {
-        if(solution.initArgs(alpha,
-                             A,
-                             B,
-                             beta,
-                             C,
-                             D,
-                             a_ms_ns_lengths,
-                             a_ms_ks_strides,
-                             b_ns_ks_lengths,
-                             b_ns_ks_strides,
-                             std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
-                             std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
-                             e_ms_ns_lengths,
-                             e_ms_ns_strides))
+        if(solution->initArgs(alpha,
+                              A,
+                              B,
+                              beta,
+                              C,
+                              D,
+                              a_ms_ns_lengths,
+                              a_ms_ks_strides,
+                              b_ns_ks_lengths,
+                              b_ns_ks_strides,
+                              std::vector<std::vector<ck::index_t>>{e_ms_ns_lengths},
+                              std::vector<std::vector<ck::index_t>>{e_ms_ns_strides},
+                              e_ms_ns_lengths,
+                              e_ms_ns_strides))
         {
             // Make sure to time the kernels
-            auto time  = solution(StreamConfig{stream, true});
-            auto flops = std::size_t(2) * solution.mM * solution.mN * solution.mK;
-            auto bytes = solution.mBytes;
+            auto    time = (*solution)(StreamConfig{stream, true});
+            int32_t m, n, k;
+            std::tie(m, n, k) = solution->problemDims();
+            auto flops        = std::size_t(2) * m * n * k;
+            auto bytes        = solution->problemBytes();
 
             hiptensorContractionMetrics_t metrics = {
                 time, // avg time
                 static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
-                static_cast<float>(solution.mBytes) / static_cast<float>(1.E6) / time, //
-                solution.mKernelName // name
+                static_cast<float>(bytes) / static_cast<float>(1.E6) / time, //
+                solution->kernelName() // name
             };
 
             if(metrics.tflops > bestFound.tflops)

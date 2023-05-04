@@ -32,6 +32,7 @@ set(HIPTENSOR_CONTRACTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction_ck.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution_registry.cpp
 )
 
 add_library(hiptensor_contraction OBJECT ${HIPTENSOR_CONTRACTION_SOURCES})
