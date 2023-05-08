@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
                                   HIPTENSOR_OP_IDENTITY);
 
 #if !NDEBUG
-    std::cout << "d_ms_ns: " << c_ms_ns << std::endl;
+    std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
 #endif
 
     /**********************
