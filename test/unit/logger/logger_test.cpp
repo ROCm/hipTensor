@@ -83,7 +83,13 @@ bool hiptensorLoggerSetMaskTest()
     return true;
 }
 
-bool hiptensorLoggerForceDisableTest() {}
+bool hiptensorLoggerForceDisableTest()
+{
+    if(hiptensorLoggerForceDisable() != HIPTENSOR_STATUS_SUCCESS)
+        return false;
+
+    return true;
+}
 
 int main(int argc, char* argv[])
 {
@@ -106,6 +112,11 @@ int main(int argc, char* argv[])
     testPass = hiptensorLoggerSetMaskTest();
     totalPass &= testPass;
     std::cout << "hiptensorLoggerSetMask: ";
+    printBool(testPass);
+
+    testPass = hiptensorLoggerForceDisableTest();
+    totalPass &= testPass;
+    std::cout << "hiptensorLoggerForceDisableTest: ";
     printBool(testPass);
 
     if(!totalPass)
