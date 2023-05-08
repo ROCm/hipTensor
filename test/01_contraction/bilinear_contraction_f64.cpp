@@ -89,45 +89,48 @@ int main(int argc, char* argv[])
         b_ks_ns_lengths.push_back(extent[mode]);
 
     hiptensorHandle_t* handle;
-    hiptensorCreate(&handle);
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
     /********************************************
    * Intialise Tensors with the input lengths *
    ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks;
 
-    hiptensorInitTensorDescriptor(handle,
-                                  &a_ms_ks,
-                                  nmodeA,
-                                  a_ms_ks_lengths.data(),
-                                  NULL, /*stride*/
-                                  typeA,
-                                  HIPTENSOR_OP_IDENTITY);
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                                handle,
+                                &a_ms_ks,
+                                nmodeA,
+                                a_ms_ks_lengths.data(),
+                                NULL, /*stride*/
+                                typeA,
+                                HIPTENSOR_OP_IDENTITY));
 #if !NDEBUG
     std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
 #endif
 
     hiptensorTensorDescriptor_t b_ks_ns;
-    hiptensorInitTensorDescriptor(handle,
-                                  &b_ks_ns,
-                                  nmodeB,
-                                  b_ks_ns_lengths.data(),
-                                  NULL, /*stride*/
-                                  typeB,
-                                  HIPTENSOR_OP_IDENTITY);
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                                handle,
+                                &b_ks_ns,
+                                nmodeB,
+                                b_ks_ns_lengths.data(),
+                                NULL, /*stride*/
+                                typeB,
+                                HIPTENSOR_OP_IDENTITY));
 
 #if !NDEBUG
     std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
 #endif
 
     hiptensorTensorDescriptor_t c_ms_ns;
-    hiptensorInitTensorDescriptor(handle,
-                                  &c_ms_ns,
-                                  nmodeC,
-                                  c_ms_ns_lengths.data(),
-                                  NULL, /*stride*/
-                                  typeC,
-                                  HIPTENSOR_OP_IDENTITY);
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                                handle,
+                                &c_ms_ns,
+                                nmodeC,
+                                c_ms_ns_lengths.data(),
+                                NULL, /*stride*/
+                                typeC,
+                                HIPTENSOR_OP_IDENTITY));
 
 #if !NDEBUG
     std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
@@ -177,48 +180,49 @@ int main(int argc, char* argv[])
    ************************************************/
 
     uint32_t alignmentRequirementA;
-    hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA);
+    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA));
 
     uint32_t alignmentRequirementB;
-    hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB);
+    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB));
 
     uint32_t alignmentRequirementC;
-    hiptensorGetAlignmentRequirement(handle, C_d, &c_ms_ns, &alignmentRequirementC);
+    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(handle, C_d, &c_ms_ns, &alignmentRequirementC));
 
     /*******************************
    * Create Contraction Descriptor
    *******************************/
 
     hiptensorContractionDescriptor_t desc;
-    hiptensorInitContractionDescriptor(handle,
-                                       &desc,
-                                       &a_ms_ks,
-                                       modeA.data(),
-                                       alignmentRequirementA,
-                                       &b_ks_ns,
-                                       modeB.data(),
-                                       alignmentRequirementB,
-                                       &c_ms_ns,
-                                       modeC.data(),
-                                       alignmentRequirementC,
-                                       &c_ms_ns,
-                                       modeC.data(),
-                                       alignmentRequirementC,
-                                       typeCompute);
+    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(
+                                    handle,
+                                    &desc,
+                                    &a_ms_ks,
+                                    modeA.data(),
+                                    alignmentRequirementA,
+                                    &b_ks_ns,
+                                    modeB.data(),
+                                    alignmentRequirementB,
+                                    &c_ms_ns,
+                                    modeC.data(),
+                                    alignmentRequirementC,
+                                    &c_ms_ns,
+                                    modeC.data(),
+                                    alignmentRequirementC,
+                                    typeCompute));
     /**************************
    * Set the algorithm to use
    ***************************/
 
     hiptensorContractionFind_t find;
-    hiptensorInitContractionFind(handle, &find, HIPTENSOR_ALGO_DEFAULT);
+    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionFind(handle, &find, HIPTENSOR_ALGO_DEFAULT));
 
     /**********************
    * Query workspace
    **********************/
 
     uint64_t worksize = 0;
-    hiptensorContractionGetWorkspaceSize(
-        handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize);
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
+        handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
     void* work = nullptr;
 
     /**************************
@@ -226,19 +230,20 @@ int main(int argc, char* argv[])
    **************************/
 
     hiptensorContractionPlan_t plan;
-    hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize);
+    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
 
-    hiptensorContraction(handle,
-                         &plan,
-                         (void*)&alpha,
-                         A_d,
-                         B_d,
-                         (void*)&beta,
-                         C_d,
-                         C_d,
-                         work,
-                         worksize,
-                         0 /* stream */);
+    CHECK_HIPTENSOR_ERROR(hiptensorContraction(
+                        handle,
+                        &plan,
+                        (void*)&alpha,
+                        A_d,
+                        B_d,
+                        (void*)&beta,
+                        C_d,
+                        C_d,
+                        work,
+                        worksize,
+                        0 /* stream */));
 
     plan.hiptensorPrintContractionMetrics();
     CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));

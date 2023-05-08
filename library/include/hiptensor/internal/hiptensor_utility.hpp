@@ -42,6 +42,20 @@
     }
 #endif
 
+#ifndef CHECK_HIPTENSOR_ERROR
+#define CHECK_HIPTENSOR_ERROR(status)                   \
+    if(status != HIPTENSOR_STATUS_SUCCESS)                      \
+    {                                             \
+        fprintf(stderr,                           \
+                "hip error: '%s'(%d) at %s:%d\n", \
+                hiptensorGetErrorString(status),        \
+                status,                           \
+                __FILE__,                         \
+                __LINE__);                        \
+        exit(EXIT_FAILURE);                       \
+    }
+#endif
+
 template <typename T>
 void hiptensorPrintArrayElements(T* vec, size_t size)
 {
