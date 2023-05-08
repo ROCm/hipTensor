@@ -117,98 +117,29 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     std::cout << ", size: " << plan->ht_plan_desc.ht_contract_attr_desc[2].tensor_size << std::endl;
 #endif // !NDEBUG
 
-    hiptensor::ContractionSolutionRegistry registry;
+    auto& registry = hiptensor::ContractionSolutionRegistry::instance();
 
     auto ADataType = plan->ht_plan_desc.ht_contract_attr_desc[0].ht_type;
     auto BDataType = plan->ht_plan_desc.ht_contract_attr_desc[1].ht_type;
     auto CDataType = plan->ht_plan_desc.ht_contract_attr_desc[2].ht_type;
     auto DDataType = plan->ht_plan_desc.ht_contract_attr_desc[3].ht_type;
 
-    if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::BILINEAR)
-    {
-        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && CDataType == HIP_R_32F
-           && DDataType == HIP_R_32F)
-        {
-            auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
-                2,
-                2,
-                2,
-                float,
-                float,
-                ck::Tuple<float>,
-                float,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Bilinear>();
-
-            registry.registerSolutions(std::move(bilinearSolutions));
-        }
-        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && CDataType == HIP_R_64F
-                && DDataType == HIP_R_64F)
-        {
-            auto bilinearSolutions = hiptensor::enumerateContractionSolutions<
-                2,
-                2,
-                2,
-                double,
-                double,
-                ck::Tuple<double>,
-                double,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Bilinear>();
-
-            registry.registerSolutions(std::move(bilinearSolutions));
-        }
-    }
-    else if(plan->ht_plan_desc.ht_contract_op == (int)hiptensor::ContractionOpId_t::SCALE)
-    {
-        if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && DDataType == HIP_R_32F)
-        {
-            auto scaleSolutions = hiptensor::enumerateContractionSolutions<
-                2,
-                2,
-                2,
-                float,
-                float,
-                ck::Tuple<>,
-                float,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Scale>();
-
-            registry.registerSolutions(std::move(scaleSolutions));
-        }
-        else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && DDataType == HIP_R_64F)
-        {
-            auto scaleSolutions = hiptensor::enumerateContractionSolutions<
-                2,
-                2,
-                2,
-                double,
-                double,
-                ck::Tuple<>,
-                double,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::PassThrough,
-                ck::tensor_operation::element_wise::Scale>();
-
-            registry.registerSolutions(std::move(scaleSolutions));
-        }
-    }
-
     /// Dispatching end
-    auto solutions
-        = registry.querySolutions(2,
-                                  2,
-                                  2,
-                                  ADataType,
-                                  BDataType,
-                                  CDataType,
-                                  DDataType,
-                                  hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
-                                  hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
-                                  (hiptensor::ContractionOpId_t)plan->ht_plan_desc.ht_contract_op);
+
+    // Query the available kernels with given parameters
+    auto query
+        = registry->querySolutions(2,
+                                   2,
+                                   2,
+                                   ADataType,
+                                   BDataType,
+                                   CDataType,
+                                   DDataType,
+                                   hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
+                                   hiptensorOperator_t::HIPTENSOR_OP_IDENTITY,
+                                   (hiptensor::ContractionOpId_t)plan->ht_plan_desc.ht_contract_op);
+
+    auto const& solutions = query.solutions();
 
     // Now we can launch the kernels and get the metrics.
     std::cout << "Run all instances and do timing: " << solutions.size() << std::endl;
@@ -217,8 +148,9 @@ hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handl
     bool                          found     = false;
     hiptensorContractionMetrics_t bestFound = {0, 0, 0, ""};
 
-    for(auto& solution : solutions)
+    for(auto& solutionPair : solutions)
     {
+        auto solution = solutionPair.second;
         if(solution->initArgs(alpha,
                               A,
                               B,
