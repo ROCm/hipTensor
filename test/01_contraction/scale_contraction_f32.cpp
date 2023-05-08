@@ -153,9 +153,9 @@ int main(int argc, char* argv[])
 
     void *A_d, *B_d, *D_d;
 
-    hip_check_error(hipMalloc(static_cast<void**>(&A_d), sizeA));
-    hip_check_error(hipMalloc(static_cast<void**>(&B_d), sizeB));
-    hip_check_error(hipMalloc(static_cast<void**>(&D_d), sizeD));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_d), sizeD));
 
     /*******************
    * Initialize data
@@ -172,9 +172,9 @@ int main(int argc, char* argv[])
     /********************************************
    * Transfer the Host Tensor to Device Memory *
    ********************************************/
-    hip_check_error(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
-    hip_check_error(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    hip_check_error(hipMemset(D_d, 0, sizeD));
+    CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemset(D_d, 0, sizeD));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
                          0 /* stream */);
 
     plan.hiptensorPrintContractionMetrics();
-    hip_check_error(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
     std::ofstream tensorA, tensorB, tensorD;
@@ -297,17 +297,17 @@ int main(int argc, char* argv[])
 
     if(A_d)
     {
-        hip_check_error(hipFree(A_d));
+        CHECK_HIP_ERROR(hipFree(A_d));
     }
 
     if(B_d)
     {
-        hip_check_error(hipFree(B_d));
+        CHECK_HIP_ERROR(hipFree(B_d));
     }
 
     if(D_d)
     {
-        hip_check_error(hipFree(D_d));
+        CHECK_HIP_ERROR(hipFree(D_d));
     }
 
     return 0;

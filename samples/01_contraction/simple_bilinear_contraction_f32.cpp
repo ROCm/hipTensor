@@ -148,9 +148,9 @@ int main(int argc, char* argv[])
 
     void *A_d, *B_d, *C_d;
 
-    hip_check_error(hipMalloc(static_cast<void**>(&A_d), sizeA));
-    hip_check_error(hipMalloc(static_cast<void**>(&B_d), sizeB));
-    hip_check_error(hipMalloc(static_cast<void**>(&C_d), sizeC));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&C_d), sizeC));
 
     /*******************
    * Initialize data
@@ -165,9 +165,9 @@ int main(int argc, char* argv[])
     /********************************************
    * Transfer the Host Tensor to Device Memory *
    ********************************************/
-    hip_check_error(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
-    hip_check_error(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    hip_check_error(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
                          0 /* stream */);
 
     plan.hiptensorPrintContractionMetrics();
-    hip_check_error(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
     std::ofstream tensorA, tensorB, tensorC;
@@ -289,11 +289,11 @@ int main(int argc, char* argv[])
     if(C)
         free(C);
     if(A_d)
-        hip_check_error(hipFree(A_d));
+        CHECK_HIP_ERROR(hipFree(A_d));
     if(B_d)
-        hip_check_error(hipFree(B_d));
+        CHECK_HIP_ERROR(hipFree(B_d));
     if(C_d)
-        hip_check_error(hipFree(C_d));
+        CHECK_HIP_ERROR(hipFree(C_d));
 
     return 0;
 }
