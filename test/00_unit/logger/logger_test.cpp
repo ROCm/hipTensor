@@ -48,21 +48,35 @@ bool hiptensorLoggerSetLevelTest()
 {
     // Test all log levels enumerated in hiptensorLogLevel_t
     if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_OFF) != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
     if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_ERROR) != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
     if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_PERF_TRACE) != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
     if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_PERF_HINT) != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
     if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE) != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
     if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_API_TRACE) != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
 
     // Test out-of-range input value
     if(hiptensorLoggerSetLevel(hiptensorLogLevel_t(3)) == HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
 
     return true;
 }
@@ -73,12 +87,16 @@ bool hiptensorLoggerSetMaskTest()
     for(int i = 0x00; i <= 0x1F; i++)
     {
         if(hiptensorLoggerSetMask(i) != HIPTENSOR_STATUS_SUCCESS)
+        {
             return false;
+        }
     }
 
     // Test out-of-range input value
     if(hiptensorLoggerSetMask(0x20) == HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
 
     return true;
 }
@@ -86,7 +104,9 @@ bool hiptensorLoggerSetMaskTest()
 bool hiptensorLoggerForceDisableTest()
 {
     if(hiptensorLoggerForceDisable() != HIPTENSOR_STATUS_SUCCESS)
+    {
         return false;
+    }
 
     return true;
 }
@@ -114,6 +134,7 @@ int main(int argc, char* argv[])
     std::cout << "hiptensorLoggerSetMask: ";
     printBool(testPass);
 
+    // This test must be performed last as hiptensorLoggerForceDisable() cannot be undone
     testPass = hiptensorLoggerForceDisableTest();
     totalPass &= testPass;
     std::cout << "hiptensorLoggerForceDisableTest: ";

@@ -113,7 +113,7 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 endfunction()
 
 add_subdirectory(01_contraction)
-add_subdirectory(unit/logger)
+add_subdirectory(00_unit/logger)
 
 rocm_install(
     FILES "${INSTALL_TEST_FILE}"
