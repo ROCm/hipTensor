@@ -125,18 +125,19 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    hiptensorCKContraction(handle,
-                           plan,
-                           &ht_contract_metrics,
-                           alpha,
-                           A,
-                           B,
-                           beta,
-                           C,
-                           D,
-                           workspace,
-                           workspaceSize,
-                           stream);
+    CHECK_HIPTENSOR_ERROR(hiptensorCKContraction(
+                            handle,
+                            plan,
+                            &ht_contract_metrics,
+                            alpha,
+                            A,
+                            B,
+                            beta,
+                            C,
+                            D,
+                            workspace,
+                            workspaceSize,
+                            stream));
 
     return HIPTENSOR_STATUS_SUCCESS;
 }

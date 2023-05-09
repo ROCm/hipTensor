@@ -79,7 +79,7 @@ namespace hiptensor
         if(!mArgPtr || !mInvokerPtr || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
         {
 #if !NDEBUG
-            std::cout << deviceOp->GetTypeString() << " is not initialized" << std::endl;
+            std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
         }
@@ -87,7 +87,7 @@ namespace hiptensor
         if(!mValid)
         {
 #if !NDEBUG
-            std::cout << mKernelName << " does not support this problem" << std::endl;
+            std::cout << kernelName() << " does not support this problem" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
         }
@@ -128,7 +128,7 @@ namespace hiptensor
                      e_ms_ns_strides))
         {
 #if !NDEBUG
-            std::cout << mKernelName << " does not support this problem" << std::endl;
+            std::cout << kernelName() << " does not support this problem" << std::endl;
 #endif // !NDEBUG
             return -1.0f;
         }
