@@ -124,7 +124,7 @@ namespace hiptensor
         return newQuery;
     }
 
-    std::unordered_map<ContractionSolutionRegistry::Query::Uuid, ContractionSolution*> const&
+    std::unordered_map<ContractionSolutionRegistry::Query::Uid, ContractionSolution*> const&
         ContractionSolutionRegistry::Query::solutions() const
     {
         return mAllSolutions;
@@ -203,10 +203,10 @@ namespace hiptensor
     void ContractionSolutionRegistry::Query::addSolution(ContractionSolution* solution)
     {
         // Acquire unique ID and category ID per solution
-        auto  solutionUuid = solution->uuid();
-        auto& params       = solution->params();
+        auto  solutionUid = solution->uid();
+        auto& params      = solution->params();
 
-        if(auto const& result = mAllSolutions.emplace(std::make_pair(solutionUuid, solution));
+        if(auto const& result = mAllSolutions.emplace(std::make_pair(solutionUid, solution));
            result.second == true)
         {
             auto solutionHash = hashSolution(params->dimsM(),
@@ -231,7 +231,7 @@ namespace hiptensor
 
             // Hash contraction solutions into categories and then register
             // into master list.
-            mAllSolutions[solutionUuid] = solution;
+            mAllSolutions[solutionUid] = solution;
             mSolutionHash[solutionHash].push_back(solution);
             mSolutionHash[dimsMNKHash].push_back(solution);
             mSolutionHash[typesABCDHash].push_back(solution);
@@ -241,7 +241,7 @@ namespace hiptensor
         else
         {
 #if !NDEBUG
-            std::cout << "Unique solution: " << solutionUuid << " already exists!" << std::endl;
+            std::cout << "Unique solution: " << solutionUid << " already exists!" << std::endl;
 #endif // !NDEBUG
         }
     }
@@ -256,7 +256,7 @@ namespace hiptensor
     }
 
     void ContractionSolutionRegistry::Query::addSolutions(
-        std::unordered_map<Uuid, ContractionSolution*> const& solutions)
+        std::unordered_map<Uid, ContractionSolution*> const& solutions)
     {
         for(auto& solutionPair : solutions)
         {

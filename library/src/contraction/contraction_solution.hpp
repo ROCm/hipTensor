@@ -105,7 +105,7 @@ namespace hiptensor
         std::unique_ptr<ContractionSolutionParams> const& params() const;
 
         // Unique ID for the kernel
-        size_t uuid() const;
+        size_t uid() const;
 
         // Problem dimensions
         std::tuple<ck::index_t, ck::index_t, ck::index_t> problemDims() const;

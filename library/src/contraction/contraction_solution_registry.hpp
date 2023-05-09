@@ -44,7 +44,7 @@ namespace hiptensor
         {
         public:
             friend class ContractionSolutionRegistry;
-            using Uuid   = std::size_t;
+            using Uid    = std::size_t;
             using HashId = std::size_t;
 
             Query()  = default;
@@ -88,8 +88,8 @@ namespace hiptensor
             // intersection
             Query operator&&(Query const& other) const;
 
-            // Full map of Uuid to ContractionSolution*
-            std::unordered_map<Uuid, ContractionSolution*> const& solutions() const;
+            // Full map of Uid to ContractionSolution*
+            std::unordered_map<Uid, ContractionSolution*> const& solutions() const;
 
             uint32_t solutionCount() const;
 
@@ -123,12 +123,12 @@ namespace hiptensor
             // Adding solutions to the query
             void addSolution(ContractionSolution* solution);
             void addSolutions(std::vector<ContractionSolution*> const& solutions);
-            void addSolutions(std::unordered_map<Uuid, ContractionSolution*> const& solutions);
+            void addSolutions(std::unordered_map<Uid, ContractionSolution*> const& solutions);
 
         private: // members
-            // This is the has of all solutions, by unique Uuid
-            // [Key = KernelUuid, element = ContractionSolution*]
-            std::unordered_map<Uuid, ContractionSolution*> mAllSolutions;
+            // This is the has of all solutions, by unique Uid
+            // [Key = KernelUid, element = ContractionSolution*]
+            std::unordered_map<Uid, ContractionSolution*> mAllSolutions;
 
             // This is the contextual query hash
             // [Key = Query hash, Element = ContractionSolution*]
