@@ -24,27 +24,38 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_TYPES_HPP
-#define HIPTENSOR_LIBRARY_TYPES_HPP
+#ifndef HIPTENSOR_CONTRACTION_TYPES_IMPL_HPP
+#define HIPTENSOR_CONTRACTION_TYPES_IMPL_HPP
 
-#include <hip/hip_bfloat16.h>
-#include <hip/hip_fp16.h>
-#include <hip/library_types.h>
+// CK includes
+#include <contraction_bilinear.hpp>
+#include <contraction_scale.hpp>
+#include <element_wise_operation.hpp>
+
+#include "contraction_types.hpp"
 
 namespace hiptensor
 {
-    // Map type to runtime HipDataType
-    template <typename T>
-    struct HipDataType;
+    // Specialize overrides for runtime ElementWiseOperatorType
+    template <>
+    struct ElementWiseOperatorType<ck::tensor_operation::element_wise::PassThrough>
+    {
+        static constexpr auto value = hiptensorOperator_t::HIPTENSOR_OP_IDENTITY;
+    };
 
-    template <typename T>
-    static constexpr auto HipDataType_v = HipDataType<T>::value;
+    // Specialize overrides for runtime ContractionOperatorType
+    template <>
+    struct ContractionOperatorType<ck::tensor_operation::element_wise::Scale>
+    {
+        static constexpr auto value = ContractionOpId_t::SCALE;
+    };
 
-    // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id);
+    template <>
+    struct ContractionOperatorType<ck::tensor_operation::element_wise::Bilinear>
+    {
+        static constexpr auto value = ContractionOpId_t::BILINEAR;
+    };
 
 } // namespace hiptensor
 
-#include "types_impl.hpp"
-
-#endif // HIPTENSOR_LIBRARY_TYPES_HPP
+#endif // HIPTENSOR_CONTRACTION_TYPES_IMPL_HPP

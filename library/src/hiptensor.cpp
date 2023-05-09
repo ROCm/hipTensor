@@ -26,7 +26,8 @@
 #include <hip/hip_runtime_api.h>
 
 #include "hiptensor.hpp"
-#include "include/logger.hpp"
+#include "logger.hpp"
+#include "types.hpp"
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
@@ -145,21 +146,23 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    if(!((desc->ht_type == HIP_R_32F) || (desc->ht_type == HIP_R_64F)))
+    *alignmentRequirement = 0u;
+    for(auto i = hiptensor::hipDataTypeSize(desc->ht_type); i <= 16u; i *= 2)
+    {
+        if((std::size_t)ptr % (std::size_t)i == 0)
+        {
+            *alignmentRequirement = i;
+        }
+    }
+
+    if(*alignmentRequirement == 0)
     {
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
-
-    if(desc->ht_type == HIP_R_32F)
-    {
-        *alignmentRequirement = sizeof(float) * desc->hiptensorGetElementSpace();
-    }
     else
     {
-        *alignmentRequirement = sizeof(double) * desc->hiptensorGetElementSpace();
+        return HIPTENSOR_STATUS_SUCCESS;
     }
-
-    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 void hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate(

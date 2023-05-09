@@ -39,6 +39,7 @@ add_subdirectory(contraction)
 set(HIPTENSOR_CORE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/types.cpp
 )
 
 add_library(hiptensor_core OBJECT ${HIPTENSOR_CORE_SOURCES})
