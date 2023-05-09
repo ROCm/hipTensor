@@ -75,6 +75,10 @@ namespace hiptensor
         void     enable();
 
         Status_t logMessage(int32_t context, const char* apiFuncName, const char* message);
+        Status_t logError(const char* apiFuncName, const char* message);
+        Status_t logPerformanceTrace(const char* apiFuncName, const char* message);
+        Status_t logHeuristics(const char* apiFuncName, const char* message);
+        Status_t logAPITrace(const char* apiFuncName, const char* message);
 
         static const char* statusString(Status_t status);
 

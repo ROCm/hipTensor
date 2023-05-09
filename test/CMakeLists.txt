@@ -73,7 +73,47 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
 
 endfunction()
 
+# Create unit test executables and deploy
+# Differs from hiptensor_test in that src include directory is linked
+function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
+
+    message( STATUS "adding hiptensor unit test: ${BINARY_NAME}")
+    add_executable(${BINARY_NAME} ${FILE_NAME})
+
+    # Test must propagate the build interface includes to make sure
+    # hiptensor includes are captured at runtime.
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_include_directories(${BINARY_NAME} PRIVATE
+                               ${CMAKE_CURRENT_SOURCE_DIR}
+                               ${PROJECT_SOURCE_DIR}/library/include
+                               ${PROJECT_SOURCE_DIR}/library/src/include)
+
+    # Build this test under custom target
+    add_dependencies(hiptensor_tests ${BINARY_NAME})
+
+    # Register with ctest
+    add_test(NAME ${BINARY_NAME} COMMAND ${BINARY_NAME})
+
+    # Install with rocm pkg
+    rocm_install_targets(
+    TARGETS ${BINARY_NAME}
+    COMPONENT tests
+    )
+
+    # Add to testing manifest
+    get_target_property(EXE_NAME ${BINARY_NAME} RUNTIME_OUTPUT_NAME)
+    if(EXE_NAME STREQUAL "EXE_NAME-NOTFOUND")
+        get_target_property(EXE_NAME ${BINARY_NAME} OUTPUT_NAME)
+        if(EXE_NAME STREQUAL "EXE_NAME-NOTFOUND")
+            set(EXE_NAME "${BINARY_NAME}")
+        endif()
+    endif()
+    file(APPEND "${INSTALL_TEST_FILE}" "add_test(${BINARY_NAME} \"../${BINARY_NAME}\")\n")
+
+endfunction()
+
 add_subdirectory(01_contraction)
+add_subdirectory(00_unit/logger)
 
 rocm_install(
     FILES "${INSTALL_TEST_FILE}"

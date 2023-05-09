@@ -260,7 +260,7 @@ hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)
     // Log API access
     char msg[64];
     sprintf(msg, "callback=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)callback);
-    logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerSetCallback", msg);
+    logger->logAPITrace("hiptensorLoggerSetCallback", msg);
 
     // Check logger callback result
     auto loggerResult = logger->setCallback(callback);
@@ -271,7 +271,7 @@ hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)
                 2 * (int)sizeof(void*),
                 (unsigned long long)callback,
                 logger->statusString(loggerResult));
-        logger->logMessage(HIPTENSOR_LOG_LEVEL_ERROR, "hiptensorLoggerSetCallback", msg);
+        logger->logError("hiptensorLoggerSetCallback", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
@@ -286,7 +286,7 @@ hiptensorStatus_t hiptensorLoggerSetFile(FILE* file)
     // Log API access
     char msg[64];
     sprintf(msg, "file=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)file);
-    logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerSetFile", msg);
+    logger->logAPITrace("hiptensorLoggerSetFile", msg);
 
     // Check logger callback result
     auto loggerResult = logger->writeToStream(file);
@@ -297,7 +297,7 @@ hiptensorStatus_t hiptensorLoggerSetFile(FILE* file)
                 2 * (int)sizeof(void*),
                 (unsigned long long)file,
                 logger->statusString(loggerResult));
-        logger->logMessage(HIPTENSOR_LOG_LEVEL_ERROR, "hiptensorLoggerSetFile", msg);
+        logger->logError("hiptensorLoggerSetFile", msg);
         return HIPTENSOR_STATUS_IO_ERROR;
     }
 
@@ -312,14 +312,14 @@ hiptensorStatus_t hiptensorLoggerOpenFile(const char* logFile)
     // Log API trace
     char msg[2048];
     sprintf(msg, "logFile=%s", logFile);
-    logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerOpenFile", msg);
+    logger->logAPITrace("hiptensorLoggerOpenFile", msg);
 
     // Check logger open file result
     auto loggerResult = logger->openFileStream(logFile);
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
         sprintf(msg, "fileName=%s (%s)", logFile, logger->statusString(loggerResult));
-        logger->logMessage(HIPTENSOR_LOG_LEVEL_ERROR, "hiptensorLoggerOpenFile", msg);
+        logger->logError("hiptensorLoggerOpenFile", msg);
         return HIPTENSOR_STATUS_IO_ERROR;
     }
 
@@ -334,14 +334,14 @@ hiptensorStatus_t hiptensorLoggerSetLevel(hiptensorLogLevel_t level)
     // Log API trace
     char msg[64];
     sprintf(msg, "log level=0x%02X", (unsigned int)level);
-    logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerSetLevel", msg);
+    logger->logAPITrace("hiptensorLoggerSetLevel", msg);
 
     // Check logger level
     auto loggerResult = logger->setLogLevel(Logger::LogLevel_t(level));
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
         sprintf(msg, "level=0x%02X (%s)", (unsigned int)level, logger->statusString(loggerResult));
-        logger->logMessage(HIPTENSOR_LOG_LEVEL_ERROR, "hiptensorLoggerSetLevel", msg);
+        logger->logError("hiptensorLoggerSetLevel", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
@@ -356,14 +356,14 @@ hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask)
     // Log API trace
     char msg[64];
     sprintf(msg, "mask=0x%02X", (unsigned int)mask);
-    logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerSetMask", msg);
+    logger->logAPITrace("hiptensorLoggerSetMask", msg);
 
     // Check for logger error
     auto loggerResult = logger->setLogMask(mask);
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
         sprintf(msg, "mask=0x%02X (%s)", (unsigned int)mask, logger->statusString(loggerResult));
-        logger->logMessage(HIPTENSOR_LOG_LEVEL_ERROR, "hiptensorLoggerSetMask", msg);
+        logger->logError("hiptensorLoggerSetMask", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
@@ -374,8 +374,7 @@ hiptensorStatus_t hiptensorLoggerForceDisable()
 {
     // Log API trace
     auto& logger = hiptensor::Logger::instance();
-    logger->logMessage(
-        HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorLoggerForceDisable", "Logging Disabled");
+    logger->logAPITrace("hiptensorLoggerForceDisable", "Logging Disabled");
     logger->disable();
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -384,7 +383,7 @@ int hiptensorGetHiprtVersion()
 {
     // Log API trace
     auto& logger = hiptensor::Logger::instance();
-    logger->logMessage(HIPTENSOR_LOG_LEVEL_API_TRACE, "hiptensorGetHiprtVersion", "");
+    logger->logAPITrace("hiptensorGetHiprtVersion", "");
 
     int  version   = 0;
     auto hipResult = hipRuntimeGetVersion(&version);
@@ -392,7 +391,7 @@ int hiptensorGetHiprtVersion()
     {
         char msg[256];
         sprintf(msg, "Hip error: (%s)", hipGetErrorString(hipResult));
-        logger->logMessage(HIPTENSOR_LOG_LEVEL_ERROR, "hiptensorGetHiprtVersion", msg);
+        logger->logError("hiptensorGetHiprtVersion", msg);
         return -1;
     }
 
