@@ -80,13 +80,21 @@ int main(int argc, char* argv[])
 
     std::vector<int64_t> c_ms_ns_lengths;
     for(auto mode : modeC)
+    {
         c_ms_ns_lengths.push_back(extent[mode]);
+    }
+
     std::vector<int64_t> a_ms_ks_lengths;
     for(auto mode : modeA)
+    {
         a_ms_ks_lengths.push_back(extent[mode]);
+    }
+
     std::vector<int64_t> b_ks_ns_lengths;
     for(auto mode : modeB)
+    {
         b_ks_ns_lengths.push_back(extent[mode]);
+    }
 
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
@@ -162,11 +170,19 @@ int main(int argc, char* argv[])
    * Initialize data
    *******************/
     for(int64_t i = 0; i < elementsA; i++)
+    {
         A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+    }
+
     for(int64_t i = 0; i < elementsB; i++)
+    {
         B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+    }
+
     for(int64_t i = 0; i < elementsC; i++)
+    {
         C[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+    }
 
     /********************************************
    * Transfer the Host Tensor to Device Memory *
@@ -283,16 +299,34 @@ int main(int argc, char* argv[])
 #endif
 
     if(A)
+    {
         free(A);
+    }
+
     if(B)
+    {
         free(B);
+    }
+
     if(C)
+    {
         free(C);
+    }
+
     if(A_d)
+    {
         CHECK_HIP_ERROR(hipFree(A_d));
+    }
+
     if(B_d)
+    {
         CHECK_HIP_ERROR(hipFree(B_d));
+    }
+
     if(C_d)
+    {
         CHECK_HIP_ERROR(hipFree(C_d));
+    }
+
     return 0;
 }

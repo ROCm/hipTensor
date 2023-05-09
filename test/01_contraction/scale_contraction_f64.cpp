@@ -77,13 +77,21 @@ int main(int argc, char* argv[])
 
     std::vector<int64_t> d_ms_ns_lengths;
     for(auto mode : modeD)
+    {
         d_ms_ns_lengths.push_back(extent[mode]);
+    }
+
     std::vector<int64_t> a_ms_ks_lengths;
     for(auto mode : modeA)
+    {
         a_ms_ks_lengths.push_back(extent[mode]);
+    }
+
     std::vector<int64_t> b_ks_ns_lengths;
     for(auto mode : modeB)
+    {
         b_ks_ns_lengths.push_back(extent[mode]);
+    }
 
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
