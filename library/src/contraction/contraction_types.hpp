@@ -24,27 +24,47 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_TYPES_HPP
-#define HIPTENSOR_LIBRARY_TYPES_HPP
+#ifndef HIPTENSOR_CONTRACTION_TYPES_HPP
+#define HIPTENSOR_CONTRACTION_TYPES_HPP
 
-#include <hip/hip_bfloat16.h>
-#include <hip/hip_fp16.h>
-#include <hip/library_types.h>
+#include <ostream>
 
 namespace hiptensor
 {
-    // Map type to runtime HipDataType
-    template <typename T>
-    struct HipDataType;
+    /**
+     * \brief This enum decides the over the operation based on the inputs.
+     * \details This enum decides the operation based on the in puts passed in the
+     * hipTensorContractionGetWorkspaceSize
+     */
+    enum struct ContractionOpId_t : int32_t
+    {
+        SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
+        BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
+        UNKNOWN,
+    };
 
-    template <typename T>
-    static constexpr auto HipDataType_v = HipDataType<T>::value;
+    // Map type to runtime hiptensorOperator_t
+    template <typename OpId>
+    struct ElementWiseOperatorType;
 
-    // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id);
+    template <typename OpId>
+    static constexpr auto ElementWiseOperatorType_v = ElementWiseOperatorType<OpId>::value;
+
+    // Map type to runtime ContractionOpId_t
+    template <typename OpId>
+    struct ContractionOperatorType;
+
+    template <typename OpId>
+    static constexpr auto ContractionOperatorType_v = ContractionOperatorType<OpId>::value;
 
 } // namespace hiptensor
 
-#include "types_impl.hpp"
+namespace std
+{
+    ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const&);
 
-#endif // HIPTENSOR_LIBRARY_TYPES_HPP
+} // namespace std
+
+#include "contraction_types_impl.hpp"
+
+#endif // HIPTENSOR_CONTRACTION_TYPES_HPP

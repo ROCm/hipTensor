@@ -24,27 +24,18 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_TYPES_HPP
-#define HIPTENSOR_LIBRARY_TYPES_HPP
-
-#include <hip/hip_bfloat16.h>
-#include <hip/hip_fp16.h>
-#include <hip/library_types.h>
+#include "contraction_types.hpp"
 
 namespace hiptensor
 {
-    // Map type to runtime HipDataType
-    template <typename T>
-    struct HipDataType;
-
-    template <typename T>
-    static constexpr auto HipDataType_v = HipDataType<T>::value;
-
-    // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id);
 
 } // namespace hiptensor
 
-#include "types_impl.hpp"
+namespace std
+{
+    ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const& op)
+    {
+        return os << (int32_t)op;
+    }
 
-#endif // HIPTENSOR_LIBRARY_TYPES_HPP
+} // namespace std

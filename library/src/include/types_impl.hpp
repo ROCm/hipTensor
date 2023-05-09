@@ -27,15 +27,25 @@
 #ifndef HIPTENSOR_LIBRARY_TYPES_IMPL_HPP
 #define HIPTENSOR_LIBRARY_TYPES_IMPL_HPP
 
-#include <hip/hip_common.h>
-
 #include "types.hpp"
 
 namespace hiptensor
 {
-
     // Specialize overrides for runtime HipDataType
     template <>
+    struct HipDataType<hip_bfloat16>
+    {
+        static constexpr auto value = HIP_R_16BF;
+    };
+
+    template <>
+    struct HipDataType<_Float16>
+    {
+        static constexpr auto value = HIP_R_16F;
+    };
+
+    template <>
+
     struct HipDataType<float>
     {
         static constexpr auto value = HIP_R_32F;
@@ -47,24 +57,52 @@ namespace hiptensor
         static constexpr auto value = HIP_R_64F;
     };
 
-    // Specialize overrides for runtime ElementWiseOperatorType
     template <>
-    struct ElementWiseOperatorType<ck::tensor_operation::element_wise::PassThrough>
+    struct HipDataType<int8_t>
     {
-        static constexpr auto value = hiptensorOperator_t::HIPTENSOR_OP_IDENTITY;
-    };
-
-    // Specialize overrides for runtime ContractionOperatorType
-    template <>
-    struct ContractionOperatorType<ck::tensor_operation::element_wise::Scale>
-    {
-        static constexpr auto value = ContractionOpId_t::SCALE;
+        static constexpr auto value = HIP_R_8I;
     };
 
     template <>
-    struct ContractionOperatorType<ck::tensor_operation::element_wise::Bilinear>
+    struct HipDataType<uint8_t>
     {
-        static constexpr auto value = ContractionOpId_t::BILINEAR;
+        static constexpr auto value = HIP_R_8U;
+    };
+
+    template <>
+    struct HipDataType<int16_t>
+    {
+        static constexpr auto value = HIP_R_16I;
+    };
+
+    template <>
+    struct HipDataType<uint16_t>
+    {
+        static constexpr auto value = HIP_R_16U;
+    };
+
+    template <>
+    struct HipDataType<int32_t>
+    {
+        static constexpr auto value = HIP_R_32I;
+    };
+
+    template <>
+    struct HipDataType<uint32_t>
+    {
+        static constexpr auto value = HIP_R_32U;
+    };
+
+    template <>
+    struct HipDataType<int64_t>
+    {
+        static constexpr auto value = HIP_R_64I;
+    };
+
+    template <>
+    struct HipDataType<uint64_t>
+    {
+        static constexpr auto value = HIP_R_64U;
     };
 
 } // namespace hiptensor

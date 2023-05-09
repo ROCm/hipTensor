@@ -26,11 +26,66 @@
 
 #include "types.hpp"
 
-namespace std
+namespace hiptensor
 {
-    ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const& op)
+    // Get data size in bytes from id
+    uint32_t hipDataTypeSize(hipDataType id)
     {
-        return os << (int32_t)op;
+        if(id == HIP_R_16BF)
+        {
+            return sizeof(hip_bfloat16);
+        }
+        else if(id == HIP_R_16F)
+        {
+            return sizeof(_Float16);
+        }
+        else if(id == HIP_R_32F)
+        {
+            return sizeof(float);
+        }
+        else if(id == HIP_R_64F)
+        {
+            return sizeof(double);
+        }
+        else if(id == HIP_R_8I)
+        {
+            return sizeof(int8_t);
+        }
+        else if(id == HIP_R_8U)
+        {
+            return sizeof(uint8_t);
+        }
+        else if(id == HIP_R_16I)
+        {
+            return sizeof(int16_t);
+        }
+        else if(id == HIP_R_16U)
+        {
+            return sizeof(uint16_t);
+        }
+        else if(id == HIP_R_32I)
+        {
+            return sizeof(int32_t);
+        }
+        else if(id == HIP_R_32U)
+        {
+            return sizeof(uint32_t);
+        }
+        else if(id == HIP_R_64I)
+        {
+            return sizeof(int64_t);
+        }
+        else if(id == HIP_R_64U)
+        {
+            return sizeof(uint64_t);
+        }
+        else
+        {
+#if !NDEBUG
+            std::cout << "Unhandled hip datatype" << std::endl;
+#endif // !NDEBUG
+            return 0;
+        }
     }
 
-} // namespace std
+} // namespace hiptensor
