@@ -25,6 +25,7 @@
  *******************************************************************************/
 #pragma once
 
+#include <iostream>
 #include <fstream>
 #include <hip/hip_runtime.h>
 
