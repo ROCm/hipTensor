@@ -146,7 +146,7 @@ namespace hiptensor
         return mParams;
     }
 
-    size_t ContractionSolution::uuid() const
+    size_t ContractionSolution::uid() const
     {
         // Convert CK uid string into binary.
         std::istringstream converter(mDeviceOp->GetTypeIdHashCode());

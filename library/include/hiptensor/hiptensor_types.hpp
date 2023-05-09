@@ -29,12 +29,19 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <numeric>
 #include <utility>
 #include <vector>
 
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
+
+namespace hiptensor
+{
+    class ContractionSolution;
+    class ContractionSolutionRegistry;
+} // namespace hiptensor
 
 /**
  * \brief hiptensor status type returns
@@ -268,7 +275,9 @@ struct hiptensorContractionDescriptor_t
  *
  */
 struct hiptensorContractionFind_t
-{ /*TODO: Discuss the struct members */
+{
+    hiptensorAlgo_t                              mSelectionAlgorithm;
+    std::vector<hiptensor::ContractionSolution*> mCandidates;
 };
 
 /**
