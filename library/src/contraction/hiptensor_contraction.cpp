@@ -24,6 +24,7 @@
  *
  *******************************************************************************/
 #include "contraction_solution.hpp"
+#include "contraction_solution_registry.hpp"
 #include "hiptensor.hpp"
 #include "hiptensor_contraction_ck.hpp"
 
@@ -82,6 +83,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         std::cout << "CK algorithm not supported" << std::endl;
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
+
+    /// Enumerate all of the known kernels
+    // TODO: store a query inside of the find object that will represent
+    // available kernels for the current device, as found in the handle.
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
