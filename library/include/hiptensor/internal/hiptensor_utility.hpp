@@ -28,16 +28,33 @@
 #include <fstream>
 #include <hip/hip_runtime.h>
 
-inline void hip_check_error(hipError_t x)
-{
-    if(x != hipSuccess)
-    {
-        std::ostringstream ss;
-        ss << "HIP runtime error: " << hipGetErrorString(x) << ". " << __FILE__ << ": " << __LINE__
-           << "in function: " << __func__;
-        throw std::runtime_error(ss.str());
+#ifndef CHECK_HIP_ERROR
+#define CHECK_HIP_ERROR(status)                   \
+    if(status != hipSuccess)                      \
+    {                                             \
+        fprintf(stderr,                           \
+                "hip error: '%s'(%d) at %s:%d\n", \
+                hipGetErrorString(status),        \
+                status,                           \
+                __FILE__,                         \
+                __LINE__);                        \
+        exit(EXIT_FAILURE);                       \
     }
-}
+#endif
+
+#ifndef CHECK_HIPTENSOR_ERROR
+#define CHECK_HIPTENSOR_ERROR(status)                   \
+    if(status != HIPTENSOR_STATUS_SUCCESS)                      \
+    {                                             \
+        fprintf(stderr,                           \
+                "hip error: '%s'(%d) at %s:%d\n", \
+                hiptensorGetErrorString(status),        \
+                status,                           \
+                __FILE__,                         \
+                __LINE__);                        \
+        exit(EXIT_FAILURE);                       \
+    }
+#endif
 
 template <typename T>
 void hiptensorPrintArrayElements(T* vec, size_t size)
