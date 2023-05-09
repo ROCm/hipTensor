@@ -120,6 +120,7 @@ namespace hiptensor
         switch(level)
         {
         // Only accept discretized log level
+        case LogLevel_t::LOG_LEVEL_OFF:
         case LogLevel_t::LOG_LEVEL_ERROR:
         case LogLevel_t::LOG_LEVEL_PERF_TRACE:
         case LogLevel_t::LOG_LEVEL_PERF_HINT:
@@ -186,6 +187,30 @@ namespace hiptensor
         }
 
         return Status_t::SUCCESS;
+    }
+
+    Logger::Status_t Logger::logError(const char* apiFuncName, const char* message)
+    {
+        return Logger::logMessage(
+            static_cast<int>(LogLevel_t::LOG_LEVEL_ERROR), apiFuncName, message);
+    }
+
+    Logger::Status_t Logger::logPerformanceTrace(const char* apiFuncName, const char* message)
+    {
+        return Logger::logMessage(
+            static_cast<int>(LogLevel_t::LOG_LEVEL_PERF_TRACE), apiFuncName, message);
+    }
+
+    Logger::Status_t Logger::logHeuristics(const char* apiFuncName, const char* message)
+    {
+        return Logger::logMessage(
+            static_cast<int>(LogLevel_t::LOG_LEVEL_HEURISTICS_TRACE), apiFuncName, message);
+    }
+
+    Logger::Status_t Logger::logAPITrace(const char* apiFuncName, const char* message)
+    {
+        return Logger::logMessage(
+            static_cast<int>(LogLevel_t::LOG_LEVEL_API_TRACE), apiFuncName, message);
     }
 
     /* static */
