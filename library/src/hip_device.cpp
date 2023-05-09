@@ -36,8 +36,8 @@ namespace hiptensor
         , mCuCount(0)
         , mMaxFreqMhz(0)
     {
-        hip_check_error(hipGetDevice(&mHandle));
-        hip_check_error(hipGetDeviceProperties(&mProps, mHandle));
+        CHECK_HIP_ERROR(hipGetDevice(&mHandle));
+        CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
 
         mArch = mProps.arch;
 
