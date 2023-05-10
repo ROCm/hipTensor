@@ -37,12 +37,6 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
-namespace hiptensor
-{
-    class ContractionSolution;
-    class ContractionSolutionRegistry;
-} // namespace hiptensor
-
 /**
  * \brief hiptensor status type returns
  * \details The type is used for function status returns. All hiptensor library
@@ -170,9 +164,8 @@ typedef enum
  * \brief Opaque structure holding hiptensor's library context.
  */
 struct hiptensorHandle_t
-{ /*TODO: Discuss the struct members and replace constructor/destructor*/
-    hiptensorHandle_t()  = default;
-    ~hiptensorHandle_t() = default;
+{
+    int32_t mHipDevice;
 };
 
 /**
@@ -276,8 +269,8 @@ struct hiptensorContractionDescriptor_t
  */
 struct hiptensorContractionFind_t
 {
-    hiptensorAlgo_t                              mSelectionAlgorithm;
-    std::vector<hiptensor::ContractionSolution*> mCandidates;
+    hiptensorAlgo_t    mSelectionAlgorithm;
+    std::vector<void*> mCandidates;
 };
 
 /**
@@ -305,6 +298,7 @@ struct hiptensorContractionMetrics_t
  */
 struct hiptensorContractionPlan_t
 {
+    void*                            mSolution;
     hiptensorContractionDescriptor_t ht_plan_desc; /*!< Represent the contraction descriptor */
     void hiptensorPrintContractionMetrics(); /*!< Function that prints all the
                                               perf results of the CK's

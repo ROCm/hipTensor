@@ -23,10 +23,11 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include "contraction_heuristics.hpp"
 #include "contraction_solution.hpp"
 #include "contraction_solution_registry.hpp"
+#include "hip_device.hpp"
 #include "hiptensor.hpp"
-#include "hiptensor_contraction_ck.hpp"
 
 hiptensorContractionMetrics_t ht_contract_metrics;
 
@@ -78,17 +79,54 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    if(algo != HIPTENSOR_ALGO_DEFAULT)
+    // Ensure current HIP device is same as the handle.
+    hiptensor::HipDevice currentDevice;
+    if((int)currentDevice.getDeviceHandle() != handle->mHipDevice)
     {
-        std::cout << "CK algorithm not supported" << std::endl;
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
-    /// Enumerate all of the known kernels
-    // TODO: store a query inside of the find object that will represent
-    // available kernels for the current device, as found in the handle.
+    if(algo == HIPTENSOR_ALGO_DEFAULT)
+    {
+        // Update the stored selection algorithm
+        find->mSelectionAlgorithm = HIPTENSOR_ALGO_DEFAULT;
 
-    return HIPTENSOR_STATUS_SUCCESS;
+        // For now, enumerate all known contraction kernels.
+        // Using the hipDevice, determine if the device supports F64
+        auto& registry = hiptensor::ContractionSolutionRegistry::instance();
+        auto  query    = registry->allSolutions();
+
+        // Check if the current device supports F64
+        if(!currentDevice.supportsF64())
+        {
+            // Allow only supported f32 combos
+            query = query.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F)
+                    || query.query(HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F);
+        }
+
+        // Can do more checking for scale / bilinear, etc. if we need to.
+
+        if(query.solutionCount() == 0)
+        {
+            // No kernels found!
+            return HIPTENSOR_STATUS_INTERNAL_ERROR;
+        }
+
+        // Retrieve the solution map
+        auto& solutions = query.solutions();
+
+        // Extract the solutions to the candidates vector.
+        find->mCandidates.resize(solutions.size());
+        transform(solutions.begin(), solutions.end(), find->mCandidates.begin(), [](auto p) {
+            return (void*)p.second;
+        });
+
+        return HIPTENSOR_STATUS_SUCCESS;
+    }
+    else
+    {
+        return HIPTENSOR_STATUS_INVALID_VALUE;
+    }
 }
 
 hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
@@ -106,10 +144,81 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                                const hiptensorContractionFind_t*       find,
                                                const uint64_t workspaceSize)
 {
-    if(!handle || !plan || !desc)
+    if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
+    {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
 
+    hiptensor::HipDevice currentDevice;
+    if((int)currentDevice.getDeviceHandle() != handle->mHipDevice)
+    {
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+    }
+
+    // At this point, we need to format inputs for kernels as they will be tested via heuristic.
+    // Brute force method currently uses CK kernel format, so we will adjust inputs to that style.
+
+    // Convert to concrete contraction solutions
+    auto candidates = std::vector<hiptensor::ContractionSolution*>(find->mCandidates.size());
+    transform(find->mCandidates.begin(), find->mCandidates.end(), candidates.begin(), [](auto* p) {
+        return (hiptensor::ContractionSolution*)p;
+    });
+
+    // Query contraction solutions for the correct contraction operation
+    auto solutionMap = hiptensor::ContractionSolutionRegistry::Query{candidates}
+                           .query((hiptensor::ContractionOpId_t)desc->ht_contract_op)
+                           .solutions();
+    candidates.resize(solutionMap.size());
+    transform(solutionMap.begin(), solutionMap.end(), candidates.begin(), [](auto p) {
+        return (hiptensor::ContractionSolution*)p.second;
+    });
+
+    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
+    // Therefore the conversion to ck::index_t is required.
+    auto toCKVec
+        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
+
+    auto ADataType = desc->ht_contract_attr_desc[0].ht_type;
+    auto BDataType = desc->ht_contract_attr_desc[1].ht_type;
+    auto DDataType = desc->ht_contract_attr_desc[2].ht_type;
+    auto EDataType = desc->ht_contract_attr_desc[3].ht_type;
+
+    auto a_ms_ks_lengths = toCKVec(desc->ht_contract_attr_desc[0].lens);
+    auto a_ms_ks_strides = toCKVec(desc->ht_contract_attr_desc[0].strides);
+    auto b_ns_ks_lengths = toCKVec(desc->ht_contract_attr_desc[1].lens);
+    auto b_ns_ks_strides = toCKVec(desc->ht_contract_attr_desc[1].strides);
+    auto d_ms_ns_lengths = toCKVec(desc->ht_contract_attr_desc[2].lens);
+    auto d_ms_ns_strides = toCKVec(desc->ht_contract_attr_desc[2].strides);
+    auto e_ms_ns_lengths = toCKVec(desc->ht_contract_attr_desc[3].lens);
+    auto e_ms_ns_strides = toCKVec(desc->ht_contract_attr_desc[3].strides);
+
+    // Launch heuristic
+    hiptensor::ContractionSolution* winner = nullptr;
+    auto                            result = hiptensor::bruteForceHeuristic(&winner,
+                                                 candidates,
+                                                 ADataType,
+                                                 a_ms_ks_lengths,
+                                                 a_ms_ks_strides,
+                                                 BDataType,
+                                                 b_ns_ks_lengths,
+                                                 b_ns_ks_strides,
+                                                 DDataType,
+                                                 d_ms_ns_lengths,
+                                                 d_ms_ns_strides,
+                                                 EDataType,
+                                                 e_ms_ns_lengths,
+                                                 e_ms_ns_strides,
+                                                 workspaceSize);
+
+    if(result != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return result;
+    }
+
+    // Assign the contraction descriptor
     plan->ht_plan_desc = *desc;
+    plan->mSolution    = winner;
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -125,26 +234,69 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                        uint64_t                          workspaceSize,
                                        hipStream_t                       stream)
 {
-    if(!handle || !A || !B || !D)
+    if(handle == nullptr || plan == nullptr)
     {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    CHECK_HIPTENSOR_ERROR(hiptensorCKContraction(
-                            handle,
-                            plan,
-                            &ht_contract_metrics,
-                            alpha,
-                            A,
-                            B,
-                            beta,
-                            C,
-                            D,
-                            workspace,
-                            workspaceSize,
-                            stream));
+    if(alpha == nullptr || A == nullptr || B == nullptr || D == nullptr)
+    {
+        return HIPTENSOR_STATUS_INVALID_VALUE;
+    }
 
-    return HIPTENSOR_STATUS_SUCCESS;
+    if(plan->mSolution == nullptr)
+    {
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+    }
+
+    auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
+
+    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
+    // Therefore the conversion to ck::index_t is required.
+    auto toCKVec
+        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
+
+    auto a_ms_ks_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[0].lens);
+    auto a_ms_ks_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[0].strides);
+
+    auto b_ns_ks_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[1].lens);
+    auto b_ns_ks_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[1].strides);
+
+    auto d_ms_ns_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[2].lens);
+    auto d_ms_ns_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[2].strides);
+
+    auto e_ms_ns_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[3].lens);
+    auto e_ms_ns_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[3].strides);
+
+    auto canRun = cSolution->initArgs(alpha,
+                                      A,
+                                      B,
+                                      beta,
+                                      C,
+                                      D,
+                                      a_ms_ks_lengths,
+                                      a_ms_ks_strides,
+                                      b_ns_ks_lengths,
+                                      b_ns_ks_strides,
+                                      std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
+                                      std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
+                                      e_ms_ns_lengths,
+                                      e_ms_ns_strides);
+
+    if(cSolution->params()->opCDE() == hiptensor::ContractionOpId_t::SCALE && canRun)
+    {
+        std::cout << "Running a scale!!" << std::endl;
+    }
+
+    if(canRun)
+    {
+        (*cSolution)(StreamConfig{stream, false});
+        return HIPTENSOR_STATUS_SUCCESS;
+    }
+    else
+    {
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+    }
 }
 
 void hiptensorContractionPlan_t::hiptensorPrintContractionMetrics()

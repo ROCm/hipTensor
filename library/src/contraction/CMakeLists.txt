@@ -31,7 +31,7 @@ get_target_property(composable_kernel_INCLUDES composable_kernel::device_operati
 set(HIPTENSOR_CONTRACTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction_ck.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/contraction_heuristics.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution_registry.cpp
 )
 

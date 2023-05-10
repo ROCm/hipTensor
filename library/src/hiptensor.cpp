@@ -33,16 +33,24 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
     (*handle) = new hiptensorHandle_t;
 
+    if(*handle == nullptr)
+    {
+        return HIPTENSOR_STATUS_ALLOC_FAILED;
+    }
+
     auto hip_status = hipInit(0);
 
-    if(!(*handle))
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
-
-    else if(hip_status == hipErrorInvalidDevice)
+    if(hip_status == hipErrorInvalidDevice)
+    {
         return HIPTENSOR_STATUS_HIP_ERROR;
-
+    }
     else if(hip_status == hipErrorInvalidValue)
+    {
         return HIPTENSOR_STATUS_INVALID_VALUE;
+    }
+
+    // Get the current device
+    CHECK_HIP_ERROR(hipGetDevice(&((*handle)->mHipDevice)));
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -50,6 +58,7 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
 {
     delete handle;
+    handle = nullptr;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
