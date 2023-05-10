@@ -33,6 +33,7 @@
 #include <element_wise_operation.hpp>
 
 #include "contraction_types.hpp"
+#include "hiptensor_types.hpp"
 
 namespace hiptensor
 {
