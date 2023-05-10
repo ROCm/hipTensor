@@ -28,6 +28,7 @@
 #include "hiptensor.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+#include "util.hpp"
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
@@ -71,44 +72,32 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 hipDataType                  dataType,
                                                 hiptensorOperator_t          unaryOp)
 {
-    if(!handle || !desc)
+    if(handle == nullptr || desc == nullptr)
     {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    if(((!lens) && (!strides)) || ((dataType != HIP_R_32F) && (dataType != HIP_R_64F))
+    if((lens == nullptr) || ((dataType != HIP_R_32F) && (dataType != HIP_R_64F))
        || unaryOp != HIPTENSOR_OP_IDENTITY)
     {
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
-    using descType = float;
-    int ht_index   = 0;
-
-    std::vector<std::int64_t> ht_lens;
-    std::vector<std::int64_t> ht_strides;
-
-    for(int index = 0; index < numModes; index++)
+    if(strides)
     {
-        ht_lens.push_back(lens[index]);
-        if(strides)
-        {
-            ht_strides.push_back(strides[index]);
-        }
-    }
-    if(!strides)
-    {
-        *desc
-            = hiptensorTensorDescriptor_t(std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()));
+        // Construct with both given lengths and strides
+        *desc = {dataType,
+                 std::vector<std::size_t>(lens, lens + numModes),
+                 std::vector<std::size_t>(strides, strides + numModes)};
     }
     else
     {
-        *desc = hiptensorTensorDescriptor_t(
-            std::vector<std::size_t>(ht_lens.begin(), ht_lens.end()),
-            std::vector<std::size_t>(ht_strides.begin(), ht_strides.end()));
-    }
+        // Re-construct strides from lengths, assuming packed.
+        std::vector<std::size_t> l(lens, lens + numModes);
+        std::vector<std::size_t> s = hiptensor::stridesFromLengths(l);
 
-    desc->ht_type = dataType;
+        *desc = {dataType, l, s};
+    }
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -156,7 +145,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     }
 
     *alignmentRequirement = 0u;
-    for(auto i = hiptensor::hipDataTypeSize(desc->ht_type); i <= 16u; i *= 2)
+    for(auto i = hiptensor::hipDataTypeSize(desc->mType); i <= 16u; i *= 2)
     {
         if((std::size_t)ptr % (std::size_t)i == 0)
         {
@@ -172,88 +161,6 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     {
         return HIPTENSOR_STATUS_SUCCESS;
     }
-}
-
-void hiptensorContractionDescriptor_t::hiptensorContractionAttrUpdate(
-    const hiptensorTensorDescriptor_t* desc[],
-    const uint32_t                     tensor_size[],
-    const int                          tensor_desc_num)
-{
-    for(int index = 0; index < tensor_desc_num; index++)
-    {
-        if(desc[index] != nullptr)
-        {
-            ht_contract_attr_desc.push_back({desc[index]->ht_type,
-                                             desc[index]->hiptensorGetLengths(),
-                                             desc[index]->hiptensorGetStrides(),
-                                             tensor_size[index]});
-        }
-        else
-        {
-            ht_contract_attr_desc.push_back({(hipDataType)-1, {}, {}, 0});
-        }
-    }
-}
-
-void hiptensorTensorDescriptor_t::hiptensorCalculateStrides()
-{
-    mStrides.clear();
-    mStrides.resize(mLens.size(), 0);
-    if(mStrides.empty())
-    {
-        return;
-    }
-
-    mStrides.back() = 1;
-    std::partial_sum(
-        mLens.rbegin(), mLens.rend() - 1, mStrides.rbegin() + 1, std::multiplies<std::size_t>());
-}
-
-std::size_t hiptensorTensorDescriptor_t::hiptensorGetNumOfDimension() const
-{
-    return mLens.size();
-}
-
-std::size_t hiptensorTensorDescriptor_t::hiptensorGetElementSize() const
-{
-    assert(mLens.size() == mStrides.size());
-    return std::accumulate(
-        mLens.begin(), mLens.end(), std::size_t{1}, std::multiplies<std::size_t>());
-}
-
-std::size_t hiptensorTensorDescriptor_t::hiptensorGetElementSpace() const
-{
-    std::size_t space = 1;
-    for(std::size_t i = 0; i < mLens.size(); ++i)
-    {
-        space += (mLens[i] - 1) * mStrides[i];
-    }
-    return space;
-}
-
-const std::vector<std::size_t>& hiptensorTensorDescriptor_t::hiptensorGetLengths() const
-{
-    return mLens;
-}
-
-const std::vector<std::size_t>& hiptensorTensorDescriptor_t::hiptensorGetStrides() const
-{
-    return mStrides;
-}
-
-std::ostream& operator<<(std::ostream& os, const hiptensorTensorDescriptor_t& desc)
-{
-    os << "dim " << desc.hiptensorGetNumOfDimension() << ", ";
-
-    os << "lengths {";
-    hiptensorPrintVectorElements(desc.hiptensorGetLengths(), ", ");
-    os << "}, ";
-
-    os << "strides {";
-    hiptensorPrintVectorElements(desc.hiptensorGetStrides(), ", ");
-    os << "}";
-
-    return os;
 }
 
 void printHexAddress(char* str, void const* obj)

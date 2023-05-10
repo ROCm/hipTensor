@@ -33,6 +33,7 @@
 #endif
 
 #include "contraction_selection.hpp"
+#include "util.hpp"
 
 namespace hiptensor
 {
@@ -52,19 +53,15 @@ namespace hiptensor
                                       std::vector<ck::index_t> const&          e_ms_ns_strides,
                                       const uint64_t                           workspaceSize)
     {
-        auto calcSize = [](auto& lens, auto& strides) {
-            std::size_t space = 1;
-            for(std::size_t i = 0; i < lens.size(); ++i)
-            {
-                space += (lens[i] - 1) * strides[i];
-            }
-            return space;
-        };
-
-        auto sizeA = calcSize(a_ms_ks_lengths, a_ms_ks_strides) * hiptensor::hipDataTypeSize(typeA);
-        auto sizeB = calcSize(b_ns_ks_lengths, b_ns_ks_strides) * hiptensor::hipDataTypeSize(typeB);
-        auto sizeD = calcSize(d_ms_ns_lengths, d_ms_ns_strides) * hiptensor::hipDataTypeSize(typeD);
-        auto sizeE = calcSize(e_ms_ns_lengths, e_ms_ns_strides) * hiptensor::hipDataTypeSize(typeE);
+        // Make sure that we calculate full element space incase strides are not packed.
+        auto sizeA = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides)
+                     * hiptensor::hipDataTypeSize(typeA);
+        auto sizeB = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides)
+                     * hiptensor::hipDataTypeSize(typeB);
+        auto sizeD = elementSpaceFromLengthsAndStrides(d_ms_ns_lengths, d_ms_ns_strides)
+                     * hiptensor::hipDataTypeSize(typeD);
+        auto sizeE = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides)
+                     * hiptensor::hipDataTypeSize(typeE);
 
         std::cout << "sizeA: " << sizeA << std::endl;
         std::cout << "sizeB: " << sizeB << std::endl;

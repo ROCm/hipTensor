@@ -25,9 +25,11 @@
  *******************************************************************************/
 #pragma once
 
-#include <iostream>
 #include <fstream>
 #include <hip/hip_runtime.h>
+#include <iostream>
+
+#include "../hiptensor_types.hpp"
 
 #ifndef CHECK_HIP_ERROR
 #define CHECK_HIP_ERROR(status)                   \
@@ -44,12 +46,12 @@
 #endif
 
 #ifndef CHECK_HIPTENSOR_ERROR
-#define CHECK_HIPTENSOR_ERROR(status)                   \
-    if(status != HIPTENSOR_STATUS_SUCCESS)                      \
+#define CHECK_HIPTENSOR_ERROR(status)             \
+    if(status != HIPTENSOR_STATUS_SUCCESS)        \
     {                                             \
         fprintf(stderr,                           \
                 "hip error: '%s'(%d) at %s:%d\n", \
-                hiptensorGetErrorString(status),        \
+                hiptensorGetErrorString(status),  \
                 status,                           \
                 __FILE__,                         \
                 __LINE__);                        \
@@ -98,4 +100,22 @@ void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, cha
             fs << static_cast<F>(output[i]) << delim;
     }
     return;
+}
+
+namespace std
+{
+    static ostream& operator<<(ostream& os, const hiptensorTensorDescriptor_t& desc)
+    {
+        os << "dim " << desc.mLengths.size() << ", ";
+
+        os << "lengths {";
+        hiptensorPrintVectorElements(desc.mLengths, ", ");
+        os << "}, ";
+
+        os << "strides {";
+        hiptensorPrintVectorElements(desc.mStrides, ", ");
+        os << "}";
+
+        return os;
+    }
 }

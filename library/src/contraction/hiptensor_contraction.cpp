@@ -53,18 +53,23 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    const hiptensorTensorDescriptor_t* ht_input_descs[]           = {descA, descB, descC, descD};
-    const uint32_t                     alignmentRequirement_arr[] = {
-        alignmentRequirementA, alignmentRequirementB, alignmentRequirementC, alignmentRequirementD};
-    desc->hiptensorContractionAttrUpdate(ht_input_descs, alignmentRequirement_arr, 4);
-
+    int32_t contractionOp;
     if(descC == nullptr || modeC == nullptr)
     {
-        desc->ht_contract_op = (int32_t)hiptensor::ContractionOpId_t::SCALE;
+        // C-descriptor is empty
+        *desc = {(int32_t)hiptensor::ContractionOpId_t::SCALE,
+                 {*descA, *descB, {(hipDataType)-1, {}, {}}, *descD},
+                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
     }
     else
     {
-        desc->ht_contract_op = (int32_t)hiptensor::ContractionOpId_t::BILINEAR;
+        // C-descriptor is not empty
+        *desc = {(int32_t)hiptensor::ContractionOpId_t::BILINEAR,
+                 {*descA, *descB, *descC, *descD},
+                 {alignmentRequirementA,
+                  alignmentRequirementB,
+                  alignmentRequirementC,
+                  alignmentRequirementD}};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -156,7 +161,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
-    // At this point, we need to format inputs for kernels as they will be tested via heuristic.
+    // At this point, we need to format inputs for kernels as they will be tested via selection model.
     // Brute force method currently uses CK kernel format, so we will adjust inputs to that style.
 
     // Convert to concrete contraction solutions
@@ -167,7 +172,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     // Query contraction solutions for the correct contraction operation
     auto solutionMap = hiptensor::ContractionSolutionRegistry::Query{candidates}
-                           .query((hiptensor::ContractionOpId_t)desc->ht_contract_op)
+                           .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
                            .solutions();
     candidates.resize(solutionMap.size());
     transform(solutionMap.begin(), solutionMap.end(), candidates.begin(), [](auto p) {
@@ -179,19 +184,19 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     auto toCKVec
         = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
 
-    auto ADataType = desc->ht_contract_attr_desc[0].ht_type;
-    auto BDataType = desc->ht_contract_attr_desc[1].ht_type;
-    auto DDataType = desc->ht_contract_attr_desc[2].ht_type;
-    auto EDataType = desc->ht_contract_attr_desc[3].ht_type;
+    auto ADataType = desc->mTensorDesc[0].mType;
+    auto BDataType = desc->mTensorDesc[1].mType;
+    auto DDataType = desc->mTensorDesc[2].mType;
+    auto EDataType = desc->mTensorDesc[3].mType;
 
-    auto a_ms_ks_lengths = toCKVec(desc->ht_contract_attr_desc[0].lens);
-    auto a_ms_ks_strides = toCKVec(desc->ht_contract_attr_desc[0].strides);
-    auto b_ns_ks_lengths = toCKVec(desc->ht_contract_attr_desc[1].lens);
-    auto b_ns_ks_strides = toCKVec(desc->ht_contract_attr_desc[1].strides);
-    auto d_ms_ns_lengths = toCKVec(desc->ht_contract_attr_desc[2].lens);
-    auto d_ms_ns_strides = toCKVec(desc->ht_contract_attr_desc[2].strides);
-    auto e_ms_ns_lengths = toCKVec(desc->ht_contract_attr_desc[3].lens);
-    auto e_ms_ns_strides = toCKVec(desc->ht_contract_attr_desc[3].strides);
+    auto a_ms_ks_lengths = toCKVec(desc->mTensorDesc[0].mLengths);
+    auto a_ms_ks_strides = toCKVec(desc->mTensorDesc[0].mStrides);
+    auto b_ns_ks_lengths = toCKVec(desc->mTensorDesc[1].mLengths);
+    auto b_ns_ks_strides = toCKVec(desc->mTensorDesc[1].mStrides);
+    auto d_ms_ns_lengths = toCKVec(desc->mTensorDesc[2].mLengths);
+    auto d_ms_ns_strides = toCKVec(desc->mTensorDesc[2].mStrides);
+    auto e_ms_ns_lengths = toCKVec(desc->mTensorDesc[3].mLengths);
+    auto e_ms_ns_strides = toCKVec(desc->mTensorDesc[3].mStrides);
 
     // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
@@ -257,17 +262,17 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     auto toCKVec
         = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
 
-    auto a_ms_ks_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[0].lens);
-    auto a_ms_ks_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[0].strides);
+    auto a_ms_ks_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[0].mLengths);
+    auto a_ms_ks_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[0].mStrides);
 
-    auto b_ns_ks_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[1].lens);
-    auto b_ns_ks_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[1].strides);
+    auto b_ns_ks_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[1].mLengths);
+    auto b_ns_ks_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[1].mStrides);
 
-    auto d_ms_ns_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[2].lens);
-    auto d_ms_ns_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[2].strides);
+    auto d_ms_ns_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[2].mLengths);
+    auto d_ms_ns_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[2].mStrides);
 
-    auto e_ms_ns_lengths = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[3].lens);
-    auto e_ms_ns_strides = toCKVec(plan->ht_plan_desc.ht_contract_attr_desc[3].strides);
+    auto e_ms_ns_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[3].mLengths);
+    auto e_ms_ns_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[3].mStrides);
 
     auto canRun = cSolution->initArgs(alpha,
                                       A,
