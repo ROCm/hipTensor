@@ -23,7 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include "contraction_heuristics.hpp"
+#include "contraction_selection.hpp"
 #include "contraction_solution.hpp"
 #include "contraction_solution_registry.hpp"
 #include "hip_device.hpp"
