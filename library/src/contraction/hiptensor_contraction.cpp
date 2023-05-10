@@ -193,23 +193,23 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     auto e_ms_ns_lengths = toCKVec(desc->ht_contract_attr_desc[3].lens);
     auto e_ms_ns_strides = toCKVec(desc->ht_contract_attr_desc[3].strides);
 
-    // Launch heuristic
+    // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
-    auto                            result = hiptensor::bruteForceHeuristic(&winner,
-                                                 candidates,
-                                                 ADataType,
-                                                 a_ms_ks_lengths,
-                                                 a_ms_ks_strides,
-                                                 BDataType,
-                                                 b_ns_ks_lengths,
-                                                 b_ns_ks_strides,
-                                                 DDataType,
-                                                 d_ms_ns_lengths,
-                                                 d_ms_ns_strides,
-                                                 EDataType,
-                                                 e_ms_ns_lengths,
-                                                 e_ms_ns_strides,
-                                                 workspaceSize);
+    auto                            result = hiptensor::bruteForceModel(&winner,
+                                             candidates,
+                                             ADataType,
+                                             a_ms_ks_lengths,
+                                             a_ms_ks_strides,
+                                             BDataType,
+                                             b_ns_ks_lengths,
+                                             b_ns_ks_strides,
+                                             DDataType,
+                                             d_ms_ns_lengths,
+                                             d_ms_ns_strides,
+                                             EDataType,
+                                             e_ms_ns_lengths,
+                                             e_ms_ns_strides,
+                                             workspaceSize);
 
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
