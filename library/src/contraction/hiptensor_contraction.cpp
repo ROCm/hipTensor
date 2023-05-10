@@ -100,8 +100,9 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         if(!currentDevice.supportsF64())
         {
             // Allow only supported f32 combos
-            query = query.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F)
-                    || query.query(HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F);
+            query = query.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) // Bilinear F32
+                    || query.query(
+                        HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F); // Scale F32 (no C)
         }
 
         // Can do more checking for scale / bilinear, etc. if we need to.

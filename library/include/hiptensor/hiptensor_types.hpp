@@ -123,6 +123,7 @@ typedef enum
  */
 typedef enum
 {
+    HIPTENSOR_ALGO_ACTOR_CRITIC    = -8, ///< Uses novel actor-critic selection model
     HIPTENSOR_ALGO_DEFAULT_PATIENT = -6, ///< Uses the more accurate but also more
     ///< time-consuming performance model
     HIPTENSOR_ALGO_GETT  = -4, ///< Choose the GETT algorithm
