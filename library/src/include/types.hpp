@@ -27,9 +27,12 @@
 #ifndef HIPTENSOR_LIBRARY_TYPES_HPP
 #define HIPTENSOR_LIBRARY_TYPES_HPP
 
+// clang-format off
+// Include order needs to be preserved
+#include <hip/library_types.h>
 #include <hip/hip_bfloat16.h>
 #include <hip/hip_fp16.h>
-#include <hip/library_types.h>
+// clang-format on
 
 namespace hiptensor
 {
