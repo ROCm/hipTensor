@@ -27,8 +27,8 @@
 #ifndef HIPTENSOR_HIP_DEVICE_HPP
 #define HIPTENSOR_HIP_DEVICE_HPP
 
-#include <hip/hip_runtime_api.h>
 #include "internal/hiptensor_utility.hpp"
+#include <hip/hip_runtime_api.h>
 
 namespace hiptensor
 {
@@ -49,6 +49,7 @@ namespace hiptensor
         };
 
         HipDevice();
+        ~HipDevice() = default;
 
         hipDevice_t     getDeviceHandle() const;
         hipDeviceProp_t getDeviceProps() const;
@@ -61,8 +62,6 @@ namespace hiptensor
         int maxFreqMhz() const;
 
         bool supportsF64() const;
-
-        ~HipDevice();
 
     private:
         hipDevice_t     mHandle;
