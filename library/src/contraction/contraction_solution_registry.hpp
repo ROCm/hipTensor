@@ -93,10 +93,10 @@ namespace hiptensor
 
             uint32_t solutionCount() const;
 
-        private:
             // Internal ctor
             Query(std::vector<ContractionSolution*> const& solutions);
 
+        private:
             // Query by explicit hash
             Query query(HashId queryHash) const;
 

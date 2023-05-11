@@ -37,12 +37,6 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
-namespace hiptensor
-{
-    class ContractionSolution;
-    class ContractionSolutionRegistry;
-} // namespace hiptensor
-
 /**
  * \brief hiptensor status type returns
  * \details The type is used for function status returns. All hiptensor library
@@ -129,6 +123,7 @@ typedef enum
  */
 typedef enum
 {
+    HIPTENSOR_ALGO_ACTOR_CRITIC    = -8, ///< Uses novel actor-critic selection model
     HIPTENSOR_ALGO_DEFAULT_PATIENT = -6, ///< Uses the more accurate but also more
     ///< time-consuming performance model
     HIPTENSOR_ALGO_GETT  = -4, ///< Choose the GETT algorithm
@@ -170,9 +165,8 @@ typedef enum
  * \brief Opaque structure holding hiptensor's library context.
  */
 struct hiptensorHandle_t
-{ /*TODO: Discuss the struct members and replace constructor/destructor*/
-    hiptensorHandle_t()  = default;
-    ~hiptensorHandle_t() = default;
+{
+    int32_t mHipDevice;
 };
 
 /**
@@ -184,65 +178,9 @@ struct hiptensorHandle_t
  */
 struct hiptensorTensorDescriptor_t
 {
-
-    hiptensorTensorDescriptor_t() = default; /*!< Default Constructor of the
-                                              structure hiptensorDescriptor_t */
-
-    void hiptensorCalculateStrides(); /*!< Function that returns the size of the tensor
-                                  based on the input length and strides */
-
-    template <typename X>
-    hiptensorTensorDescriptor_t(const std::vector<X>& lens)
-        : mLens(lens.begin(), lens.end())
-    {
-        this->hiptensorCalculateStrides();
-    } /*!< Function that initializes the tensor based on the input lengths*/
-
-    template <typename X, typename Y>
-    hiptensorTensorDescriptor_t(const std::vector<X>& lens, const std::vector<Y>& strides)
-        : mLens(lens.begin(), lens.end())
-        , mStrides(strides.begin(), strides.end())
-    {
-
-    } /*!< Function that initializes the tensor based on the input length and
-       strides */
-
-    hipDataType ht_type; /*!< Data type of the tensors enum selection */
-
-    std::size_t
-        hiptensorGetNumOfDimension() const; /*!< Function that returns the number of dimensions */
-    std::size_t
-        hiptensorGetElementSize() const; /*!< Function that returns the total elements size*/
-    std::size_t hiptensorGetElementSpace()
-        const; /*!< Function that returns the size of the tensor based on the
-                input length and strides */
-
-    const std::vector<std::size_t>&
-        hiptensorGetLengths() const; /*!< Function that returns the lengths of the tensor */
-    const std::vector<std::size_t>&
-        hiptensorGetStrides() const; /*!< Function that returns the strides of the tensor */
-
-    friend std::ostream&
-        operator<<(std::ostream& os,
-                   const hiptensorTensorDescriptor_t&
-                       desc); /*!< Function that prints the length, strides tensor */
-
-private:
-    std::vector<std::size_t> mLens; /*!< Lengths of the tensor */
+    hipDataType              mType; /*!< Data type of the tensors enum selection */
+    std::vector<std::size_t> mLengths; /*!< Lengths of the tensor */
     std::vector<std::size_t> mStrides; /*!< Strides of the tensor */
-};
-
-/**
- * \brief Structure used to store the tensor descriptor dimensions and strides
- * for the contraction operation.
- *
- */
-struct tensor_attr
-{
-    hipDataType              ht_type;
-    std::vector<std::size_t> lens; /*!< Represent the lengths of the descriptor */
-    std::vector<std::size_t> strides; /*!< Represent the strides of the descriptor */
-    std::size_t              tensor_size; /*!< Represent the allocated size of the tensor*/
 };
 
 /**
@@ -255,17 +193,9 @@ struct tensor_attr
  */
 struct hiptensorContractionDescriptor_t
 {
-    /*!<Enum that has the contraction operation(scale/bilinear)*/
-    int32_t ht_contract_op;
-
-    std::vector<tensor_attr>
-         ht_contract_attr_desc; /*!<Vector that represents the length,strides,and
-                                size of the input tensors*/
-    void hiptensorContractionAttrUpdate(
-        const hiptensorTensorDescriptor_t* desc[],
-        const uint32_t                     tensor_size[],
-        const int                          tensor_desc_num); /*!< Function that updates the param
-                                     ht_contract_attr_desc vector*/
+    int32_t mContractionOpId; /*!< Enum that differentiates the internal contraction operation*/
+    std::vector<hiptensorTensorDescriptor_t> mTensorDesc; /*!<Cache of tensor descriptors*/
+    std::vector<uint32_t>                    mAlignmentReq; /*!<Cache of alignment requirements*/
 };
 
 /**
@@ -276,8 +206,8 @@ struct hiptensorContractionDescriptor_t
  */
 struct hiptensorContractionFind_t
 {
-    hiptensorAlgo_t                              mSelectionAlgorithm;
-    std::vector<hiptensor::ContractionSolution*> mCandidates;
+    hiptensorAlgo_t    mSelectionAlgorithm;
+    std::vector<void*> mCandidates;
 };
 
 /**
@@ -305,6 +235,7 @@ struct hiptensorContractionMetrics_t
  */
 struct hiptensorContractionPlan_t
 {
+    void*                            mSolution;
     hiptensorContractionDescriptor_t ht_plan_desc; /*!< Represent the contraction descriptor */
     void hiptensorPrintContractionMetrics(); /*!< Function that prints all the
                                               perf results of the CK's

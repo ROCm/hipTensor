@@ -23,24 +23,41 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HT_CK_CORE_HPP_
-#define HT_CK_CORE_HPP_
 
-#include <vector>
+#ifndef HIPTENSOR_SRC_UTIL_HPP
+#define HIPTENSOR_SRC_UTIL_HPP
 
-#include "hiptensor_types.hpp"
+namespace hiptensor
+{
+    template <typename T>
+    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
+    {
+        // Re-construct strides from lengths, assuming packed.
+        std::vector<std::size_t> strides(lengths.size());
+        strides.back() = 1;
+        std::partial_sum(
+            lengths.rbegin(), lengths.rend() - 1, strides.rbegin() + 1, std::multiplies<T>());
+        return strides;
+    }
 
-hiptensorStatus_t hiptensorCKContraction(const hiptensorHandle_t*          handle,
-                                         const hiptensorContractionPlan_t* plan,
-                                         hiptensorContractionMetrics_t*    ht_contract_metrics,
-                                         const void*                       alpha,
-                                         const void*                       A,
-                                         const void*                       B,
-                                         const void*                       beta,
-                                         const void*                       C,
-                                         void*                             D,
-                                         void*                             workspace,
-                                         uint64_t                          workspaceSize,
-                                         hipStream_t                       stream);
+    template <typename T>
+    static inline T elementsFromLengths(std::vector<T> const& lengths)
+    {
+        return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
+    }
 
-#endif
+    template <typename T>
+    static inline T elementSpaceFromLengthsAndStrides(std::vector<T> const& lengths,
+                                                      std::vector<T> const& strides)
+    {
+        auto accum = T{1};
+        for(int i = 0; i < lengths.size(); i++)
+        {
+            accum += (lengths[i] - 1) * strides[i];
+        }
+        return accum;
+    }
+
+} // namespace hiptensor
+
+#endif // HIPTENSOR_SRC_UTIL_HPP
