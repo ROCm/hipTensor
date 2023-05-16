@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     hipDataType            typeD       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
+    floatTypeCompute alpha = (floatTypeCompute)2.0f;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
@@ -304,9 +304,9 @@ int main(int argc, char* argv[])
             = compareEqual<DDataType>(D, D_host, elementsD);
 
     if(mValidationResult == true)
-        std::cout << " Validation Successful" << std::endl;
+        std::cout << "Validation Successful" << std::endl;
     else
-        std::cout << " Validation Failed" << std::endl;
+        std::cout << "Validation Failed" << std::endl;
 
     std::cout   << "Max relative error: " << mMaxRelativeError;
 

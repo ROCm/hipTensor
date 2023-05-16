@@ -51,8 +51,8 @@ int main(int argc, char* argv[])
     hipDataType            typeC       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.1f;
-    floatTypeCompute beta  = (floatTypeCompute)1.0f;
+    floatTypeCompute alpha = (floatTypeCompute)2.1f;
+    floatTypeCompute beta  = (floatTypeCompute)2.0f;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
@@ -165,6 +165,7 @@ int main(int argc, char* argv[])
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     CDataType* C = (CDataType*)malloc(sizeC);
+    CDataType* C_host = (CDataType*)malloc(sizeC);
 
     void *A_d, *B_d, *C_d;
 
@@ -311,23 +312,23 @@ int main(int argc, char* argv[])
 
     std::vector<size_t> a_ms_ks_strides = a_ms_ks.hiptensorGetStrides();
     std::vector<size_t> b_ks_ns_strides = b_ks_ns.hiptensorGetStrides(); 
-    std::vector<size_t> d_ms_ns_strides = d_ms_ns.hiptensorGetStrides();
+    std::vector<size_t> c_ms_ns_strides = c_ms_ns.hiptensorGetStrides();
     
-    hiptensorBilinearContractionReference<ADataType, BDataType, DDataType, floatTypeCompute>(
-                                          A, B, D_host, alpha, beta, a_ms_ks_lengths, b_ks_ns_lengths,
-                                          d_ms_ns_lengths, a_ms_ks_strides, b_ks_ns_strides,
-                                          d_ms_ns_strides, elementsD);
+    hiptensorBilinearContractionReference<ADataType, BDataType, CDataType, floatTypeCompute>(
+                                          A, B, C_host, alpha, beta, a_ms_ks_lengths, b_ks_ns_lengths,
+                                          c_ms_ns_lengths, a_ms_ks_strides, b_ks_ns_strides,
+                                          c_ms_ns_strides, elementsC);
 
     bool     mValidationResult = false;
     double   mMaxRelativeError;
 
     std::tie(mValidationResult, mMaxRelativeError)
-            = compareEqual<DDataType>(D, D_host, elementsD);
+            = compareEqual<CDataType>(C, C_host, elementsC);
 
     if(mValidationResult == true)
-        std::cout << " Validation Successful" << std::endl;
+        std::cout << "Validation Successful" << std::endl;
     else
-        std::cout << " Validation Failed" << std::endl;
+        std::cout << "Validation Failed" << std::endl;
 
     std::cout   << "Max relative error: " << mMaxRelativeError;
 
@@ -344,6 +345,11 @@ int main(int argc, char* argv[])
     if(C)
     {
         free(C);
+    }
+
+    if(C_host)
+    {
+        free(C_host);
     }
 
     if(A_d)

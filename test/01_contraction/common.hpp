@@ -50,10 +50,10 @@ void hiptensorScaleContractionReference(ADataType *A,
         floatTypeCompute valA, valB, valC, valAcc = 0;
         size_t indexA, indexB, indexD;
 
-        auto K0 = d_ms_ns_lengths[2];
-        auto K1 = d_ms_ns_lengths[3];
+        auto K0 = a_ms_ks_lengths[2];
+        auto K1 = a_ms_ks_lengths[3];
 
-        auto offset = [](std::vector<size_t> curIndices, std::vector<size_t> strides) {
+        auto offset = [&](std::vector<size_t> curIndices, std::vector<size_t> strides) {
                         return std::inner_product(curIndices.begin(), curIndices.end(), strides.begin(), std::size_t{0}); };
 
         for(size_t k0 = 0; k0 < K0; k0++)
@@ -96,7 +96,6 @@ void hiptensorScaleContractionReference(ADataType *A,
     }
 }
 
-
 template < typename ADataType,
            typename BDataType,
            typename DDataType,
@@ -119,10 +118,10 @@ void hiptensorBilinearContractionReference(ADataType *A,
         floatTypeCompute valA, valB, valAcc = 0;
         size_t indexA, indexB, indexD;
 
-        auto K0 = d_ms_ns_lengths[2];
-        auto K1 = d_ms_ns_lengths[3];
+        auto K0 = a_ms_ks_lengths[2];
+        auto K1 = a_ms_ks_lengths[3];
 
-        auto offset = [](std::vector<size_t> curIndices, std::vector<size_t> strides) {
+        auto offset = [&](std::vector<size_t> curIndices, std::vector<size_t> strides) {
                         return std::inner_product(curIndices.begin(), curIndices.end(), strides.begin(), std::size_t{0}); };
 
         for(size_t k0 = 0; k0 < K0; k0++)
