@@ -287,8 +287,17 @@ int main(int argc, char* argv[])
     std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
     
     hiptensorScaleContractionReference<ADataType, BDataType, DDataType, floatTypeCompute>(
-                                       A, B, D_host, alpha, a_ms_ks_lengths, b_ks_ns_lengths, d_ms_ns_lengths,
-                                       a_ms_ks_strides, b_ks_ns_strides, d_ms_ns_strides, elementsD);
+                                       A,
+                                       B,
+                                       D_host,
+                                       alpha,
+                                       a_ms_ks_lengths,
+                                       b_ks_ns_lengths,
+                                       d_ms_ns_lengths,
+                                       a_ms_ks_strides,
+                                       b_ks_ns_strides,
+                                       d_ms_ns_strides,
+                                       elementsD);
 
     bool     mValidationResult = false;
     double   mMaxRelativeError;
