@@ -27,6 +27,18 @@
 #ifndef HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
 #define HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
 
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#include <numeric>
+#include <unordered_map>
+#include <mutex>
+
+// hiptensor includes
+#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/internal/hiptensor_utility.hpp>
+
 #define NDIM 4
 
 template < typename ADataType,
@@ -60,7 +72,6 @@ void hiptensorScaleContractionReference(ADataType *A,
         {
             for(size_t k1 = 0; k1 < K1; k1++)
             {
-
                 indexA = offset(std::vector<size_t>{m0, m1, k0, k1}, a_ms_ks_strides);
                 valA = static_cast<floatTypeCompute> (A[indexA]);
 
@@ -98,37 +109,41 @@ void hiptensorScaleContractionReference(ADataType *A,
 
 template < typename ADataType,
            typename BDataType,
+           typename CDataType,
            typename DDataType,
            typename floatTypeCompute>
 void hiptensorBilinearContractionReference(ADataType *A,
                                            BDataType *B,
+                                           CDataType *C,
                                            DDataType *D,
                                            floatTypeCompute alpha,
                                            floatTypeCompute beta,
                                            std::vector<int64_t> a_ms_ks_lengths,
                                            std::vector<int64_t> b_ks_ns_lengths,
+                                           std::vector<int64_t> c_ms_ns_lengths,
                                            std::vector<int64_t> d_ms_ns_lengths,
                                            std::vector<size_t> a_ms_ks_strides,
                                            std::vector<size_t> b_ks_ns_strides,
+                                           std::vector<size_t> c_ms_ns_strides,
                                            std::vector<size_t> d_ms_ns_strides,
                                            int elementsD)
 {
     auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1)
     {
-        floatTypeCompute valA, valB, valAcc = 0;
-        size_t indexA, indexB, indexD;
+        floatTypeCompute valA, valB, valAcc = 0, valD1, valD2;
+        size_t indexA, indexB, indexC, indexD;
 
         auto K0 = a_ms_ks_lengths[2];
         auto K1 = a_ms_ks_lengths[3];
 
         auto offset = [&](std::vector<size_t> curIndices, std::vector<size_t> strides) {
-                        return std::inner_product(curIndices.begin(), curIndices.end(), strides.begin(), std::size_t{0}); };
+                        return std::inner_product(curIndices.begin(), curIndices.end(),
+                                                  strides.begin(), std::size_t{0}); };
 
         for(size_t k0 = 0; k0 < K0; k0++)
         {
             for(size_t k1 = 0; k1 < K1; k1++)
             {
-
                 indexA = offset(std::vector<size_t>{m0, m1, k0, k1}, a_ms_ks_strides);
                 valA = static_cast<floatTypeCompute> (A[indexA]);
 
@@ -139,9 +154,13 @@ void hiptensorBilinearContractionReference(ADataType *A,
             }
         }
 
+        valD1 = valAcc * alpha;
+
+        indexC = offset(std::vector<size_t>{m0, m1, n0, n1}, c_ms_ns_strides);
+        valD2 = static_cast<floatTypeCompute>(C[indexC]) * beta;
+
         indexD = offset(std::vector<size_t>{m0, m1, n0, n1}, d_ms_ns_strides);
-        D[indexD] = static_cast<DDataType>((alpha * valAcc) +
-                                           (beta * static_cast<floatTypeCompute>(D[indexD])));
+        D[indexD] = static_cast<DDataType>(valD1 + valD2);
     };
 
     auto GetNdIndices = [&](size_t index) {

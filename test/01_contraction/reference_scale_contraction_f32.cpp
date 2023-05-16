@@ -23,28 +23,18 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include <algorithm>
-#include <fstream>
-#include <iterator>
-#include <numeric>
-#include <unordered_map>
-#include <mutex>
 
-// hiptensor includes
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
-#include <hiptensor/internal/hiptensor_utility.hpp>
 #include "common.hpp"
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
-typedef float ADataType;
-typedef float BDataType;
-typedef float DDataType;
-typedef float floatTypeCompute;
-
 int main(int argc, char* argv[])
 {
+    typedef float ADataType;
+    typedef float BDataType;
+    typedef float DDataType;
+    typedef float floatTypeCompute;
+
     hipDataType            typeA       = HIP_R_32F;
     hipDataType            typeB       = HIP_R_32F;
     hipDataType            typeD       = HIP_R_32F;
@@ -144,9 +134,12 @@ int main(int argc, char* argv[])
    * Allocating data
    **********************/
 
-    size_t elementsA = a_ms_ks.hiptensorGetElementSpace();
-    size_t elementsB = b_ks_ns.hiptensorGetElementSpace();
-    size_t elementsD = d_ms_ns.hiptensorGetElementSpace();
+    size_t elementsA = std::accumulate(
+        a_ms_ks_lengths.begin(), a_ms_ks_lengths.end(), size_t{1}, std::multiplies<size_t>());
+    size_t elementsB = std::accumulate(
+        b_ks_ns_lengths.begin(), b_ks_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
+    size_t elementsD = std::accumulate(
+        d_ms_ns_lengths.begin(), d_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
 
     size_t sizeA = sizeof(ADataType) * elementsA;
     size_t sizeB = sizeof(BDataType) * elementsB;
@@ -289,9 +282,9 @@ int main(int argc, char* argv[])
     tensorD.close();
 #endif
     
-    std::vector<size_t> a_ms_ks_strides = a_ms_ks.hiptensorGetStrides();
-    std::vector<size_t> b_ks_ns_strides = b_ks_ns.hiptensorGetStrides(); 
-    std::vector<size_t> d_ms_ns_strides = d_ms_ns.hiptensorGetStrides();
+    std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
+    std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
+    std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
     
     hiptensorScaleContractionReference<ADataType, BDataType, DDataType, floatTypeCompute>(
                                        A, B, D_host, alpha, a_ms_ks_lengths, b_ks_ns_lengths, d_ms_ns_lengths,

@@ -32,6 +32,8 @@
 #include <hip/library_types.h>
 #include <hip/hip_bfloat16.h>
 #include <hip/hip_fp16.h>
+#include <iostream>
+
 // clang-format on
 
 namespace hiptensor
