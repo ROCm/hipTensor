@@ -96,6 +96,74 @@ void hiptensorScaleContractionReference(ADataType *A,
     }
 }
 
+
+template < typename ADataType,
+           typename BDataType,
+           typename DDataType,
+           typename floatTypeCompute>
+void hiptensorBilinearContractionReference(ADataType *A,
+                                           BDataType *B,
+                                           DDataType *D,
+                                           floatTypeCompute alpha,
+                                           floatTypeCompute beta,
+                                           std::vector<int64_t> a_ms_ks_lengths,
+                                           std::vector<int64_t> b_ks_ns_lengths,
+                                           std::vector<int64_t> d_ms_ns_lengths,
+                                           std::vector<size_t> a_ms_ks_strides,
+                                           std::vector<size_t> b_ks_ns_strides,
+                                           std::vector<size_t> d_ms_ns_strides,
+                                           int elementsD)
+{
+    auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1)
+    {
+        floatTypeCompute valA, valB, valAcc = 0;
+        size_t indexA, indexB, indexD;
+
+        auto K0 = d_ms_ns_lengths[2];
+        auto K1 = d_ms_ns_lengths[3];
+
+        auto offset = [](std::vector<size_t> curIndices, std::vector<size_t> strides) {
+                        return std::inner_product(curIndices.begin(), curIndices.end(), strides.begin(), std::size_t{0}); };
+
+        for(size_t k0 = 0; k0 < K0; k0++)
+        {
+            for(size_t k1 = 0; k1 < K1; k1++)
+            {
+
+                indexA = offset(std::vector<size_t>{m0, m1, k0, k1}, a_ms_ks_strides);
+                valA = static_cast<floatTypeCompute> (A[indexA]);
+
+                indexB = offset(std::vector<size_t>{n0, n1, k0, k1}, b_ks_ns_strides);
+                valB = static_cast<floatTypeCompute> (B[indexB]);
+
+                valAcc += valA * valB;
+            }
+        }
+
+        indexD = offset(std::vector<size_t>{m0, m1, n0, n1}, d_ms_ns_strides);
+        D[indexD] = static_cast<DDataType>((alpha * valAcc) +
+                                           (beta * static_cast<floatTypeCompute>(D[indexD])));
+    };
+
+    auto GetNdIndices = [&](size_t index) {
+        std::array<std::size_t, NDIM> indices;
+
+        for(std::size_t idim = 0;  idim < NDIM; ++idim)
+        {
+            indices[idim] = index / d_ms_ns_strides[idim];
+            index -= indices[idim] * d_ms_ns_strides[idim];
+        }
+
+        return indices;
+    };
+
+    for(std::size_t i = 0; i < elementsD; ++i)
+    {
+        std::array<std::size_t, NDIM> indices = GetNdIndices(i);
+        d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
+    }
+}
+
 template <typename DDataType>
 std::pair<bool, double> compareEqual(DDataType const* deviceD,
                                      DDataType const* hostD,
