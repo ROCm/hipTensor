@@ -168,11 +168,6 @@ int main(int argc, char* argv[])
     size_t elementsD = std::accumulate(
         d_ms_ns_lengths.begin(), d_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
 
-    std::cout << "elementsA: " << elementsA << std::endl;
-    std::cout << "elementsB: " << elementsB << std::endl;
-    std::cout << "elementsC: " << elementsC << std::endl;
-    std::cout << "elementsD: " << elementsD << std::endl;
-
     size_t sizeA = sizeof(ADataType) * elementsA;
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeC = sizeof(CDataType) * elementsC;
@@ -243,11 +238,6 @@ int main(int argc, char* argv[])
     CHECK_HIPTENSOR_ERROR(
         hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD));
 
-    std::cout << "Alignment A: " << alignmentRequirementA << " addr: " << A_d << std::endl;
-    std::cout << "Alignment B: " << alignmentRequirementB << " addr: " << B_d << std::endl;
-    std::cout << "Alignment C: " << alignmentRequirementC << " addr: " << C_d << std::endl;
-    std::cout << "Alignment D: " << alignmentRequirementD << " addr: " << D_d << std::endl;
-
     /*******************************
    * Create Contraction Descriptor
    *******************************/
@@ -303,7 +293,6 @@ int main(int argc, char* argv[])
                                                worksize,
                                                0 /* stream */));
 
-    plan.hiptensorPrintContractionMetrics();
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG

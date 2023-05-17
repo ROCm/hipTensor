@@ -151,7 +151,6 @@ int main(int argc, char* argv[])
     DDataType* D_host = (DDataType*)malloc(sizeD);
 
     void *A_d, *B_d, *D_d;
-    std::cout << " sizeD " <<  sizeD << std::endl;
 
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
@@ -245,7 +244,6 @@ int main(int argc, char* argv[])
                         worksize,
                         0 /* stream */));
 
-    plan.hiptensorPrintContractionMetrics();
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
