@@ -29,8 +29,6 @@
 #include "hip_device.hpp"
 #include "hiptensor.hpp"
 
-hiptensorContractionMetrics_t ht_contract_metrics;
-
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
                                                      hiptensorContractionDescriptor_t*  desc,
                                                      const hiptensorTensorDescriptor_t* descA,
@@ -222,8 +220,8 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     }
 
     // Assign the contraction descriptor
-    plan->ht_plan_desc = *desc;
-    plan->mSolution    = winner;
+    plan->mContractionDesc = *desc;
+    plan->mSolution        = winner;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -262,17 +260,17 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     auto toCKVec
         = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
 
-    auto a_ms_ks_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[0].mLengths);
-    auto a_ms_ks_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[0].mStrides);
+    auto a_ms_ks_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[0].mLengths);
+    auto a_ms_ks_strides = toCKVec(plan->mContractionDesc.mTensorDesc[0].mStrides);
 
-    auto b_ns_ks_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[1].mLengths);
-    auto b_ns_ks_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[1].mStrides);
+    auto b_ns_ks_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[1].mLengths);
+    auto b_ns_ks_strides = toCKVec(plan->mContractionDesc.mTensorDesc[1].mStrides);
 
-    auto d_ms_ns_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[2].mLengths);
-    auto d_ms_ns_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[2].mStrides);
+    auto d_ms_ns_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[2].mLengths);
+    auto d_ms_ns_strides = toCKVec(plan->mContractionDesc.mTensorDesc[2].mStrides);
 
-    auto e_ms_ns_lengths = toCKVec(plan->ht_plan_desc.mTensorDesc[3].mLengths);
-    auto e_ms_ns_strides = toCKVec(plan->ht_plan_desc.mTensorDesc[3].mStrides);
+    auto e_ms_ns_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[3].mLengths);
+    auto e_ms_ns_strides = toCKVec(plan->mContractionDesc.mTensorDesc[3].mStrides);
 
     auto canRun = cSolution->initArgs(alpha,
                                       A,
@@ -289,11 +287,6 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                       e_ms_ns_lengths,
                                       e_ms_ns_strides);
 
-    if(cSolution->params()->opCDE() == hiptensor::ContractionOpId_t::SCALE && canRun)
-    {
-        std::cout << "Running a scale!!" << std::endl;
-    }
-
     if(canRun)
     {
         (*cSolution)(StreamConfig{stream, false});
@@ -303,11 +296,4 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     {
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
-}
-
-void hiptensorContractionPlan_t::hiptensorPrintContractionMetrics()
-{
-    std::cout << "Perf: " << ht_contract_metrics.avg_time << " ms, " << ht_contract_metrics.tflops
-              << " TFlops, " << ht_contract_metrics.transfer_speed << " GB/s, "
-              << ht_contract_metrics.ht_instance << std::endl;
 }

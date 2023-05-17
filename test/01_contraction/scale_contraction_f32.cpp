@@ -249,7 +249,6 @@ int main(int argc, char* argv[])
                                                worksize,
                                                0 /* stream */));
 
-    plan.hiptensorPrintContractionMetrics();
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
