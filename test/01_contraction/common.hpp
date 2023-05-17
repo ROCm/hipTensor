@@ -100,6 +100,7 @@ void hiptensorScaleContractionReference(ADataType *A,
         return indices;
     };
 
+#pragma omp parallel for
     for(std::size_t i = 0; i < elementsD; ++i)
     {
         std::array<std::size_t, NDIM> indices = GetNdIndices(i);
@@ -175,6 +176,7 @@ void hiptensorBilinearContractionReference(ADataType *A,
         return indices;
     };
 
+#pragma omp parallel for
     for(std::size_t i = 0; i < elementsD; ++i)
     {
         std::array<std::size_t, NDIM> indices = GetNdIndices(i);
