@@ -24,9 +24,6 @@
  *
  *******************************************************************************/
 
-#if !NDEBUG
-#include "common.hpp"
-#else
 #include <algorithm>
 #include <fstream>
 #include <iterator>
@@ -37,6 +34,9 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+
+#if !NDEBUG
+#include "common.hpp"
 #endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
