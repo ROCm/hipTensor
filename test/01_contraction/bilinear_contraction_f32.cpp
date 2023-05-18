@@ -189,9 +189,9 @@ int main(int argc, char* argv[])
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     CDataType* C = (CDataType*)malloc(sizeC);
-    CDataType* D = (DDataType*)malloc(sizeD);
+    DDataType* D = (DDataType*)malloc(sizeD);
 #if !NDEBUG
-    CDataType* D_host = (DDataType*)malloc(sizeD);
+    DDataType* D_host = (DDataType*)malloc(sizeD);
 #endif
     void *A_d, *B_d, *C_d, *D_d;
 
@@ -386,9 +386,13 @@ int main(int argc, char* argv[])
     std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
 
     if(mValidationResult == true)
+    {
         std::cout << "Validation Successful" << std::endl;
+    }
     else
+    {
         std::cout << "Validation Failed" << std::endl;
+    }
 
     std::cout << "Max relative error: " << mMaxRelativeError;
 

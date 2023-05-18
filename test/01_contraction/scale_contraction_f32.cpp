@@ -315,9 +315,13 @@ int main(int argc, char* argv[])
     std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
 
     if(mValidationResult == true)
+    {
         std::cout << "Validation Successful" << std::endl;
+    }
     else
+    {
         std::cout << "Validation Failed" << std::endl;
+    }
 
     std::cout << "Max relative error: " << mMaxRelativeError;
 

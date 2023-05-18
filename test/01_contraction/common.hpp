@@ -72,18 +72,18 @@ struct joinable_thread : std::thread
 };
 
 template <typename ADataType, typename BDataType, typename DDataType, typename floatTypeCompute>
-void hiptensorScaleContractionReference(ADataType*           A,
-                                        BDataType*           B,
-                                        DDataType*           D,
-                                        floatTypeCompute     alpha,
-                                        std::vector<int64_t> a_ms_ks_lengths,
-                                        std::vector<int64_t> b_ks_ns_lengths,
-                                        std::vector<int64_t> d_ms_ns_lengths,
-                                        std::vector<size_t>  a_ms_ks_strides,
-                                        std::vector<size_t>  b_ks_ns_strides,
-                                        std::vector<size_t>  d_ms_ns_strides,
-                                        std::size_t          elementsD,
-                                        std::size_t          num_thread = 1)
+void hiptensorScaleContractionReference(ADataType*          A,
+                                        BDataType*          B,
+                                        DDataType*          D,
+                                        floatTypeCompute    alpha,
+                                        std::vector<size_t> a_ms_ks_lengths,
+                                        std::vector<size_t> b_ks_ns_lengths,
+                                        std::vector<size_t> d_ms_ns_lengths,
+                                        std::vector<size_t> a_ms_ks_strides,
+                                        std::vector<size_t> b_ks_ns_strides,
+                                        std::vector<size_t> d_ms_ns_strides,
+                                        std::size_t         elementsD,
+                                        std::size_t         num_thread = 1)
 {
     auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
         floatTypeCompute valA, valB, valC, valAcc = 0;
@@ -154,22 +154,22 @@ template <typename ADataType,
           typename CDataType,
           typename DDataType,
           typename floatTypeCompute>
-void hiptensorBilinearContractionReference(ADataType*           A,
-                                           BDataType*           B,
-                                           CDataType*           C,
-                                           DDataType*           D,
-                                           floatTypeCompute     alpha,
-                                           floatTypeCompute     beta,
-                                           std::vector<int64_t> a_ms_ks_lengths,
-                                           std::vector<int64_t> b_ks_ns_lengths,
-                                           std::vector<int64_t> c_ms_ns_lengths,
-                                           std::vector<int64_t> d_ms_ns_lengths,
-                                           std::vector<size_t>  a_ms_ks_strides,
-                                           std::vector<size_t>  b_ks_ns_strides,
-                                           std::vector<size_t>  c_ms_ns_strides,
-                                           std::vector<size_t>  d_ms_ns_strides,
-                                           std::size_t          elementsD,
-                                           std::size_t          num_thread = 1)
+void hiptensorBilinearContractionReference(ADataType*          A,
+                                           BDataType*          B,
+                                           CDataType*          C,
+                                           DDataType*          D,
+                                           floatTypeCompute    alpha,
+                                           floatTypeCompute    beta,
+                                           std::vector<size_t> a_ms_ks_lengths,
+                                           std::vector<size_t> b_ks_ns_lengths,
+                                           std::vector<size_t> c_ms_ns_lengths,
+                                           std::vector<size_t> d_ms_ns_lengths,
+                                           std::vector<size_t> a_ms_ks_strides,
+                                           std::vector<size_t> b_ks_ns_strides,
+                                           std::vector<size_t> c_ms_ns_strides,
+                                           std::vector<size_t> d_ms_ns_strides,
+                                           std::size_t         elementsD,
+                                           std::size_t         num_thread = 1)
 {
     auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
         floatTypeCompute valA, valB, valAcc = 0, valD1, valD2;
