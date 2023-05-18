@@ -28,12 +28,6 @@
 
 namespace hiptensor
 {
-    // Handle::Handle()
-    //     : mDeviceId()
-    // {
-
-    // }
-
     Handle Handle::createHandle(int64_t* buff)
     {
         auto handle = toHandle(buff);
