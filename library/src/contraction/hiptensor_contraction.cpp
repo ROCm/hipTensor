@@ -56,13 +56,18 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     {
         // C-descriptor is empty
         *desc = {(int32_t)hiptensor::ContractionOpId_t::SCALE,
-                 {*descA, *descB, {(hipDataType)-1, {}, {}}, *descD},
+                 typeCompute,
+                 {*descA,
+                  *descB,
+                  {(hipDataType)-1, {descD->mLengths.size(), 0}, {descD->mStrides.size(), 0}},
+                  *descD},
                  {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
     }
     else
     {
         // C-descriptor is not empty
         *desc = {(int32_t)hiptensor::ContractionOpId_t::BILINEAR,
+                 typeCompute,
                  {*descA, *descB, *descC, *descD},
                  {alignmentRequirementA,
                   alignmentRequirementB,
@@ -89,10 +94,11 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
-    if(algo == HIPTENSOR_ALGO_DEFAULT)
+    if(algo == HIPTENSOR_ALGO_DEFAULT || algo == HIPTENSOR_ALGO_DEFAULT_PATIENT
+       || algo == HIPTENSOR_ALGO_ACTOR_CRITIC)
     {
         // Update the stored selection algorithm
-        find->mSelectionAlgorithm = HIPTENSOR_ALGO_DEFAULT;
+        find->mSelectionAlgorithm = algo;
 
         // For now, enumerate all known contraction kernels.
         // Using the hipDevice, determine if the device supports F64
@@ -139,6 +145,67 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
                                                        const hiptensorWorksizePreference_t     pref,
                                                        uint64_t* workspaceSize)
 {
+    if(handle == nullptr || desc == nullptr || find == nullptr || workspaceSize == nullptr)
+    {
+        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    }
+
+    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
+    // Therefore the conversion to ck::index_t is required.
+    auto toCKVec
+        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
+
+    auto a_ms_ks_lengths = toCKVec(desc->mTensorDesc[0].mLengths);
+    auto a_ms_ks_strides = toCKVec(desc->mTensorDesc[0].mStrides);
+    auto b_ns_ks_lengths = toCKVec(desc->mTensorDesc[1].mLengths);
+    auto b_ns_ks_strides = toCKVec(desc->mTensorDesc[1].mStrides);
+    auto d_ms_ns_lengths = toCKVec(desc->mTensorDesc[2].mLengths);
+    auto d_ms_ns_strides = toCKVec(desc->mTensorDesc[2].mStrides);
+    auto e_ms_ns_lengths = toCKVec(desc->mTensorDesc[3].mLengths);
+    auto e_ms_ns_strides = toCKVec(desc->mTensorDesc[3].mStrides);
+
+    *workspaceSize = 0u;
+
+    // No mem alloc, just need to init sizes to determine workspace req.
+    float alpha, beta;
+    void *A_d, *B_d, *C_d;
+    for(auto* candidate : find->mCandidates)
+    {
+        auto* solution = (hiptensor::ContractionSolution*)candidate;
+        if(solution->initArgs(&alpha,
+                              A_d,
+                              B_d,
+                              &beta,
+                              C_d,
+                              C_d,
+                              a_ms_ks_lengths,
+                              a_ms_ks_strides,
+                              b_ns_ks_lengths,
+                              b_ns_ks_strides,
+                              std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
+                              std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
+                              e_ms_ns_lengths,
+                              e_ms_ns_strides,
+                              nullptr))
+        {
+            if(*workspaceSize == 0)
+            {
+                *workspaceSize = solution->workspaceSize();
+            }
+            else
+            {
+                if(pref == HIPTENSOR_WORKSPACE_MIN)
+                {
+                    *workspaceSize = std::min(*workspaceSize, solution->workspaceSize());
+                }
+                else
+                {
+                    *workspaceSize = std::max(*workspaceSize, solution->workspaceSize());
+                }
+            }
+        }
+    }
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -198,8 +265,30 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
-    auto                            result = hiptensor::bruteForceModel(&winner,
-                                             candidates,
+    auto                            result = HIPTENSOR_STATUS_INTERNAL_ERROR;
+    if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
+       || find->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
+    {
+        result = hiptensor::bruteForceModel(&winner,
+                                            candidates,
+                                            ADataType,
+                                            a_ms_ks_lengths,
+                                            a_ms_ks_strides,
+                                            BDataType,
+                                            b_ns_ks_lengths,
+                                            b_ns_ks_strides,
+                                            DDataType,
+                                            d_ms_ns_lengths,
+                                            d_ms_ns_strides,
+                                            EDataType,
+                                            e_ms_ns_lengths,
+                                            e_ms_ns_strides,
+                                            workspaceSize);
+    }
+    else if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
+    {
+        result = hiptensor::actorCriticModel(&winner,
+                                             solutionMap,
                                              ADataType,
                                              a_ms_ks_lengths,
                                              a_ms_ks_strides,
@@ -213,6 +302,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                              e_ms_ns_lengths,
                                              e_ms_ns_strides,
                                              workspaceSize);
+    }
 
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
@@ -285,10 +375,16 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                       std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
                                       std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
                                       e_ms_ns_lengths,
-                                      e_ms_ns_strides);
+                                      e_ms_ns_strides,
+                                      workspace);
 
     if(canRun)
     {
+        if(cSolution->workspaceSize() > workspaceSize)
+        {
+            return HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE;
+        }
+
         (*cSolution)(StreamConfig{stream, false});
         return HIPTENSOR_STATUS_SUCCESS;
     }
