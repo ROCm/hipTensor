@@ -41,6 +41,23 @@
 
 #define NDIM 4
 
+struct joinable_thread : std::thread
+{
+    template <typename... Xs>
+    joinable_thread(Xs&&... xs) : std::thread(std::forward<Xs>(xs)...)
+    {
+    }
+
+    joinable_thread(joinable_thread&&) = default;
+    joinable_thread& operator=(joinable_thread&&) = default;
+
+    ~joinable_thread()
+    {
+        if(this->joinable())
+            this->join();
+    }
+};
+
 template < typename ADataType,
            typename BDataType,
            typename DDataType,
@@ -55,7 +72,8 @@ void hiptensorScaleContractionReference(ADataType *A,
                                         std::vector<size_t> a_ms_ks_strides,
                                         std::vector<size_t> b_ks_ns_strides,
                                         std::vector<size_t> d_ms_ns_strides,
-                                        int elementsD)
+                                        std::size_t elementsD,
+                                        std::size_t num_thread = 1)
 {
     auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1)
     {
@@ -100,11 +118,23 @@ void hiptensorScaleContractionReference(ADataType *A,
         return indices;
     };
 
-#pragma omp parallel for
-    for(std::size_t i = 0; i < elementsD; ++i)
+    std::size_t work_per_thread = (elementsD + num_thread - 1) / num_thread;
+    std::vector<joinable_thread> threads(num_thread);
+
+    for(std::size_t i = 0; i < num_thread; ++i)
     {
-        std::array<std::size_t, NDIM> indices = GetNdIndices(i);
-        d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
+        std::size_t it_begin = i * work_per_thread;
+        std::size_t it_end   = std::min((i + 1) * work_per_thread, elementsD);
+
+        auto f = [=] {
+            for(std::size_t it = it_begin; it < it_end; ++it)
+            {
+                std::array<std::size_t, NDIM> indices = GetNdIndices(it);
+                d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
+            }
+        };
+
+        threads[i] = joinable_thread(f);
     }
 }
 
@@ -127,7 +157,8 @@ void hiptensorBilinearContractionReference(ADataType *A,
                                            std::vector<size_t> b_ks_ns_strides,
                                            std::vector<size_t> c_ms_ns_strides,
                                            std::vector<size_t> d_ms_ns_strides,
-                                           int elementsD)
+                                           std::size_t elementsD,
+                                           std::size_t num_thread = 1)
 {
     auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1)
     {
@@ -176,18 +207,30 @@ void hiptensorBilinearContractionReference(ADataType *A,
         return indices;
     };
 
-#pragma omp parallel for
-    for(std::size_t i = 0; i < elementsD; ++i)
+    std::size_t work_per_thread = (elementsD + num_thread - 1) / num_thread;
+    std::vector<joinable_thread> threads(num_thread);
+
+    for(std::size_t i = 0; i < num_thread; ++i)
     {
-        std::array<std::size_t, NDIM> indices = GetNdIndices(i);
-        d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
+        std::size_t it_begin = i * work_per_thread;
+        std::size_t it_end   = std::min((i + 1) * work_per_thread, elementsD);
+
+        auto f = [=] {
+            for(std::size_t it = it_begin; it < it_end; ++it)
+            {
+                std::array<std::size_t, NDIM> indices = GetNdIndices(it);
+                d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
+            }
+        };
+
+        threads[i] = joinable_thread(f);
     }
 }
 
 template <typename DDataType>
 std::pair<bool, double> compareEqual(DDataType const* deviceD,
                                      DDataType const* hostD,
-                                     int elementsD,
+                                     std::size_t elementsD,
                                      double       tolerance = 100.0)
 {
     bool   retval             = true;
