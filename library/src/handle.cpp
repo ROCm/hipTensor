@@ -24,55 +24,38 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HIP_DEVICE_HPP
-#define HIPTENSOR_HIP_DEVICE_HPP
-
-#include "internal/hiptensor_utility.hpp"
-#include <hip/hip_runtime_api.h>
+#include "handle.hpp"
 
 namespace hiptensor
 {
-    class HipDevice
+    // Handle::Handle()
+    //     : mDeviceId()
+    // {
+
+    // }
+
+    Handle Handle::createHandle(int64_t* buff)
     {
-    public:
-        enum hipGcnArch_t : uint32_t
-        {
-            GFX908           = 0x908,
-            GFX90A           = 0x90A,
-            UNSUPPORTED_ARCH = 0x0,
-        };
+        auto handle = toHandle(buff);
+        new(handle) Handle();
 
-        enum hipWarpSize_t : uint32_t
-        {
-            Wave64                = 64u,
-            UNSUPPORTED_WARP_SIZE = 0u,
-        };
+        return *handle;
+    }
 
-        HipDevice();
-        ~HipDevice() = default;
+    void Handle::destroyHandle(int64_t* buff)
+    {
+        auto handle = toHandle(buff);
+        handle->~Handle();
+    }
 
-        hipDevice_t     getDeviceId() const;
-        hipDeviceProp_t getDeviceProps() const;
-        hipDeviceArch_t getDeviceArch() const;
-        hipGcnArch_t    getGcnArch() const;
+    Handle* Handle::toHandle(int64_t* buff)
+    {
+        return reinterpret_cast<Handle*>(buff);
+    }
 
-        int warpSize() const;
-        int sharedMemSize() const;
-        int cuCount() const;
-        int maxFreqMhz() const;
+    HipDevice Handle::getDevice()
+    {
+        return mDevice;
+    }
 
-        bool supportsF64() const;
-
-    private:
-        hipDevice_t     mDeviceId;
-        hipDeviceProp_t mProps;
-        hipDeviceArch_t mArch;
-        hipGcnArch_t    mGcnArch;
-        int             mWarpSize;
-        int             mSharedMemSize;
-        int             mCuCount;
-        int             mMaxFreqMhz;
-    };
 } // namespace hiptensor
-
-#endif // HIPTENSOR_HIP_DEVICE_HPP
