@@ -33,6 +33,8 @@ file(WRITE "${INSTALL_TEST_FILE}"
 ]=]
 )
 
+find_package(Threads REQUIRED)
+
 # Target that will trigger build of all tests
 add_custom_target(hiptensor_tests)
 
