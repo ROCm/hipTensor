@@ -24,7 +24,20 @@
  *
  *******************************************************************************/
 
+#if !NDEBUG
 #include "common.hpp"
+#else
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#include <numeric>
+#include <unordered_map>
+
+// hiptensor includes
+#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/internal/hiptensor_utility.hpp>
+#endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
@@ -177,8 +190,9 @@ int main(int argc, char* argv[])
     BDataType* B = (BDataType*)malloc(sizeB);
     CDataType* C = (CDataType*)malloc(sizeC);
     CDataType* D = (DDataType*)malloc(sizeD);
+#if !NDEBUG
     CDataType* D_host = (DDataType*)malloc(sizeD);
-
+#endif
     void *A_d, *B_d, *C_d, *D_d;
 
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
@@ -207,7 +221,9 @@ int main(int argc, char* argv[])
     for(int64_t i = 0; i < elementsD; i++)
     {
         D[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
+#if !NDEBUG
         D_host[i] = D[i];
+#endif
     }
 
     /********************************************
@@ -293,9 +309,10 @@ int main(int argc, char* argv[])
                                                worksize,
                                                0 /* stream */));
 
+#if !NDEBUG
+
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
-#if !NDEBUG
     std::ofstream tensorA, tensorB, tensorC, tensorD;
     if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
     {
@@ -327,7 +344,7 @@ int main(int argc, char* argv[])
     hiptensorPrintElementsToFile(tensorC, C, elementsC, ',');
     std::cout << std::endl;
     tensorC.close();
-    if(elementsD< MAX_ELEMENTS_PRINT_COUNT)
+    if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
     {
         std::cout << "Tensor D elements:\n";
         hiptensorPrintArrayElements(D, elementsD);
@@ -337,42 +354,49 @@ int main(int argc, char* argv[])
     hiptensorPrintElementsToFile(tensorD, D, elementsD, ',');
     std::cout << std::endl;
     tensorD.close();
-#endif
 
     std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
     std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
     std::vector<size_t> c_ms_ns_strides = c_ms_ns.mStrides;
     std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
 
-    hiptensorBilinearContractionReference<ADataType, BDataType, CDataType, DDataType, floatTypeCompute>(
-                                          A,
-                                          B,
-                                          C,
-                                          D_host,
-                                          alpha,
-                                          beta,
-                                          a_ms_ks_lengths,
-                                          b_ks_ns_lengths,
-                                          c_ms_ns_lengths,
-                                          d_ms_ns_lengths,
-                                          a_ms_ks_strides,
-                                          b_ks_ns_strides,
-                                          c_ms_ns_strides,
-                                          d_ms_ns_strides,
-                                          elementsD);
+    hiptensorBilinearContractionReference<ADataType,
+                                          BDataType,
+                                          CDataType,
+                                          DDataType,
+                                          floatTypeCompute>(A,
+                                                            B,
+                                                            C,
+                                                            D_host,
+                                                            alpha,
+                                                            beta,
+                                                            a_ms_ks_lengths,
+                                                            b_ks_ns_lengths,
+                                                            c_ms_ns_lengths,
+                                                            d_ms_ns_lengths,
+                                                            a_ms_ks_strides,
+                                                            b_ks_ns_strides,
+                                                            c_ms_ns_strides,
+                                                            d_ms_ns_strides,
+                                                            elementsD);
 
-    bool     mValidationResult = false;
-    double   mMaxRelativeError;
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
 
-    std::tie(mValidationResult, mMaxRelativeError)
-            = compareEqual<DDataType>(D, D_host, elementsD);
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
 
     if(mValidationResult == true)
         std::cout << "Validation Successful" << std::endl;
     else
         std::cout << "Validation Failed" << std::endl;
 
-    std::cout   << "Max relative error: " << mMaxRelativeError;
+    std::cout << "Max relative error: " << mMaxRelativeError;
+
+    if(D_host)
+    {
+        free(D_host);
+    }
+#endif
 
     if(A)
     {
@@ -392,11 +416,6 @@ int main(int argc, char* argv[])
     if(D)
     {
         free(D);
-    }
-
-    if(D_host)
-    {
-        free(D_host);
     }
 
     if(A_d)

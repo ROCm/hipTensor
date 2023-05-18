@@ -24,7 +24,20 @@
  *
  *******************************************************************************/
 
+#if !NDEBUG
 #include "common.hpp"
+#else
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#include <numeric>
+#include <unordered_map>
+
+// hiptensor includes
+#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/internal/hiptensor_utility.hpp>
+#endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
@@ -89,42 +102,39 @@ int main(int argc, char* argv[])
    * Intialise Tensors with the input lengths *
    ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                                handle,
-                                &a_ms_ks,
-                                nmodeA,
-                                a_ms_ks_lengths.data(),
-                                NULL, /*stride*/
-                                typeA,
-                                HIPTENSOR_OP_IDENTITY));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &a_ms_ks,
+                                                        nmodeA,
+                                                        a_ms_ks_lengths.data(),
+                                                        NULL, /*stride*/
+                                                        typeA,
+                                                        HIPTENSOR_OP_IDENTITY));
 
 #if !NDEBUG
     std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
 #endif
 
     hiptensorTensorDescriptor_t b_ks_ns;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                                handle,
-                                &b_ks_ns,
-                                nmodeB,
-                                b_ks_ns_lengths.data(),
-                                NULL, /*stride*/
-                                typeB,
-                                HIPTENSOR_OP_IDENTITY));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &b_ks_ns,
+                                                        nmodeB,
+                                                        b_ks_ns_lengths.data(),
+                                                        NULL, /*stride*/
+                                                        typeB,
+                                                        HIPTENSOR_OP_IDENTITY));
 
 #if !NDEBUG
     std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
 #endif
 
     hiptensorTensorDescriptor_t d_ms_ns;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                                handle,
-                                &d_ms_ns,
-                                nmodeD,
-                                d_ms_ns_lengths.data(),
-                                NULL, /*stride*/
-                                typeD,
-                                HIPTENSOR_OP_IDENTITY));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &d_ms_ns,
+                                                        nmodeD,
+                                                        d_ms_ns_lengths.data(),
+                                                        NULL, /*stride*/
+                                                        typeD,
+                                                        HIPTENSOR_OP_IDENTITY));
 
 #if !NDEBUG
     std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
@@ -148,7 +158,9 @@ int main(int argc, char* argv[])
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     DDataType* D = (DDataType*)malloc(sizeD);
+#if !NDEBUG
     DDataType* D_host = (DDataType*)malloc(sizeD);
+#endif
 
     void *A_d, *B_d, *D_d;
 
@@ -179,35 +191,37 @@ int main(int argc, char* argv[])
    * Retrieve the memory alignment for each tensor
    ************************************************/
     uint32_t alignmentRequirementA;
-    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA));
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA));
 
     uint32_t alignmentRequirementB;
-    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB));
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB));
 
     uint32_t alignmentRequirementD;
-    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD));
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD));
 
     /*******************************
    * Create Contraction Descriptor
    *******************************/
 
     hiptensorContractionDescriptor_t desc;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(
-                                    handle,
-                                    &desc,
-                                    &a_ms_ks,
-                                    modeA.data(),
-                                    alignmentRequirementA,
-                                    &b_ks_ns,
-                                    modeB.data(),
-                                    alignmentRequirementB,
-                                    nullptr,
-                                    nullptr,
-                                    0,
-                                    &d_ms_ns,
-                                    modeD.data(),
-                                    alignmentRequirementD,
-                                    typeCompute));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(handle,
+                                                             &desc,
+                                                             &a_ms_ks,
+                                                             modeA.data(),
+                                                             alignmentRequirementA,
+                                                             &b_ks_ns,
+                                                             modeB.data(),
+                                                             alignmentRequirementB,
+                                                             nullptr,
+                                                             nullptr,
+                                                             0,
+                                                             &d_ms_ns,
+                                                             modeD.data(),
+                                                             alignmentRequirementD,
+                                                             typeCompute));
     /**************************
    * Set the algorithm to use
    ***************************/
@@ -231,22 +245,21 @@ int main(int argc, char* argv[])
     hiptensorContractionPlan_t plan;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
 
-    CHECK_HIPTENSOR_ERROR(hiptensorContraction(
-                        handle,
-                        &plan,
-                        (void*)&alpha,
-                        A_d,
-                        B_d,
-                        nullptr,
-                        nullptr,
-                        D_d,
-                        work,
-                        worksize,
-                        0 /* stream */));
-
-    CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+    CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
+                                               &plan,
+                                               (void*)&alpha,
+                                               A_d,
+                                               B_d,
+                                               nullptr,
+                                               nullptr,
+                                               D_d,
+                                               work,
+                                               worksize,
+                                               0 /* stream */));
 
 #if !NDEBUG
+    CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+
     std::ofstream tensorA, tensorB, tensorD;
     if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
     {
@@ -278,37 +291,41 @@ int main(int argc, char* argv[])
     hiptensorPrintElementsToFile(tensorD, D, elementsD, ',');
     std::cout << std::endl;
     tensorD.close();
-#endif
-    
+
     std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
     std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
     std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
-    
+
     hiptensorScaleContractionReference<ADataType, BDataType, DDataType, floatTypeCompute>(
-                                       A,
-                                       B,
-                                       D_host,
-                                       alpha,
-                                       a_ms_ks_lengths,
-                                       b_ks_ns_lengths,
-                                       d_ms_ns_lengths,
-                                       a_ms_ks_strides,
-                                       b_ks_ns_strides,
-                                       d_ms_ns_strides,
-                                       elementsD);
+        A,
+        B,
+        D_host,
+        alpha,
+        a_ms_ks_lengths,
+        b_ks_ns_lengths,
+        d_ms_ns_lengths,
+        a_ms_ks_strides,
+        b_ks_ns_strides,
+        d_ms_ns_strides,
+        elementsD);
 
-    bool     mValidationResult = false;
-    double   mMaxRelativeError;
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
 
-    std::tie(mValidationResult, mMaxRelativeError)
-            = compareEqual<DDataType>(D, D_host, elementsD);
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
 
     if(mValidationResult == true)
         std::cout << "Validation Successful" << std::endl;
     else
         std::cout << "Validation Failed" << std::endl;
 
-    std::cout   << "Max relative error: " << mMaxRelativeError;
+    std::cout << "Max relative error: " << mMaxRelativeError;
+
+    if(D_host)
+    {
+        free(D_host);
+    }
+#endif
 
     if(A)
     {
@@ -323,11 +340,6 @@ int main(int argc, char* argv[])
     if(D)
     {
         free(D);
-    }
-
-    if(D_host)
-    {
-        free(D_host);
     }
 
     if(A_d)
