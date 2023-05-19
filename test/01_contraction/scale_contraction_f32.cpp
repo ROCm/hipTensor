@@ -23,6 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+
 #include <algorithm>
 #include <fstream>
 #include <iterator>
@@ -33,6 +34,10 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+
+#if !NDEBUG
+#include "common.hpp"
+#endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
@@ -48,7 +53,7 @@ int main(int argc, char* argv[])
     hipDataType            typeD       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
+    floatTypeCompute alpha = (floatTypeCompute)2.0f;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
@@ -153,6 +158,9 @@ int main(int argc, char* argv[])
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     DDataType* D = (DDataType*)malloc(sizeD);
+#if !NDEBUG
+    DDataType* D_host = (DDataType*)malloc(sizeD);
+#endif
 
     void *A_d, *B_d, *D_d;
 
@@ -170,6 +178,13 @@ int main(int argc, char* argv[])
     for(int64_t i = 0; i < elementsB; i++)
     {
         B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+    }
+    for(int64_t i = 0; i < elementsD; i++)
+    {
+        D[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#if !NDEBUG
+        D_host[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#endif
     }
 
     /********************************************
@@ -249,9 +264,9 @@ int main(int argc, char* argv[])
                                                worksize,
                                                0 /* stream */));
 
+#if !NDEBUG
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
-#if !NDEBUG
     std::ofstream tensorA, tensorB, tensorD;
     if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
     {
@@ -283,6 +298,48 @@ int main(int argc, char* argv[])
     hiptensorPrintElementsToFile(tensorD, D, elementsD, ',');
     std::cout << std::endl;
     tensorD.close();
+
+    std::vector<size_t> a_m_k_lengths = a_ms_ks.mLengths;
+    std::vector<size_t> b_k_n_lengths = b_ks_ns.mLengths;
+    std::vector<size_t> d_m_n_lengths = d_ms_ns.mLengths;
+
+    std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
+    std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
+    std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
+
+    hiptensorScaleContractionReference<ADataType, BDataType, DDataType, floatTypeCompute>(
+        A,
+        B,
+        D_host,
+        alpha,
+        a_m_k_lengths,
+        b_k_n_lengths,
+        d_m_n_lengths,
+        a_ms_ks_strides,
+        b_ks_ns_strides,
+        d_ms_ns_strides,
+        elementsD);
+
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
+
+    if(mValidationResult == true)
+    {
+        std::cout << "Validation Successful" << std::endl;
+    }
+    else
+    {
+        std::cout << "Validation Failed" << std::endl;
+    }
+
+    std::cout << "Max relative error: " << mMaxRelativeError;
+
+    if(D_host)
+    {
+        free(D_host);
+    }
 #endif
 
     if(A)
