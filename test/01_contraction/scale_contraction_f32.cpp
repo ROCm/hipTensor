@@ -179,6 +179,13 @@ int main(int argc, char* argv[])
     {
         B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
     }
+    for(int64_t i = 0; i < elementsD; i++)
+    {
+        D[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#if !NDEBUG
+        D_host[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#endif
+    }
 
     /********************************************
    * Transfer the Host Tensor to Device Memory *
@@ -292,6 +299,10 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
     tensorD.close();
 
+    std::vector<size_t> a_m_k_lengths = a_ms_ks.mLengths;
+    std::vector<size_t> b_k_n_lengths = b_ks_ns.mLengths;
+    std::vector<size_t> d_m_n_lengths = d_ms_ns.mLengths;
+
     std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
     std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
     std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
@@ -301,9 +312,9 @@ int main(int argc, char* argv[])
         B,
         D_host,
         alpha,
-        a_ms_ks_lengths,
-        b_ks_ns_lengths,
-        d_ms_ns_lengths,
+        a_m_k_lengths,
+        b_k_n_lengths,
+        d_m_n_lengths,
         a_ms_ks_strides,
         b_ks_ns_strides,
         d_ms_ns_strides,
