@@ -310,6 +310,8 @@ int main(int argc, char* argv[])
     tensorC.close();
 #endif
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+
     if(A)
     {
         free(A);

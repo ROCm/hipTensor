@@ -295,6 +295,8 @@ int main(int argc, char* argv[])
     tensorD.close();
 #endif
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+
     if(A)
     {
         free(A);
