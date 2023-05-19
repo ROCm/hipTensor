@@ -342,6 +342,8 @@ int main(int argc, char* argv[])
     }
 #endif
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+
     if(A)
     {
         free(A);
