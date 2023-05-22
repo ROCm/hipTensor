@@ -44,6 +44,16 @@ bool loggerSingletonTest()
     return (loggerInit == logger);
 }
 
+bool hiptensorLoggerOpenFileTest()
+{
+    const char* logFile = "log.txt";
+    if(hiptensorLoggerOpenFile(logFile) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+    return true;
+}
+
 bool hiptensorLoggerSetLevelTest()
 {
     // Test all log levels enumerated in hiptensorLogLevel_t
@@ -122,6 +132,11 @@ int main(int argc, char* argv[])
     testPass = loggerSingletonTest();
     totalPass &= testPass;
     std::cout << "Logger Singleton: ";
+    printBool(testPass);
+
+    testPass = hiptensorLoggerOpenFileTest();
+    totalPass &= testPass;
+    std::cout << "hiptensorLoggerOpenFile: ";
     printBool(testPass);
 
     testPass = hiptensorLoggerSetLevelTest();
