@@ -44,9 +44,26 @@ bool loggerSingletonTest()
     return (loggerInit == logger);
 }
 
+bool hiptensorLoggerSetFileTest()
+{
+    FILE* fp = fopen("LoggerSetFileTestLogFail.txt", "r");
+    if(hiptensorLoggerSetFile(fp) == HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    FILE* fp_w = fopen("LoggerSetFileTestLogPass.txt", "w");
+    if(hiptensorLoggerSetFile(fp_w) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool hiptensorLoggerOpenFileTest()
 {
-    const char* logFile = "log.txt";
+    const char* logFile = "LoggerOpenFileTestLog.txt";
     if(hiptensorLoggerOpenFile(logFile) != HIPTENSOR_STATUS_SUCCESS)
     {
         return false;
@@ -132,6 +149,11 @@ int main(int argc, char* argv[])
     testPass = loggerSingletonTest();
     totalPass &= testPass;
     std::cout << "Logger Singleton: ";
+    printBool(testPass);
+
+    testPass = hiptensorLoggerSetFileTest();
+    totalPass &= testPass;
+    std::cout << "hiptensorLoggerSetFile: ";
     printBool(testPass);
 
     testPass = hiptensorLoggerOpenFileTest();
