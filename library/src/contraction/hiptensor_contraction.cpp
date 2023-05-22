@@ -46,8 +46,21 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                                      hiptensorComputeType_t typeCompute)
 
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
+
     if(!handle || !desc || !descA || !descB || !descD)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_NOT_INITIALIZED)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorInitContractionDescriptor", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
@@ -77,8 +90,21 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                                                hiptensorContractionFind_t* find,
                                                const hiptensorAlgo_t       algo)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorInitContractionFind", msg);
+
     if(handle == nullptr || find == nullptr)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_NOT_INITIALIZED)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
@@ -86,6 +112,11 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceHandle() != handle->mHipDevice)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
@@ -113,6 +144,11 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         if(query.solutionCount() == 0)
         {
             // No kernels found!
+            sprintf(msg,
+                    "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+                    2 * (int)sizeof(void*),
+                    (unsigned long long)handle);
+            logger->logError("hiptensorInitContractionFind", msg);
             return HIPTENSOR_STATUS_INTERNAL_ERROR;
         }
 
@@ -129,6 +165,11 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     }
     else
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_INVALID_VALUE)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 }
@@ -139,6 +180,14 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
                                                        const hiptensorWorksizePreference_t     pref,
                                                        uint64_t* workspaceSize)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -148,14 +197,32 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                                const hiptensorContractionFind_t*       find,
                                                const uint64_t workspaceSize)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorInitContractionPlan", msg);
+
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_NOT_INITIALIZED)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceHandle() != handle->mHipDevice)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
@@ -216,6 +283,12 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (%s)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                hiptensorGetErrorString(result));
+        logger->logError("hiptensorInitContractionFind", msg);
         return result;
     }
 
@@ -238,18 +311,41 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                        uint64_t                          workspaceSize,
                                        hipStream_t                       stream)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorContraction", msg);
+
     if(handle == nullptr || plan == nullptr)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_NOT_INITIALIZED)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     if(alpha == nullptr || A == nullptr || B == nullptr || D == nullptr)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_INVALID_VALUE)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
     if(plan->mSolution == nullptr)
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
@@ -294,6 +390,11 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     }
     else
     {
+        sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle);
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 }
