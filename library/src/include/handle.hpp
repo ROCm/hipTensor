@@ -24,50 +24,33 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_SRC_UTIL_HPP
-#define HIPTENSOR_SRC_UTIL_HPP
+#ifndef HIPTENSOR_HANDLE_HPP
+#define HIPTENSOR_HANDLE_HPP
+
+#include <new>
+
+#include "hip_device.hpp"
+#include "internal/hiptensor_utility.hpp"
+#include <hip/hip_runtime_api.h>
 
 namespace hiptensor
 {
-    template <typename T>
-    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
+    // hiptensorHandle_t wrapper object
+    struct Handle
     {
-        if(lengths.empty())
-        {
-            return lengths;
-        }
+    public:
+        Handle()  = default;
+        ~Handle() = default;
 
-        // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> strides(lengths.size());
-        strides.back() = 1;
-        std::partial_sum(
-            lengths.rbegin(), lengths.rend() - 1, strides.rbegin() + 1, std::multiplies<T>());
-        return strides;
-    }
+        static Handle  createHandle(int64_t* buff); // Calls constructor for all member variables
+        static void    destroyHandle(int64_t* buff); // Calls destructor for all member variables
+        static Handle* toHandle(int64_t* buff); // Reinterprets input buffer as Handle class
 
-    template <typename T>
-    static inline T elementsFromLengths(std::vector<T> const& lengths)
-    {
-        return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
-    }
+        HipDevice getDevice();
 
-    template <typename T>
-    static inline T elementSpaceFromLengthsAndStrides(std::vector<T> const& lengths,
-                                                      std::vector<T> const& strides)
-    {
-        auto accum = T{1};
-        for(int i = 0; i < lengths.size(); i++)
-        {
-            if(lengths[i] == 0)
-            {
-                continue;
-            }
-
-            accum += (lengths[i] - 1) * strides[i];
-        }
-        return accum;
-    }
-
+    private:
+        HipDevice mDevice;
+    };
 } // namespace hiptensor
 
-#endif // HIPTENSOR_SRC_UTIL_HPP
+#endif // HIPTENSOR_HANDLE_HPP

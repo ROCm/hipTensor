@@ -23,9 +23,9 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <numeric>
 #include <unordered_map>
@@ -35,6 +35,10 @@
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
+#if !NDEBUG
+#include "common.hpp"
+#endif
+
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
 int main(int argc, char* argv[])
@@ -42,15 +46,17 @@ int main(int argc, char* argv[])
     typedef float ADataType;
     typedef float BDataType;
     typedef float CDataType;
+    typedef float DDataType;
     typedef float floatTypeCompute;
 
     hipDataType            typeA       = HIP_R_32F;
     hipDataType            typeB       = HIP_R_32F;
     hipDataType            typeC       = HIP_R_32F;
+    hipDataType            typeD       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.1f;
-    floatTypeCompute beta  = (floatTypeCompute)1.0f;
+    floatTypeCompute alpha = (floatTypeCompute)2.0f;
+    floatTypeCompute beta  = (floatTypeCompute)2.0f;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
@@ -61,6 +67,7 @@ int main(int argc, char* argv[])
    *C_{m,n,u,v}
    **********************/
 
+    std::vector<int> modeD{'m', 'n', 'u', 'v'};
     std::vector<int> modeC{'m', 'n', 'u', 'v'};
     std::vector<int> modeA{'m', 'n', 'h', 'k'};
     std::vector<int> modeB{'u', 'v', 'h', 'k'};
@@ -68,6 +75,7 @@ int main(int argc, char* argv[])
     int nmodeA = modeA.size();
     int nmodeB = modeB.size();
     int nmodeC = modeC.size();
+    int nmodeD = modeD.size();
 
     std::unordered_map<int, int64_t> extent;
 
@@ -82,6 +90,12 @@ int main(int argc, char* argv[])
     for(auto mode : modeC)
     {
         c_ms_ns_lengths.push_back(extent[mode]);
+    }
+
+    std::vector<int64_t> d_ms_ns_lengths;
+    for(auto mode : modeD)
+    {
+        d_ms_ns_lengths.push_back(extent[mode]);
     }
 
     std::vector<int64_t> a_ms_ks_lengths;
@@ -141,6 +155,19 @@ int main(int argc, char* argv[])
     std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
 #endif
 
+    hiptensorTensorDescriptor_t d_ms_ns;
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &d_ms_ns,
+                                                        nmodeD,
+                                                        d_ms_ns_lengths.data(),
+                                                        NULL, /*stride*/
+                                                        typeD,
+                                                        HIPTENSOR_OP_IDENTITY));
+
+#if !NDEBUG
+    std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
+#endif
+
     /**********************
    * Allocating data
    **********************/
@@ -151,41 +178,53 @@ int main(int argc, char* argv[])
         b_ks_ns_lengths.begin(), b_ks_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
     size_t elementsC = std::accumulate(
         c_ms_ns_lengths.begin(), c_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
+    size_t elementsD = std::accumulate(
+        d_ms_ns_lengths.begin(), d_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
 
-    std::cout << "elementsA: " << elementsA << std::endl;
-    std::cout << "elementsB: " << elementsB << std::endl;
-    std::cout << "elementsC: " << elementsC << std::endl;
 
     size_t sizeA = sizeof(ADataType) * elementsA;
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeC = sizeof(CDataType) * elementsC;
+    size_t sizeD = sizeof(DDataType) * elementsD;
 
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     CDataType* C = (CDataType*)malloc(sizeC);
-
-    void *A_d, *B_d, *C_d;
+    DDataType* D = (DDataType*)malloc(sizeD);
+#if !NDEBUG
+    DDataType* D_host = (DDataType*)malloc(sizeD);
+#endif
+    void *A_d, *B_d, *C_d, *D_d;
 
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&C_d), sizeC));
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_d), sizeD));
 
     /*******************
    * Initialize data
    *******************/
     for(int64_t i = 0; i < elementsA; i++)
     {
-        A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
     }
 
     for(int64_t i = 0; i < elementsB; i++)
     {
-        B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
     }
 
     for(int64_t i = 0; i < elementsC; i++)
     {
-        C[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        C[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
+    }
+
+    for(int64_t i = 0; i < elementsD; i++)
+    {
+        D[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#if !NDEBUG
+        D_host[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#endif
     }
 
     /********************************************
@@ -194,6 +233,7 @@ int main(int argc, char* argv[])
     CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(D_d, static_cast<const void*>(D), sizeD, hipMemcpyHostToDevice));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -211,9 +251,9 @@ int main(int argc, char* argv[])
     CHECK_HIPTENSOR_ERROR(
         hiptensorGetAlignmentRequirement(handle, C_d, &c_ms_ns, &alignmentRequirementC));
 
-    std::cout << "Alignment A: " << alignmentRequirementA << " addr: " << A_d << std::endl;
-    std::cout << "Alignment B: " << alignmentRequirementB << " addr: " << B_d << std::endl;
-    std::cout << "Alignment C: " << alignmentRequirementC << " addr: " << C_d << std::endl;
+    uint32_t alignmentRequirementD;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD));
 
     /*******************************
    * Create Contraction Descriptor
@@ -231,9 +271,9 @@ int main(int argc, char* argv[])
                                                              &c_ms_ns,
                                                              modeC.data(),
                                                              alignmentRequirementC,
-                                                             &c_ms_ns,
-                                                             modeC.data(),
-                                                             alignmentRequirementC,
+                                                             &d_ms_ns,
+                                                             modeD.data(),
+                                                             alignmentRequirementD,
                                                              typeCompute));
     /**************************
    * Set the algorithm to use
@@ -249,7 +289,13 @@ int main(int argc, char* argv[])
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
         handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
-    void* work = nullptr;
+
+    void* workspace = nullptr;
+
+    if(worksize > 0)
+    {
+        CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&workspace), worksize));
+    }
 
     /**************************
    * Create Contraction Plan
@@ -265,16 +311,16 @@ int main(int argc, char* argv[])
                                                B_d,
                                                (void*)&beta,
                                                C_d,
-                                               C_d,
-                                               work,
+                                               D_d,
+                                               workspace,
                                                worksize,
                                                0 /* stream */));
 
-    plan.hiptensorPrintContractionMetrics();
-    CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
-
 #if !NDEBUG
-    std::ofstream tensorA, tensorB, tensorC;
+
+    CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+
+    std::ofstream tensorA, tensorB, tensorC, tensorD;
     if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
     {
         std::cout << "Tensor A elements:\n";
@@ -305,7 +351,70 @@ int main(int argc, char* argv[])
     hiptensorPrintElementsToFile(tensorC, C, elementsC, ',');
     std::cout << std::endl;
     tensorC.close();
+    if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
+    {
+        std::cout << "Tensor D elements:\n";
+        hiptensorPrintArrayElements(D, elementsD);
+        std::cout << std::endl;
+    }
+    tensorD.open("tensor_D_bilinear_contraction_results.txt");
+    hiptensorPrintElementsToFile(tensorD, D, elementsD, ',');
+    std::cout << std::endl;
+    tensorD.close();
+
+    std::vector<size_t> a_m_k_lengths = a_ms_ks.mLengths;
+    std::vector<size_t> b_k_n_lengths = b_ks_ns.mLengths;
+    std::vector<size_t> c_m_n_lengths = c_ms_ns.mLengths;
+    std::vector<size_t> d_m_n_lengths = d_ms_ns.mLengths;
+
+    std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
+    std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
+    std::vector<size_t> c_ms_ns_strides = c_ms_ns.mStrides;
+    std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
+
+    hiptensorBilinearContractionReference<ADataType,
+                                          BDataType,
+                                          CDataType,
+                                          DDataType,
+                                          floatTypeCompute>(A,
+                                                            B,
+                                                            C,
+                                                            D_host,
+                                                            alpha,
+                                                            beta,
+                                                            a_m_k_lengths,
+                                                            b_k_n_lengths,
+                                                            c_m_n_lengths,
+                                                            d_m_n_lengths,
+                                                            a_ms_ks_strides,
+                                                            b_ks_ns_strides,
+                                                            c_ms_ns_strides,
+                                                            d_ms_ns_strides,
+                                                            elementsD);
+
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
+
+    if(mValidationResult == true)
+    {
+        std::cout << "Validation Successful" << std::endl;
+    }
+    else
+    {
+        std::cout << "Validation Failed" << std::endl;
+    }
+
+    std::cout << "Max relative error: " << mMaxRelativeError;
+
+    if(D_host)
+    {
+        free(D_host);
+    }
 #endif
+
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
     if(A)
     {
@@ -322,6 +431,11 @@ int main(int argc, char* argv[])
         free(C);
     }
 
+    if(D)
+    {
+        free(D);
+    }
+
     if(A_d)
     {
         CHECK_HIP_ERROR(hipFree(A_d));
@@ -335,6 +449,16 @@ int main(int argc, char* argv[])
     if(C_d)
     {
         CHECK_HIP_ERROR(hipFree(C_d));
+    }
+
+    if(workspace)
+    {
+        CHECK_HIP_ERROR(hipFree(workspace));
+    }
+  
+    if(D_d)
+    {
+        CHECK_HIP_ERROR(hipFree(D_d));
     }
 
     return 0;

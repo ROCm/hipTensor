@@ -49,21 +49,22 @@ namespace hiptensor
                                       std::vector<ck::index_t> const&          e_ms_ns_strides,
                                       const uint64_t                           workspaceSize);
 
-    hiptensorStatus_t actorCriticModel(ContractionSolution**                    winner,
-                                       std::vector<ContractionSolution*> const& candidates,
-                                       hipDataType                              typeA,
-                                       std::vector<ck::index_t> const&          a_ms_ks_lengths,
-                                       std::vector<ck::index_t> const&          a_ms_ks_strides,
-                                       hipDataType                              typeB,
-                                       std::vector<ck::index_t> const&          b_ns_ks_lengths,
-                                       std::vector<ck::index_t> const&          b_ns_ks_strides,
-                                       hipDataType                              typeD,
-                                       std::vector<ck::index_t> const&          d_ms_ns_lengths,
-                                       std::vector<ck::index_t> const&          d_ms_ns_strides,
-                                       hipDataType                              typeE,
-                                       std::vector<ck::index_t> const&          e_ms_ns_lengths,
-                                       std::vector<ck::index_t> const&          e_ms_ns_strides,
-                                       const uint64_t                           workspaceSize);
+    hiptensorStatus_t
+        actorCriticModel(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<ck::index_t> const&                         a_ms_ks_lengths,
+                         std::vector<ck::index_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<ck::index_t> const&                         b_ns_ks_lengths,
+                         std::vector<ck::index_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<ck::index_t> const&                         d_ms_ns_lengths,
+                         std::vector<ck::index_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<ck::index_t> const&                         e_ms_ns_lengths,
+                         std::vector<ck::index_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize);
 
 } // namespace hiptensor
 

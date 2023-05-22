@@ -166,7 +166,7 @@ typedef enum
  */
 struct hiptensorHandle_t
 {
-    int32_t mHipDevice;
+    int64_t fields[512];
 };
 
 /**
@@ -194,6 +194,7 @@ struct hiptensorTensorDescriptor_t
 struct hiptensorContractionDescriptor_t
 {
     int32_t mContractionOpId; /*!< Enum that differentiates the internal contraction operation*/
+    hiptensorComputeType_t                   mComputeType; /*!<Compute type for the contraction*/
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc; /*!<Cache of tensor descriptors*/
     std::vector<uint32_t>                    mAlignmentReq; /*!<Cache of alignment requirements*/
 };
@@ -213,22 +214,6 @@ struct hiptensorContractionFind_t
 /**
  * \brief structure representing a plan
  *
- * Captures all the perf results: execution time, FLOPS, Transfer speed, and
- * the CK's contraction instance name
- *
- */
-struct hiptensorContractionMetrics_t
-{
-    float       avg_time; /*!<Time to exectued the selected CK's contraction instance*/
-    float       tflops; /*!<FLOPS returned by the selected CK's contraction instance*/
-    float       transfer_speed; /*!<Transfer speed returned by the CK's contraction
-                              instance*/
-    std::string ht_instance; /*!<CK's contraction instance name */
-};
-
-/**
- * \brief structure representing a plan
- *
  * Constructs a contraction plan with the contractions descriptor passed into
  * the function hiptensorInitContractionPlan
  *
@@ -236,10 +221,7 @@ struct hiptensorContractionMetrics_t
 struct hiptensorContractionPlan_t
 {
     void*                            mSolution;
-    hiptensorContractionDescriptor_t ht_plan_desc; /*!< Represent the contraction descriptor */
-    void hiptensorPrintContractionMetrics(); /*!< Function that prints all the
-                                              perf results of the CK's
-                                              contraction instance */
+    hiptensorContractionDescriptor_t mContractionDesc; /*!< Represent the contraction descriptor */
 };
 
 /**

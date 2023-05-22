@@ -24,50 +24,32 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_SRC_UTIL_HPP
-#define HIPTENSOR_SRC_UTIL_HPP
+#include "handle.hpp"
 
 namespace hiptensor
 {
-    template <typename T>
-    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
+    Handle Handle::createHandle(int64_t* buff)
     {
-        if(lengths.empty())
-        {
-            return lengths;
-        }
+        auto handle = toHandle(buff);
+        new(handle) Handle();
 
-        // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> strides(lengths.size());
-        strides.back() = 1;
-        std::partial_sum(
-            lengths.rbegin(), lengths.rend() - 1, strides.rbegin() + 1, std::multiplies<T>());
-        return strides;
+        return *handle;
     }
 
-    template <typename T>
-    static inline T elementsFromLengths(std::vector<T> const& lengths)
+    void Handle::destroyHandle(int64_t* buff)
     {
-        return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
+        auto handle = toHandle(buff);
+        handle->~Handle();
     }
 
-    template <typename T>
-    static inline T elementSpaceFromLengthsAndStrides(std::vector<T> const& lengths,
-                                                      std::vector<T> const& strides)
+    Handle* Handle::toHandle(int64_t* buff)
     {
-        auto accum = T{1};
-        for(int i = 0; i < lengths.size(); i++)
-        {
-            if(lengths[i] == 0)
-            {
-                continue;
-            }
+        return reinterpret_cast<Handle*>(buff);
+    }
 
-            accum += (lengths[i] - 1) * strides[i];
-        }
-        return accum;
+    HipDevice Handle::getDevice()
+    {
+        return mDevice;
     }
 
 } // namespace hiptensor
-
-#endif // HIPTENSOR_SRC_UTIL_HPP

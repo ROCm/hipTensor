@@ -51,7 +51,7 @@ namespace hiptensor
         HipDevice();
         ~HipDevice() = default;
 
-        hipDevice_t     getDeviceHandle() const;
+        hipDevice_t     getDeviceId() const;
         hipDeviceProp_t getDeviceProps() const;
         hipDeviceArch_t getDeviceArch() const;
         hipGcnArch_t    getGcnArch() const;
@@ -64,7 +64,7 @@ namespace hiptensor
         bool supportsF64() const;
 
     private:
-        hipDevice_t     mHandle;
+        hipDevice_t     mDeviceId;
         hipDeviceProp_t mProps;
         hipDeviceArch_t mArch;
         hipGcnArch_t    mGcnArch;

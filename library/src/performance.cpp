@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2023 Advanced Micro Devices, Inc.
+ * Copyright 2021-2023 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,50 +24,42 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_SRC_UTIL_HPP
-#define HIPTENSOR_SRC_UTIL_HPP
+#include "include/performance.hpp"
 
 namespace hiptensor
 {
-    template <typename T>
-    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
+    bool PerfMetrics::operator>(PerfMetrics const& other) const
     {
-        if(lengths.empty())
-        {
-            return lengths;
-        }
-
-        // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> strides(lengths.size());
-        strides.back() = 1;
-        std::partial_sum(
-            lengths.rbegin(), lengths.rend() - 1, strides.rbegin() + 1, std::multiplies<T>());
-        return strides;
+        return this->mTflops > other.mTflops;
     }
 
-    template <typename T>
-    static inline T elementsFromLengths(std::vector<T> const& lengths)
+    bool PerfMetrics::operator<(PerfMetrics const& other) const
     {
-        return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
+        return this->mTflops < other.mTflops;
     }
 
-    template <typename T>
-    static inline T elementSpaceFromLengthsAndStrides(std::vector<T> const& lengths,
-                                                      std::vector<T> const& strides)
+    bool PerfMetrics::operator>=(PerfMetrics const& other) const
     {
-        auto accum = T{1};
-        for(int i = 0; i < lengths.size(); i++)
-        {
-            if(lengths[i] == 0)
-            {
-                continue;
-            }
-
-            accum += (lengths[i] - 1) * strides[i];
-        }
-        return accum;
+        return this->mTflops >= other.mTflops;
     }
 
-} // namespace hiptensor
+    bool PerfMetrics::operator<=(PerfMetrics const& other) const
+    {
+        return this->mTflops <= other.mTflops;
+    }
 
-#endif // HIPTENSOR_SRC_UTIL_HPP
+    bool PerfMetrics::operator==(PerfMetrics const& other) const
+    {
+        return this->mTflops == other.mTflops;
+    }
+}
+
+namespace std
+{
+    ostream& operator<<(std::ostream& os, hiptensor::PerfMetrics const& metrics)
+    {
+        return os << "Kernel Name: " << metrics.mKernelName << std::endl
+                  << metrics.mAvgTimeMs << " ms, " << metrics.mTflops << " TFlops, "
+                  << metrics.mBandwidth << " GB/s " << std::endl;
+    }
+}

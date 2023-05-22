@@ -33,6 +33,7 @@
 #endif
 
 #include "contraction_selection.hpp"
+#include "performance.hpp"
 #include "util.hpp"
 
 namespace hiptensor
@@ -55,20 +56,15 @@ namespace hiptensor
     {
         // Make sure that we calculate full element space incase strides are not packed.
         auto sizeA = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides)
-                     * hiptensor::hipDataTypeSize(typeA);
+                     * hipDataTypeSize(typeA);
         auto sizeB = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides)
-                     * hiptensor::hipDataTypeSize(typeB);
+                     * hipDataTypeSize(typeB);
         auto sizeD = elementSpaceFromLengthsAndStrides(d_ms_ns_lengths, d_ms_ns_strides)
-                     * hiptensor::hipDataTypeSize(typeD);
+                     * hipDataTypeSize(typeD);
         auto sizeE = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides)
-                     * hiptensor::hipDataTypeSize(typeE);
+                     * hipDataTypeSize(typeE);
 
-        std::cout << "sizeA: " << sizeA << std::endl;
-        std::cout << "sizeB: " << sizeB << std::endl;
-        std::cout << "sizeD: " << sizeD << std::endl;
-        std::cout << "sizeE: " << sizeE << std::endl;
-
-        void *A_d, *B_d, *D_d, *E_d;
+        void *A_d, *B_d, *D_d, *E_d, *wspace;
         float alpha = 1.02f;
         float beta  = 1.03f;
 
@@ -76,13 +72,11 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipMalloc(&B_d, sizeB));
         CHECK_HIP_ALLOC(hipMalloc(&D_d, sizeD));
         CHECK_HIP_ALLOC(hipMalloc(&E_d, sizeE));
+        CHECK_HIP_ALLOC(hipMalloc(&wspace, workspaceSize));
 
-        // Now we can launch the kernels and get the metrics.
-        std::cout << "Run all instances and do timing: " << candidates.size() << std::endl;
-
-        std::string                   best_op_name;
-        ContractionSolution*          bestSolution = nullptr;
-        hiptensorContractionMetrics_t bestMetric   = {0, 0, 0, ""};
+        std::string          best_op_name;
+        ContractionSolution* bestSolution = nullptr;
+        PerfMetrics          bestMetrics  = {0, 0, 0, ""};
 
         for(auto* solution : candidates)
         {
@@ -99,7 +93,9 @@ namespace hiptensor
                                   std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
                                   std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
                                   e_ms_ns_lengths,
-                                  e_ms_ns_strides))
+                                  e_ms_ns_strides,
+                                  wspace)
+               && solution->workspaceSize() <= workspaceSize)
             {
                 // Make sure to time the kernels
                 auto    time = (*solution)(StreamConfig{nullptr, true});
@@ -108,17 +104,17 @@ namespace hiptensor
                 auto flops        = std::size_t(2) * m * n * k;
                 auto bytes        = solution->problemBytes();
 
-                hiptensorContractionMetrics_t metrics = {
+                PerfMetrics metrics = {
                     time, // avg time
                     static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
-                    static_cast<float>(bytes) / static_cast<float>(1.E6) / time, //
+                    static_cast<float>(bytes) / static_cast<float>(1.E6) / time, // BW
                     solution->kernelName() // name
                 };
 
-                if(metrics.tflops > bestMetric.tflops)
+                if(metrics > bestMetrics)
                 {
                     bestSolution = solution;
-                    bestMetric   = metrics;
+                    bestMetrics  = metrics;
                 }
             }
         }
@@ -127,6 +123,11 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipFree(B_d));
         CHECK_HIP_ALLOC(hipFree(D_d));
         CHECK_HIP_ALLOC(hipFree(E_d));
+        CHECK_HIP_ALLOC(hipFree(wspace));
+
+#if !NDEBUG
+        std::cout << bestMetrics << std::endl;
+#endif // !NDEBUG
 
         *winner = bestSolution;
 
@@ -140,21 +141,22 @@ namespace hiptensor
         }
     }
 
-  hiptensorStatus_t actorCriticModel(ContractionSolution**                    winner,
-				     std::vector<ContractionSolution*> const& candidates,
-				     hipDataType                              typeA,
-				     std::vector<ck::index_t> const&          a_ms_ks_lengths,
-				     std::vector<ck::index_t> const&          a_ms_ks_strides,
-				     hipDataType                              typeB,
-				     std::vector<ck::index_t> const&          b_ns_ks_lengths,
-				     std::vector<ck::index_t> const&          b_ns_ks_strides,
-				     hipDataType                              typeD,
-				     std::vector<ck::index_t> const&          d_ms_ns_lengths,
-				     std::vector<ck::index_t> const&          d_ms_ns_strides,
-				     hipDataType                              typeE,
-				     std::vector<ck::index_t> const&          e_ms_ns_lengths,
-				     std::vector<ck::index_t> const&          e_ms_ns_strides,
-				     const uint64_t                           workspaceSize)
+  hiptensorStatus_t
+        actorCriticModel(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<ck::index_t> const&                         a_ms_ks_lengths,
+                         std::vector<ck::index_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<ck::index_t> const&                         b_ns_ks_lengths,
+                         std::vector<ck::index_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<ck::index_t> const&                         d_ms_ns_lengths,
+                         std::vector<ck::index_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<ck::index_t> const&                         e_ms_ns_lengths,
+                         std::vector<ck::index_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
   {
 
     int d1 = a_ms_ks_lengths[0];
@@ -578,4 +580,5 @@ namespace hiptensor
     
     return HIPTENSOR_STATUS_EXECUTION_FAILED;
   }
+
 }
