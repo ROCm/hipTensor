@@ -70,9 +70,8 @@ void hiptensorPrintArrayElements(T* vec, size_t size)
             std::cout << vec[index];
         }
         else
-        {
-            std::cout << vec[index] << ",";
-        }
+            std::cout << vec[index] << ", ";
+
         index++;
     }
 }
@@ -80,14 +79,18 @@ void hiptensorPrintArrayElements(T* vec, size_t size)
 template <typename S>
 void hiptensorPrintVectorElements(const std::vector<S>& vec, std::string sep = " ")
 {
-    for(auto elem : vec)
+    for(auto& elem : vec)
     {
-        std::cout << elem << sep;
+        std::cout << elem;
+        if(&elem != &vec.back())
+        {
+            std::cout << sep;
+        }
     }
 }
 
 template <typename F>
-void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, char delim)
+void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, std::string sep = " ")
 {
     if(!fs.is_open())
     {
@@ -102,9 +105,7 @@ void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, cha
             fs << static_cast<F>(output[i]);
         }
         else
-        {
-            fs << static_cast<F>(output[i]) << delim;
-        }
+            fs << static_cast<F>(output[i]) << sep;
     }
     return;
 }

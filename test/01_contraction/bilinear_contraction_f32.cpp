@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorA.open("tensor_A.txt");
-    hiptensorPrintElementsToFile(tensorA, A, elementsA, ',');
+    hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
     std::cout << std::endl;
     tensorA.close();
     if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
@@ -337,7 +337,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorB.open("tensor_B.txt");
-    hiptensorPrintElementsToFile(tensorB, B, elementsB, ',');
+    hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
     std::cout << std::endl;
     tensorB.close();
     if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
@@ -347,7 +347,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorC.open("tensor_C_bilinear_contraction_results.txt");
-    hiptensorPrintElementsToFile(tensorC, C, elementsC, ',');
+    hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
     std::cout << std::endl;
     tensorC.close();
     if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
@@ -357,7 +357,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorD.open("tensor_D_bilinear_contraction_results.txt");
-    hiptensorPrintElementsToFile(tensorD, D, elementsD, ',');
+    hiptensorPrintElementsToFile(tensorD, D, elementsD, ", ");
     std::cout << std::endl;
     tensorD.close();
 
