@@ -26,6 +26,7 @@
 #include "contraction_selection.hpp"
 #include "contraction_solution.hpp"
 #include "contraction_solution_registry.hpp"
+#include "handle.hpp"
 #include "hip_device.hpp"
 #include "hiptensor.hpp"
 
@@ -108,16 +109,18 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceHandle() != handle->mHipDevice)
+    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
-        sprintf(msg,
-                "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+      sprintf(msg,
+                "handle=0x%0*llX (HIPTENSOR_STATUS_ARCH_MISMATCH)",
                 2 * (int)sizeof(void*),
                 (unsigned long long)handle);
         logger->logError("hiptensorInitContractionFind", msg);
-        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
     if(algo == HIPTENSOR_ALGO_DEFAULT)
@@ -215,15 +218,18 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+
+    // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceHandle() != handle->mHipDevice)
+    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
         sprintf(msg,
-                "handle=0x%0*llX (HIPTENSOR_STATUS_INTERNAL_ERROR)",
+                "handle=0x%0*llX (HIPTENSOR_STATUS_ARCH_MISMATCH)",
                 2 * (int)sizeof(void*),
                 (unsigned long long)handle);
         logger->logError("hiptensorInitContractionFind", msg);
-        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
     // At this point, we need to format inputs for kernels as they will be tested via selection model.
@@ -347,6 +353,15 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                 (unsigned long long)handle);
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
+    }
+
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+
+    // Ensure current HIP device is same as the handle.
+    hiptensor::HipDevice currentDevice;
+    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    {
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
     auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);

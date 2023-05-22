@@ -166,7 +166,7 @@ typedef enum
  */
 struct hiptensorHandle_t
 {
-    int32_t mHipDevice;
+    int64_t fields[512];
 };
 
 /**
