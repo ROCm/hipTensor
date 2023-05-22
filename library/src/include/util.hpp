@@ -32,6 +32,11 @@ namespace hiptensor
     template <typename T>
     static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
     {
+        if(lengths.empty())
+        {
+            return lengths;
+        }
+
         // Re-construct strides from lengths, assuming packed.
         std::vector<std::size_t> strides(lengths.size());
         strides.back() = 1;
@@ -53,6 +58,11 @@ namespace hiptensor
         auto accum = T{1};
         for(int i = 0; i < lengths.size(); i++)
         {
+            if(lengths[i] == 0)
+            {
+                continue;
+            }
+
             accum += (lengths[i] - 1) * strides[i];
         }
         return accum;

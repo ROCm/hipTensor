@@ -194,6 +194,7 @@ struct hiptensorTensorDescriptor_t
 struct hiptensorContractionDescriptor_t
 {
     int32_t mContractionOpId; /*!< Enum that differentiates the internal contraction operation*/
+    hiptensorComputeType_t                   mComputeType; /*!<Compute type for the contraction*/
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc; /*!<Cache of tensor descriptors*/
     std::vector<uint32_t>                    mAlignmentReq; /*!<Cache of alignment requirements*/
 };

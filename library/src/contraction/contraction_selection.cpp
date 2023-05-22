@@ -64,7 +64,7 @@ namespace hiptensor
         auto sizeE = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides)
                      * hipDataTypeSize(typeE);
 
-        void *A_d, *B_d, *D_d, *E_d;
+        void *A_d, *B_d, *D_d, *E_d, *wspace;
         float alpha = 1.02f;
         float beta  = 1.03f;
 
@@ -72,6 +72,7 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipMalloc(&B_d, sizeB));
         CHECK_HIP_ALLOC(hipMalloc(&D_d, sizeD));
         CHECK_HIP_ALLOC(hipMalloc(&E_d, sizeE));
+        CHECK_HIP_ALLOC(hipMalloc(&wspace, workspaceSize));
 
         std::string          best_op_name;
         ContractionSolution* bestSolution = nullptr;
@@ -92,7 +93,9 @@ namespace hiptensor
                                   std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
                                   std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
                                   e_ms_ns_lengths,
-                                  e_ms_ns_strides))
+                                  e_ms_ns_strides,
+                                  wspace)
+               && solution->workspaceSize() <= workspaceSize)
             {
                 // Make sure to time the kernels
                 auto    time = (*solution)(StreamConfig{nullptr, true});
@@ -120,6 +123,7 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipFree(B_d));
         CHECK_HIP_ALLOC(hipFree(D_d));
         CHECK_HIP_ALLOC(hipFree(E_d));
+        CHECK_HIP_ALLOC(hipFree(wspace));
 
 #if !NDEBUG
         std::cout << bestMetrics << std::endl;
@@ -137,21 +141,22 @@ namespace hiptensor
         }
     }
 
-    hiptensorStatus_t actorCriticModel(ContractionSolution**                    winner,
-                                       std::vector<ContractionSolution*> const& candidates,
-                                       hipDataType                              typeA,
-                                       std::vector<ck::index_t> const&          a_ms_ks_lengths,
-                                       std::vector<ck::index_t> const&          a_ms_ks_strides,
-                                       hipDataType                              typeB,
-                                       std::vector<ck::index_t> const&          b_ns_ks_lengths,
-                                       std::vector<ck::index_t> const&          b_ns_ks_strides,
-                                       hipDataType                              typeD,
-                                       std::vector<ck::index_t> const&          d_ms_ns_lengths,
-                                       std::vector<ck::index_t> const&          d_ms_ns_strides,
-                                       hipDataType                              typeE,
-                                       std::vector<ck::index_t> const&          e_ms_ns_lengths,
-                                       std::vector<ck::index_t> const&          e_ms_ns_strides,
-                                       const uint64_t                           workspaceSize)
+    hiptensorStatus_t
+        actorCriticModel(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<ck::index_t> const&                         a_ms_ks_lengths,
+                         std::vector<ck::index_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<ck::index_t> const&                         b_ns_ks_lengths,
+                         std::vector<ck::index_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<ck::index_t> const&                         d_ms_ns_lengths,
+                         std::vector<ck::index_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<ck::index_t> const&                         e_ms_ns_lengths,
+                         std::vector<ck::index_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
     {
     }
 }
