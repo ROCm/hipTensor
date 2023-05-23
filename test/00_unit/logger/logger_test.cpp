@@ -88,7 +88,7 @@ bool hiptensorLoggerSetFileTest()
     fclose (fp);
     std::remove(fname.c_str());
 
-    if(fileSizeAfter == fileSizeOrig)
+    if(fileSizeAfter <= fileSizeOrig)
     {
         return false;
     }
@@ -98,11 +98,41 @@ bool hiptensorLoggerSetFileTest()
 
 bool hiptensorLoggerOpenFileTest()
 {
-    const char* logFile = "LoggerOpenFileTestLog.txt";
-    if(hiptensorLoggerOpenFile(logFile) != HIPTENSOR_STATUS_SUCCESS)
+    std::string fname = std::tmpnam(nullptr);
+    const char *fname_c = fname.c_str();
+
+    long fileSizeOrig = 0, fileSizeAfter = 0;
+
+    FILE *fp = fopen(fname_c, "w");
+    if (fp == NULL)
+    {
+        std::cout << " Failed to Open File. Check Permissions!";
+        return false;
+    }
+    else
+    {
+        fseek (fp, 0, SEEK_END);
+        fileSizeOrig = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+    }
+
+    //Write logs to fname_c.
+    if(hiptensorLoggerOpenFile(fname_c) != HIPTENSOR_STATUS_SUCCESS)
     {
         return false;
     }
+
+    //Check Size After API Call
+    fseek (fp, 0, SEEK_END);
+    fileSizeAfter = ftell(fp);
+    fclose (fp);
+    std::remove(fname.c_str());
+
+    if(fileSizeAfter <= fileSizeOrig)
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -195,6 +225,9 @@ int main(int argc, char* argv[])
     totalPass &= testPass;
     std::cout << "hiptensorLoggerOpenFile: ";
     printBool(testPass);
+
+    //As the above function call sets to a temporary file, need to call OpenFile again.
+    hiptensorLoggerOpenFile("test.log");
 
     testPass = hiptensorLoggerSetLevelTest();
     totalPass &= testPass;
