@@ -51,8 +51,18 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    char msg[512];
+    sprintf(msg, "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, alignmentRequirementA=0x%02X, "
+                  "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
+                  "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
+                  "typeCompute=0x%02X",
+                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)desc,
+                  (unsigned long long)descA, (unsigned long long)modeA, (unsigned int)alignmentRequirementA,
+                  (unsigned long long)descB, (unsigned long long)modeB, (unsigned int)alignmentRequirementB,
+                  (unsigned long long)descC, (unsigned long long)modeC, (unsigned int)alignmentRequirementC,
+                  (unsigned long long)descD, (unsigned long long)modeD, (unsigned int)alignmentRequirementD,
+                  (unsigned int)typeCompute);
+
     logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
 
     if(!handle || !desc || !descA || !descB || !descD)
@@ -95,8 +105,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    char msg[128];
+    sprintf(msg, "handle=0x%0*llX, find=0x%llX, algo=%i", 2 * (int)sizeof(void*),
+                 (unsigned long long)handle, (unsigned long long)find, algo);
+
     logger->logAPITrace("hiptensorInitContractionFind", msg);
 
     if(handle == nullptr || find == nullptr)
@@ -187,8 +199,11 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    char msg[256];
+    sprintf(msg, "handle=0x%0*llX, desc=0x%llX, find=0x%llX, pref=0x%llX, workspaceSize=0x%llX",
+                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)desc,
+                  (unsigned long long)find, (unsigned long long)pref, (unsigned long long)workspaceSize);
+
     logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -204,8 +219,12 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+
+    char msg[256];
+    sprintf(msg, "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=%lu",
+                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
+                  (unsigned long long)desc, (unsigned long long)find, workspaceSize);
+
     logger->logAPITrace("hiptensorInitContractionPlan", msg);
 
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
@@ -321,8 +340,14 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    char msg[512];
+    sprintf(msg, "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
+                  "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=%lu, stream=0x%llX",
+                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
+                  (unsigned long long)alpha, (unsigned long long)A, (unsigned long long)B,
+                  (unsigned long long)beta, (unsigned long long)C, (unsigned long long)D,
+                  (unsigned long long)workspace, workspaceSize, (unsigned long long)stream);
+
     logger->logAPITrace("hiptensorContraction", msg);
 
     if(handle == nullptr || plan == nullptr)

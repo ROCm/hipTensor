@@ -111,8 +111,13 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    char msg[128];
+    sprintf(msg, "handle=0x%0*llX, desc=0x%llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
+                 "dataType=0x%02X, unaryOp=0x%02X", 2 * (int)sizeof(void*),
+                 (unsigned long long)handle, (unsigned long long)desc, (unsigned int)numModes,
+                 (unsigned long long)lens, (unsigned long long)strides, (unsigned int)dataType,
+                 (unsigned int)unaryOp);
+
     logger->logAPITrace("hiptensorInitTensorDescriptor", msg);
 
     if(handle == nullptr || desc == nullptr)
@@ -204,8 +209,11 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[64];
-    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    char msg[128];
+    sprintf(msg, "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%llX",
+                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)ptr,
+                  (unsigned long long)desc, (unsigned long long)alignmentRequirement);
+
     logger->logAPITrace("hiptensorGetAlignmentRequirement", msg);
 
     if(!handle || !desc)
