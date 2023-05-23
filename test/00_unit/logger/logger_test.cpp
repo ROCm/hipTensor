@@ -46,14 +46,49 @@ bool loggerSingletonTest()
 
 bool hiptensorLoggerSetFileTest()
 {
-    FILE* fp = fopen("LoggerSetFileTestLogFail.txt", "r");
+    // hiptensorLoggerSetFile should have Filestream Open in Write mode.
+    std::string fname = std::tmpnam(nullptr);
+    FILE* fp = fopen(fname.c_str(), "r");
     if(hiptensorLoggerSetFile(fp) == HIPTENSOR_STATUS_SUCCESS)
     {
         return false;
     }
 
-    FILE* fp_w = fopen("LoggerSetFileTestLogPass.txt", "w");
-    if(hiptensorLoggerSetFile(fp_w) != HIPTENSOR_STATUS_SUCCESS)
+    long fileSizeOrig = 0, fileSizeAfter = 0;
+
+    // hiptensorLoggerSetFile with file in write mode.
+    fp = fopen(fname.c_str(), "w");
+    if (fp == NULL)
+    {
+        std::cout << " Failed to Open File. Check Permissions!";
+        return false;
+    }
+    else
+    {
+        fseek (fp, 0, SEEK_END);
+        fileSizeOrig = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+    }
+
+    //Only Sets Filestream to fp. Doesn't write logs yet.
+    if(hiptensorLoggerSetFile(fp) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    //Call API again to write logs to fp
+    if(hiptensorLoggerSetFile(fp) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    //Check Size After API Call
+    fseek (fp, 0, SEEK_END);
+    fileSizeAfter = ftell(fp);
+    fclose (fp);
+    std::remove(fname.c_str());
+
+    if(fileSizeAfter == fileSizeOrig)
     {
         return false;
     }
