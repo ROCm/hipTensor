@@ -62,7 +62,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                  typeCompute,
                  {*descA,
                   *descB,
-                  {(hipDataType)-1, {descD->mLengths.size(), 0}, {descD->mStrides.size(), 0}},
+                  {hiptensor::NONE_TYPE, {descD->mLengths.size(), 0}, {descD->mStrides.size(), 0}},
                   *descD},
                  {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
     }
@@ -117,7 +117,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
             // Allow only supported f32 combos
             query = query.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) // Bilinear F32
                     || query.query(
-                        HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F); // Scale F32 (no C)
+                        HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F); // Scale F32 (no C)
         }
 
         // Can do more checking for scale / bilinear, etc. if we need to.
