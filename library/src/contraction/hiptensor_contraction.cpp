@@ -155,7 +155,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                 2 * (int)sizeof(void*),
                 (unsigned long long)handle,
                 (unsigned long long)find,
-                algo);
+                (int)algo);
         logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
