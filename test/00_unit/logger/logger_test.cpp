@@ -46,8 +46,9 @@ bool loggerSingletonTest()
 
 bool hiptensorLoggerSetFileTest()
 {
-    // hiptensorLoggerSetFile should have Filestream Open in Write mode.
     std::string fname = std::tmpnam(nullptr);
+
+    // hiptensorLoggerSetFile should have filestream open in write mode.
     FILE* fp = fopen(fname.c_str(), "r");
     if(hiptensorLoggerSetFile(fp) == HIPTENSOR_STATUS_SUCCESS)
     {
@@ -82,7 +83,7 @@ bool hiptensorLoggerSetFileTest()
         return false;
     }
 
-    //Check Size After API Call
+    //Check size after API call
     fseek (fp, 0, SEEK_END);
     fileSizeAfter = ftell(fp);
     fclose (fp);
@@ -122,7 +123,7 @@ bool hiptensorLoggerOpenFileTest()
         return false;
     }
 
-    //Check Size After API Call
+    //Check size after API call
     fseek (fp, 0, SEEK_END);
     fileSizeAfter = ftell(fp);
     fclose (fp);
