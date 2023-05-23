@@ -111,10 +111,6 @@ int main(int argc, char* argv[])
                                                         typeA,
                                                         HIPTENSOR_OP_IDENTITY));
 
-#if !NDEBUG
-    std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
-#endif
-
     hiptensorTensorDescriptor_t b_ks_ns;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
                                                         &b_ks_ns,
@@ -123,10 +119,6 @@ int main(int argc, char* argv[])
                                                         NULL, /*stride*/
                                                         typeB,
                                                         HIPTENSOR_OP_IDENTITY));
-
-#if !NDEBUG
-    std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
-#endif
 
     hiptensorTensorDescriptor_t d_ms_ns;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
@@ -137,13 +129,14 @@ int main(int argc, char* argv[])
                                                         typeD,
                                                         HIPTENSOR_OP_IDENTITY));
 
-#if !NDEBUG
+    std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
+    std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
     std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
-#endif
 
     /**********************
    * Allocating data
    **********************/
+    std::cout << "Initializing host data..." << std::endl;
 
     size_t elementsA = std::accumulate(
         a_ms_ks_lengths.begin(), a_ms_ks_lengths.end(), size_t{1}, std::multiplies<size_t>());
@@ -191,6 +184,8 @@ int main(int argc, char* argv[])
     /********************************************
    * Transfer the Host Tensor to Device Memory *
    ********************************************/
+    std::cout << "Initializing device data..." << std::endl;
+
     CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(D_d, 0, sizeD));

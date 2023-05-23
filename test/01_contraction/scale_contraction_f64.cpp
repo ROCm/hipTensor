@@ -108,10 +108,6 @@ int main(int argc, char* argv[])
                                                         typeA,
                                                         HIPTENSOR_OP_IDENTITY));
 
-#if !NDEBUG
-    std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
-#endif
-
     hiptensorTensorDescriptor_t b_ks_ns;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
                                                         &b_ks_ns,
@@ -120,10 +116,6 @@ int main(int argc, char* argv[])
                                                         NULL, /*stride*/
                                                         typeB,
                                                         HIPTENSOR_OP_IDENTITY));
-
-#if !NDEBUG
-    std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
-#endif
 
     hiptensorTensorDescriptor_t d_ms_ns;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
@@ -134,9 +126,9 @@ int main(int argc, char* argv[])
                                                         typeD,
                                                         HIPTENSOR_OP_IDENTITY));
 
-#if !NDEBUG
+    std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
+    std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
     std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
-#endif
 
     /**********************
    * Allocating data
