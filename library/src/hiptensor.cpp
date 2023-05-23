@@ -231,25 +231,25 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     // Log API access
     char msg[128];
     sprintf(msg,
-            "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%llX",
+            "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%02X",
             2 * (int)sizeof(void*),
             (unsigned long long)handle,
             (unsigned long long)ptr,
             (unsigned long long)desc,
-            (unsigned long long)alignmentRequirement);
+            (unsigned int)*alignmentRequirement);
 
     logger->logAPITrace("hiptensorGetAlignmentRequirement", msg);
 
     if(!handle || !desc)
     {
         sprintf(msg,
-                "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%llX "
+                "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%02X "
                 "(HIPTENSOR_STATUS_NOT_INITIALIZED)",
                 2 * (int)sizeof(void*),
                 (unsigned long long)handle,
                 (unsigned long long)ptr,
                 (unsigned long long)desc,
-                (unsigned long long)alignmentRequirement);
+                (unsigned int)*alignmentRequirement);
         logger->logError("hiptensorGetAlignmentRequirement", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
@@ -266,13 +266,13 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     if(*alignmentRequirement == 0)
     {
         sprintf(msg,
-                "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%llX "
+                "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%02X "
                 "(HIPTENSOR_STATUS_INVALID_VALUE)",
                 2 * (int)sizeof(void*),
                 (unsigned long long)handle,
                 (unsigned long long)ptr,
                 (unsigned long long)desc,
-                (unsigned long long)alignmentRequirement);
+                (unsigned int)*alignmentRequirement);
         logger->logError("hiptensorGetAlignmentRequirement", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }

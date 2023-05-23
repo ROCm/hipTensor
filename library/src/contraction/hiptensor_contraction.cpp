@@ -52,32 +52,57 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
 
     // Log API access
     char msg[512];
-    sprintf(msg, "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, alignmentRequirementA=0x%02X, "
-                  "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
-                  "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
-                  "typeCompute=0x%02X",
-                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)desc,
-                  (unsigned long long)descA, (unsigned long long)modeA, (unsigned int)alignmentRequirementA,
-                  (unsigned long long)descB, (unsigned long long)modeB, (unsigned int)alignmentRequirementB,
-                  (unsigned long long)descC, (unsigned long long)modeC, (unsigned int)alignmentRequirementC,
-                  (unsigned long long)descD, (unsigned long long)modeD, (unsigned int)alignmentRequirementD,
-                  (unsigned int)typeCompute);
+    sprintf(
+        msg,
+        "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, alignmentRequirementA=0x%02X, "
+        "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
+        "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
+        "typeCompute=0x%02X",
+        2 * (int)sizeof(void*),
+        (unsigned long long)handle,
+        (unsigned long long)desc,
+        (unsigned long long)descA,
+        (unsigned long long)modeA,
+        (unsigned int)alignmentRequirementA,
+        (unsigned long long)descB,
+        (unsigned long long)modeB,
+        (unsigned int)alignmentRequirementB,
+        (unsigned long long)descC,
+        (unsigned long long)modeC,
+        (unsigned int)alignmentRequirementC,
+        (unsigned long long)descD,
+        (unsigned long long)modeD,
+        (unsigned int)alignmentRequirementD,
+        (unsigned int)typeCompute);
 
     logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
 
     if(!handle || !desc || !descA || !descB || !descD)
     {
-        sprintf(msg,
-                "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, alignmentRequirementA=0x%02X, "
-                "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
-                "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
-                "typeCompute=0x%02X (HIPTENSOR_STATUS_NOT_INITIALIZED)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)desc,
-                (unsigned long long)descA, (unsigned long long)modeA, (unsigned int)alignmentRequirementA,
-                (unsigned long long)descB, (unsigned long long)modeB, (unsigned int)alignmentRequirementB,
-                (unsigned long long)descC, (unsigned long long)modeC, (unsigned int)alignmentRequirementC,
-                (unsigned long long)descD, (unsigned long long)modeD, (unsigned int)alignmentRequirementD,
-                (unsigned int)typeCompute);
+        sprintf(
+            msg,
+            "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, "
+            "alignmentRequirementA=0x%02X, "
+            "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
+            "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, "
+            "alignmentRequirementD=0x%02X, "
+            "typeCompute=0x%02X (HIPTENSOR_STATUS_NOT_INITIALIZED)",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)desc,
+            (unsigned long long)descA,
+            (unsigned long long)modeA,
+            (unsigned int)alignmentRequirementA,
+            (unsigned long long)descB,
+            (unsigned long long)modeB,
+            (unsigned int)alignmentRequirementB,
+            (unsigned long long)descC,
+            (unsigned long long)modeC,
+            (unsigned int)alignmentRequirementC,
+            (unsigned long long)descD,
+            (unsigned long long)modeD,
+            (unsigned int)alignmentRequirementD,
+            (unsigned int)typeCompute);
 
         logger->logError("hiptensorInitContractionDescriptor", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
@@ -114,8 +139,12 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
 
     // Log API access
     char msg[128];
-    sprintf(msg, "handle=0x%0*llX, find=0x%llX, algo=0x%02X", 2 * (int)sizeof(void*),
-                 (unsigned long long)handle, (unsigned long long)find, (int)algo);
+    sprintf(msg,
+            "handle=0x%0*llX, find=0x%llX, algo=0x%02X",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)find,
+            (int)algo);
 
     logger->logAPITrace("hiptensorInitContractionFind", msg);
 
@@ -124,7 +153,9 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         sprintf(msg,
                 "handle=0x%0*llX, find=0x%llX, algo=0x%02X (HIPTENSOR_STATUS_NOT_INITIALIZED)",
                 2 * (int)sizeof(void*),
-                (unsigned long long)handle, (unsigned long long)find, algo);
+                (unsigned long long)handle,
+                (unsigned long long)find,
+                algo);
         logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
@@ -135,10 +166,12 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
-      sprintf(msg,
-              "handle=0x%0*llX, find=0x%llX, algo=0x%02X (HIPTENSOR_STATUS_ARCH_MISMATCH)",
-              2 * (int)sizeof(void*),
-              (unsigned long long)handle, (unsigned long long)find, (int)algo);
+        sprintf(msg,
+                "handle=0x%0*llX, find=0x%llX, algo=0x%02X (HIPTENSOR_STATUS_ARCH_MISMATCH)",
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)find,
+                (int)algo);
         logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
@@ -170,7 +203,9 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
             sprintf(msg,
                     "handle=0x%0*llX, find=0x%llX, algo=0x%02X (HIPTENSOR_STATUS_INTERNAL_ERROR)",
                     2 * (int)sizeof(void*),
-                    (unsigned long long)handle, (unsigned long long)find, (int)algo);
+                    (unsigned long long)handle,
+                    (unsigned long long)find,
+                    (int)algo);
             logger->logError("hiptensorInitContractionFind", msg);
             return HIPTENSOR_STATUS_INTERNAL_ERROR;
         }
@@ -191,7 +226,9 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         sprintf(msg,
                 "handle=0x%0*llX, find=0x%llX, algo=0x%02X (HIPTENSOR_STATUS_INVALID_VALUE)",
                 2 * (int)sizeof(void*),
-                (unsigned long long)handle, (unsigned long long)find, (int)algo);
+                (unsigned long long)handle,
+                (unsigned long long)find,
+                (int)algo);
         logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
@@ -208,9 +245,14 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
 
     // Log API access
     char msg[256];
-    sprintf(msg, "handle=0x%0*llX, desc=0x%llX, find=0x%llX, pref=0x%llX, workspaceSize=0x%llX",
-                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)desc,
-                  (unsigned long long)find, (unsigned long long)pref, (unsigned long long)workspaceSize);
+    sprintf(msg,
+            "handle=0x%0*llX, desc=0x%llX, find=0x%llX, pref=0x%02X, workspaceSize=0x%04lX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)desc,
+            (unsigned long long)find,
+            (unsigned int)pref,
+            (unsigned long)*workspaceSize);
 
     logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
 
@@ -229,9 +271,14 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     // Log API access
 
     char msg[256];
-    sprintf(msg, "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX",
-                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                  (unsigned long long)desc, (unsigned long long)find, (unsigned long)workspaceSize);
+    sprintf(msg,
+            "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)plan,
+            (unsigned long long)desc,
+            (unsigned long long)find,
+            (unsigned long)workspaceSize);
 
     logger->logAPITrace("hiptensorInitContractionPlan", msg);
 
@@ -240,8 +287,12 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         sprintf(msg,
                 "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX "
                 "(HIPTENSOR_STATUS_NOT_INITIALIZED)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                (unsigned long long)desc, (unsigned long long)find, (unsigned long)workspaceSize);
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)desc,
+                (unsigned long long)find,
+                (unsigned long)workspaceSize);
         logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
@@ -255,8 +306,12 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         sprintf(msg,
                 "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX "
                 "(HIPTENSOR_STATUS_ARCH_MISMATCH)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                (unsigned long long)desc, (unsigned long long)find, (unsigned long)workspaceSize);
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)desc,
+                (unsigned long long)find,
+                (unsigned long)workspaceSize);
         logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
@@ -351,12 +406,21 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
 
     // Log API access
     char msg[512];
-    sprintf(msg, "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
-                  "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
-                  2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                  (unsigned long long)alpha, (unsigned long long)A, (unsigned long long)B,
-                  (unsigned long long)beta, (unsigned long long)C, (unsigned long long)D,
-                  (unsigned long long)workspace, (unsigned long)workspaceSize, (unsigned long long)stream);
+    sprintf(msg,
+            "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
+            "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)plan,
+            (unsigned long long)alpha,
+            (unsigned long long)A,
+            (unsigned long long)B,
+            (unsigned long long)beta,
+            (unsigned long long)C,
+            (unsigned long long)D,
+            (unsigned long long)workspace,
+            (unsigned long)workspaceSize,
+            (unsigned long long)stream);
 
     logger->logAPITrace("hiptensorContraction", msg);
 
@@ -366,10 +430,18 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                 "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
                 "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
                 "(HIPTENSOR_STATUS_NOT_INITIALIZED)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                (unsigned long long)alpha, (unsigned long long)A, (unsigned long long)B,
-                (unsigned long long)beta, (unsigned long long)C, (unsigned long long)D,
-                (unsigned long long)workspace, (unsigned long)workspaceSize, (unsigned long long)stream);
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)alpha,
+                (unsigned long long)A,
+                (unsigned long long)B,
+                (unsigned long long)beta,
+                (unsigned long long)C,
+                (unsigned long long)D,
+                (unsigned long long)workspace,
+                (unsigned long)workspaceSize,
+                (unsigned long long)stream);
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
@@ -380,10 +452,18 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                 "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
                 "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
                 "(HIPTENSOR_STATUS_INVALID_VALUE)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                (unsigned long long)alpha, (unsigned long long)A, (unsigned long long)B,
-                (unsigned long long)beta, (unsigned long long)C, (unsigned long long)D,
-                (unsigned long long)workspace, (unsigned long)workspaceSize, (unsigned long long)stream);
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)alpha,
+                (unsigned long long)A,
+                (unsigned long long)B,
+                (unsigned long long)beta,
+                (unsigned long long)C,
+                (unsigned long long)D,
+                (unsigned long long)workspace,
+                (unsigned long)workspaceSize,
+                (unsigned long long)stream);
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
@@ -394,10 +474,18 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                 "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
                 "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
                 "(HIPTENSOR_STATUS_INTERNAL_ERROR)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                (unsigned long long)alpha, (unsigned long long)A, (unsigned long long)B,
-                (unsigned long long)beta, (unsigned long long)C, (unsigned long long)D,
-                (unsigned long long)workspace, (unsigned long)workspaceSize, (unsigned long long)stream);
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)alpha,
+                (unsigned long long)A,
+                (unsigned long long)B,
+                (unsigned long long)beta,
+                (unsigned long long)C,
+                (unsigned long long)D,
+                (unsigned long long)workspace,
+                (unsigned long)workspaceSize,
+                (unsigned long long)stream);
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
@@ -456,10 +544,18 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                 "handle=0x%0*llX, plan=0x%llX, alpha=0x%llX, A=0x%llX, B=0x%llX, beta=0x%llX,"
                 "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
                 "(HIPTENSOR_STATUS_INTERNAL_ERROR)",
-                2 * (int)sizeof(void*), (unsigned long long)handle, (unsigned long long)plan,
-                (unsigned long long)alpha, (unsigned long long)A, (unsigned long long)B,
-                (unsigned long long)beta, (unsigned long long)C, (unsigned long long)D,
-                (unsigned long long)workspace, (unsigned long)workspaceSize, (unsigned long long)stream);
+                2 * (int)sizeof(void*),
+                (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)alpha,
+                (unsigned long long)A,
+                (unsigned long long)B,
+                (unsigned long long)beta,
+                (unsigned long long)C,
+                (unsigned long long)D,
+                (unsigned long long)workspace,
+                (unsigned long)workspaceSize,
+                (unsigned long long)stream);
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
