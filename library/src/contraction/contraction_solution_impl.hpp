@@ -260,11 +260,11 @@ namespace hiptensor
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
 
-        std::vector<std::unique_ptr<hiptensor::ContractionSolution>> result;
+        std::vector<std::unique_ptr<ContractionSolution>> result;
         for(auto& opPtr : Factory::GetInstances())
         {
-            result.push_back(std::make_unique<hiptensor::ContractionSolutionImpl<ContractionOp>>(
-                std::move(opPtr)));
+            result.push_back(
+                std::make_unique<ContractionSolutionImpl<ContractionOp>>(std::move(opPtr)));
         }
         return result;
     }

@@ -27,6 +27,9 @@
 find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_operations )
 rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 include_directories(BEFORE
     ${PROJECT_SOURCE_DIR}/library/include/hiptensor
     ${PROJECT_SOURCE_DIR}/library/src/include
@@ -62,6 +65,7 @@ target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
 
 # Users of hiptensor will need HIP libs
 target_link_libraries(hiptensor INTERFACE hip::device hip::host)
+target_link_libraries(hiptensor PRIVATE Threads::Threads)
 set_target_properties(hiptensor PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 rocm_install_targets(

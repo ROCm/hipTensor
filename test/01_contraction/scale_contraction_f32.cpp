@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
 
     hipDataType            typeA       = HIP_R_32F;
     hipDataType            typeB       = HIP_R_32F;
+    hipDataType            typeC       = hipDataType(-1);
     hipDataType            typeD       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
@@ -305,26 +306,25 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
     tensorD.close();
 
-    std::vector<size_t> a_m_k_lengths = a_ms_ks.mLengths;
-    std::vector<size_t> b_k_n_lengths = b_ks_ns.mLengths;
-    std::vector<size_t> d_m_n_lengths = d_ms_ns.mLengths;
-
-    std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
-    std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
-    std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
-
-    hiptensorScaleContractionReference<ADataType, BDataType, DDataType, floatTypeCompute>(
-        A,
-        B,
-        D_host,
-        alpha,
-        a_m_k_lengths,
-        b_k_n_lengths,
-        d_m_n_lengths,
-        a_ms_ks_strides,
-        b_ks_ns_strides,
-        d_ms_ns_strides,
-        elementsD);
+    hiptensorContractionReference((void*)&alpha,
+                                  A,
+                                  B,
+                                  nullptr,
+                                  nullptr,
+                                  D_host,
+                                  a_ms_ks.mLengths,
+                                  a_ms_ks.mStrides,
+                                  b_ks_ns.mLengths,
+                                  b_ks_ns.mStrides,
+                                  d_ms_ns.mLengths,
+                                  d_ms_ns.mStrides,
+                                  d_ms_ns.mLengths,
+                                  d_ms_ns.mStrides,
+                                  typeA,
+                                  typeB,
+                                  typeC,
+                                  typeD,
+                                  workspace);
 
     bool   mValidationResult = false;
     double mMaxRelativeError;
@@ -340,7 +340,7 @@ int main(int argc, char* argv[])
         std::cout << "Validation Failed" << std::endl;
     }
 
-    std::cout << "Max relative error: " << mMaxRelativeError;
+    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
     if(D_host)
     {
