@@ -395,7 +395,7 @@ int main(int argc, char* argv[])
         std::cout << "Validation Failed" << std::endl;
     }
 
-    std::cout << "Max relative error: " << mMaxRelativeError;
+    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
     if(D_host)
     {
