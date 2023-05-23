@@ -25,6 +25,7 @@
  *******************************************************************************/
 
 #include "hip_device.hpp"
+#include <hiptensor/internal/hiptensor_utility.hpp>
 
 namespace hiptensor
 {

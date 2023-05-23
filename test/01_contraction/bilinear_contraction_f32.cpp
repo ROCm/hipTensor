@@ -361,25 +361,25 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
     tensorD.close();
 
-    hiptensorContractionReference((void*)&alpha,
-                                  A,
-                                  B,
-                                  (void*)&beta,
-                                  C,
-                                  D_host,
-                                  a_ms_ks.mLengths,
-                                  a_ms_ks.mStrides,
-                                  b_ks_ns.mLengths,
-                                  b_ks_ns.mStrides,
-                                  d_ms_ns.mLengths,
-                                  d_ms_ns.mStrides,
-                                  d_ms_ns.mLengths,
-                                  d_ms_ns.mStrides,
-                                  typeA,
-                                  typeB,
-                                  typeC,
-                                  typeD,
-                                  workspace);
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+                                                        A,
+                                                        B,
+                                                        (void*)&beta,
+                                                        C,
+                                                        D_host,
+                                                        a_ms_ks.mLengths,
+                                                        a_ms_ks.mStrides,
+                                                        b_ks_ns.mLengths,
+                                                        b_ks_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        typeA,
+                                                        typeB,
+                                                        typeC,
+                                                        typeD,
+                                                        workspace));
 
     bool   mValidationResult = false;
     double mMaxRelativeError;

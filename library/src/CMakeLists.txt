@@ -31,7 +31,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 include_directories(BEFORE
-    ${PROJECT_SOURCE_DIR}/library/include/hiptensor
+    ${PROJECT_SOURCE_DIR}/library/include
     ${PROJECT_SOURCE_DIR}/library/src/include
 )
 

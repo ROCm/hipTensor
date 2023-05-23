@@ -66,10 +66,13 @@ void hiptensorPrintArrayElements(T* vec, size_t size)
     while(index != size)
     {
         if(index == size - 1)
+        {
             std::cout << vec[index];
+        }
         else
+        {
             std::cout << vec[index] << ",";
-
+        }
         index++;
     }
 }
@@ -95,9 +98,13 @@ void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, cha
     for(int i = 0; i < size; i++)
     {
         if(i == size - 1)
+        {
             fs << static_cast<F>(output[i]);
+        }
         else
+        {
             fs << static_cast<F>(output[i]) << delim;
+        }
     }
     return;
 }

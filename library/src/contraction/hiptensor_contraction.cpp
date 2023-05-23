@@ -23,13 +23,14 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include <hiptensor/hiptensor.hpp>
+
 #include "contraction_selection.hpp"
 #include "contraction_solution.hpp"
 #include "contraction_solution_instances.hpp"
 #include "contraction_solution_registry.hpp"
 #include "handle.hpp"
 #include "hip_device.hpp"
-#include "hiptensor.hpp"
 
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
                                                      hiptensorContractionDescriptor_t*  desc,

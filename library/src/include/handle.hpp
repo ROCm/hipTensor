@@ -29,9 +29,9 @@
 
 #include <new>
 
-#include "hip_device.hpp"
-#include "internal/hiptensor_utility.hpp"
 #include <hip/hip_runtime_api.h>
+
+#include "hip_device.hpp"
 
 namespace hiptensor
 {

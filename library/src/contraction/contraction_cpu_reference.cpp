@@ -28,25 +28,25 @@
 #include "contraction_cpu_reference_impl.hpp"
 #include "contraction_cpu_reference_instances.hpp"
 
-void hiptensorContractionReference(void const*                alpha,
-                                   void const*                A,
-                                   void const*                B,
-                                   void const*                beta,
-                                   void const*                C,
-                                   void*                      D,
-                                   std::vector<size_t> const& a_ms_ks_lengths,
-                                   std::vector<size_t> const& a_ms_ks_strides,
-                                   std::vector<size_t> const& b_ns_ks_lengths,
-                                   std::vector<size_t> const& b_ns_ks_strides,
-                                   std::vector<size_t> const& c_ms_ns_lengths,
-                                   std::vector<size_t> const& c_ms_ns_strides,
-                                   std::vector<size_t> const& d_ms_ns_lengths,
-                                   std::vector<size_t> const& d_ms_ns_strides,
-                                   hipDataType                typeA,
-                                   hipDataType                typeB,
-                                   hipDataType                typeC,
-                                   hipDataType                typeD,
-                                   void*                      workspace)
+hiptensorStatus_t hiptensorContractionReference(void const*                alpha,
+                                                void const*                A,
+                                                void const*                B,
+                                                void const*                beta,
+                                                void const*                C,
+                                                void*                      D,
+                                                std::vector<size_t> const& a_ms_ks_lengths,
+                                                std::vector<size_t> const& a_ms_ks_strides,
+                                                std::vector<size_t> const& b_ns_ks_lengths,
+                                                std::vector<size_t> const& b_ns_ks_strides,
+                                                std::vector<size_t> const& c_ms_ns_lengths,
+                                                std::vector<size_t> const& c_ms_ns_strides,
+                                                std::vector<size_t> const& d_ms_ns_lengths,
+                                                std::vector<size_t> const& d_ms_ns_strides,
+                                                hipDataType                typeA,
+                                                hipDataType                typeB,
+                                                hipDataType                typeC,
+                                                hipDataType                typeD,
+                                                void*                      workspace)
 {
     auto& instances  = hiptensor::ContractionCpuReferenceInstances::instance();
     auto  candidates = instances->allSolutions().query(typeA, typeB, typeC, typeD);
@@ -56,11 +56,10 @@ void hiptensorContractionReference(void const*                alpha,
 
     if(candidates.solutionCount() != 1)
     {
-        std::cout << "Solution not found\n";
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
     else
     {
-        std::cout << "Reference solution found!\n";
         auto refCandidate = candidates.solutions().begin()->second;
         if(refCandidate->initArgs(alpha,
                                   A,
@@ -80,5 +79,6 @@ void hiptensorContractionReference(void const*                alpha,
         {
             (*refCandidate)();
         }
+        return HIPTENSOR_STATUS_SUCCESS;
     }
 }

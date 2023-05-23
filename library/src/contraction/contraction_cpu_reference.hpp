@@ -27,28 +27,29 @@
 #ifndef HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP
 #define HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP
 
-// Std includes
 #include <hip/library_types.h>
 #include <vector>
 
-void hiptensorContractionReference(void const*                alpha,
-                                   void const*                A,
-                                   void const*                B,
-                                   void const*                beta,
-                                   void const*                C,
-                                   void*                      D,
-                                   std::vector<size_t> const& a_ms_ks_lengths,
-                                   std::vector<size_t> const& a_ms_ks_strides,
-                                   std::vector<size_t> const& b_ks_ns_lengths,
-                                   std::vector<size_t> const& b_ks_ns_strides,
-                                   std::vector<size_t> const& c_ms_ns_lengths,
-                                   std::vector<size_t> const& c_ms_ns_strides,
-                                   std::vector<size_t> const& d_ms_ns_lengths,
-                                   std::vector<size_t> const& d_ms_ns_strides,
-                                   hipDataType                typeA,
-                                   hipDataType                typeB,
-                                   hipDataType                typeC,
-                                   hipDataType                typeD,
-                                   void*                      workspace);
+#include <hiptensor/hiptensor.hpp>
+
+hiptensorStatus_t hiptensorContractionReference(void const*                alpha,
+                                                void const*                A,
+                                                void const*                B,
+                                                void const*                beta,
+                                                void const*                C,
+                                                void*                      D,
+                                                std::vector<size_t> const& a_ms_ks_lengths,
+                                                std::vector<size_t> const& a_ms_ks_strides,
+                                                std::vector<size_t> const& b_ks_ns_lengths,
+                                                std::vector<size_t> const& b_ks_ns_strides,
+                                                std::vector<size_t> const& c_ms_ns_lengths,
+                                                std::vector<size_t> const& c_ms_ns_strides,
+                                                std::vector<size_t> const& d_ms_ns_lengths,
+                                                std::vector<size_t> const& d_ms_ns_strides,
+                                                hipDataType                typeA,
+                                                hipDataType                typeB,
+                                                hipDataType                typeC,
+                                                hipDataType                typeD,
+                                                void*                      workspace);
 
 #endif // HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP
