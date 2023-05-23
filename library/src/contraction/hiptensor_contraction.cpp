@@ -279,7 +279,6 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
             (unsigned long long)desc,
             (unsigned long long)find,
             (unsigned long)workspaceSize);
-
     logger->logAPITrace("hiptensorInitContractionPlan", msg);
 
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
@@ -312,7 +311,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                 (unsigned long long)desc,
                 (unsigned long long)find,
                 (unsigned long)workspaceSize);
-        logger->logError("hiptensorInitContractionFind", msg);
+        logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
@@ -374,11 +373,16 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
         sprintf(msg,
-                "handle=0x%0*llX (%s)",
+                "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX "
+                "(%s)",
                 2 * (int)sizeof(void*),
                 (unsigned long long)handle,
+                (unsigned long long)plan,
+                (unsigned long long)desc,
+                (unsigned long long)find,
+                (unsigned long)workspaceSize),
                 hiptensorGetErrorString(result));
-        logger->logError("hiptensorInitContractionFind", msg);
+        logger->logError("hiptensorInitContractionPlan", msg);
         return result;
     }
 
