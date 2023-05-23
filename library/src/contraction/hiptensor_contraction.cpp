@@ -26,6 +26,7 @@
 #include "contraction_selection.hpp"
 #include "contraction_solution.hpp"
 #include "contraction_solution_registry.hpp"
+//#include "contraction_solution_instances.hpp"
 #include "handle.hpp"
 #include "hip_device.hpp"
 #include "hiptensor.hpp"
@@ -52,10 +53,10 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    int32_t contractionOp;
     if(descC == nullptr || modeC == nullptr)
     {
-        // C-descriptor is empty
+        // Use a scale contraction due to
+        // tensor C-descriptor is empty
         *desc = {(int32_t)hiptensor::ContractionOpId_t::SCALE,
                  typeCompute,
                  {*descA,
@@ -66,7 +67,8 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     }
     else
     {
-        // C-descriptor is not empty
+        // Use a bilinear contraction due to
+        // tensor C-descriptor is not empty
         *desc = {(int32_t)hiptensor::ContractionOpId_t::BILINEAR,
                  typeCompute,
                  {*descA, *descB, *descC, *descD},
@@ -105,6 +107,8 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
 
         // For now, enumerate all known contraction kernels.
         // Using the hipDevice, determine if the device supports F64
+        // auto& instances = hiptensor::ContractionSolutionInstances::instance();
+        // auto  query    = instances->allSolutions();
         auto& registry = hiptensor::ContractionSolutionRegistry::instance();
         auto  query    = registry->allSolutions();
 
@@ -153,6 +157,21 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
+    // Convert to concrete contraction solutions
+    auto candidates = std::vector<hiptensor::ContractionSolution*>(find->mCandidates.size());
+    transform(find->mCandidates.begin(), find->mCandidates.end(), candidates.begin(), [](auto* p) {
+        return (hiptensor::ContractionSolution*)p;
+    });
+
+    // Query contraction solutions for the correct contraction operation
+    auto solutionMap = hiptensor::ContractionSolutionRegistry::Query{candidates}
+                           .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
+                           .solutions();
+    candidates.resize(solutionMap.size());
+    transform(solutionMap.begin(), solutionMap.end(), candidates.begin(), [](auto p) {
+        return (hiptensor::ContractionSolution*)p.second;
+    });
+
     // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
     // Therefore the conversion to ck::index_t is required.
     auto toCKVec
@@ -172,7 +191,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     // No mem alloc, just need to init sizes to determine workspace req.
     float alpha, beta;
     void *A_d, *B_d, *C_d;
-    for(auto* candidate : find->mCandidates)
+    for(auto* candidate : candidates)
     {
         auto* solution = (hiptensor::ContractionSolution*)candidate;
         if(solution->initArgs(&alpha,
