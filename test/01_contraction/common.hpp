@@ -43,6 +43,45 @@
 #include "contraction_cpu_reference.hpp"
 #include "device/common.hpp"
 
+#define HIPTENSOR_FREE_DEVICE(ptr)     \
+    if(ptr != nullptr)                 \
+    {                                  \
+        CHECK_HIP_ERROR(hipFree(ptr)); \
+    }
+
+#define HIPTENSOR_FREE_HOST(ptr) \
+    if(ptr != nullptr)           \
+    {                            \
+        free(ptr);               \
+    }
+
+inline bool isF32Supported()
+{
+    hipDevice_t     mHandle;
+    hipDeviceProp_t mProps;
+
+    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
+    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
+
+    std::string deviceName(mProps.gcnArchName);
+
+    return (deviceName.find("gfx908") != std::string::npos)
+           || (deviceName.find("gfx90a") != std::string::npos);
+}
+
+inline bool isF64Supported()
+{
+    hipDevice_t     mHandle;
+    hipDeviceProp_t mProps;
+
+    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
+    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
+
+    std::string deviceName(mProps.gcnArchName);
+
+    return (deviceName.find("gfx90a") != std::string::npos);
+}
+
 template <typename intT1,
           class = typename std::enable_if<std::is_integral<intT1>::value>::type,
           typename intT2,
