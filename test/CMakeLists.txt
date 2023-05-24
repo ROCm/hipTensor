@@ -55,6 +55,7 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
 
     # Register with ctest
     add_test(NAME ${BINARY_NAME} COMMAND ${BINARY_NAME})
+    set_property(TEST ${BINARY_NAME} PROPERTY SKIP_REGULAR_EXPRESSION "HIPTENSOR_STATUS_ARCH_MISMATCH" "unsupported host device")
 
     # Install with rocm pkg
     rocm_install_targets(
@@ -94,6 +95,7 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
     # Register with ctest
     add_test(NAME ${BINARY_NAME} COMMAND ${BINARY_NAME})
+    set_property(TEST ${BINARY_NAME} PROPERTY SKIP_REGULAR_EXPRESSION "HIPTENSOR_STATUS_ARCH_MISMATCH" "unsupported host device")
 
     # Install with rocm pkg
     rocm_install_targets(
