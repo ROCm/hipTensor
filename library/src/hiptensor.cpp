@@ -88,6 +88,12 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+    if(dataType == HIP_R_64F && !realHandle->getDevice().supportsF64())
+    {
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
+    }
+
     if(strides)
     {
         // Construct with both given lengths and strides
