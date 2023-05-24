@@ -181,7 +181,6 @@ int main(int argc, char* argv[])
     size_t elementsD = std::accumulate(
         d_ms_ns_lengths.begin(), d_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
 
-
     size_t sizeA = sizeof(ADataType) * elementsA;
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeC = sizeof(CDataType) * elementsC;
@@ -362,35 +361,25 @@ int main(int argc, char* argv[])
     std::cout << std::endl;
     tensorD.close();
 
-    std::vector<size_t> a_m_k_lengths = a_ms_ks.mLengths;
-    std::vector<size_t> b_k_n_lengths = b_ks_ns.mLengths;
-    std::vector<size_t> c_m_n_lengths = c_ms_ns.mLengths;
-    std::vector<size_t> d_m_n_lengths = d_ms_ns.mLengths;
-
-    std::vector<size_t> a_ms_ks_strides = a_ms_ks.mStrides;
-    std::vector<size_t> b_ks_ns_strides = b_ks_ns.mStrides;
-    std::vector<size_t> c_ms_ns_strides = c_ms_ns.mStrides;
-    std::vector<size_t> d_ms_ns_strides = d_ms_ns.mStrides;
-
-    hiptensorBilinearContractionReference<ADataType,
-                                          BDataType,
-                                          CDataType,
-                                          DDataType,
-                                          floatTypeCompute>(A,
-                                                            B,
-                                                            C,
-                                                            D_host,
-                                                            alpha,
-                                                            beta,
-                                                            a_m_k_lengths,
-                                                            b_k_n_lengths,
-                                                            c_m_n_lengths,
-                                                            d_m_n_lengths,
-                                                            a_ms_ks_strides,
-                                                            b_ks_ns_strides,
-                                                            c_ms_ns_strides,
-                                                            d_ms_ns_strides,
-                                                            elementsD);
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+                                                        A,
+                                                        B,
+                                                        (void*)&beta,
+                                                        C,
+                                                        D_host,
+                                                        a_ms_ks.mLengths,
+                                                        a_ms_ks.mStrides,
+                                                        b_ks_ns.mLengths,
+                                                        b_ks_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        typeA,
+                                                        typeB,
+                                                        typeC,
+                                                        typeD,
+                                                        workspace));
 
     bool   mValidationResult = false;
     double mMaxRelativeError;
@@ -455,7 +444,7 @@ int main(int argc, char* argv[])
     {
         CHECK_HIP_ERROR(hipFree(workspace));
     }
-  
+
     if(D_d)
     {
         CHECK_HIP_ERROR(hipFree(D_d));

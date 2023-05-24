@@ -31,13 +31,15 @@
 #include <unordered_map>
 #include <vector>
 
-#include "contraction_solution.hpp"
+#include "contraction_types.hpp"
 #include "singleton.hpp"
 #include "types.hpp"
 
 namespace hiptensor
 {
-    class ContractionSolutionRegistry : public LazySingleton<ContractionSolutionRegistry>
+    class ContractionSolution;
+
+    class ContractionSolutionRegistry
     {
     public:
         class Query
@@ -135,23 +137,19 @@ namespace hiptensor
             std::unordered_map<HashId, std::vector<ContractionSolution*>> mSolutionHash;
         };
 
-    private:
-        // Singleton: only one instance
-        ContractionSolutionRegistry();
+    protected:
+        // Move only
+        ContractionSolutionRegistry()                                              = default;
+        ContractionSolutionRegistry(ContractionSolutionRegistry&&)                 = default;
+        ContractionSolutionRegistry& operator=(ContractionSolutionRegistry&&)      = default;
         ContractionSolutionRegistry(ContractionSolutionRegistry const&)            = delete;
-        ContractionSolutionRegistry(ContractionSolutionRegistry&&)                 = delete;
-        ContractionSolutionRegistry* operator=(ContractionSolutionRegistry const&) = delete;
-        ContractionSolutionRegistry* operator=(ContractionSolutionRegistry&&)      = delete;
+        ContractionSolutionRegistry& operator=(ContractionSolutionRegistry const&) = delete;
 
         // Import contraction solutions for the registry to manage
         void registerSolutions(std::vector<std::unique_ptr<ContractionSolution>>&& solutions);
 
     public:
-        // For static initialization
-        friend std::unique_ptr<ContractionSolutionRegistry>
-            std::make_unique<ContractionSolutionRegistry>();
-
-        ~ContractionSolutionRegistry() = default;
+        virtual ~ContractionSolutionRegistry() = default;
 
         template <typename... Ts>
         Query querySolutions(Ts... ts)

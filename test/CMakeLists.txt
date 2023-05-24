@@ -33,8 +33,6 @@ file(WRITE "${INSTALL_TEST_FILE}"
 ]=]
 )
 
-find_package(Threads REQUIRED)
-
 # Target that will trigger build of all tests
 add_custom_target(hiptensor_tests)
 
@@ -46,10 +44,11 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor Threads::Threads "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
-                               ${PROJECT_SOURCE_DIR}/library/include)
+                               ${PROJECT_SOURCE_DIR}/library/include
+                               ${PROJECT_SOURCE_DIR}/library/src/contraction)
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})

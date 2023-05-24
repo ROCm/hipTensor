@@ -23,8 +23,8 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HT_TYPES_H_
-#define HT_TYPES_H_
+#ifndef HIPTENSOR_TYPES_HPP
+#define HIPTENSOR_TYPES_HPP
 
 #include <algorithm>
 #include <cassert>
@@ -235,4 +235,4 @@ typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
                                           const char* funcName,
                                           const char* msg);
 
-#endif
+#endif // HIPTENSOR_TYPES_HPP

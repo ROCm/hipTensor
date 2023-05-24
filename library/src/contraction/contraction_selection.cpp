@@ -36,6 +36,8 @@
 #include "performance.hpp"
 #include "util.hpp"
 
+#include "contraction_cpu_reference.hpp"
+
 namespace hiptensor
 {
     hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,

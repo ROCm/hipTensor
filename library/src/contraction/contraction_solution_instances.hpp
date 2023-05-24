@@ -24,33 +24,35 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HANDLE_HPP
-#define HIPTENSOR_HANDLE_HPP
+#ifndef HIPTENSOR_CONTRACTION_SOLUTION_INSTANCES_HPP
+#define HIPTENSOR_CONTRACTION_SOLUTION_INSTANCES_HPP
 
-#include <new>
+#include <memory>
 
-#include <hip/hip_runtime_api.h>
-
-#include "hip_device.hpp"
+#include "contraction_solution_registry.hpp"
+#include "singleton.hpp"
 
 namespace hiptensor
 {
-    // hiptensorHandle_t wrapper object
-    struct Handle
+    class ContractionSolutionInstances : public ContractionSolutionRegistry,
+                                         public LazySingleton<ContractionSolutionInstances>
     {
     public:
-        Handle()  = default;
-        ~Handle() = default;
+        // For static initialization
+        friend std::unique_ptr<ContractionSolutionInstances>
+            std::make_unique<ContractionSolutionInstances>();
 
-        static Handle  createHandle(int64_t* buff); // Calls constructor for all member variables
-        static void    destroyHandle(int64_t* buff); // Calls destructor for all member variables
-        static Handle* toHandle(int64_t* buff); // Reinterprets input buffer as Handle class
-
-        HipDevice getDevice();
+        ~ContractionSolutionInstances() = default;
 
     private:
-        HipDevice mDevice;
+        // Singleton: only one instance
+        ContractionSolutionInstances();
+        ContractionSolutionInstances(ContractionSolutionInstances const&)            = delete;
+        ContractionSolutionInstances(ContractionSolutionInstances&&)                 = delete;
+        ContractionSolutionInstances& operator=(ContractionSolutionInstances const&) = delete;
+        ContractionSolutionInstances& operator=(ContractionSolutionInstances&&)      = delete;
     };
+
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HANDLE_HPP
+#endif // HIPTENSOR_CONTRACTION_SOLUTION_INSTANCES_HPP
