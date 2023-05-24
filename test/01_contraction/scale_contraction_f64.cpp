@@ -34,10 +34,17 @@
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
+#include "common.hpp"
+
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
 int main(int argc, char* argv[])
 {
+    if(!isF64Supported())
+    {
+        std::cout << "unsupported host device" << std::endl;
+    }
+
     typedef double ADataType;
     typedef double BDataType;
     typedef double DDataType;
@@ -49,7 +56,6 @@ int main(int argc, char* argv[])
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_64F;
 
     doubleTypeCompute alpha = (doubleTypeCompute)1.0;
-    doubleTypeCompute beta  = (doubleTypeCompute)0.0;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
@@ -149,6 +155,9 @@ int main(int argc, char* argv[])
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     DDataType* D = (DDataType*)malloc(sizeD);
+#if !NDEBUG
+    DDataType* D_host = (DDataType*)malloc(sizeD);
+#endif
 
     void *A_d, *B_d, *D_d;
 
@@ -169,6 +178,14 @@ int main(int argc, char* argv[])
         B[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
     }
 
+    for(int64_t i = 0; i < elementsD; i++)
+    {
+        D[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#if !NDEBUG
+        D_host[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#endif
+    }
+
     /********************************************
    * Transfer the Host Tensor to Device Memory *
    ********************************************/
@@ -176,7 +193,7 @@ int main(int argc, char* argv[])
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(D_d, 0, sizeD));
+    CHECK_HIP_ERROR(hipMemcpy(D_d, static_cast<const void*>(D), sizeD, hipMemcpyHostToDevice));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -242,7 +259,7 @@ int main(int argc, char* argv[])
     /**************************
    * Create Contraction Plan
    **************************/
-    std::cout << "Finding contraction solution..." << std::endl;
+    std::cout << "Initializing contraction plan..." << std::endl;
 
     hiptensorContractionPlan_t plan;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
@@ -264,8 +281,8 @@ int main(int argc, char* argv[])
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
-    std::ofstream tensorA, tensorB, tensorD;
-    bool          printElements = false;
+    bool printElements = false;
+    bool storeElements = false;
 
     if(printElements)
     {
@@ -275,69 +292,93 @@ int main(int argc, char* argv[])
             hiptensorPrintArrayElements(A, elementsA);
             std::cout << std::endl;
         }
-        tensorA.open("tensor_A.txt");
-        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
-        std::cout << std::endl;
-        tensorA.close();
+
         if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor B elements:\n";
             hiptensorPrintArrayElements(B, elementsB);
             std::cout << std::endl;
         }
-        tensorB.open("tensor_B.txt");
-        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
-        std::cout << std::endl;
-        tensorB.close();
+
         if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor D elements:\n";
             hiptensorPrintArrayElements(D, elementsD);
             std::cout << std::endl;
         }
+    }
+
+    if(storeElements)
+    {
+        std::ofstream tensorA, tensorB, tensorD;
+        tensorA.open("tensor_A.txt");
+        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
+        tensorA.close();
+
+        tensorB.open("tensor_B.txt");
+        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
+        tensorB.close();
+
         tensorD.open("tensor_D_scale_contraction_results.txt");
         hiptensorPrintElementsToFile(tensorD, D, elementsD, ", ");
-        std::cout << std::endl;
         tensorD.close();
     }
+
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+                                                        A,
+                                                        B,
+                                                        nullptr,
+                                                        nullptr,
+                                                        D_host,
+                                                        a_ms_ks.mLengths,
+                                                        a_ms_ks.mStrides,
+                                                        b_ks_ns.mLengths,
+                                                        b_ks_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        typeA,
+                                                        typeB,
+                                                        typeD,
+                                                        typeD,
+                                                        workspace));
+
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
+
+    if(mValidationResult == true)
+    {
+        std::cout << "Validation Successful" << std::endl;
+    }
+    else
+    {
+        std::cout << "Validation Failed" << std::endl;
+    }
+
+    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
+
+    if(D_host)
+    {
+        free(D_host);
+    }
+
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
-    if(A)
-    {
-        free(A);
-    }
+    HIPTENSOR_FREE_HOST(A);
+    HIPTENSOR_FREE_HOST(B);
+    HIPTENSOR_FREE_HOST(D);
 
-    if(B)
-    {
-        free(B);
-    }
+    HIPTENSOR_FREE_DEVICE(A_d);
+    HIPTENSOR_FREE_DEVICE(B_d);
+    HIPTENSOR_FREE_DEVICE(D_d);
+    HIPTENSOR_FREE_DEVICE(workspace);
 
-    if(D)
-    {
-        free(D);
-    }
-
-    if(A_d)
-    {
-        CHECK_HIP_ERROR(hipFree(A_d));
-    }
-
-    if(B_d)
-    {
-        CHECK_HIP_ERROR(hipFree(B_d));
-    }
-
-    if(D_d)
-    {
-        CHECK_HIP_ERROR(hipFree(D_d));
-    }
-
-    if(workspace)
-    {
-        CHECK_HIP_ERROR(hipFree(workspace));
-    }
+    std::cout << "Finished!" << std::endl;
 
     return 0;
 }

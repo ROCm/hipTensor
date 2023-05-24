@@ -35,14 +35,17 @@
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
-#if !NDEBUG
 #include "common.hpp"
-#endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
 int main(int argc, char* argv[])
 {
+    if(!isF32Supported())
+    {
+        std::cout << "unsupported host device" << std::endl;
+    }
+
     typedef float ADataType;
     typedef float BDataType;
     typedef float CDataType;
@@ -57,10 +60,6 @@ int main(int argc, char* argv[])
 
     floatTypeCompute alpha = (floatTypeCompute)2.0f;
     floatTypeCompute beta  = (floatTypeCompute)2.0f;
-
-#if !NDEBUG
-    std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
-#endif
 
     /**********************
    * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta *
@@ -113,9 +112,8 @@ int main(int argc, char* argv[])
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-    CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_ERROR
-                                                 | HIPTENSOR_LOG_LEVEL_PERF_TRACE
-                                                 | HIPTENSOR_LOG_LEVEL_API_TRACE));
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     /********************************************
    * Intialise Tensors with the input lengths *
@@ -193,6 +191,7 @@ int main(int argc, char* argv[])
     /*******************
    * Initialize data
    *******************/
+
     for(int64_t i = 0; i < elementsA; i++)
     {
         A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
@@ -296,7 +295,7 @@ int main(int argc, char* argv[])
     /**************************
    * Create Contraction Plan
    **************************/
-    std::cout << "Finding contraction solution..." << std::endl;
+    std::cout << "Initializing contraction plan..." << std::endl;
 
     hiptensorContractionPlan_t plan;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
@@ -319,8 +318,8 @@ int main(int argc, char* argv[])
 
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
-    std::ofstream tensorA, tensorB, tensorC, tensorD;
-    bool          printElements = false;
+    bool printElements = false;
+    bool storeElements = false;
 
     if(printElements)
     {
@@ -330,39 +329,47 @@ int main(int argc, char* argv[])
             hiptensorPrintArrayElements(A, elementsA);
             std::cout << std::endl;
         }
-        tensorA.open("tensor_A.txt");
-        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
-        std::cout << std::endl;
-        tensorA.close();
+
         if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor B elements:\n";
             hiptensorPrintArrayElements(B, elementsB);
             std::cout << std::endl;
         }
-        tensorB.open("tensor_B.txt");
-        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
-        std::cout << std::endl;
-        tensorB.close();
+
         if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor C elements:\n";
             hiptensorPrintArrayElements(C, elementsC);
             std::cout << std::endl;
         }
-        tensorC.open("tensor_C_bilinear_contraction_results.txt");
-        hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
-        std::cout << std::endl;
-        tensorC.close();
+
         if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor D elements:\n";
             hiptensorPrintArrayElements(D, elementsD);
             std::cout << std::endl;
         }
+    }
+
+    if(storeElements)
+    {
+        std::ofstream tensorA, tensorB, tensorC, tensorD;
+
+        tensorA.open("tensor_A.txt");
+        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
+        tensorA.close();
+
+        tensorB.open("tensor_B.txt");
+        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
+        tensorB.close();
+
+        tensorC.open("tensor_C.txt");
+        hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
+        tensorC.close();
+
         tensorD.open("tensor_D_bilinear_contraction_results.txt");
         hiptensorPrintElementsToFile(tensorD, D, elementsD, ", ");
-        std::cout << std::endl;
         tensorD.close();
     }
 
@@ -402,58 +409,21 @@ int main(int argc, char* argv[])
 
     std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
-    if(D_host)
-    {
-        free(D_host);
-    }
+    HIPTENSOR_FREE_HOST(D_host);
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
-    if(A)
-    {
-        free(A);
-    }
+    HIPTENSOR_FREE_HOST(A);
+    HIPTENSOR_FREE_HOST(B);
+    HIPTENSOR_FREE_HOST(C);
+    HIPTENSOR_FREE_HOST(D);
 
-    if(B)
-    {
-        free(B);
-    }
-
-    if(C)
-    {
-        free(C);
-    }
-
-    if(D)
-    {
-        free(D);
-    }
-
-    if(A_d)
-    {
-        CHECK_HIP_ERROR(hipFree(A_d));
-    }
-
-    if(B_d)
-    {
-        CHECK_HIP_ERROR(hipFree(B_d));
-    }
-
-    if(C_d)
-    {
-        CHECK_HIP_ERROR(hipFree(C_d));
-    }
-
-    if(workspace)
-    {
-        CHECK_HIP_ERROR(hipFree(workspace));
-    }
-
-    if(D_d)
-    {
-        CHECK_HIP_ERROR(hipFree(D_d));
-    }
+    HIPTENSOR_FREE_DEVICE(A_d);
+    HIPTENSOR_FREE_DEVICE(B_d);
+    HIPTENSOR_FREE_DEVICE(C_d);
+    HIPTENSOR_FREE_DEVICE(D_d);
+    HIPTENSOR_FREE_DEVICE(workspace);
 
     std::cout << "Finished!" << std::endl;
 

@@ -35,14 +35,17 @@
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
-#if !NDEBUG
 #include "common.hpp"
-#endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
 int main(int argc, char* argv[])
 {
+    if(!isF32Supported())
+    {
+        std::cout << "unsupported host device" << std::endl;
+    }
+
     typedef float ADataType;
     typedef float BDataType;
     typedef float DDataType;
@@ -162,6 +165,7 @@ int main(int argc, char* argv[])
     /*******************
    * Initialize data
    *******************/
+
     for(int64_t i = 0; i < elementsA; i++)
     {
         A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
@@ -185,7 +189,7 @@ int main(int argc, char* argv[])
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemset(D_d, 0, sizeD));
+    CHECK_HIP_ERROR(hipMemcpy(D_d, static_cast<const void*>(D), sizeD, hipMemcpyHostToDevice));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -251,7 +255,7 @@ int main(int argc, char* argv[])
     /**************************
    * Create Contraction Plan
    **************************/
-    std::cout << "Finding contraction solution..." << std::endl;
+    std::cout << "Initializing contraction plan..." << std::endl;
 
     hiptensorContractionPlan_t plan;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
@@ -273,8 +277,8 @@ int main(int argc, char* argv[])
 #if !NDEBUG
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
-    std::ofstream tensorA, tensorB, tensorD;
-    bool          printElements = false;
+    bool printElements = false;
+    bool storeElements = false;
 
     if(printElements)
     {
@@ -284,29 +288,35 @@ int main(int argc, char* argv[])
             hiptensorPrintArrayElements(A, elementsA);
             std::cout << std::endl;
         }
-        tensorA.open("tensor_A.txt");
-        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
-        std::cout << std::endl;
-        tensorA.close();
+
         if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor B elements:\n";
             hiptensorPrintArrayElements(B, elementsB);
             std::cout << std::endl;
         }
-        tensorB.open("tensor_B.txt");
-        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
-        std::cout << std::endl;
-        tensorB.close();
+
         if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor D elements:\n";
             hiptensorPrintArrayElements(D, elementsD);
             std::cout << std::endl;
         }
+    }
+
+    if(storeElements)
+    {
+        std::ofstream tensorA, tensorB, tensorD;
+        tensorA.open("tensor_A.txt");
+        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
+        tensorA.close();
+
+        tensorB.open("tensor_B.txt");
+        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
+        tensorB.close();
+
         tensorD.open("tensor_D_scale_contraction_results.txt");
         hiptensorPrintElementsToFile(tensorD, D, elementsD, ", ");
-        std::cout << std::endl;
         tensorD.close();
     }
 
@@ -350,46 +360,21 @@ int main(int argc, char* argv[])
     {
         free(D_host);
     }
-#else
-    std::cout << "Finished" << std::endl;
+
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
-    if(A)
-    {
-        free(A);
-    }
+    HIPTENSOR_FREE_HOST(A);
+    HIPTENSOR_FREE_HOST(B);
+    HIPTENSOR_FREE_HOST(D);
 
-    if(B)
-    {
-        free(B);
-    }
+    HIPTENSOR_FREE_DEVICE(A_d);
+    HIPTENSOR_FREE_DEVICE(B_d);
+    HIPTENSOR_FREE_DEVICE(D_d);
+    HIPTENSOR_FREE_DEVICE(workspace);
 
-    if(D)
-    {
-        free(D);
-    }
-
-    if(A_d)
-    {
-        CHECK_HIP_ERROR(hipFree(A_d));
-    }
-
-    if(B_d)
-    {
-        CHECK_HIP_ERROR(hipFree(B_d));
-    }
-
-    if(D_d)
-    {
-        CHECK_HIP_ERROR(hipFree(D_d));
-    }
-
-    if(workspace)
-    {
-        CHECK_HIP_ERROR(hipFree(workspace));
-    }
+    std::cout << "Finished!" << std::endl;
 
     return 0;
 }
