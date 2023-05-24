@@ -369,46 +369,45 @@ int main(int argc, char* argv[])
         tensorD.open("tensor_D_bilinear_contraction_results.txt");
         hiptensorPrintElementsToFile(tensorD, D, elementsD, ", ");
         tensorD.close();
-
-        CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
-                                                            A,
-                                                            B,
-                                                            (void*)&beta,
-                                                            C,
-                                                            D_host,
-                                                            a_ms_ks.mLengths,
-                                                            a_ms_ks.mStrides,
-                                                            b_ns_ks.mLengths,
-                                                            b_ns_ks.mStrides,
-                                                            d_ms_ns.mLengths,
-                                                            d_ms_ns.mStrides,
-                                                            d_ms_ns.mLengths,
-                                                            d_ms_ns.mStrides,
-                                                            typeA,
-                                                            typeB,
-                                                            typeC,
-                                                            typeD,
-                                                            workspace));
-
-        bool   mValidationResult = false;
-        double mMaxRelativeError;
-
-        std::tie(mValidationResult, mMaxRelativeError)
-            = compareEqual<DDataType>(D, D_host, elementsD);
-
-        if(mValidationResult == true)
-        {
-            std::cout << "Validation Successful" << std::endl;
-        }
-        else
-        {
-            std::cout << "Validation Failed" << std::endl;
-        }
-
-        std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
-
-        HIPTENSOR_FREE_HOST(D_host);
     }
+
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+                                                        A,
+                                                        B,
+                                                        (void*)&beta,
+                                                        C,
+                                                        D_host,
+                                                        a_ms_ks.mLengths,
+                                                        a_ms_ks.mStrides,
+                                                        b_ns_ks.mLengths,
+                                                        b_ns_ks.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        typeA,
+                                                        typeB,
+                                                        typeC,
+                                                        typeD,
+                                                        workspace));
+
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
+
+    if(mValidationResult == true)
+    {
+        std::cout << "Validation Successful" << std::endl;
+    }
+    else
+    {
+        std::cout << "Validation Failed" << std::endl;
+    }
+
+    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
+
+    HIPTENSOR_FREE_HOST(D_host);
 
 #endif
 

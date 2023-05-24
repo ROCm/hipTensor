@@ -360,10 +360,7 @@ int main(int argc, char* argv[])
 
     std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
-    if(D_host)
-    {
-        free(D_host);
-    }
+    HIPTENSOR_FREE_HOST(D_host);
 
 #endif
 

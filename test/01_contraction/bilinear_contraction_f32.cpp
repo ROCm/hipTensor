@@ -410,6 +410,7 @@ int main(int argc, char* argv[])
     std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
     HIPTENSOR_FREE_HOST(D_host);
+
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
