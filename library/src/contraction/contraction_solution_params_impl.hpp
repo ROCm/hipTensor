@@ -97,7 +97,7 @@ namespace hiptensor
             if constexpr(std::is_same_v<typename MetaTraitsT::CDEOp,
                                         typename ck::tensor_operation::element_wise::Scale>)
             {
-                return hipDataType(-1);
+                return hipDataType(NONE_TYPE);
             }
             else
             {

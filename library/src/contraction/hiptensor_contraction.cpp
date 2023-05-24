@@ -31,6 +31,8 @@
 #include "contraction_solution_registry.hpp"
 #include "handle.hpp"
 #include "hip_device.hpp"
+#include "logger.hpp"
+#include "performance.hpp"
 
 // Helper to convert to CK style vectors
 template <typename T>
@@ -102,7 +104,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                  typeCompute,
                  {*descA,
                   *descB,
-                  {(hipDataType)-1, {descD->mLengths.size(), 0}, {descD->mStrides.size(), 0}},
+                  {hiptensor::NONE_TYPE, {descD->mLengths.size(), 0}, {descD->mStrides.size(), 0}},
                   *descD},
                  {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
     }
@@ -155,9 +157,8 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         if(!currentDevice.supportsF64())
         {
             // Allow only supported f32 combos
-            solnQ = solnQ.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) // Bilinear F32
-                    || solnQ.query(
-                        HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F); // Scale F32 (no C)
+            solnQ = solnQ.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) || // Bilinear F32
+                    solnQ.query(HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F); // Scale F32 (no C)
         }
 
         // Can do more checking for scale / bilinear, etc. if we need to.
@@ -249,6 +250,13 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                                const hiptensorContractionFind_t*       find,
                                                const uint64_t workspaceSize)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+
+    char msg[256];
+
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
     {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
@@ -293,11 +301,13 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
+    hiptensor::PerfMetrics          winnerMetrics;
     auto                            result = HIPTENSOR_STATUS_INTERNAL_ERROR;
     if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
        || find->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
     {
         result = hiptensor::bruteForceModel(&winner,
+                                            &winnerMetrics,
                                             candidates,
                                             ADataType,
                                             a_ms_ks_lengths,
@@ -316,6 +326,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     else if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
     {
         result = hiptensor::actorCriticModel(&winner,
+                                             &winnerMetrics,
                                              solutionQ.solutions(),
                                              ADataType,
                                              a_ms_ks_lengths,
@@ -336,6 +347,15 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     {
         return result;
     }
+
+    // todo: Log the performance metrics of the winning kernel (loglevel perf trace)
+    sprintf(msg,
+            "\nKernel Name: %s\n%0.3f ms, %0.3f TFlops, %0.3f GB/s\n",
+            winnerMetrics.mKernelName.c_str(),
+            winnerMetrics.mAvgTimeMs,
+            winnerMetrics.mTflops,
+            winnerMetrics.mBandwidth);
+    logger->logPerformanceTrace("hiptensorInitContractionPlan", msg);
 
     // Assign the contraction descriptor
     plan->mContractionDesc = *desc;

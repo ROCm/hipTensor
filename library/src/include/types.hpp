@@ -42,6 +42,8 @@ namespace hiptensor
     template <typename T>
     struct HipDataType;
 
+    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
+
     template <typename T>
     static constexpr auto HipDataType_v = HipDataType<T>::value;
 
