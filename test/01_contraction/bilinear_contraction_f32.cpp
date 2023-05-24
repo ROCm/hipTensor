@@ -41,6 +41,9 @@
 
 int main(int argc, char* argv[])
 {
+    /***************************************
+   * Check device support                 *
+   **************************************/
     if(!isF32Supported())
     {
         std::cout << "unsupported host device" << std::endl;

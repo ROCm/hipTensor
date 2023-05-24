@@ -41,6 +41,9 @@
 
 int main(int argc, char* argv[])
 {
+    /***************************************
+   * Check device support                 *
+   **************************************/
     if(!isF32Supported())
     {
         std::cout << "unsupported host device" << std::endl;
@@ -101,7 +104,8 @@ int main(int argc, char* argv[])
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-    hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_PERF_TRACE);
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     /********************************************
    * Intialise Tensors with the input lengths *
