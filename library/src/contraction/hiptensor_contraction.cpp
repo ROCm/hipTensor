@@ -34,6 +34,46 @@
 #include "logger.hpp"
 #include "performance.hpp"
 
+// Helper to convert to CK style vectors
+template <typename T>
+inline auto toCKVec(std::vector<T> const& v)
+{
+    return std::vector<ck::index_t>(v.begin(), v.end());
+}
+
+// Convert between vectors of void ptrs stored in opaque API objects
+// to vectors of ContractionSolution ptrs with simple cast.
+inline auto toContractionSolutionVec(std::vector<void*> const& v)
+{
+    auto result = std::vector<hiptensor::ContractionSolution*>(v.size());
+    std::transform(v.begin(), v.end(), result.begin(), [](auto* p) {
+        return (hiptensor::ContractionSolution*)p;
+    });
+    return result;
+}
+
+inline auto toContractionSolutionVec(
+    std::unordered_map<std::size_t, hiptensor::ContractionSolution*> const& map)
+{
+    auto result = std::vector<hiptensor::ContractionSolution*>(map.size());
+    transform(map.begin(), map.end(), result.begin(), [](auto p) { return p.second; });
+    return result;
+}
+
+inline auto toVoidVec(std::vector<hiptensor::ContractionSolution*> const& v)
+{
+    auto result = std::vector<void*>(v.size());
+    transform(v.begin(), v.end(), result.begin(), [](auto* p) { return (void*)p; });
+    return result;
+}
+
+inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolution*> const& map)
+{
+    auto result = std::vector<void*>(map.size());
+    transform(map.begin(), map.end(), result.begin(), [](auto p) { return (void*)p.second; });
+    return result;
+}
+
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
                                                      hiptensorContractionDescriptor_t*  desc,
                                                      const hiptensorTensorDescriptor_t* descA,
@@ -111,33 +151,26 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         // For now, enumerate all known contraction kernels.
         // Using the hipDevice, determine if the device supports F64
         auto& instances = hiptensor::ContractionSolutionInstances::instance();
-        auto  query     = instances->allSolutions();
+        auto  solnQ      = instances->allSolutions();
 
         // Check if the current device supports F64
         if(!currentDevice.supportsF64())
         {
             // Allow only supported f32 combos
-            query = query.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) // Bilinear F32
-                    || query.query(
-                        HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F); // Scale F32 (no C)
+            solnQ = solnQ.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) || // Bilinear F32
+                    solnQ.query(HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F); // Scale F32 (no C)
         }
 
         // Can do more checking for scale / bilinear, etc. if we need to.
 
-        if(query.solutionCount() == 0)
+        if(solnQ.solutionCount() == 0)
         {
             // No kernels found!
             return HIPTENSOR_STATUS_INTERNAL_ERROR;
         }
 
-        // Retrieve the solution map
-        auto& solutions = query.solutions();
-
         // Extract the solutions to the candidates vector.
-        find->mCandidates.resize(solutions.size());
-        transform(solutions.begin(), solutions.end(), find->mCandidates.begin(), [](auto p) {
-            return (void*)p.second;
-        });
+        find->mCandidates = toVoidVec(solnQ.solutions());
 
         return HIPTENSOR_STATUS_SUCCESS;
     }
@@ -159,33 +192,13 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     }
 
     // Convert to concrete contraction solutions
-    auto candidates = std::vector<hiptensor::ContractionSolution*>(find->mCandidates.size());
-    transform(find->mCandidates.begin(), find->mCandidates.end(), candidates.begin(), [](auto* p) {
-        return (hiptensor::ContractionSolution*)p;
-    });
+    auto candidates = toContractionSolutionVec(find->mCandidates);
 
     // Query contraction solutions for the correct contraction operation
-    auto solutionMap = hiptensor::ContractionSolutionRegistry::Query{candidates}
-                           .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
-                           .solutions();
-    candidates.resize(solutionMap.size());
-    transform(solutionMap.begin(), solutionMap.end(), candidates.begin(), [](auto p) {
-        return (hiptensor::ContractionSolution*)p.second;
-    });
+    auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}.query(
+        (hiptensor::ContractionOpId_t)desc->mContractionOpId);
 
-    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
-    // Therefore the conversion to ck::index_t is required.
-    auto toCKVec
-        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
-
-    auto a_ms_ks_lengths = toCKVec(desc->mTensorDesc[0].mLengths);
-    auto a_ms_ks_strides = toCKVec(desc->mTensorDesc[0].mStrides);
-    auto b_ns_ks_lengths = toCKVec(desc->mTensorDesc[1].mLengths);
-    auto b_ns_ks_strides = toCKVec(desc->mTensorDesc[1].mStrides);
-    auto d_ms_ns_lengths = toCKVec(desc->mTensorDesc[2].mLengths);
-    auto d_ms_ns_strides = toCKVec(desc->mTensorDesc[2].mStrides);
-    auto e_ms_ns_lengths = toCKVec(desc->mTensorDesc[3].mLengths);
-    auto e_ms_ns_strides = toCKVec(desc->mTensorDesc[3].mStrides);
+    candidates = toContractionSolutionVec(solutionQ.solutions());
 
     *workspaceSize = 0u;
 
@@ -194,36 +207,35 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     void *A_d, *B_d, *C_d;
     for(auto* candidate : candidates)
     {
-        auto* solution = (hiptensor::ContractionSolution*)candidate;
-        if(solution->initArgs(&alpha,
-                              A_d,
-                              B_d,
-                              &beta,
-                              C_d,
-                              C_d,
-                              a_ms_ks_lengths,
-                              a_ms_ks_strides,
-                              b_ns_ks_lengths,
-                              b_ns_ks_strides,
-                              std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
-                              std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
-                              e_ms_ns_lengths,
-                              e_ms_ns_strides,
-                              nullptr))
+        if(candidate->initArgs(&alpha,
+                               A_d,
+                               B_d,
+                               &beta,
+                               C_d,
+                               C_d,
+                               toCKVec(desc->mTensorDesc[0].mLengths),
+                               toCKVec(desc->mTensorDesc[0].mStrides),
+                               toCKVec(desc->mTensorDesc[1].mLengths),
+                               toCKVec(desc->mTensorDesc[1].mStrides),
+                               toCKVec(desc->mTensorDesc[2].mLengths),
+                               toCKVec(desc->mTensorDesc[2].mStrides),
+                               toCKVec(desc->mTensorDesc[3].mLengths),
+                               toCKVec(desc->mTensorDesc[3].mStrides),
+                               nullptr))
         {
             if(*workspaceSize == 0)
             {
-                *workspaceSize = solution->workspaceSize();
+                *workspaceSize = candidate->workspaceSize();
             }
             else
             {
                 if(pref == HIPTENSOR_WORKSPACE_MIN)
                 {
-                    *workspaceSize = std::min(*workspaceSize, solution->workspaceSize());
+                    *workspaceSize = std::min(*workspaceSize, candidate->workspaceSize());
                 }
                 else
                 {
-                    *workspaceSize = std::max(*workspaceSize, solution->workspaceSize());
+                    *workspaceSize = std::max(*workspaceSize, candidate->workspaceSize());
                 }
             }
         }
@@ -263,30 +275,21 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     // Brute force method currently uses CK kernel format, so we will adjust inputs to that style.
 
     // Convert to concrete contraction solutions
-    auto candidates = std::vector<hiptensor::ContractionSolution*>(find->mCandidates.size());
-    transform(find->mCandidates.begin(), find->mCandidates.end(), candidates.begin(), [](auto* p) {
-        return (hiptensor::ContractionSolution*)p;
-    });
+    auto candidates = toContractionSolutionVec(find->mCandidates);
 
     // Query contraction solutions for the correct contraction operation
-    auto solutionMap = hiptensor::ContractionSolutionRegistry::Query{candidates}
-                           .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
-                           .solutions();
-    candidates.resize(solutionMap.size());
-    transform(solutionMap.begin(), solutionMap.end(), candidates.begin(), [](auto p) {
-        return (hiptensor::ContractionSolution*)p.second;
-    });
+    auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}.query(
+        (hiptensor::ContractionOpId_t)desc->mContractionOpId);
 
-    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
-    // Therefore the conversion to ck::index_t is required.
-    auto toCKVec
-        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
+    candidates = toContractionSolutionVec(solutionQ.solutions());
 
     auto ADataType = desc->mTensorDesc[0].mType;
     auto BDataType = desc->mTensorDesc[1].mType;
     auto DDataType = desc->mTensorDesc[2].mType;
     auto EDataType = desc->mTensorDesc[3].mType;
 
+    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
+    // Therefore the conversion to ck::index_t is required.
     auto a_ms_ks_lengths = toCKVec(desc->mTensorDesc[0].mLengths);
     auto a_ms_ks_strides = toCKVec(desc->mTensorDesc[0].mStrides);
     auto b_ns_ks_lengths = toCKVec(desc->mTensorDesc[1].mLengths);
@@ -324,7 +327,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     {
         result = hiptensor::actorCriticModel(&winner,
                                              &winnerMetrics,
-                                             solutionMap,
+                                             solutionQ.solutions(),
                                              ADataType,
                                              a_ms_ks_lengths,
                                              a_ms_ks_strides,
@@ -399,37 +402,20 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
 
     auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
 
-    // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
-    // Therefore the conversion to ck::index_t is required.
-    auto toCKVec
-        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
-
-    auto a_ms_ks_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[0].mLengths);
-    auto a_ms_ks_strides = toCKVec(plan->mContractionDesc.mTensorDesc[0].mStrides);
-
-    auto b_ns_ks_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[1].mLengths);
-    auto b_ns_ks_strides = toCKVec(plan->mContractionDesc.mTensorDesc[1].mStrides);
-
-    auto d_ms_ns_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[2].mLengths);
-    auto d_ms_ns_strides = toCKVec(plan->mContractionDesc.mTensorDesc[2].mStrides);
-
-    auto e_ms_ns_lengths = toCKVec(plan->mContractionDesc.mTensorDesc[3].mLengths);
-    auto e_ms_ns_strides = toCKVec(plan->mContractionDesc.mTensorDesc[3].mStrides);
-
     auto canRun = cSolution->initArgs(alpha,
                                       A,
                                       B,
                                       beta,
                                       C,
                                       D,
-                                      a_ms_ks_lengths,
-                                      a_ms_ks_strides,
-                                      b_ns_ks_lengths,
-                                      b_ns_ks_strides,
-                                      std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
-                                      std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
-                                      e_ms_ns_lengths,
-                                      e_ms_ns_strides,
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[0].mLengths),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[0].mStrides),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[1].mLengths),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[1].mStrides),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[2].mLengths),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[2].mStrides),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[3].mLengths),
+                                      toCKVec(plan->mContractionDesc.mTensorDesc[3].mStrides),
                                       workspace);
 
     if(canRun)

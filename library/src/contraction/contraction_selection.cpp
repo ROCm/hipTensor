@@ -97,8 +97,8 @@ namespace hiptensor
                                   a_ms_ks_strides,
                                   b_ns_ks_lengths,
                                   b_ns_ks_strides,
-                                  std::vector<std::vector<ck::index_t>>{d_ms_ns_lengths},
-                                  std::vector<std::vector<ck::index_t>>{d_ms_ns_strides},
+                                  d_ms_ns_lengths,
+                                  d_ms_ns_strides,
                                   e_ms_ns_lengths,
                                   e_ms_ns_strides,
                                   wspace)

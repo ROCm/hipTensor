@@ -174,14 +174,6 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     }
 }
 
-void printHexAddress(char* str, void const* obj)
-{
-    // Format string as hex
-    // Width in hex = 8 Byte * 2 = 16
-    // Cast obj to
-    sprintf(str, "0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)obj);
-}
-
 hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)
 {
     using hiptensor::Logger;
