@@ -48,7 +48,8 @@ bool hiptensorLoggerSetCallbackTest()
 {
     static bool checkEntry   = false;
     auto        callBackFunc = [](int32_t logContext, const char* funcName, const char* msg) {
-        if(!strcmp(funcName, "TestFunction") && (strstr(msg, "TestMessage") != NULL))
+        if((logContext == static_cast<int32_t>(hiptensor::Logger::LogLevel_t::LOG_LEVEL_API_TRACE))
+           && !strcmp(funcName, "TestFunction") && (strstr(msg, "TestMessage") != NULL))
         {
             checkEntry = true;
         }
