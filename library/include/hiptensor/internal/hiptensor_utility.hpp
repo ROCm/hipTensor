@@ -23,7 +23,8 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#pragma once
+#ifndef HIPTENSOR_UTILITY_INTERNAL_HPP
+#define HIPTENSOR_UTILITY_INTERNAL_HPP
 
 #include <fstream>
 #include <hip/hip_runtime.h>
@@ -126,3 +127,5 @@ namespace std
         return os;
     }
 }
+
+#endif // HIPTENSOR_UTILITY_INTERNAL_HPP

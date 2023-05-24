@@ -95,23 +95,22 @@ namespace hiptensor
         return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
     }
 
-    float ContractionSolution::operator()(
-        void const*                                  alpha,
-        void const*                                  A,
-        void const*                                  B,
-        void const*                                  beta,
-        void const*                                  D,
-        void*                                        E,
-        std::vector<ck::index_t> const&              a_ms_ns_lengths,
-        std::vector<ck::index_t> const&              a_ms_ks_strides,
-        std::vector<ck::index_t> const&              b_ns_ks_lengths,
-        std::vector<ck::index_t> const&              b_ns_ks_strides,
-        std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-        std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-        std::vector<ck::index_t> const&              e_ms_ns_lengths,
-        std::vector<ck::index_t> const&              e_ms_ns_strides,
-        void*                                        workspacePtr,
-        StreamConfig const&                          streamConfig /*= StreamConfig{}*/)
+    float ContractionSolution::operator()(void const*                     alpha,
+                                          void const*                     A,
+                                          void const*                     B,
+                                          void const*                     beta,
+                                          void const*                     D,
+                                          void*                           E,
+                                          std::vector<ck::index_t> const& a_ms_ns_lengths,
+                                          std::vector<ck::index_t> const& a_ms_ks_strides,
+                                          std::vector<ck::index_t> const& b_ns_ks_lengths,
+                                          std::vector<ck::index_t> const& b_ns_ks_strides,
+                                          std::vector<ck::index_t> const& ds_ms_ns_lengths,
+                                          std::vector<ck::index_t> const& ds_ms_ns_strides,
+                                          std::vector<ck::index_t> const& e_ms_ns_lengths,
+                                          std::vector<ck::index_t> const& e_ms_ns_strides,
+                                          void*                           workspacePtr,
+                                          StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
         if(!initArgs(alpha,
                      A,
