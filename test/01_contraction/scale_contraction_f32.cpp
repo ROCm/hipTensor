@@ -50,7 +50,6 @@ int main(int argc, char* argv[])
 
     hipDataType            typeA       = HIP_R_32F;
     hipDataType            typeB       = HIP_R_32F;
-    hipDataType            typeC       = hipDataType(-1);
     hipDataType            typeD       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
@@ -327,7 +326,7 @@ int main(int argc, char* argv[])
                                                         d_ms_ns.mStrides,
                                                         typeA,
                                                         typeB,
-                                                        typeC,
+                                                        typeD,
                                                         typeD,
                                                         workspace));
 

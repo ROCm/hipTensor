@@ -48,8 +48,11 @@ hiptensorStatus_t hiptensorContractionReference(void const*                alpha
                                                 hipDataType                typeD,
                                                 void*                      workspace)
 {
-    auto& instances  = hiptensor::ContractionCpuReferenceInstances::instance();
-    auto  candidates = instances->allSolutions().query(typeA, typeB, typeC, typeD);
+    auto& instances = hiptensor::ContractionCpuReferenceInstances::instance();
+    auto  candidates
+        = (C == nullptr)
+              ? instances->allSolutions().query(typeA, typeB, hiptensor::NONE_TYPE, typeD)
+              : instances->allSolutions().query(typeA, typeB, typeC, typeD);
 
     auto toCKVec
         = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };

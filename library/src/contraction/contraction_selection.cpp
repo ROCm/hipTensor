@@ -63,7 +63,7 @@ namespace hiptensor
         auto sizeB = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides)
                      * hipDataTypeSize(typeB);
         auto sizeD = 0;
-        if(typeD == NONE_TYPE)
+        if(typeD != NONE_TYPE)
         {
             sizeD = elementSpaceFromLengthsAndStrides(d_ms_ns_lengths, d_ms_ns_strides)
                     * hipDataTypeSize(typeD);
