@@ -63,21 +63,21 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                                  alpha,
-                      void const*                                  A,
-                      void const*                                  B,
-                      void const*                                  beta,
-                      void const*                                  D,
-                      void*                                        E,
-                      std::vector<ck::index_t> const&              a_ms_ks_lengths,
-                      std::vector<ck::index_t> const&              a_ms_ks_strides,
-                      std::vector<ck::index_t> const&              b_ns_ks_lengths,
-                      std::vector<ck::index_t> const&              b_ns_ks_strides,
-                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-                      std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                      std::vector<ck::index_t> const&              e_ms_ns_strides,
-                      void*                                        workspacePtr) override
+        bool initArgs(void const*                     alpha,
+                      void const*                     A,
+                      void const*                     B,
+                      void const*                     beta,
+                      void const*                     D,
+                      void*                           E,
+                      std::vector<ck::index_t> const& a_ms_ks_lengths,
+                      std::vector<ck::index_t> const& a_ms_ks_strides,
+                      std::vector<ck::index_t> const& b_ns_ks_lengths,
+                      std::vector<ck::index_t> const& b_ns_ks_strides,
+                      std::vector<ck::index_t> const& ds_ms_ns_lengths,
+                      std::vector<ck::index_t> const& ds_ms_ns_strides,
+                      std::vector<ck::index_t> const& e_ms_ns_lengths,
+                      std::vector<ck::index_t> const& e_ms_ns_strides,
+                      void*                           workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
@@ -99,8 +99,8 @@ namespace hiptensor
                 a_ms_ks_strides,
                 b_ns_ks_lengths,
                 b_ns_ks_strides,
-                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths[0]},
-                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides[0]},
+                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths},
+                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides},
                 e_ms_ns_lengths,
                 e_ms_ns_strides,
                 typename Traits::AOp{},
@@ -156,21 +156,21 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                                  alpha,
-                      void const*                                  A,
-                      void const*                                  B,
-                      void const*                                  beta,
-                      void const*                                  D,
-                      void*                                        E,
-                      std::vector<ck::index_t> const&              a_ms_ks_lengths,
-                      std::vector<ck::index_t> const&              a_ms_ks_strides,
-                      std::vector<ck::index_t> const&              b_ns_ks_lengths,
-                      std::vector<ck::index_t> const&              b_ns_ks_strides,
-                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
-                      std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
-                      std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                      std::vector<ck::index_t> const&              e_ms_ns_strides,
-                      void*                                        workspacePtr) override
+        bool initArgs(void const*                     alpha,
+                      void const*                     A,
+                      void const*                     B,
+                      void const*                     beta,
+                      void const*                     D,
+                      void*                           E,
+                      std::vector<ck::index_t> const& a_ms_ks_lengths,
+                      std::vector<ck::index_t> const& a_ms_ks_strides,
+                      std::vector<ck::index_t> const& b_ns_ks_lengths,
+                      std::vector<ck::index_t> const& b_ns_ks_strides,
+                      std::vector<ck::index_t> const& ds_ms_ns_lengths,
+                      std::vector<ck::index_t> const& ds_ms_ns_strides,
+                      std::vector<ck::index_t> const& e_ms_ns_lengths,
+                      std::vector<ck::index_t> const& e_ms_ns_strides,
+                      void*                           workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
