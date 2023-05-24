@@ -44,6 +44,99 @@ bool loggerSingletonTest()
     return (loggerInit == logger);
 }
 
+bool hiptensorLoggerSetFileTest()
+{
+    std::string fname = std::tmpnam(nullptr);
+
+    // hiptensorLoggerSetFile should have filestream open in write mode.
+    FILE* fp = fopen(fname.c_str(), "r");
+    if(hiptensorLoggerSetFile(fp) == HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    long fileSizeOrig = 0, fileSizeAfter = 0;
+
+    // hiptensorLoggerSetFile with file in write mode.
+    fp = fopen(fname.c_str(), "w");
+    if (fp == NULL)
+    {
+        std::cout << " Failed to Open File. Check Permissions!";
+        return false;
+    }
+    else
+    {
+        fseek (fp, 0, SEEK_END);
+        fileSizeOrig = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+    }
+
+    //Only Sets Filestream to fp. Doesn't write logs yet.
+    if(hiptensorLoggerSetFile(fp) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    //Call API again to write logs to fp
+    if(hiptensorLoggerSetFile(fp) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    //Check size after API call
+    fseek (fp, 0, SEEK_END);
+    fileSizeAfter = ftell(fp);
+    fclose (fp);
+    std::remove(fname.c_str());
+
+    if(fileSizeAfter <= fileSizeOrig)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool hiptensorLoggerOpenFileTest()
+{
+    std::string fname = std::tmpnam(nullptr);
+    const char *fname_c = fname.c_str();
+
+    long fileSizeOrig = 0, fileSizeAfter = 0;
+
+    FILE *fp = fopen(fname_c, "w");
+    if (fp == NULL)
+    {
+        std::cout << " Failed to Open File. Check Permissions!";
+        return false;
+    }
+    else
+    {
+        fseek (fp, 0, SEEK_END);
+        fileSizeOrig = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+    }
+
+    //Write logs to fname_c.
+    if(hiptensorLoggerOpenFile(fname_c) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    //Check size after API call
+    fseek (fp, 0, SEEK_END);
+    fileSizeAfter = ftell(fp);
+    fclose (fp);
+    std::remove(fname.c_str());
+
+    if(fileSizeAfter <= fileSizeOrig)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool hiptensorLoggerSetLevelTest()
 {
     // Test all log levels enumerated in hiptensorLogLevel_t
@@ -123,6 +216,19 @@ int main(int argc, char* argv[])
     totalPass &= testPass;
     std::cout << "Logger Singleton: ";
     printBool(testPass);
+
+    testPass = hiptensorLoggerSetFileTest();
+    totalPass &= testPass;
+    std::cout << "hiptensorLoggerSetFile: ";
+    printBool(testPass);
+
+    testPass = hiptensorLoggerOpenFileTest();
+    totalPass &= testPass;
+    std::cout << "hiptensorLoggerOpenFile: ";
+    printBool(testPass);
+
+    //As the above function call sets to a temporary file, need to call OpenFile again.
+    hiptensorLoggerOpenFile("test.log");
 
     testPass = hiptensorLoggerSetLevelTest();
     totalPass &= testPass;
