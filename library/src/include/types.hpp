@@ -38,6 +38,8 @@
 
 namespace hiptensor
 {
+    struct NoneType;
+
     // Map type to runtime HipDataType
     template <typename T>
     struct HipDataType;
