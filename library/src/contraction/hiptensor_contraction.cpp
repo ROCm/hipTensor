@@ -31,6 +31,8 @@
 #include "contraction_solution_registry.hpp"
 #include "handle.hpp"
 #include "hip_device.hpp"
+#include "logger.hpp"
+#include "performance.hpp"
 
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
                                                      hiptensorContractionDescriptor_t*  desc,
@@ -236,6 +238,13 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                                const hiptensorContractionFind_t*       find,
                                                const uint64_t workspaceSize)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+
+    char msg[256];
+
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
     {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
@@ -289,11 +298,13 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
+    hiptensor::PerfMetrics          winnerMetrics;
     auto                            result = HIPTENSOR_STATUS_INTERNAL_ERROR;
     if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
        || find->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
     {
         result = hiptensor::bruteForceModel(&winner,
+                                            &winnerMetrics,
                                             candidates,
                                             ADataType,
                                             a_ms_ks_lengths,
@@ -312,6 +323,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     else if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
     {
         result = hiptensor::actorCriticModel(&winner,
+                                             &winnerMetrics,
                                              solutionMap,
                                              ADataType,
                                              a_ms_ks_lengths,
@@ -332,6 +344,15 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     {
         return result;
     }
+
+    // todo: Log the performance metrics of the winning kernel (loglevel perf trace)
+    sprintf(msg,
+            "\nKernel Name: %s\n%0.3f ms, %0.3f TFlops, %0.3f GB/s\n",
+            winnerMetrics.mKernelName.c_str(),
+            winnerMetrics.mAvgTimeMs,
+            winnerMetrics.mTflops,
+            winnerMetrics.mBandwidth);
+    logger->logPerformanceTrace("hiptensorInitContractionPlan", msg);
 
     // Assign the contraction descriptor
     plan->mContractionDesc = *desc;

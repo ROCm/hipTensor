@@ -99,6 +99,8 @@ int main(int argc, char* argv[])
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
+    hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_PERF_TRACE);
+
     /********************************************
    * Intialise Tensors with the input lengths *
    ********************************************/
@@ -349,6 +351,8 @@ int main(int argc, char* argv[])
     {
         free(D_host);
     }
+#else
+    std::cout << "Finished" << std::endl;
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));

@@ -32,7 +32,9 @@
 
 namespace hiptensor
 {
-    // todo: fwd declare contractionSolution and perfmetrics
+    class ContractionSolution;
+    struct PerfMetrics;
+
     hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,
                                       PerfMetrics*                             winnerMetrics,
                                       std::vector<ContractionSolution*> const& candidates,

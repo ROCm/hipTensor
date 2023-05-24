@@ -88,8 +88,11 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
-    // todo: check for f64 support (dataType == HIP_R_64F && isSupported)
-    // return INVALID_ARCH if not supported
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+    if(dataType == HIP_R_64F && !realHandle->getDevice().supportsF64())
+    {
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
+    }
 
     if(strides)
     {
