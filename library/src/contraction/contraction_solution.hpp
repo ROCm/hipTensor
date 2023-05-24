@@ -27,7 +27,6 @@
 #ifndef HIPTENSOR_CONTRACTION_SOLUTION_HPP
 #define HIPTENSOR_CONTRACTION_SOLUTION_HPP
 
-#include <array>
 #include <functional>
 #include <memory>
 #include <tuple>

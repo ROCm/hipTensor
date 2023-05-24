@@ -26,11 +26,6 @@
 
 #include "contraction_types.hpp"
 
-namespace hiptensor
-{
-
-} // namespace hiptensor
-
 namespace std
 {
     ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const& op)
