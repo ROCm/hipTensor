@@ -35,6 +35,7 @@
 
 // hiptensor includes
 #include "meta_traits.hpp"
+#include "types.hpp"
 
 namespace hiptensor
 {
@@ -99,6 +100,7 @@ namespace hiptensor
         constexpr static ck::index_t DimsK = NumDimsK;
         using ADataT                       = ADataType;
         using BDataT                       = BDataType;
+        using DDataT                       = NoneType;
         using EDataT                       = EDataType;
         using AOp                          = AElementwiseOperation;
         using BOp                          = BElementwiseOperation;
