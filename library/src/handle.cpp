@@ -24,32 +24,32 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_TYPES_HPP
-#define HIPTENSOR_LIBRARY_TYPES_HPP
-
-// clang-format off
-// Include order needs to be preserved
-#include <hip/library_types.h>
-#include <hip/hip_bfloat16.h>
-#include <hip/hip_fp16.h>
-#include <iostream>
-
-// clang-format on
+#include "handle.hpp"
 
 namespace hiptensor
 {
-    // Map type to runtime HipDataType
-    template <typename T>
-    struct HipDataType;
+    Handle Handle::createHandle(int64_t* buff)
+    {
+        auto handle = toHandle(buff);
+        new(handle) Handle();
 
-    template <typename T>
-    static constexpr auto HipDataType_v = HipDataType<T>::value;
+        return *handle;
+    }
 
-    // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id);
+    void Handle::destroyHandle(int64_t* buff)
+    {
+        auto handle = toHandle(buff);
+        handle->~Handle();
+    }
+
+    Handle* Handle::toHandle(int64_t* buff)
+    {
+        return reinterpret_cast<Handle*>(buff);
+    }
+
+    HipDevice Handle::getDevice()
+    {
+        return mDevice;
+    }
 
 } // namespace hiptensor
-
-#include "types_impl.hpp"
-
-#endif // HIPTENSOR_LIBRARY_TYPES_HPP

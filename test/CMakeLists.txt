@@ -47,7 +47,8 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
     target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
-                               ${PROJECT_SOURCE_DIR}/library/include)
+                               ${PROJECT_SOURCE_DIR}/library/include
+                               ${PROJECT_SOURCE_DIR}/library/src/contraction)
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})

@@ -75,7 +75,8 @@ namespace hiptensor
                               std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
                               std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
                               std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                              std::vector<ck::index_t> const&              e_ms_ns_strides)
+                              std::vector<ck::index_t> const&              e_ms_ns_strides,
+                              void*                                        workspacePtr)
             = 0;
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});
@@ -94,6 +95,7 @@ namespace hiptensor
                          std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
                          std::vector<ck::index_t> const&              e_ms_ns_lengths,
                          std::vector<ck::index_t> const&              e_ms_ns_strides,
+                         void*                                        workspacePtr,
                          StreamConfig const& streamConfig = StreamConfig{});
 
         /// Accessors
@@ -115,6 +117,12 @@ namespace hiptensor
 
         // Kernel's name encoding
         std::string kernelName() const;
+
+        // Kernel's required workspace size
+        size_t workspaceSize() const;
+
+        // Reset all arguments
+        void resetArgs();
 
     protected:
         // Derived runtime arguments

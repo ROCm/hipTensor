@@ -27,11 +27,27 @@
 #ifndef HIPTENSOR_SRC_UTIL_HPP
 #define HIPTENSOR_SRC_UTIL_HPP
 
+#include <type_traits>
+
 namespace hiptensor
 {
+    template <typename intT1,
+              class = typename std::enable_if<std::is_integral<intT1>::value>::type,
+              typename intT2,
+              class = typename std::enable_if<std::is_integral<intT2>::value>::type>
+    static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
+    {
+        return (numerator + divisor - 1) / divisor;
+    }
+
     template <typename T>
     static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
     {
+        if(lengths.empty())
+        {
+            return lengths;
+        }
+
         // Re-construct strides from lengths, assuming packed.
         std::vector<std::size_t> strides(lengths.size());
         strides.back() = 1;
@@ -53,6 +69,11 @@ namespace hiptensor
         auto accum = T{1};
         for(int i = 0; i < lengths.size(); i++)
         {
+            if(lengths[i] == 0)
+            {
+                continue;
+            }
+
             accum += (lengths[i] - 1) * strides[i];
         }
         return accum;

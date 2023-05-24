@@ -24,32 +24,36 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_TYPES_HPP
-#define HIPTENSOR_LIBRARY_TYPES_HPP
+#ifndef HIPTENSOR_CONTRACTION_CPU_REFERENCE_INSTANCES_HPP
+#define HIPTENSOR_CONTRACTION_CPU_REFERENCE_INSTANCES_HPP
 
-// clang-format off
-// Include order needs to be preserved
-#include <hip/library_types.h>
-#include <hip/hip_bfloat16.h>
-#include <hip/hip_fp16.h>
-#include <iostream>
+#include <memory>
 
-// clang-format on
+#include "contraction_solution_registry.hpp"
+#include "singleton.hpp"
 
 namespace hiptensor
 {
-    // Map type to runtime HipDataType
-    template <typename T>
-    struct HipDataType;
+    class ContractionCpuReferenceInstances : public ContractionSolutionRegistry,
+                                             public LazySingleton<ContractionCpuReferenceInstances>
+    {
+    public:
+        // For static initialization
+        friend std::unique_ptr<ContractionCpuReferenceInstances>
+            std::make_unique<ContractionCpuReferenceInstances>();
 
-    template <typename T>
-    static constexpr auto HipDataType_v = HipDataType<T>::value;
+        ~ContractionCpuReferenceInstances() = default;
 
-    // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id);
+    private:
+        // Singleton: only one instance
+        ContractionCpuReferenceInstances();
+        ContractionCpuReferenceInstances(ContractionCpuReferenceInstances const&) = delete;
+        ContractionCpuReferenceInstances(ContractionCpuReferenceInstances&&)      = delete;
+        ContractionCpuReferenceInstances& operator=(ContractionCpuReferenceInstances const&)
+            = delete;
+        ContractionCpuReferenceInstances& operator=(ContractionCpuReferenceInstances&&) = delete;
+    };
 
 } // namespace hiptensor
 
-#include "types_impl.hpp"
-
-#endif // HIPTENSOR_LIBRARY_TYPES_HPP
+#endif // HIPTENSOR_CONTRACTION_SOLUTION_INSTANCES_HPP

@@ -23,6 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+
 #include <algorithm>
 #include <fstream>
 #include <iterator>
@@ -33,6 +34,10 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+
+#if !NDEBUG
+#include "common.hpp"
+#endif
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
@@ -45,10 +50,11 @@ int main(int argc, char* argv[])
 
     hipDataType            typeA       = HIP_R_32F;
     hipDataType            typeB       = HIP_R_32F;
+    hipDataType            typeC       = hipDataType(-1);
     hipDataType            typeD       = HIP_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
+    floatTypeCompute alpha = (floatTypeCompute)2.0f;
 
 #if !NDEBUG
     std::cout << "RAND_MAX value is " << RAND_MAX << std::endl;
@@ -153,6 +159,9 @@ int main(int argc, char* argv[])
     ADataType* A = (ADataType*)malloc(sizeA);
     BDataType* B = (BDataType*)malloc(sizeB);
     DDataType* D = (DDataType*)malloc(sizeD);
+#if !NDEBUG
+    DDataType* D_host = (DDataType*)malloc(sizeD);
+#endif
 
     void *A_d, *B_d, *D_d;
 
@@ -170,6 +179,13 @@ int main(int argc, char* argv[])
     for(int64_t i = 0; i < elementsB; i++)
     {
         B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+    }
+    for(int64_t i = 0; i < elementsD; i++)
+    {
+        D[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#if !NDEBUG
+        D_host[i] = std::numeric_limits<DDataType>::signaling_NaN();
+#endif
     }
 
     /********************************************
@@ -228,7 +244,13 @@ int main(int argc, char* argv[])
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
         handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
-    void* work = nullptr;
+
+    void* workspace = nullptr;
+
+    if(worksize > 0)
+    {
+        CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&workspace), worksize));
+    }
 
     /**************************
    * Create Contraction Plan
@@ -245,13 +267,13 @@ int main(int argc, char* argv[])
                                                nullptr,
                                                nullptr,
                                                D_d,
-                                               work,
+                                               workspace,
                                                worksize,
                                                0 /* stream */));
 
+#if !NDEBUG
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
-#if !NDEBUG
     std::ofstream tensorA, tensorB, tensorD;
     if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
     {
@@ -283,7 +305,50 @@ int main(int argc, char* argv[])
     hiptensorPrintElementsToFile(tensorD, D, elementsD, ',');
     std::cout << std::endl;
     tensorD.close();
+
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+                                                        A,
+                                                        B,
+                                                        nullptr,
+                                                        nullptr,
+                                                        D_host,
+                                                        a_ms_ks.mLengths,
+                                                        a_ms_ks.mStrides,
+                                                        b_ks_ns.mLengths,
+                                                        b_ks_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        typeA,
+                                                        typeB,
+                                                        typeC,
+                                                        typeD,
+                                                        workspace));
+
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
+
+    if(mValidationResult == true)
+    {
+        std::cout << "Validation Successful" << std::endl;
+    }
+    else
+    {
+        std::cout << "Validation Failed" << std::endl;
+    }
+
+    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
+
+    if(D_host)
+    {
+        free(D_host);
+    }
 #endif
+
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
     if(A)
     {
@@ -313,6 +378,11 @@ int main(int argc, char* argv[])
     if(D_d)
     {
         CHECK_HIP_ERROR(hipFree(D_d));
+    }
+
+    if(workspace)
+    {
+        CHECK_HIP_ERROR(hipFree(workspace));
     }
 
     return 0;

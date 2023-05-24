@@ -25,7 +25,9 @@
  *******************************************************************************/
 #include <hip/hip_runtime_api.h>
 
-#include "hiptensor.hpp"
+#include <hiptensor/hiptensor.hpp>
+
+#include "handle.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include "util.hpp"
@@ -45,19 +47,22 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
     {
         return HIPTENSOR_STATUS_HIP_ERROR;
     }
+
     else if(hip_status == hipErrorInvalidValue)
     {
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
-    // Get the current device
-    CHECK_HIP_ERROR(hipGetDevice(&((*handle)->mHipDevice)));
+    // Get the current device (handled by the Handle class)
+    auto realHandle = hiptensor::Handle::createHandle((*handle)->fields);
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
 {
+    hiptensor::Handle::destroyHandle(handle->fields);
+
     delete handle;
     handle = nullptr;
 

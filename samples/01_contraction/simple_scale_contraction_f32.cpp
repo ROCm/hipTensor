@@ -236,7 +236,13 @@ int main(int argc, char* argv[])
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
         handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
-    void* work = nullptr;
+
+    void* workspace = nullptr;
+
+    if(worksize > 0)
+    {
+        CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&workspace), worksize));
+    }
 
     /**************************
    * Create Contraction Plan
@@ -253,11 +259,10 @@ int main(int argc, char* argv[])
                                                nullptr,
                                                nullptr,
                                                D_d,
-                                               work,
+                                               workspace,
                                                worksize,
                                                0 /* stream */));
 
-    plan.hiptensorPrintContractionMetrics();
     CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
@@ -294,6 +299,8 @@ int main(int argc, char* argv[])
     tensorD.close();
 #endif
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+
     if(A)
     {
         free(A);
@@ -322,6 +329,11 @@ int main(int argc, char* argv[])
     if(D_d)
     {
         CHECK_HIP_ERROR(hipFree(D_d));
+    }
+
+    if(workspace)
+    {
+        CHECK_HIP_ERROR(hipFree(workspace));
     }
 
     return 0;

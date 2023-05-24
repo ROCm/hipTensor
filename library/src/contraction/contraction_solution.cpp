@@ -110,6 +110,7 @@ namespace hiptensor
         std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
         std::vector<ck::index_t> const&              e_ms_ns_lengths,
         std::vector<ck::index_t> const&              e_ms_ns_strides,
+        void*                                        workspacePtr,
         StreamConfig const&                          streamConfig /*= StreamConfig{}*/)
     {
         if(!initArgs(alpha,
@@ -125,7 +126,8 @@ namespace hiptensor
                      ds_ms_ns_lengths,
                      ds_ms_ns_strides,
                      e_ms_ns_lengths,
-                     e_ms_ns_strides))
+                     e_ms_ns_strides,
+                     workspacePtr))
         {
 #if !NDEBUG
             std::cout << kernelName() << " does not support this problem" << std::endl;
@@ -168,6 +170,31 @@ namespace hiptensor
     std::string ContractionSolution::kernelName() const
     {
         return mDeviceOp->GetTypeString();
+    }
+
+    size_t ContractionSolution::workspaceSize() const
+    {
+        if(mValid)
+        {
+            return mDeviceOp->GetWorkSpaceSize(mArgPtr.get());
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    void ContractionSolution::resetArgs()
+    {
+        mM     = 0;
+        mN     = 0;
+        mK     = 0;
+        mBytes = 0;
+
+        mArgPtr.reset(nullptr);
+        mInvokerPtr.reset(nullptr);
+
+        mValid = false;
     }
 
 } // namespace hiptensor

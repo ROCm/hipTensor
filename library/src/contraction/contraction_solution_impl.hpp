@@ -69,17 +69,21 @@ namespace hiptensor
                       void const*                                  beta,
                       void const*                                  D,
                       void*                                        E,
-                      std::vector<ck::index_t> const&              a_ms_ns_lengths,
+                      std::vector<ck::index_t> const&              a_ms_ks_lengths,
                       std::vector<ck::index_t> const&              a_ms_ks_strides,
                       std::vector<ck::index_t> const&              b_ns_ks_lengths,
                       std::vector<ck::index_t> const&              b_ns_ks_strides,
                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
                       std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                      std::vector<ck::index_t> const&              e_ms_ns_strides) override
+                      std::vector<ck::index_t> const&              e_ms_ns_strides,
+                      void*                                        workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
+
+            // Clear out the previous arguments
+            resetArgs();
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
@@ -91,7 +95,7 @@ namespace hiptensor
                 B,
                 std::array<const void*, 1>{D},
                 E,
-                a_ms_ns_lengths,
+                a_ms_ks_lengths,
                 a_ms_ks_strides,
                 b_ns_ks_lengths,
                 b_ns_ks_strides,
@@ -102,6 +106,9 @@ namespace hiptensor
                 typename Traits::AOp{},
                 typename Traits::BOp{},
                 typename Traits::CDEOp{*(float*)alpha, *(float*)beta}));
+
+            // Attach the workspace pointer
+            deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -117,8 +124,8 @@ namespace hiptensor
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
-            Base::mK = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                       e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+            Base::mK = std::accumulate(a_ms_ks_lengths.begin() + Traits::DimsM,
+                                       a_ms_ks_lengths.begin() + Traits::DimsM + Traits::DimsK,
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
@@ -155,17 +162,20 @@ namespace hiptensor
                       void const*                                  beta,
                       void const*                                  D,
                       void*                                        E,
-                      std::vector<ck::index_t> const&              a_ms_ns_lengths,
+                      std::vector<ck::index_t> const&              a_ms_ks_lengths,
                       std::vector<ck::index_t> const&              a_ms_ks_strides,
                       std::vector<ck::index_t> const&              b_ns_ks_lengths,
                       std::vector<ck::index_t> const&              b_ns_ks_strides,
                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_lengths,
                       std::vector<std::vector<ck::index_t>> const& ds_ms_ns_strides,
                       std::vector<ck::index_t> const&              e_ms_ns_lengths,
-                      std::vector<ck::index_t> const&              e_ms_ns_strides) override
+                      std::vector<ck::index_t> const&              e_ms_ns_strides,
+                      void*                                        workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
+
+            // Clear previous data
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
@@ -177,7 +187,7 @@ namespace hiptensor
                                                           B,
                                                           std::array<const void*, 0>{},
                                                           E,
-                                                          a_ms_ns_lengths,
+                                                          a_ms_ks_lengths,
                                                           a_ms_ks_strides,
                                                           b_ns_ks_lengths,
                                                           b_ns_ks_strides,
@@ -188,6 +198,9 @@ namespace hiptensor
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
                                                           typename Traits::CDEOp{*(float*)alpha}));
+
+            // Attach the workspace pointer
+            deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -203,8 +216,8 @@ namespace hiptensor
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
-            Base::mK = std::accumulate(a_ms_ns_lengths.begin() + Traits::DimsM,
-                                       a_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsK,
+            Base::mK = std::accumulate(a_ms_ks_lengths.begin() + Traits::DimsM,
+                                       a_ms_ks_lengths.begin() + Traits::DimsM + Traits::DimsK,
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
@@ -247,11 +260,11 @@ namespace hiptensor
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
 
-        std::vector<std::unique_ptr<hiptensor::ContractionSolution>> result;
+        std::vector<std::unique_ptr<ContractionSolution>> result;
         for(auto& opPtr : Factory::GetInstances())
         {
-            result.push_back(std::make_unique<hiptensor::ContractionSolutionImpl<ContractionOp>>(
-                std::move(opPtr)));
+            result.push_back(
+                std::make_unique<ContractionSolutionImpl<ContractionOp>>(std::move(opPtr)));
         }
         return result;
     }

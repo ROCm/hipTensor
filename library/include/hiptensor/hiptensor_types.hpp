@@ -23,8 +23,8 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HT_TYPES_H_
-#define HT_TYPES_H_
+#ifndef HIPTENSOR_TYPES_HPP
+#define HIPTENSOR_TYPES_HPP
 
 #include <algorithm>
 #include <cassert>
@@ -166,7 +166,7 @@ typedef enum
  */
 struct hiptensorHandle_t
 {
-    int32_t mHipDevice;
+    int64_t fields[512];
 };
 
 /**
@@ -194,6 +194,7 @@ struct hiptensorTensorDescriptor_t
 struct hiptensorContractionDescriptor_t
 {
     int32_t mContractionOpId; /*!< Enum that differentiates the internal contraction operation*/
+    hiptensorComputeType_t                   mComputeType; /*!<Compute type for the contraction*/
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc; /*!<Cache of tensor descriptors*/
     std::vector<uint32_t>                    mAlignmentReq; /*!<Cache of alignment requirements*/
 };
@@ -234,4 +235,4 @@ typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
                                           const char* funcName,
                                           const char* msg);
 
-#endif
+#endif // HIPTENSOR_TYPES_HPP
