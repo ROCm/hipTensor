@@ -44,6 +44,33 @@ bool loggerSingletonTest()
     return (loggerInit == logger);
 }
 
+bool hiptensorLoggerSetCallbackTest()
+{
+    static bool checkEntry   = false;
+    auto        callBackFunc = [](int32_t logContext, const char* funcName, const char* msg) {
+        if(!strcmp(funcName, "TestFunction") && (strstr(msg, "TestMessage") != NULL))
+        {
+            checkEntry = true;
+        }
+    };
+
+    if(hiptensorLoggerSetCallback(callBackFunc) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
+
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    if(logger->logAPITrace("TestFunction", "TestMessage") != hiptensor::Logger::Status_t::SUCCESS
+       || checkEntry == false)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool hiptensorLoggerSetFileTest()
 {
     std::string fname = std::tmpnam(nullptr);
@@ -59,14 +86,14 @@ bool hiptensorLoggerSetFileTest()
 
     // hiptensorLoggerSetFile with file in write mode.
     fp = fopen(fname.c_str(), "w");
-    if (fp == NULL)
+    if(fp == NULL)
     {
         std::cout << " Failed to Open File. Check Permissions!";
         return false;
     }
     else
     {
-        fseek (fp, 0, SEEK_END);
+        fseek(fp, 0, SEEK_END);
         fileSizeOrig = ftell(fp);
         fseek(fp, 0, SEEK_SET);
     }
@@ -84,9 +111,9 @@ bool hiptensorLoggerSetFileTest()
     }
 
     //Check size after API call
-    fseek (fp, 0, SEEK_END);
+    fseek(fp, 0, SEEK_END);
     fileSizeAfter = ftell(fp);
-    fclose (fp);
+    fclose(fp);
     std::remove(fname.c_str());
 
     if(fileSizeAfter <= fileSizeOrig)
@@ -99,20 +126,20 @@ bool hiptensorLoggerSetFileTest()
 
 bool hiptensorLoggerOpenFileTest()
 {
-    std::string fname = std::tmpnam(nullptr);
-    const char *fname_c = fname.c_str();
+    std::string fname   = std::tmpnam(nullptr);
+    const char* fname_c = fname.c_str();
 
     long fileSizeOrig = 0, fileSizeAfter = 0;
 
-    FILE *fp = fopen(fname_c, "w");
-    if (fp == NULL)
+    FILE* fp = fopen(fname_c, "w");
+    if(fp == NULL)
     {
         std::cout << " Failed to Open File. Check Permissions!";
         return false;
     }
     else
     {
-        fseek (fp, 0, SEEK_END);
+        fseek(fp, 0, SEEK_END);
         fileSizeOrig = ftell(fp);
         fseek(fp, 0, SEEK_SET);
     }
@@ -124,9 +151,9 @@ bool hiptensorLoggerOpenFileTest()
     }
 
     //Check size after API call
-    fseek (fp, 0, SEEK_END);
+    fseek(fp, 0, SEEK_END);
     fileSizeAfter = ftell(fp);
-    fclose (fp);
+    fclose(fp);
     std::remove(fname.c_str());
 
     if(fileSizeAfter <= fileSizeOrig)
@@ -215,6 +242,11 @@ int main(int argc, char* argv[])
     testPass = loggerSingletonTest();
     totalPass &= testPass;
     std::cout << "Logger Singleton: ";
+    printBool(testPass);
+
+    testPass = hiptensorLoggerSetCallbackTest();
+    totalPass &= testPass;
+    std::cout << "hiptensorLoggerSetCallback: ";
     printBool(testPass);
 
     testPass = hiptensorLoggerSetFileTest();
