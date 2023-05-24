@@ -31,15 +31,11 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
 
 # If building hipTensor samples as a standalone Cmake project
 else()
-    # add_executable(sample_contraction_scale test_scale_contraction_xdl_fp32.cpp)
-    # target_link_libraries(sample_contraction_scale PRIVATE hiptensor::hiptensor)
-
-    # add_executable(sample_contraction_bilinear test_bilinear_contraction_xdl_fp32.cpp)
-    # target_link_libraries(sample_contraction_bilinear PRIVATE hiptensor::hiptensor)
 
     add_executable(simple_contraction_scale_f32 simple_scale_contraction_f32.cpp)
     target_link_libraries(simple_contraction_scale_f32 PRIVATE hiptensor::hiptensor)
 
     add_executable(simple_contraction_bilinear_f32 simple_bilinear_contraction_f32.cpp)
     target_link_libraries(simple_contraction_bilinear_f32 PRIVATE hiptensor::hiptensor)
+
 endif()

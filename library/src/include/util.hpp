@@ -28,6 +28,7 @@
 #define HIPTENSOR_SRC_UTIL_HPP
 
 #include <type_traits>
+#include <vector>
 
 namespace hiptensor
 {

@@ -71,8 +71,8 @@ hiptensorStatus_t hiptensorContractionReference(void const*                alpha
                                   toCKVec(a_ms_ks_strides),
                                   toCKVec(b_ns_ks_lengths),
                                   toCKVec(b_ns_ks_strides),
-                                  std::vector<std::vector<ck::index_t>>{toCKVec(c_ms_ns_lengths)},
-                                  std::vector<std::vector<ck::index_t>>{toCKVec(c_ms_ns_strides)},
+                                  toCKVec(c_ms_ns_lengths),
+                                  toCKVec(c_ms_ns_strides),
                                   toCKVec(d_ms_ns_lengths),
                                   toCKVec(d_ms_ns_strides),
                                   workspace))
