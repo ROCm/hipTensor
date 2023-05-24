@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
    * Create Contraction Plan
    **************************/
 
-    std::cout << "Finding contraction solution..." << std::endl;
+    std::cout << "Initializing contraction plan..." << std::endl;
 
     hiptensorContractionPlan_t plan;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));

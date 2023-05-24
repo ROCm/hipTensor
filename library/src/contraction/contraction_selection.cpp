@@ -41,6 +41,7 @@
 namespace hiptensor
 {
     hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,
+                                      PerfMetrics*                             winnerMetrics,
                                       std::vector<ContractionSolution*> const& candidates,
                                       hipDataType                              typeA,
                                       std::vector<ck::index_t> const&          a_ms_ks_lengths,
@@ -131,9 +132,7 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipFree(E_d));
         CHECK_HIP_ALLOC(hipFree(wspace));
 
-#if !NDEBUG
-        std::cout << bestMetrics << std::endl;
-#endif // !NDEBUG
+        *winnerMetrics = bestMetrics;
 
         *winner = bestSolution;
 
@@ -149,6 +148,7 @@ namespace hiptensor
 
     hiptensorStatus_t
         actorCriticModel(ContractionSolution**                                   winner,
+                         PerfMetrics*                                            winnerMetrics,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<ck::index_t> const&                         a_ms_ks_lengths,

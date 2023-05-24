@@ -88,6 +88,9 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
+    // todo: check for f64 support (dataType == HIP_R_64F && isSupported)
+    // return INVALID_ARCH if not supported
+
     if(strides)
     {
         // Construct with both given lengths and strides
