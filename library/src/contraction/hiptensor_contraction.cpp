@@ -29,6 +29,7 @@
 #include "handle.hpp"
 #include "hip_device.hpp"
 #include "hiptensor.hpp"
+#include "logger.hpp"
 
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
                                                      hiptensorContractionDescriptor_t*  desc,
@@ -380,7 +381,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                 (unsigned long long)plan,
                 (unsigned long long)desc,
                 (unsigned long long)find,
-                (unsigned long)workspaceSize),
+                (unsigned long)workspaceSize,
                 hiptensorGetErrorString(result));
         logger->logError("hiptensorInitContractionPlan", msg);
         return result;

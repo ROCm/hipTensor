@@ -34,7 +34,6 @@
 
 #include "contraction_types.hpp"
 #include "hiptensor_types.hpp"
-#include "logger.hpp"
 
 namespace hiptensor
 {
