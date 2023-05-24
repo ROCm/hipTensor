@@ -93,10 +93,10 @@ int main(int argc, char* argv[])
         a_ms_ks_lengths.push_back(extent[mode]);
     }
 
-    std::vector<int64_t> b_ks_ns_lengths;
+    std::vector<int64_t> b_ns_ks_lengths;
     for(auto mode : modeB)
     {
-        b_ks_ns_lengths.push_back(extent[mode]);
+        b_ns_ks_lengths.push_back(extent[mode]);
     }
 
     hiptensorHandle_t* handle;
@@ -118,11 +118,11 @@ int main(int argc, char* argv[])
                                                         typeA,
                                                         HIPTENSOR_OP_IDENTITY));
 
-    hiptensorTensorDescriptor_t b_ks_ns;
+    hiptensorTensorDescriptor_t b_ns_ks;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &b_ks_ns,
+                                                        &b_ns_ks,
                                                         nmodeB,
-                                                        b_ks_ns_lengths.data(),
+                                                        b_ns_ks_lengths.data(),
                                                         NULL, /*stride*/
                                                         typeB,
                                                         HIPTENSOR_OP_IDENTITY));
@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
     size_t elementsA = std::accumulate(
         a_ms_ks_lengths.begin(), a_ms_ks_lengths.end(), size_t{1}, std::multiplies<size_t>());
     size_t elementsB = std::accumulate(
-        b_ks_ns_lengths.begin(), b_ks_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
+        b_ns_ks_lengths.begin(), b_ns_ks_lengths.end(), size_t{1}, std::multiplies<size_t>());
     size_t elementsD = std::accumulate(
         d_ms_ns_lengths.begin(), d_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
 
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
 
     uint32_t alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, B_d, &b_ks_ns, &alignmentRequirementB));
+        hiptensorGetAlignmentRequirement(handle, B_d, &b_ns_ks, &alignmentRequirementB));
 
     uint32_t alignmentRequirementD;
     CHECK_HIPTENSOR_ERROR(
@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
    *******************************/
 
     std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
-    std::cout << "b_ks_ns: " << b_ks_ns << std::endl;
+    std::cout << "b_ns_ks: " << b_ns_ks << std::endl;
     std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
 
     hiptensorContractionDescriptor_t desc;
@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
                                                              &a_ms_ks,
                                                              modeA.data(),
                                                              alignmentRequirementA,
-                                                             &b_ks_ns,
+                                                             &b_ns_ks,
                                                              modeB.data(),
                                                              alignmentRequirementB,
                                                              nullptr,
@@ -332,8 +332,8 @@ int main(int argc, char* argv[])
                                                         D_host,
                                                         a_ms_ks.mLengths,
                                                         a_ms_ks.mStrides,
-                                                        b_ks_ns.mLengths,
-                                                        b_ks_ns.mStrides,
+                                                        b_ns_ks.mLengths,
+                                                        b_ns_ks.mStrides,
                                                         d_ms_ns.mLengths,
                                                         d_ms_ns.mStrides,
                                                         d_ms_ns.mLengths,
