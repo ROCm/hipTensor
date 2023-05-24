@@ -27,8 +27,19 @@
 #ifndef HIPTENSOR_SRC_UTIL_HPP
 #define HIPTENSOR_SRC_UTIL_HPP
 
+#include <type_traits>
+
 namespace hiptensor
 {
+    template <typename intT1,
+              class = typename std::enable_if<std::is_integral<intT1>::value>::type,
+              typename intT2,
+              class = typename std::enable_if<std::is_integral<intT2>::value>::type>
+    static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
+    {
+        return (numerator + divisor - 1) / divisor;
+    }
+
     template <typename T>
     static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
     {

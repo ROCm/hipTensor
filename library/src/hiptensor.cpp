@@ -25,8 +25,9 @@
  *******************************************************************************/
 #include <hip/hip_runtime_api.h>
 
+#include <hiptensor/hiptensor.hpp>
+
 #include "handle.hpp"
-#include "hiptensor.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include "util.hpp"

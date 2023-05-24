@@ -23,13 +23,14 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include <hiptensor/hiptensor.hpp>
+
 #include "contraction_selection.hpp"
 #include "contraction_solution.hpp"
+#include "contraction_solution_instances.hpp"
 #include "contraction_solution_registry.hpp"
-//#include "contraction_solution_instances.hpp"
 #include "handle.hpp"
 #include "hip_device.hpp"
-#include "hiptensor.hpp"
 
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
                                                      hiptensorContractionDescriptor_t*  desc,
@@ -107,10 +108,8 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
 
         // For now, enumerate all known contraction kernels.
         // Using the hipDevice, determine if the device supports F64
-        // auto& instances = hiptensor::ContractionSolutionInstances::instance();
-        // auto  query    = instances->allSolutions();
-        auto& registry = hiptensor::ContractionSolutionRegistry::instance();
-        auto  query    = registry->allSolutions();
+        auto& instances = hiptensor::ContractionSolutionInstances::instance();
+        auto  query     = instances->allSolutions();
 
         // Check if the current device supports F64
         if(!currentDevice.supportsF64())

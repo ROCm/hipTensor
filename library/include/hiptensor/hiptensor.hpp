@@ -23,8 +23,8 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HT_TENSOR_HPP
-#define HT_TENSOR_HPP
+#ifndef HIPTENSOR_API_HPP
+#define HIPTENSOR_API_HPP
 
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
@@ -371,4 +371,4 @@ hiptensorStatus_t hiptensorLoggerForceDisable();
  */
 int hiptensorGetHiprtVersion();
 
-#endif // HT_TENSOR_HPP
+#endif // HIPTENSOR_API_HPP

@@ -30,14 +30,16 @@ get_target_property(composable_kernel_INCLUDES composable_kernel::device_operati
 
 set(HIPTENSOR_CONTRACTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_contraction.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/contraction_cpu_reference.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_selection.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution_registry.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/contraction_cpu_reference_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution.cpp
 )
 
 add_library(hiptensor_contraction OBJECT ${HIPTENSOR_CONTRACTION_SOURCES})
 target_include_directories(hiptensor_contraction PRIVATE ${composable_kernel_INCLUDES})
-target_link_libraries(hiptensor_contraction PRIVATE hip::host)
 set_target_properties(hiptensor_contraction PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(device)

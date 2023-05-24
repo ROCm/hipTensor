@@ -25,6 +25,7 @@
  *******************************************************************************/
 
 #include "contraction_solution_registry.hpp"
+#include "contraction_solution.hpp"
 
 namespace hiptensor
 {
@@ -267,61 +268,6 @@ namespace hiptensor
     /////////////////////////////////////////
     /// Class ContractionSolutionRegistry ///
     /////////////////////////////////////////
-    ContractionSolutionRegistry::ContractionSolutionRegistry()
-    {
-        // Register all the solutions exactly once
-        // Bilinear f32
-        registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
-                                          float,
-                                          float,
-                                          ck::Tuple<float>,
-                                          float,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Bilinear>());
-
-        // Bilinear f64
-        registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
-                                          double,
-                                          double,
-                                          ck::Tuple<double>,
-                                          double,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Bilinear>());
-
-        // Scale f32
-        registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
-                                          float,
-                                          float,
-                                          ck::Tuple<>,
-                                          float,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Scale>());
-
-        // Scale f64
-        registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
-                                          double,
-                                          double,
-                                          ck::Tuple<>,
-                                          double,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Scale>());
-    }
 
     void ContractionSolutionRegistry::registerSolutions(
         std::vector<std::unique_ptr<ContractionSolution>>&& solutions)
