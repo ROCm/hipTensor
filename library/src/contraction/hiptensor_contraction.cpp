@@ -151,14 +151,17 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         // For now, enumerate all known contraction kernels.
         // Using the hipDevice, determine if the device supports F64
         auto& instances = hiptensor::ContractionSolutionInstances::instance();
-        auto  solnQ      = instances->allSolutions();
+        auto  solnQ     = instances->allSolutions();
 
         // Check if the current device supports F64
         if(!currentDevice.supportsF64())
         {
             // Allow only supported f32 combos
             solnQ = solnQ.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) || // Bilinear F32
-                    solnQ.query(HIP_R_32F, HIP_R_32F, hipDataType(-1), HIP_R_32F); // Scale F32 (no C)
+                    solnQ.query(HIP_R_32F,
+                                HIP_R_32F,
+                                hipDataType(hiptensor::NONE_TYPE),
+                                HIP_R_32F); // Scale F32 (no C)
         }
 
         // Can do more checking for scale / bilinear, etc. if we need to.
@@ -253,10 +256,6 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
-    // Log API access
-
-    char msg[256];
-
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
     {
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
@@ -348,9 +347,10 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         return result;
     }
 
-    // todo: Log the performance metrics of the winning kernel (loglevel perf trace)
+    char msg[256];
     sprintf(msg,
-            "\nKernel Name: %s\n%0.3f ms, %0.3f TFlops, %0.3f GB/s\n",
+            "Algo: %d Kernel: %s %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+            find->mSelectionAlgorithm,
             winnerMetrics.mKernelName.c_str(),
             winnerMetrics.mAvgTimeMs,
             winnerMetrics.mTflops,
