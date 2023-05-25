@@ -186,11 +186,17 @@ int main(int argc, char* argv[])
 #endif
 
     void *A_d, *B_d, *C_d, *D_d;
+#if !NDEBUG
+    void* D_host_d;
+#endif
 
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&C_d), sizeC));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_d), sizeD));
+#if !NDEBUG
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_host_d), sizeD));
+#endif
 
     /*******************
    * Initialize data
@@ -228,6 +234,8 @@ int main(int argc, char* argv[])
     CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(D_d, static_cast<const void*>(D), sizeD, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(
+        hipMemcpy(D_host_d, static_cast<const void*>(D_host), sizeD, hipMemcpyHostToDevice));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -400,7 +408,11 @@ int main(int argc, char* argv[])
     bool   mValidationResult = false;
     double mMaxRelativeError;
 
-    std::tie(mValidationResult, mMaxRelativeError) = compareEqual<DDataType>(D, D_host, elementsD);
+    CHECK_HIP_ERROR(
+        hipMemcpy(D_host_d, static_cast<const void*>(D_host), sizeD, hipMemcpyHostToDevice));
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<DDataType>(
+        static_cast<DDataType*>(D_d), static_cast<DDataType*>(D_host_d), elementsD);
 
     if(mValidationResult == true)
     {
@@ -414,6 +426,7 @@ int main(int argc, char* argv[])
     std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
     HIPTENSOR_FREE_HOST(D_host);
+    HIPTENSOR_FREE_DEVICE(D_host_d);
 
 #endif
 
