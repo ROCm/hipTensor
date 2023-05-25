@@ -58,7 +58,8 @@ namespace std
 {
     ostream& operator<<(std::ostream& os, hiptensor::PerfMetrics const& metrics)
     {
-        return os << "Kernel Name: " << metrics.mKernelName << std::endl
+        return os << "Kernel Id: " << metrics.mKernelUid << std::endl
+                  << "Kernel Name: " << metrics.mKernelName << std::endl
                   << metrics.mAvgTimeMs << " ms, " << metrics.mTflops << " TFlops, "
                   << metrics.mBandwidth << " GB/s " << std::endl;
     }
