@@ -100,12 +100,9 @@ namespace hiptensor
     Logger::Status_t Logger::setCallback(Callback_t callbackFunc)
     {
         std::scoped_lock lock(mMutex);
-        if(callbackFunc != nullptr)
-        {
-            mCallback = callbackFunc;
-            return Status_t::SUCCESS;
-        }
-        return Status_t::INVALID_CALLBACK;
+
+        mCallback = callbackFunc;
+        return Status_t::SUCCESS;
     }
 
     int32_t Logger::getLogMask() const
