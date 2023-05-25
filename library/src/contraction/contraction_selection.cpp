@@ -592,5 +592,4 @@ namespace hiptensor
             return HIPTENSOR_STATUS_EXECUTION_FAILED;
         }
     }
-
 }
