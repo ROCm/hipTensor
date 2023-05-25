@@ -25,8 +25,9 @@
  *******************************************************************************/
 #include <hip/hip_runtime_api.h>
 
+#include <hiptensor/hiptensor.hpp>
+
 #include "handle.hpp"
-#include "hiptensor.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include "util.hpp"
@@ -167,6 +168,12 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+    if(dataType == HIP_R_64F && !realHandle->getDevice().supportsF64())
+    {
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
+    }
+
     if(strides)
     {
         // Construct with both given lengths and strides
@@ -283,14 +290,6 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     {
         return HIPTENSOR_STATUS_SUCCESS;
     }
-}
-
-void printHexAddress(char* str, void const* obj)
-{
-    // Format string as hex
-    // Width in hex = 8 Byte * 2 = 16
-    // Cast obj to
-    sprintf(str, "0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)obj);
 }
 
 hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)

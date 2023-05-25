@@ -246,7 +246,13 @@ int main(int argc, char* argv[])
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
         handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
-    void* work = nullptr;
+
+    void* workspace = nullptr;
+
+    if(worksize > 0)
+    {
+        CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&workspace), worksize));
+    }
 
     /**************************
    * Create Contraction Plan
@@ -263,7 +269,7 @@ int main(int argc, char* argv[])
                                                (void*)&beta,
                                                C_d,
                                                C_d,
-                                               work,
+                                               workspace,
                                                worksize,
                                                0 /* stream */));
 
@@ -278,7 +284,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorA.open("tensor_A.txt");
-    hiptensorPrintElementsToFile(tensorA, A, elementsA, ',');
+    hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
     std::cout << std::endl;
     tensorA.close();
     if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
@@ -288,7 +294,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorB.open("tensor_B.txt");
-    hiptensorPrintElementsToFile(tensorB, B, elementsB, ',');
+    hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
     std::cout << std::endl;
     tensorB.close();
     if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
@@ -298,7 +304,7 @@ int main(int argc, char* argv[])
         std::cout << std::endl;
     }
     tensorC.open("tensor_C_bilinear_contraction_results.txt");
-    hiptensorPrintElementsToFile(tensorC, C, elementsC, ',');
+    hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
     std::cout << std::endl;
     tensorC.close();
 #endif
@@ -333,6 +339,11 @@ int main(int argc, char* argv[])
     if(C_d)
     {
         CHECK_HIP_ERROR(hipFree(C_d));
+    }
+
+    if(workspace)
+    {
+        CHECK_HIP_ERROR(hipFree(workspace));
     }
 
     return 0;

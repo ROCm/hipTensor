@@ -94,15 +94,7 @@ namespace hiptensor
 
         hipDataType typeC() const override
         {
-            if constexpr(std::is_same_v<typename MetaTraitsT::CDEOp,
-                                        typename ck::tensor_operation::element_wise::Scale>)
-            {
-                return hipDataType(-1);
-            }
-            else
-            {
-                return HipDataType_v<typename MetaTraitsT::DDataT>;
-            }
+            return HipDataType_v<typename MetaTraitsT::DDataT>;
         }
 
         hipDataType typeD() const override

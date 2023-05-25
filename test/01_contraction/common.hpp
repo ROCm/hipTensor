@@ -40,9 +40,47 @@
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
+#include "contraction_cpu_reference.hpp"
 #include "device/common.hpp"
 
-#define NDIM 4
+#define HIPTENSOR_FREE_DEVICE(ptr)     \
+    if(ptr != nullptr)                 \
+    {                                  \
+        CHECK_HIP_ERROR(hipFree(ptr)); \
+    }
+
+#define HIPTENSOR_FREE_HOST(ptr) \
+    if(ptr != nullptr)           \
+    {                            \
+        free(ptr);               \
+    }
+
+inline bool isF32Supported()
+{
+    hipDevice_t     mHandle;
+    hipDeviceProp_t mProps;
+
+    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
+    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
+
+    std::string deviceName(mProps.gcnArchName);
+
+    return (deviceName.find("gfx908") != std::string::npos)
+           || (deviceName.find("gfx90a") != std::string::npos);
+}
+
+inline bool isF64Supported()
+{
+    hipDevice_t     mHandle;
+    hipDeviceProp_t mProps;
+
+    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
+    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
+
+    std::string deviceName(mProps.gcnArchName);
+
+    return (deviceName.find("gfx90a") != std::string::npos);
+}
 
 template <typename intT1,
           class = typename std::enable_if<std::is_integral<intT1>::value>::type,
@@ -51,191 +89,6 @@ template <typename intT1,
 static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
 {
     return (numerator + divisor - 1) / divisor;
-}
-
-struct joinable_thread : std::thread
-{
-    template <typename... Xs>
-    joinable_thread(Xs&&... xs)
-        : std::thread(std::forward<Xs>(xs)...)
-    {
-    }
-
-    joinable_thread(joinable_thread&&)            = default;
-    joinable_thread& operator=(joinable_thread&&) = default;
-
-    ~joinable_thread()
-    {
-        if(this->joinable())
-            this->join();
-    }
-};
-
-template <typename ADataType, typename BDataType, typename DDataType, typename floatTypeCompute>
-void hiptensorScaleContractionReference(ADataType*          A,
-                                        BDataType*          B,
-                                        DDataType*          D,
-                                        floatTypeCompute    alpha,
-                                        std::vector<size_t> a_ms_ks_lengths,
-                                        std::vector<size_t> b_ks_ns_lengths,
-                                        std::vector<size_t> d_ms_ns_lengths,
-                                        std::vector<size_t> a_ms_ks_strides,
-                                        std::vector<size_t> b_ks_ns_strides,
-                                        std::vector<size_t> d_ms_ns_strides,
-                                        std::size_t         elementsD,
-                                        std::size_t         num_thread = 1)
-{
-    auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
-        floatTypeCompute valA, valB, valC, valAcc = 0;
-        size_t           indexA, indexB, indexD;
-
-        auto K0 = a_ms_ks_lengths[2];
-        auto K1 = a_ms_ks_lengths[3];
-
-        auto offset = [&](std::vector<size_t> curIndices, std::vector<size_t> strides) {
-            return std::inner_product(
-                curIndices.begin(), curIndices.end(), strides.begin(), std::size_t{0});
-        };
-
-        for(size_t k0 = 0; k0 < K0; k0++)
-        {
-            for(size_t k1 = 0; k1 < K1; k1++)
-            {
-                indexA = offset(std::vector<size_t>{m0, m1, k0, k1}, a_ms_ks_strides);
-                valA   = static_cast<floatTypeCompute>(A[indexA]);
-
-                indexB = offset(std::vector<size_t>{n0, n1, k0, k1}, b_ks_ns_strides);
-                valB   = static_cast<floatTypeCompute>(B[indexB]);
-
-                valAcc += valA * valB;
-            }
-        }
-
-        valC = alpha * valAcc;
-
-        indexD    = offset(std::vector<size_t>{m0, m1, n0, n1}, d_ms_ns_strides);
-        D[indexD] = static_cast<DDataType>(valC);
-    };
-
-    auto GetNdIndices = [&](size_t index) {
-        std::array<std::size_t, NDIM> indices;
-
-        for(std::size_t idim = 0; idim < NDIM; ++idim)
-        {
-            indices[idim] = index / d_ms_ns_strides[idim];
-            index -= indices[idim] * d_ms_ns_strides[idim];
-        }
-
-        return indices;
-    };
-
-    std::size_t                  work_per_thread = (elementsD + num_thread - 1) / num_thread;
-    std::vector<joinable_thread> threads(num_thread);
-
-    for(std::size_t i = 0; i < num_thread; ++i)
-    {
-        std::size_t it_begin = i * work_per_thread;
-        std::size_t it_end   = std::min((i + 1) * work_per_thread, elementsD);
-
-        auto f = [=] {
-            for(std::size_t it = it_begin; it < it_end; ++it)
-            {
-                std::array<std::size_t, NDIM> indices = GetNdIndices(it);
-                d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
-            }
-        };
-
-        threads[i] = joinable_thread(f);
-    }
-}
-
-template <typename ADataType,
-          typename BDataType,
-          typename CDataType,
-          typename DDataType,
-          typename floatTypeCompute>
-void hiptensorBilinearContractionReference(ADataType*          A,
-                                           BDataType*          B,
-                                           CDataType*          C,
-                                           DDataType*          D,
-                                           floatTypeCompute    alpha,
-                                           floatTypeCompute    beta,
-                                           std::vector<size_t> a_ms_ks_lengths,
-                                           std::vector<size_t> b_ks_ns_lengths,
-                                           std::vector<size_t> c_ms_ns_lengths,
-                                           std::vector<size_t> d_ms_ns_lengths,
-                                           std::vector<size_t> a_ms_ks_strides,
-                                           std::vector<size_t> b_ks_ns_strides,
-                                           std::vector<size_t> c_ms_ns_strides,
-                                           std::vector<size_t> d_ms_ns_strides,
-                                           std::size_t         elementsD,
-                                           std::size_t         num_thread = 1)
-{
-    auto d_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
-        floatTypeCompute valA, valB, valAcc = 0, valD1, valD2;
-        size_t           indexA, indexB, indexC, indexD;
-
-        auto K0 = a_ms_ks_lengths[2];
-        auto K1 = a_ms_ks_lengths[3];
-
-        auto offset = [&](std::vector<size_t> curIndices, std::vector<size_t> strides) {
-            return std::inner_product(
-                curIndices.begin(), curIndices.end(), strides.begin(), std::size_t{0});
-        };
-
-        for(size_t k0 = 0; k0 < K0; k0++)
-        {
-            for(size_t k1 = 0; k1 < K1; k1++)
-            {
-                indexA = offset(std::vector<size_t>{m0, m1, k0, k1}, a_ms_ks_strides);
-                valA   = static_cast<floatTypeCompute>(A[indexA]);
-
-                indexB = offset(std::vector<size_t>{n0, n1, k0, k1}, b_ks_ns_strides);
-                valB   = static_cast<floatTypeCompute>(B[indexB]);
-
-                valAcc += valA * valB;
-            }
-        }
-
-        valD1 = valAcc * alpha;
-
-        indexC = offset(std::vector<size_t>{m0, m1, n0, n1}, c_ms_ns_strides);
-        valD2  = static_cast<floatTypeCompute>(C[indexC]) * beta;
-
-        indexD    = offset(std::vector<size_t>{m0, m1, n0, n1}, d_ms_ns_strides);
-        D[indexD] = static_cast<DDataType>(valD1 + valD2);
-    };
-
-    auto GetNdIndices = [&](size_t index) {
-        std::array<std::size_t, NDIM> indices;
-
-        for(std::size_t idim = 0; idim < NDIM; ++idim)
-        {
-            indices[idim] = index / d_ms_ns_strides[idim];
-            index -= indices[idim] * d_ms_ns_strides[idim];
-        }
-
-        return indices;
-    };
-
-    std::size_t                  work_per_thread = (elementsD + num_thread - 1) / num_thread;
-    std::vector<joinable_thread> threads(num_thread);
-
-    for(std::size_t i = 0; i < num_thread; ++i)
-    {
-        std::size_t it_begin = i * work_per_thread;
-        std::size_t it_end   = std::min((i + 1) * work_per_thread, elementsD);
-
-        auto f = [=] {
-            for(std::size_t it = it_begin; it < it_end; ++it)
-            {
-                std::array<std::size_t, NDIM> indices = GetNdIndices(it);
-                d_ms_ns(indices[0], indices[1], indices[2], indices[3]);
-            }
-        };
-
-        threads[i] = joinable_thread(f);
-    }
 }
 
 template <typename DDataType>

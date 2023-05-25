@@ -79,10 +79,14 @@ namespace hiptensor
         {
             return sizeof(uint64_t);
         }
+        else if(id == NONE_TYPE)
+        {
+            return 0;
+        }
         else
         {
 #if !NDEBUG
-            std::cout << "Unhandled hip datatype" << std::endl;
+            std::cout << "Unhandled hip datatype: " << id << std::endl;
 #endif // !NDEBUG
             return 0;
         }

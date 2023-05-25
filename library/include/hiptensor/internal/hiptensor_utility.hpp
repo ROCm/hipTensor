@@ -23,7 +23,8 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#pragma once
+#ifndef HIPTENSOR_UTILITY_INTERNAL_HPP
+#define HIPTENSOR_UTILITY_INTERNAL_HPP
 
 #include <fstream>
 #include <hip/hip_runtime.h>
@@ -46,16 +47,16 @@
 #endif
 
 #ifndef CHECK_HIPTENSOR_ERROR
-#define CHECK_HIPTENSOR_ERROR(status)             \
-    if(status != HIPTENSOR_STATUS_SUCCESS)        \
-    {                                             \
-        fprintf(stderr,                           \
-                "hip error: '%s'(%d) at %s:%d\n", \
-                hiptensorGetErrorString(status),  \
-                status,                           \
-                __FILE__,                         \
-                __LINE__);                        \
-        exit(EXIT_FAILURE);                       \
+#define CHECK_HIPTENSOR_ERROR(status)                   \
+    if(status != HIPTENSOR_STATUS_SUCCESS)              \
+    {                                                   \
+        fprintf(stderr,                                 \
+                "hipTensor error: '%s'(%d) at %s:%d\n", \
+                hiptensorGetErrorString(status),        \
+                status,                                 \
+                __FILE__,                               \
+                __LINE__);                              \
+        exit(EXIT_FAILURE);                             \
     }
 #endif
 
@@ -66,9 +67,13 @@ void hiptensorPrintArrayElements(T* vec, size_t size)
     while(index != size)
     {
         if(index == size - 1)
+        {
             std::cout << vec[index];
+        }
         else
-            std::cout << vec[index] << ",";
+        {
+            std::cout << vec[index] << ", ";
+        }
 
         index++;
     }
@@ -77,14 +82,18 @@ void hiptensorPrintArrayElements(T* vec, size_t size)
 template <typename S>
 void hiptensorPrintVectorElements(const std::vector<S>& vec, std::string sep = " ")
 {
-    for(auto elem : vec)
+    for(auto& elem : vec)
     {
-        std::cout << elem << sep;
+        std::cout << elem;
+        if(&elem != &vec.back())
+        {
+            std::cout << sep;
+        }
     }
 }
 
 template <typename F>
-void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, char delim)
+void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, std::string sep = " ")
 {
     if(!fs.is_open())
     {
@@ -95,9 +104,13 @@ void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, cha
     for(int i = 0; i < size; i++)
     {
         if(i == size - 1)
+        {
             fs << static_cast<F>(output[i]);
+        }
         else
-            fs << static_cast<F>(output[i]) << delim;
+        {
+            fs << static_cast<F>(output[i]) << sep;
+        }
     }
     return;
 }
@@ -119,3 +132,5 @@ namespace std
         return os;
     }
 }
+
+#endif // HIPTENSOR_UTILITY_INTERNAL_HPP

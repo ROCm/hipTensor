@@ -105,6 +105,12 @@ namespace hiptensor
         static constexpr auto value = HIP_R_64U;
     };
 
+    template <>
+    struct HipDataType<NoneType>
+    {
+        static constexpr auto value = NONE_TYPE;
+    };
+
 } // namespace hiptensor
 
 #endif // HIPTENSOR_LIBRARY_TYPES_IMPL_HPP

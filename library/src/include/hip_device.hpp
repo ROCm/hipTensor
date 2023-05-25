@@ -27,7 +27,6 @@
 #ifndef HIPTENSOR_HIP_DEVICE_HPP
 #define HIPTENSOR_HIP_DEVICE_HPP
 
-#include "internal/hiptensor_utility.hpp"
 #include <hip/hip_runtime_api.h>
 
 namespace hiptensor
@@ -73,6 +72,7 @@ namespace hiptensor
         int             mCuCount;
         int             mMaxFreqMhz;
     };
+
 } // namespace hiptensor
 
 #endif // HIPTENSOR_HIP_DEVICE_HPP
