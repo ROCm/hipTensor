@@ -408,190 +408,100 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     auto& logger = Logger::instance();
 
     // Log API access
-    char  msg[512];
-    float alphaVal = 0.0f;
-    float betaVal  = 0.0f;
+    char msg[512];
+    char alphaMsg[32];
+    char betaMsg[32];
 
     if(plan != nullptr)
     {
-        if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
+        if(alpha == nullptr)
+            sprintf(alphaMsg, "alpha=NULL");
+        else
         {
-            if(alpha != nullptr)
-                alphaVal = *(static_cast<const float*>(alpha));
-
-            if(beta != nullptr)
-                betaVal = *(static_cast<const float*>(beta));
-
-            sprintf(msg,
-                    "handle=0x%0*llX, plan=0x%llX, alpha=%.6f, A=0x%llX, B=0x%llX, beta=%.6f, "
-                    "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
-                    2 * (int)sizeof(void*),
-                    (unsigned long long)handle,
-                    (unsigned long long)plan,
-                    (float)alphaVal,
-                    (unsigned long long)A,
-                    (unsigned long long)B,
-                    (float)betaVal,
-                    (unsigned long long)C,
-                    (unsigned long long)D,
-                    (unsigned long long)workspace,
-                    (unsigned long)workspaceSize,
-                    (unsigned long long)stream);
-            logger->logAPITrace("hiptensorContraction", msg);
+            if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
+                sprintf(alphaMsg, "alpha=%.6f", *(static_cast<const float*>(alpha)));
+            else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
+                sprintf(alphaMsg, "alpha=%.6lf", *(static_cast<const double*>(alpha)));
         }
-        else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
+
+        if(beta == nullptr)
+            sprintf(betaMsg, "beta=NULL");
+        else
         {
-            double alphaVal = 0.0;
-            if(alpha != nullptr)
-                alphaVal = *(static_cast<const double*>(alpha));
-
-            double betaVal = 0.0;
-            if(beta != nullptr)
-                betaVal = *(static_cast<const double*>(beta));
-
-            sprintf(msg,
-                    "handle=0x%0*llX, plan=0x%llX, alpha=%.6lf, A=0x%llX, B=0x%llX, beta=%.6lf, "
-                    "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
-                    2 * (int)sizeof(void*),
-                    (unsigned long long)handle,
-                    (unsigned long long)plan,
-                    (double)alphaVal,
-                    (unsigned long long)A,
-                    (unsigned long long)B,
-                    (double)betaVal,
-                    (unsigned long long)C,
-                    (unsigned long long)D,
-                    (unsigned long long)workspace,
-                    (unsigned long)workspaceSize,
-                    (unsigned long long)stream);
-            logger->logAPITrace("hiptensorContraction", msg);
+            if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
+                sprintf(betaMsg, "beta=%.6f", *(static_cast<const float*>(beta)));
+            else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
+                sprintf(betaMsg, "beta=%.6lf", *(static_cast<const double*>(beta)));
         }
     }
     else
     {
-        sprintf(msg,
-                "handle=0x%0*llX, plan=0x%llX, alpha=%.6f, A=0x%llX, B=0x%llX, beta=%.6f, "
-                "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
-                2 * (int)sizeof(void*),
-                (unsigned long long)handle,
-                (unsigned long long)plan,
-                (float)alphaVal,
-                (unsigned long long)A,
-                (unsigned long long)B,
-                (float)betaVal,
-                (unsigned long long)C,
-                (unsigned long long)D,
-                (unsigned long long)workspace,
-                (unsigned long)workspaceSize,
-                (unsigned long long)stream);
-        logger->logAPITrace("hiptensorContraction", msg);
+        sprintf(alphaMsg, "alpha=NULL");
+        sprintf(betaMsg, "beta=NULL");
     }
+
+    sprintf(msg,
+            "handle=0x%0*llX, plan=0x%llX, %s, A=0x%llX, B=0x%llX, %s, "
+            "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)plan,
+            alphaMsg,
+            (unsigned long long)A,
+            (unsigned long long)B,
+            betaMsg,
+            (unsigned long long)C,
+            (unsigned long long)D,
+            (unsigned long long)workspace,
+            (unsigned long)workspaceSize,
+            (unsigned long long)stream);
+    logger->logAPITrace("hiptensorContraction", msg);
 
     if(handle == nullptr || plan == nullptr)
     {
-        sprintf(msg,
-                "handle=0x%0*llX, plan=0x%llX, alpha=%.6f, A=0x%llX, B=0x%llX, beta=%.6f, "
-                "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
-                "(HIPTENSOR_STATUS_NOT_INITIALIZED)",
-                2 * (int)sizeof(void*),
-                (unsigned long long)handle,
-                (unsigned long long)plan,
-                (float)alphaVal,
-                (unsigned long long)A,
-                (unsigned long long)B,
-                (float)betaVal,
-                (unsigned long long)C,
-                (unsigned long long)D,
-                (unsigned long long)workspace,
-                (unsigned long)workspaceSize,
-                (unsigned long long)stream);
-
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(handle == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Initialization Error : plan = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     if(alpha == nullptr || A == nullptr || B == nullptr || D == nullptr)
     {
-        sprintf(msg,
-                "handle=0x%0*llX, plan=0x%llX, alpha=%.6f, A=0x%llX, B=0x%llX, beta=%.6f, "
-                "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
-                "(HIPTENSOR_STATUS_INVALID_VALUE)",
-                2 * (int)sizeof(void*),
-                (unsigned long long)handle,
-                (unsigned long long)plan,
-                (float)alphaVal,
-                (unsigned long long)A,
-                (unsigned long long)B,
-                (float)betaVal,
-                (unsigned long long)C,
-                (unsigned long long)D,
-                (unsigned long long)workspace,
-                (unsigned long)workspaceSize,
-                (unsigned long long)stream);
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        if(alpha == nullptr)
+        {
+            sprintf(msg,
+                    "Input Parameter Error : alpha = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Input Parameter Error : A/B/D = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
         logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
     if(plan->mSolution == nullptr)
     {
-        if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
-        {
-            if(alpha != nullptr)
-                alphaVal = *(static_cast<const float*>(alpha));
-
-            if(beta != nullptr)
-                betaVal = *(static_cast<const float*>(beta));
-
-            sprintf(msg,
-                    "handle=0x%0*llX, plan=0x%llX, alpha=%.6f, A=0x%llX, B=0x%llX, beta=%.6f, "
-                    "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
-                    "(HIPTENSOR_STATUS_INTERNAL_ERROR)",
-                    2 * (int)sizeof(void*),
-                    (unsigned long long)handle,
-                    (unsigned long long)plan,
-                    (float)alphaVal,
-                    (unsigned long long)A,
-                    (unsigned long long)B,
-                    (float)betaVal,
-                    (unsigned long long)C,
-                    (unsigned long long)D,
-                    (unsigned long long)workspace,
-                    (unsigned long)workspaceSize,
-                    (unsigned long long)stream);
-
-            logger->logError("hiptensorContraction", msg);
-            return HIPTENSOR_STATUS_INTERNAL_ERROR;
-        }
-        else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
-        {
-            double alphaVal = 0.0;
-            if(alpha != nullptr)
-                alphaVal = *(static_cast<const double*>(alpha));
-
-            double betaVal = 0.0;
-            if(beta != nullptr)
-                betaVal = *(static_cast<const double*>(beta));
-
-            sprintf(msg,
-                    "handle=0x%0*llX, plan=0x%llX, alpha=%.6lf, A=0x%llX, B=0x%llX, beta=%.6lf, "
-                    "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX, "
-                    "(HIPTENSOR_STATUS_INTERNAL_ERROR)",
-                    2 * (int)sizeof(void*),
-                    (unsigned long long)handle,
-                    (unsigned long long)plan,
-                    (double)alphaVal,
-                    (unsigned long long)A,
-                    (unsigned long long)B,
-                    (double)betaVal,
-                    (unsigned long long)C,
-                    (unsigned long long)D,
-                    (unsigned long long)workspace,
-                    (unsigned long)workspaceSize,
-                    (unsigned long long)stream);
-
-            logger->logError("hiptensorContraction", msg);
-            return HIPTENSOR_STATUS_INTERNAL_ERROR;
-        }
+        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+        sprintf(
+            msg, "Internal Error : solution = nullptr (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
@@ -600,6 +510,13 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        sprintf(msg,
+                "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                (int)currentDevice.getDeviceId(),
+                (int)realHandle->getDevice().getDeviceId(),
+                hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
@@ -644,59 +561,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     }
     else
     {
-        if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
-        {
-            if(alpha != nullptr)
-                alphaVal = *(static_cast<const float*>(alpha));
-
-            if(beta != nullptr)
-                betaVal = *(static_cast<const float*>(beta));
-
-            sprintf(msg,
-                    "handle=0x%0*llX, plan=0x%llX, alpha=%.6f, A=0x%llX, B=0x%llX, beta=%.6f,"
-                    "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
-                    "(HIPTENSOR_STATUS_INTERNAL_ERROR)",
-                    2 * (int)sizeof(void*),
-                    (unsigned long long)handle,
-                    (unsigned long long)plan,
-                    (float)alphaVal,
-                    (unsigned long long)A,
-                    (unsigned long long)B,
-                    (float)betaVal,
-                    (unsigned long long)C,
-                    (unsigned long long)D,
-                    (unsigned long long)workspace,
-                    (unsigned long)workspaceSize,
-                    (unsigned long long)stream);
-            logger->logError("hiptensorContraction", msg);
-            return HIPTENSOR_STATUS_INTERNAL_ERROR;
-        }
-        else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
-        {
-            if(alpha != nullptr)
-                alphaVal = *(static_cast<const double*>(alpha));
-
-            if(beta != nullptr)
-                betaVal = *(static_cast<const double*>(beta));
-
-            sprintf(msg,
-                    "handle=0x%0*llX, plan=0x%llX, alpha=%.6lf, A=0x%llX, B=0x%llX, beta=%.6lf,"
-                    "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX "
-                    "(HIPTENSOR_STATUS_INTERNAL_ERROR)",
-                    2 * (int)sizeof(void*),
-                    (unsigned long long)handle,
-                    (unsigned long long)plan,
-                    (double)alphaVal,
-                    (unsigned long long)A,
-                    (unsigned long long)B,
-                    (double)betaVal,
-                    (unsigned long long)C,
-                    (unsigned long long)D,
-                    (unsigned long long)workspace,
-                    (unsigned long)workspaceSize,
-                    (unsigned long long)stream);
-            logger->logError("hiptensorContraction", msg);
-            return HIPTENSOR_STATUS_INTERNAL_ERROR;
-        }
+        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+        sprintf(msg, "Internal Error (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 }
