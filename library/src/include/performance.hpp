@@ -34,10 +34,11 @@ namespace hiptensor
 {
     struct PerfMetrics
     {
+        std::size_t mKernelUid; /*!< The unique ID of the kernel */
+        std::string mKernelName; /*!< String name of the kernel */
         float       mAvgTimeMs; /*!< Avg kernel runtime in milli-seconds */
         float       mTflops; /*!< Calculation throughput in Tflop per second */
         float       mBandwidth; /*!< Data throughput in GB per second */
-        std::string mKernelName; /*!< String name of the kernel */
 
         bool operator>(PerfMetrics const& other) const;
         bool operator<(PerfMetrics const& other) const;
