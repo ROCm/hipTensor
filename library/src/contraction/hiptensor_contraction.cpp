@@ -490,9 +490,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
             sprintf(alphaMsg, "alpha=NULL");
         else
         {
-            if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
+            if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
                 sprintf(alphaMsg, "alpha=%.6f", *(static_cast<const float*>(alpha)));
-            else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
+            else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
                 sprintf(alphaMsg, "alpha=%.6lf", *(static_cast<const double*>(alpha)));
         }
 
@@ -500,9 +500,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
             sprintf(betaMsg, "beta=NULL");
         else
         {
-            if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_32F)
+            if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
                 sprintf(betaMsg, "beta=%.6f", *(static_cast<const float*>(beta)));
-            else if(plan->mContractionDesc.mTensorDesc[3].mType == HIP_R_64F)
+            else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
                 sprintf(betaMsg, "beta=%.6lf", *(static_cast<const double*>(beta)));
         }
     }
