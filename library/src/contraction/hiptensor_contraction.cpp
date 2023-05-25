@@ -448,7 +448,6 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         return result;
     }
 
-    char msg[256];
     sprintf(msg,
             "Algo: %d Kernel: %s %0.3f ms, %0.3f TFlops, %0.3f GB/s",
             find->mSelectionAlgorithm,
