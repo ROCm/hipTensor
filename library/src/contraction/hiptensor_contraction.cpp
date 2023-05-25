@@ -91,8 +91,58 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                                      hiptensorComputeType_t typeCompute)
 
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[512];
+    sprintf(
+        msg,
+        "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, alignmentRequirementA=0x%02X, "
+        "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
+        "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
+        "typeCompute=0x%02X",
+        2 * (int)sizeof(void*),
+        (unsigned long long)handle,
+        (unsigned long long)desc,
+        (unsigned long long)descA,
+        (unsigned long long)modeA,
+        (unsigned int)alignmentRequirementA,
+        (unsigned long long)descB,
+        (unsigned long long)modeB,
+        (unsigned int)alignmentRequirementB,
+        (unsigned long long)descC,
+        (unsigned long long)modeC,
+        (unsigned int)alignmentRequirementC,
+        (unsigned long long)descD,
+        (unsigned long long)modeD,
+        (unsigned int)alignmentRequirementD,
+        (unsigned int)typeCompute);
+
+    logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
+
     if(!handle || !desc || !descA || !descB || !descD)
     {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(!handle)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(!desc)
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction descriptor = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Initialization Error : Tensor descriptors = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorInitContractionDescriptor", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
@@ -128,8 +178,36 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                                                hiptensorContractionFind_t* find,
                                                const hiptensorAlgo_t       algo)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[128];
+    sprintf(msg,
+            "handle=0x%0*llX, find=0x%llX, algo=0x%02X",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)find,
+            (int)algo);
+
+    logger->logAPITrace("hiptensorInitContractionFind", msg);
+
     if(handle == nullptr || find == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(handle == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction find = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
@@ -139,6 +217,14 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        sprintf(msg,
+                "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                (int)currentDevice.getDeviceId(),
+                (int)realHandle->getDevice().getDeviceId(),
+                hiptensorGetErrorString(errorCode));
+
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
@@ -169,6 +255,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         if(solnQ.solutionCount() == 0)
         {
             // No kernels found!
+            auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+            sprintf(
+                msg, "Internal Error : No Kernels Found (%s)", hiptensorGetErrorString(errorCode));
+            logger->logError("hiptensorInitContractionFind", msg);
             return HIPTENSOR_STATUS_INTERNAL_ERROR;
         }
 
@@ -179,6 +269,9 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     }
     else
     {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        sprintf(msg, "Invalid Algo Value (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorInitContractionFind", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 }
@@ -189,60 +282,20 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
                                                        const hiptensorWorksizePreference_t     pref,
                                                        uint64_t* workspaceSize)
 {
-    if(handle == nullptr || desc == nullptr || find == nullptr || workspaceSize == nullptr)
-    {
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
-    }
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
 
-    // Convert to concrete contraction solutions
-    auto candidates = toContractionSolutionVec(find->mCandidates);
-
-    // Query contraction solutions for the correct contraction operation
-    auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}.query(
-        (hiptensor::ContractionOpId_t)desc->mContractionOpId);
-
-    candidates = toContractionSolutionVec(solutionQ.solutions());
-
-    *workspaceSize = 0u;
-
-    // No mem alloc, just need to init sizes to determine workspace req.
-    float alpha, beta;
-    void *A_d, *B_d, *C_d;
-    for(auto* candidate : candidates)
-    {
-        if(candidate->initArgs(&alpha,
-                               A_d,
-                               B_d,
-                               &beta,
-                               C_d,
-                               C_d,
-                               toCKVec(desc->mTensorDesc[0].mLengths),
-                               toCKVec(desc->mTensorDesc[0].mStrides),
-                               toCKVec(desc->mTensorDesc[1].mLengths),
-                               toCKVec(desc->mTensorDesc[1].mStrides),
-                               toCKVec(desc->mTensorDesc[2].mLengths),
-                               toCKVec(desc->mTensorDesc[2].mStrides),
-                               toCKVec(desc->mTensorDesc[3].mLengths),
-                               toCKVec(desc->mTensorDesc[3].mStrides),
-                               nullptr))
-        {
-            if(*workspaceSize == 0)
-            {
-                *workspaceSize = candidate->workspaceSize();
-            }
-            else
-            {
-                if(pref == HIPTENSOR_WORKSPACE_MIN)
-                {
-                    *workspaceSize = std::min(*workspaceSize, candidate->workspaceSize());
-                }
-                else
-                {
-                    *workspaceSize = std::max(*workspaceSize, candidate->workspaceSize());
-                }
-            }
-        }
-    }
+    // Log API access
+    char msg[256];
+    sprintf(msg,
+            "handle=0x%0*llX, desc=0x%llX, find=0x%llX, pref=0x%02X, workspaceSize=0x%04lX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)desc,
+            (unsigned long long)find,
+            (unsigned int)pref,
+            (unsigned long)*workspaceSize);
+    logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -256,8 +309,47 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
+    // Log API access
+
+    char msg[256];
+    sprintf(msg,
+            "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)plan,
+            (unsigned long long)desc,
+            (unsigned long long)find,
+            (unsigned long)workspaceSize);
+    logger->logAPITrace("hiptensorInitContractionPlan", msg);
+
     if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(handle == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(plan == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : plan = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(desc == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction descriptor = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction find = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
@@ -267,6 +359,13 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        sprintf(msg,
+                "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                (int)currentDevice.getDeviceId(),
+                (int)realHandle->getDevice().getDeviceId(),
+                hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
@@ -344,10 +443,11 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
+        sprintf(msg, "Init contraction plan not successful (%s)", hiptensorGetErrorString(result));
+        logger->logError("hiptensorInitContractionPlan", msg);
         return result;
     }
 
-    char msg[256];
     sprintf(msg,
             "Algo: %d Kernel: %s %0.3f ms, %0.3f TFlops, %0.3f GB/s",
             find->mSelectionAlgorithm,
@@ -376,18 +476,103 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                        uint64_t                          workspaceSize,
                                        hipStream_t                       stream)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[512];
+    char alphaMsg[32];
+    char betaMsg[32];
+
+    if(plan != nullptr)
+    {
+        if(alpha == nullptr)
+            sprintf(alphaMsg, "alpha=NULL");
+        else
+        {
+            if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
+                sprintf(alphaMsg, "alpha=%.6f", *(static_cast<const float*>(alpha)));
+            else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
+                sprintf(alphaMsg, "alpha=%.6lf", *(static_cast<const double*>(alpha)));
+        }
+
+        if(beta == nullptr)
+            sprintf(betaMsg, "beta=NULL");
+        else
+        {
+            if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
+                sprintf(betaMsg, "beta=%.6f", *(static_cast<const float*>(beta)));
+            else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
+                sprintf(betaMsg, "beta=%.6lf", *(static_cast<const double*>(beta)));
+        }
+    }
+    else
+    {
+        sprintf(alphaMsg, "alpha=NULL");
+        sprintf(betaMsg, "beta=NULL");
+    }
+
+    sprintf(msg,
+            "handle=0x%0*llX, plan=0x%llX, %s, A=0x%llX, B=0x%llX, %s, "
+            "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)plan,
+            alphaMsg,
+            (unsigned long long)A,
+            (unsigned long long)B,
+            betaMsg,
+            (unsigned long long)C,
+            (unsigned long long)D,
+            (unsigned long long)workspace,
+            (unsigned long)workspaceSize,
+            (unsigned long long)stream);
+    logger->logAPITrace("hiptensorContraction", msg);
+
     if(handle == nullptr || plan == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(handle == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Initialization Error : plan = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     if(alpha == nullptr || A == nullptr || B == nullptr || D == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        if(alpha == nullptr)
+        {
+            sprintf(msg,
+                    "Input Parameter Error : alpha = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Input Parameter Error : A/B/D = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
     if(plan->mSolution == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+        sprintf(
+            msg, "Internal Error : solution = nullptr (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 
@@ -397,6 +582,13 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     hiptensor::HipDevice currentDevice;
     if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
     {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        sprintf(msg,
+                "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                (int)currentDevice.getDeviceId(),
+                (int)realHandle->getDevice().getDeviceId(),
+                hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
@@ -430,6 +622,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     }
     else
     {
+        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+        sprintf(msg, "Internal Error (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 }

@@ -34,10 +34,23 @@
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorCreate", msg);
+
     (*handle) = new hiptensorHandle_t;
 
     if(*handle == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_ALLOC_FAILED;
+        sprintf(msg,
+                "Initialization Error : handle = nullptr (%s)",
+                hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorCreate", msg);
         return HIPTENSOR_STATUS_ALLOC_FAILED;
     }
 
@@ -45,11 +58,18 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 
     if(hip_status == hipErrorInvalidDevice)
     {
+        auto errorCode = HIPTENSOR_STATUS_HIP_ERROR;
+        sprintf(
+            msg, "Initialization error: invalid device (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorCreate", msg);
         return HIPTENSOR_STATUS_HIP_ERROR;
     }
 
     else if(hip_status == hipErrorInvalidValue)
     {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        sprintf(msg, "Initialization error: (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorCreate", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
@@ -61,6 +81,14 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
 
 hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
+    logger->logAPITrace("hiptensorDestroy", msg);
+
     hiptensor::Handle::destroyHandle(handle->fields);
 
     delete handle;
@@ -77,14 +105,66 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 hipDataType                  dataType,
                                                 hiptensorOperator_t          unaryOp)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[128];
+    sprintf(msg,
+            "handle=0x%0*llX, desc=0x%llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
+            "dataType=0x%02X, unaryOp=0x%02X",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)desc,
+            (unsigned int)numModes,
+            (unsigned long long)lens,
+            (unsigned long long)strides,
+            (unsigned int)dataType,
+            (unsigned int)unaryOp);
+    logger->logAPITrace("hiptensorInitTensorDescriptor", msg);
+
     if(handle == nullptr || desc == nullptr)
     {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(handle == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction descriptor = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorInitTensorDescriptor", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     if((lens == nullptr) || ((dataType != HIP_R_32F) && (dataType != HIP_R_64F))
        || unaryOp != HIPTENSOR_OP_IDENTITY)
     {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        if(lens == nullptr)
+        {
+            sprintf(msg,
+                    "Tensor Initialization Error : lens = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(unaryOp != HIPTENSOR_OP_IDENTITY)
+        {
+            sprintf(msg,
+                    "Tensor Initialization Error : op != identity (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Tensor Initialization Error : datatype should be float or double (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorInitTensorDescriptor", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
@@ -115,6 +195,14 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
 
 const char* hiptensorGetErrorString(const hiptensorStatus_t error)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[64];
+    sprintf(msg, "error=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)error);
+    logger->logAPITrace("hiptensorGetErrorString", msg);
+
     if(error == HIPTENSOR_STATUS_SUCCESS)
         return "HIPTENSOR_STATUS_SUCCESS";
     else if(error == HIPTENSOR_STATUS_NOT_INITIALIZED)
@@ -150,8 +238,35 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
                                                    const hiptensorTensorDescriptor_t* desc,
                                                    uint32_t* alignmentRequirement)
 {
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[128];
+    sprintf(msg,
+            "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%02X",
+            2 * (int)sizeof(void*),
+            (unsigned long long)handle,
+            (unsigned long long)ptr,
+            (unsigned long long)desc,
+            (unsigned int)*alignmentRequirement);
+
+    logger->logAPITrace("hiptensorGetAlignmentRequirement", msg);
+
     if(!handle || !desc)
     {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(!handle)
+        {
+            sprintf(msg, "Error : handle = nullptr (%s)", hiptensorGetErrorString(errorCode));
+        }
+        else
+        {
+            sprintf(msg,
+                    "Error : contraction descriptor = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorGetAlignmentRequirement", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
@@ -166,6 +281,9 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
 
     if(*alignmentRequirement == 0)
     {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        sprintf(msg, "Error : alignment requirement is 0 (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorGetAlignmentRequirement", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
     else
@@ -189,9 +307,7 @@ hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
         sprintf(msg,
-                "callback=0x%0*llX (%s)",
-                2 * (int)sizeof(void*),
-                (unsigned long long)callback,
+                "Error : logger set callback not successful (%s)",
                 logger->statusString(loggerResult));
         logger->logError("hiptensorLoggerSetCallback", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
@@ -214,11 +330,8 @@ hiptensorStatus_t hiptensorLoggerSetFile(FILE* file)
     auto loggerResult = logger->writeToStream(file);
     if(loggerResult != Logger::Status_t::SUCCESS)
     {
-        sprintf(msg,
-                "file=0x%0*llX (%s)",
-                2 * (int)sizeof(void*),
-                (unsigned long long)file,
-                logger->statusString(loggerResult));
+        sprintf(
+            msg, "Error : logger set file not successful (%s)", logger->statusString(loggerResult));
         logger->logError("hiptensorLoggerSetFile", msg);
         return HIPTENSOR_STATUS_IO_ERROR;
     }
