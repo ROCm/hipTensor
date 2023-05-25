@@ -83,7 +83,13 @@ namespace hiptensor
 
         std::string          best_op_name;
         ContractionSolution* bestSolution = nullptr;
-        PerfMetrics          bestMetrics  = {0, 0, 0, ""};
+        PerfMetrics          bestMetrics  = {
+            0,
+            "",
+            0,
+            0,
+            0,
+        };
 
         for(auto* solution : candidates)
         {
@@ -112,10 +118,11 @@ namespace hiptensor
                 auto bytes        = solution->problemBytes();
 
                 PerfMetrics metrics = {
+                    solution->uid(), // id
+                    solution->kernelName(), // name
                     time, // avg time
                     static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
-                    static_cast<float>(bytes) / static_cast<float>(1.E6) / time, // BW
-                    solution->kernelName() // name
+                    static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
                 };
 
                 if(metrics > bestMetrics)

@@ -349,8 +349,9 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     char msg[256];
     sprintf(msg,
-            "Algo: %d Kernel: %s %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+            "Algo: %d KernelId: %lu KernelName: %s %0.3f ms, %0.3f TFlops, %0.3f GB/s",
             find->mSelectionAlgorithm,
+            winnerMetrics.mKernelUid,
             winnerMetrics.mKernelName.c_str(),
             winnerMetrics.mAvgTimeMs,
             winnerMetrics.mTflops,
