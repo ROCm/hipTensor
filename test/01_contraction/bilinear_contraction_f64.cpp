@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
     if(!isF64Supported())
     {
         std::cout << "unsupported host device" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     typedef double ADataType;
@@ -181,21 +182,17 @@ int main(int argc, char* argv[])
     BDataType* B = (BDataType*)malloc(sizeB);
     CDataType* C = (CDataType*)malloc(sizeC);
     DDataType* D = (DDataType*)malloc(sizeD);
-#if !NDEBUG
-    DDataType* D_host = (DDataType*)malloc(sizeD);
-#endif
 
     void *A_d, *B_d, *C_d, *D_d;
-#if !NDEBUG
-    void* D_host_d;
-#endif
 
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&C_d), sizeC));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_d), sizeD));
+
 #if !NDEBUG
-    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_host_d), sizeD));
+    void* D_ref_d;
+    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_ref_d), sizeD));
 #endif
 
     /*******************
@@ -220,9 +217,6 @@ int main(int argc, char* argv[])
     for(int64_t i = 0; i < elementsD; i++)
     {
         D[i] = std::numeric_limits<DDataType>::signaling_NaN();
-#if !NDEBUG
-        D_host[i] = std::numeric_limits<DDataType>::signaling_NaN();
-#endif
     }
 
     /********************************************
@@ -234,8 +228,6 @@ int main(int argc, char* argv[])
     CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(D_d, static_cast<const void*>(D), sizeD, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(
-        hipMemcpy(D_host_d, static_cast<const void*>(D_host), sizeD, hipMemcpyHostToDevice));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -329,10 +321,52 @@ int main(int argc, char* argv[])
 
 #if !NDEBUG
 
-    CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+                                                        A,
+                                                        B,
+                                                        (void*)&beta,
+                                                        C,
+                                                        D,
+                                                        a_ms_ks.mLengths,
+                                                        a_ms_ks.mStrides,
+                                                        b_ns_ks.mLengths,
+                                                        b_ns_ks.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        d_ms_ns.mLengths,
+                                                        d_ms_ns.mStrides,
+                                                        typeA,
+                                                        typeB,
+                                                        typeC,
+                                                        typeD,
+                                                        workspace));
+
+    bool   mValidationResult = false;
+    double mMaxRelativeError;
+
+    CHECK_HIP_ERROR(hipMemcpy(D_ref_d, D, sizeD, hipMemcpyHostToDevice));
+
+    std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<DDataType>(
+        static_cast<DDataType*>(D_d), static_cast<DDataType*>(D_ref_d), elementsD);
+
+    if(mValidationResult == true)
+    {
+        std::cout << "Validation Successful" << std::endl;
+    }
+    else
+    {
+        std::cout << "Validation Failed" << std::endl;
+    }
+
+    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
 
     bool printElements = false;
     bool storeElements = false;
+
+    if(printElements || storeElements)
+    {
+        CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+    }
 
     if(printElements)
     {
@@ -385,48 +419,7 @@ int main(int argc, char* argv[])
         tensorD.close();
     }
 
-    CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
-                                                        A,
-                                                        B,
-                                                        (void*)&beta,
-                                                        C,
-                                                        D_host,
-                                                        a_ms_ks.mLengths,
-                                                        a_ms_ks.mStrides,
-                                                        b_ns_ks.mLengths,
-                                                        b_ns_ks.mStrides,
-                                                        d_ms_ns.mLengths,
-                                                        d_ms_ns.mStrides,
-                                                        d_ms_ns.mLengths,
-                                                        d_ms_ns.mStrides,
-                                                        typeA,
-                                                        typeB,
-                                                        typeC,
-                                                        typeD,
-                                                        workspace));
-
-    bool   mValidationResult = false;
-    double mMaxRelativeError;
-
-    CHECK_HIP_ERROR(
-        hipMemcpy(D_host_d, static_cast<const void*>(D_host), sizeD, hipMemcpyHostToDevice));
-
-    std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<DDataType>(
-        static_cast<DDataType*>(D_d), static_cast<DDataType*>(D_host_d), elementsD);
-
-    if(mValidationResult == true)
-    {
-        std::cout << "Validation Successful" << std::endl;
-    }
-    else
-    {
-        std::cout << "Validation Failed" << std::endl;
-    }
-
-    std::cout << "Max relative error: " << mMaxRelativeError << std::endl;
-
-    HIPTENSOR_FREE_HOST(D_host);
-    HIPTENSOR_FREE_DEVICE(D_host_d);
+    HIPTENSOR_FREE_DEVICE(D_ref_d);
 
 #endif
 
