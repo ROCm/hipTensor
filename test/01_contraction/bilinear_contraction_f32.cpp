@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
         hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     /********************************************
-   * Intialise Tensors with the input lengths *
+   * Initialize tensors with the input lengths *
    ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks;
 
@@ -391,7 +391,7 @@ int main(int argc, char* argv[])
         }
 
         if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
-        {            
+        {
             std::cout << "Tensor D elements:\n";
             hiptensorPrintArrayElements(D, elementsD);
             std::cout << std::endl;
