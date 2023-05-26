@@ -111,7 +111,7 @@ namespace hiptensor
         static constexpr auto value = NONE_TYPE;
     };
 
-    template<typename T>
+    template <typename T>
     T readVal(void const* value, hipDataType id)
     {
         if(id == HIP_R_16BF)
@@ -171,42 +171,42 @@ namespace hiptensor
         }
     }
 
-    template<typename T>
+    template <typename T>
     T readVal(void const* value, hiptensorComputeType_t id)
     {
         if(id == HIPTENSOR_COMPUTE_16F)
         {
             return static_cast<T>(*(_Float16*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_16BF)
+        else if(id == HIPTENSOR_COMPUTE_16BF)
         {
             return static_cast<T>(*(hip_bfloat16*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_32F)
+        else if(id == HIPTENSOR_COMPUTE_32F)
         {
             return static_cast<T>(*(float*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_64F)
+        else if(id == HIPTENSOR_COMPUTE_64F)
         {
             return static_cast<T>(*(double*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_8U)
+        else if(id == HIPTENSOR_COMPUTE_8U)
         {
             return static_cast<T>(*(uint8_t*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_8I)
+        else if(id == HIPTENSOR_COMPUTE_8I)
         {
             return static_cast<T>(*(int8_t*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_32U)
+        else if(id == HIPTENSOR_COMPUTE_32U)
         {
             return static_cast<T>(*(uint32_t*)value);
         }
-        else if (id == HIPTENSOR_COMPUTE_32I)
+        else if(id == HIPTENSOR_COMPUTE_32I)
         {
             return static_cast<T>(*(int32_t*)value);
         }
-                else
+        else
         {
 #if !NDEBUG
             std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;

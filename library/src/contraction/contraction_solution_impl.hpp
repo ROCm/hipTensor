@@ -91,7 +91,7 @@ namespace hiptensor
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
             auto alphaF = 0.0f;
-            auto betaF = 0.0f; 
+            auto betaF  = 0.0f;
 
             if(alpha != nullptr)
             {
@@ -103,8 +103,7 @@ namespace hiptensor
             }
 
             // CK has its own format for indices...
-            auto toCKVec = [](std::vector<std::size_t> const& v)
-            {
+            auto toCKVec = [](std::vector<std::size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
@@ -203,15 +202,14 @@ namespace hiptensor
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
             auto alphaF = 0.0f;
-            
+
             if(alpha != nullptr)
             {
                 alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
             }
 
             // CK has its own format for indices...
-            auto toCKVec = [](std::vector<std::size_t> const& v)
-            {
+            auto toCKVec = [](std::vector<std::size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 

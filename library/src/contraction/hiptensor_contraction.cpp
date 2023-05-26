@@ -148,7 +148,9 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                  typeCompute,
                  {*descA,
                   *descB,
-                  {hiptensor::NONE_TYPE, std::vector<std::size_t>(descD->mLengths.size(), 0), std::vector<std::size_t>(descD->mStrides.size(), 0)},
+                  {hiptensor::NONE_TYPE,
+                   std::vector<std::size_t>(descD->mLengths.size(), 0),
+                   std::vector<std::size_t>(descD->mStrides.size(), 0)},
                   *descD},
                  {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
     }
@@ -446,8 +448,8 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     // Query contraction solutions for the correct contraction operation and type
     auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}
-                    .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
-                    .query(ADataType, BDataType, DDataType, EDataType);
+                         .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
+                         .query(ADataType, BDataType, DDataType, EDataType);
 
     candidates = toContractionSolutionVec(solutionQ.solutions());
 
@@ -663,8 +665,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     if(plan->mContractionDesc.mComputeType != plan->mContractionDesc.mTensorDesc[3].mType)
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        sprintf(
-            msg, "Internal Error : compute type != D type (%s)", hiptensorGetErrorString(errorCode));
+        sprintf(msg,
+                "Internal Error : compute type != D type (%s)",
+                hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
         return errorCode;
     }
@@ -692,7 +695,11 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         if(cSolution->workspaceSize() > workspaceSize)
         {
             auto errorCode = HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE;
-            sprintf(msg, "Insufficient workspace: req: %lu alloc: %lu (%s)", cSolution->workspaceSize(), workspaceSize, hiptensorGetErrorString(errorCode));
+            sprintf(msg,
+                    "Insufficient workspace: req: %lu alloc: %lu (%s)",
+                    cSolution->workspaceSize(),
+                    workspaceSize,
+                    hiptensorGetErrorString(errorCode));
             logger->logError("hiptensorContraction", msg);
             return errorCode;
         }
@@ -703,7 +710,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     else
     {
         auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
-        sprintf(msg, "Selected kernel is unable to solve the problem (%s)", hiptensorGetErrorString(errorCode));
+        sprintf(msg,
+                "Selected kernel is unable to solve the problem (%s)",
+                hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
         return errorCode;
     }

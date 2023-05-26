@@ -56,10 +56,10 @@ namespace hiptensor
     uint32_t hipDataTypeSize(hipDataType id);
 
     // Read a single value from void pointer, casted to T
-    template<typename T>
+    template <typename T>
     T readVal(void const* value, hipDataType id);
 
-    template<typename T>
+    template <typename T>
     T readVal(void const* value, hiptensorComputeType_t id);
 
 } // namespace hiptensor
