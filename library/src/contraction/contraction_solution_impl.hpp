@@ -69,14 +69,14 @@ namespace hiptensor
                       void const*                     beta,
                       void const*                     D,
                       void*                           E,
-                      std::vector<ck::index_t> const& a_ms_ks_lengths,
-                      std::vector<ck::index_t> const& a_ms_ks_strides,
-                      std::vector<ck::index_t> const& b_ns_ks_lengths,
-                      std::vector<ck::index_t> const& b_ns_ks_strides,
-                      std::vector<ck::index_t> const& ds_ms_ns_lengths,
-                      std::vector<ck::index_t> const& ds_ms_ns_strides,
-                      std::vector<ck::index_t> const& e_ms_ns_lengths,
-                      std::vector<ck::index_t> const& e_ms_ns_strides,
+                      std::vector<std::size_t> const& a_ms_ks_lengths,
+                      std::vector<std::size_t> const& a_ms_ks_strides,
+                      std::vector<std::size_t> const& b_ns_ks_lengths,
+                      std::vector<std::size_t> const& b_ns_ks_strides,
+                      std::vector<std::size_t> const& ds_ms_ns_lengths,
+                      std::vector<std::size_t> const& ds_ms_ns_strides,
+                      std::vector<std::size_t> const& e_ms_ns_lengths,
+                      std::vector<std::size_t> const& e_ms_ns_strides,
                       void*                           workspacePtr) override
         {
             using Base   = ContractionSolution;
@@ -89,23 +89,41 @@ namespace hiptensor
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
+            // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
+            auto alphaF = 0.0f;
+            auto betaF  = 0.0f;
+
+            if(alpha != nullptr)
+            {
+                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+            }
+            if(beta != nullptr)
+            {
+                betaF = hiptensor::readVal<float>(beta, HipDataType_v<typename Traits::EDataT>);
+            }
+
+            // CK has its own format for indices...
+            auto toCKVec = [](std::vector<std::size_t> const& v) {
+                return std::vector<ck::index_t>(v.begin(), v.end());
+            };
+
             // Initialize the argument pointer
             Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,
                 B,
                 std::array<const void*, 1>{D},
                 E,
-                a_ms_ks_lengths,
-                a_ms_ks_strides,
-                b_ns_ks_lengths,
-                b_ns_ks_strides,
-                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_lengths},
-                std::array<std::vector<ck::index_t>, 1>{ds_ms_ns_strides},
-                e_ms_ns_lengths,
-                e_ms_ns_strides,
+                toCKVec(a_ms_ks_lengths),
+                toCKVec(a_ms_ks_strides),
+                toCKVec(b_ns_ks_lengths),
+                toCKVec(b_ns_ks_strides),
+                std::array<std::vector<ck::index_t>, 1>{toCKVec(ds_ms_ns_lengths)},
+                std::array<std::vector<ck::index_t>, 1>{toCKVec(ds_ms_ns_strides)},
+                toCKVec(e_ms_ns_lengths),
+                toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{*(float*)alpha, *(float*)beta}));
+                typename Traits::CDEOp{alphaF, betaF}));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
@@ -162,24 +180,38 @@ namespace hiptensor
                       void const*                     beta,
                       void const*                     D,
                       void*                           E,
-                      std::vector<ck::index_t> const& a_ms_ks_lengths,
-                      std::vector<ck::index_t> const& a_ms_ks_strides,
-                      std::vector<ck::index_t> const& b_ns_ks_lengths,
-                      std::vector<ck::index_t> const& b_ns_ks_strides,
-                      std::vector<ck::index_t> const& ds_ms_ns_lengths,
-                      std::vector<ck::index_t> const& ds_ms_ns_strides,
-                      std::vector<ck::index_t> const& e_ms_ns_lengths,
-                      std::vector<ck::index_t> const& e_ms_ns_strides,
+                      std::vector<std::size_t> const& a_ms_ks_lengths,
+                      std::vector<std::size_t> const& a_ms_ks_strides,
+                      std::vector<std::size_t> const& b_ns_ks_lengths,
+                      std::vector<std::size_t> const& b_ns_ks_strides,
+                      std::vector<std::size_t> const& ds_ms_ns_lengths,
+                      std::vector<std::size_t> const& ds_ms_ns_strides,
+                      std::vector<std::size_t> const& e_ms_ns_lengths,
+                      std::vector<std::size_t> const& e_ms_ns_strides,
                       void*                           workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
 
             // Clear previous data
+            resetArgs();
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
+
+            // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
+            auto alphaF = 0.0f;
+
+            if(alpha != nullptr)
+            {
+                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+            }
+
+            // CK has its own format for indices...
+            auto toCKVec = [](std::vector<std::size_t> const& v) {
+                return std::vector<ck::index_t>(v.begin(), v.end());
+            };
 
             // Initialize the argument pointer
             Base::mArgPtr
@@ -187,17 +219,17 @@ namespace hiptensor
                                                           B,
                                                           std::array<const void*, 0>{},
                                                           E,
-                                                          a_ms_ks_lengths,
-                                                          a_ms_ks_strides,
-                                                          b_ns_ks_lengths,
-                                                          b_ns_ks_strides,
+                                                          toCKVec(a_ms_ks_lengths),
+                                                          toCKVec(a_ms_ks_strides),
+                                                          toCKVec(b_ns_ks_lengths),
+                                                          toCKVec(b_ns_ks_strides),
                                                           std::array<std::vector<ck::index_t>, 0>{},
                                                           std::array<std::vector<ck::index_t>, 0>{},
-                                                          e_ms_ns_lengths,
-                                                          e_ms_ns_strides,
+                                                          toCKVec(e_ms_ns_lengths),
+                                                          toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{*(float*)alpha}));
+                                                          typename Traits::CDEOp{alphaF}));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);

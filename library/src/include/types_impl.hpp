@@ -111,6 +111,110 @@ namespace hiptensor
         static constexpr auto value = NONE_TYPE;
     };
 
+    template <typename T>
+    T readVal(void const* value, hipDataType id)
+    {
+        if(id == HIP_R_16BF)
+        {
+            return static_cast<T>(*(hip_bfloat16*)value);
+        }
+        else if(id == HIP_R_16F)
+        {
+            return static_cast<T>(*(_Float16*)value);
+        }
+        else if(id == HIP_R_32F)
+        {
+            return static_cast<T>(*(float*)value);
+        }
+        else if(id == HIP_R_64F)
+        {
+            return static_cast<T>(*(double*)value);
+        }
+        else if(id == HIP_R_8I)
+        {
+            return static_cast<T>(*(int8_t*)value);
+        }
+        else if(id == HIP_R_8U)
+        {
+            return static_cast<T>(*(uint8_t*)value);
+        }
+        else if(id == HIP_R_16I)
+        {
+            return static_cast<T>(*(int16_t*)value);
+        }
+        else if(id == HIP_R_16U)
+        {
+            return static_cast<T>(*(uint16_t*)value);
+        }
+        else if(id == HIP_R_32I)
+        {
+            return static_cast<T>(*(int32_t*)value);
+        }
+        else if(id == HIP_R_32U)
+        {
+            return static_cast<T>(*(uint32_t*)value);
+        }
+        else if(id == HIP_R_64I)
+        {
+            return static_cast<T>(*(int64_t*)value);
+        }
+        else if(id == HIP_R_64U)
+        {
+            return static_cast<T>(*(uint64_t*)value);
+        }
+        else
+        {
+#if !NDEBUG
+            std::cout << "Unhandled hip datatype: " << id << std::endl;
+#endif // !NDEBUG
+            return 0;
+        }
+    }
+
+    template <typename T>
+    T readVal(void const* value, hiptensorComputeType_t id)
+    {
+        if(id == HIPTENSOR_COMPUTE_16F)
+        {
+            return static_cast<T>(*(_Float16*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_16BF)
+        {
+            return static_cast<T>(*(hip_bfloat16*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_32F)
+        {
+            return static_cast<T>(*(float*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_64F)
+        {
+            return static_cast<T>(*(double*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_8U)
+        {
+            return static_cast<T>(*(uint8_t*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_8I)
+        {
+            return static_cast<T>(*(int8_t*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_32U)
+        {
+            return static_cast<T>(*(uint32_t*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_32I)
+        {
+            return static_cast<T>(*(int32_t*)value);
+        }
+        else
+        {
+#if !NDEBUG
+            std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+#endif // !NDEBUG
+            return 0;
+        }
+    }
+
 } // namespace hiptensor
 
 #endif // HIPTENSOR_LIBRARY_TYPES_IMPL_HPP

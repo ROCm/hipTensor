@@ -89,9 +89,6 @@ typedef enum
     ///< 10-bit mantissa (aka half)
     HIPTENSOR_COMPUTE_16BF = (1U << 10U), ///< floating-point: 8-bit exponent and
     ///< 7-bit mantissa (aka bfloat)
-    HIPTENSOR_COMPUTE_TF32
-    = (1U << 12U), ///< floating-point: 8-bit exponent and 10-bit mantissa (aka
-    ///< tensor-float-32)
     HIPTENSOR_COMPUTE_32F = (1U << 2U), ///< floating-point: 8-bit exponent and
     ///< 23-bit mantissa (aka float)
     HIPTENSOR_COMPUTE_64F = (1U << 4U), ///< floating-point: 11-bit exponent and

@@ -70,14 +70,14 @@ hiptensorStatus_t hiptensorContractionReference(void const*                alpha
                                   beta,
                                   C,
                                   D,
-                                  toCKVec(a_ms_ks_lengths),
-                                  toCKVec(a_ms_ks_strides),
-                                  toCKVec(b_ns_ks_lengths),
-                                  toCKVec(b_ns_ks_strides),
-                                  toCKVec(c_ms_ns_lengths),
-                                  toCKVec(c_ms_ns_strides),
-                                  toCKVec(d_ms_ns_lengths),
-                                  toCKVec(d_ms_ns_strides),
+                                  a_ms_ks_lengths,
+                                  a_ms_ks_strides,
+                                  b_ns_ks_lengths,
+                                  b_ns_ks_strides,
+                                  c_ms_ns_lengths,
+                                  c_ms_ns_strides,
+                                  d_ms_ns_lengths,
+                                  d_ms_ns_strides,
                                   workspace))
         {
             (*refCandidate)();
