@@ -93,3 +93,77 @@ namespace hiptensor
     }
 
 } // namespace hiptensor
+
+bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
+{
+    if(hipType == HIP_R_16BF)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_16BF);
+    }
+    else if(hipType == HIP_R_16F)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_16F);
+    }
+    else if(hipType == HIP_R_32F)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_32F);
+    }
+    else if(hipType == HIP_R_64F)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_64F);
+    }
+    else if(hipType == HIP_R_8I)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_8I);
+    }
+    else if(hipType == HIP_R_8U)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_8U);
+    }
+    else if(hipType == HIP_R_16I)
+    {
+        return false;
+    }
+    else if(hipType == HIP_R_16U)
+    {
+        return false;
+    }
+    else if(hipType == HIP_R_32I)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_32I);
+    }
+    else if(hipType == HIP_R_32U)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_32U);
+    }
+    else if(hipType == HIP_R_64I)
+    {
+        return false;
+    }
+    else if(hipType == HIP_R_64U)
+    {
+        return false;
+    }
+    else
+    {
+#if !NDEBUG
+        std::cout << "Unhandled hip datatype: " << hipType << std::endl;
+#endif // !NDEBUG
+        return false;
+    }
+}
+
+bool operator==(hiptensorComputeType_t computeType, hipDataType hipType)
+{
+    return hipType == computeType;
+}
+
+bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType)
+{
+    return !(hipType == computeType);
+}
+
+bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType)
+{
+    return !(computeType == hipType);
+}
