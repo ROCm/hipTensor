@@ -375,16 +375,17 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     // Convert to concrete contraction solutions
     auto candidates = toContractionSolutionVec(find->mCandidates);
 
-    // Query contraction solutions for the correct contraction operation
-    auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}.query(
-        (hiptensor::ContractionOpId_t)desc->mContractionOpId);
-
-    candidates = toContractionSolutionVec(solutionQ.solutions());
-
     auto ADataType = desc->mTensorDesc[0].mType;
     auto BDataType = desc->mTensorDesc[1].mType;
     auto DDataType = desc->mTensorDesc[2].mType;
     auto EDataType = desc->mTensorDesc[3].mType;
+
+    // Query contraction solutions for the correct contraction operation and type
+    auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}
+                    .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
+                    .query(ADataType, BDataType, DDataType, EDataType);
+
+    candidates = toContractionSolutionVec(solutionQ.solutions());
 
     // NOTE: Here, ck::index_t is int, NOT same as std::index_t = long uint
     // Therefore the conversion to ck::index_t is required.
@@ -488,23 +489,35 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     if(plan != nullptr)
     {
         if(alpha == nullptr)
+        {
             sprintf(alphaMsg, "alpha=NULL");
+        }
         else
         {
             if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
+            {
                 sprintf(alphaMsg, "alpha=%.6f", *(static_cast<const float*>(alpha)));
+            }
             else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
+            {
                 sprintf(alphaMsg, "alpha=%.6lf", *(static_cast<const double*>(alpha)));
+            }
         }
 
         if(beta == nullptr)
+        {
             sprintf(betaMsg, "beta=NULL");
+        }
         else
         {
             if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
+            {
                 sprintf(betaMsg, "beta=%.6f", *(static_cast<const float*>(beta)));
+            }
             else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
+            {
                 sprintf(betaMsg, "beta=%.6lf", *(static_cast<const double*>(beta)));
+            }
         }
     }
     else
@@ -528,6 +541,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
             (unsigned long long)workspace,
             (unsigned long)workspaceSize,
             (unsigned long long)stream);
+
     logger->logAPITrace("hiptensorContraction", msg);
 
     if(handle == nullptr || plan == nullptr)
@@ -546,7 +560,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                     hiptensorGetErrorString(errorCode));
         }
         logger->logError("hiptensorContraction", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+        return errorCode;
     }
 
     if(alpha == nullptr || A == nullptr || B == nullptr || D == nullptr)
@@ -565,7 +579,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                     hiptensorGetErrorString(errorCode));
         }
         logger->logError("hiptensorContraction", msg);
-        return HIPTENSOR_STATUS_INVALID_VALUE;
+        return errorCode;
     }
 
     if(plan->mSolution == nullptr)
@@ -574,7 +588,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         sprintf(
             msg, "Internal Error : solution = nullptr (%s)", hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
-        return HIPTENSOR_STATUS_INTERNAL_ERROR;
+        return errorCode;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
@@ -590,7 +604,16 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                 (int)realHandle->getDevice().getDeviceId(),
                 hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
-        return HIPTENSOR_STATUS_ARCH_MISMATCH;
+        return errorCode;
+    }
+
+    if(plan->mContractionDesc.mComputeType != plan->mContractionDesc.mTensorDesc[3].mType)
+    {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        sprintf(
+            msg, "Internal Error : compute type != D type (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+        return errorCode;
     }
 
     auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
