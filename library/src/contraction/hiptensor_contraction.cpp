@@ -143,18 +143,19 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                     hiptensorGetErrorString(errorCode));
         }
         logger->logError("hiptensorInitContractionDescriptor", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+        return errorCode;
     }
 
     if(descC == nullptr || modeC == nullptr)
     {
         // Use a scale contraction due to
         // tensor C-descriptor is empty
+
         *desc = {(int32_t)hiptensor::ContractionOpId_t::SCALE,
                  typeCompute,
                  {*descA,
                   *descB,
-                  {hiptensor::NONE_TYPE, {descD->mLengths.size(), 0}, {descD->mStrides.size(), 0}},
+                  {hiptensor::NONE_TYPE, std::vector<std::size_t>(descD->mLengths.size(), 0), std::vector<std::size_t>(descD->mStrides.size(), 0)},
                   *descD},
                  {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
     }
@@ -208,7 +209,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                     hiptensorGetErrorString(errorCode));
         }
         logger->logError("hiptensorInitContractionFind", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+        return errorCode;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
@@ -225,7 +226,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                 hiptensorGetErrorString(errorCode));
 
         logger->logError("hiptensorInitContractionFind", msg);
-        return HIPTENSOR_STATUS_ARCH_MISMATCH;
+        return errorCode;
     }
 
     if(algo == HIPTENSOR_ALGO_DEFAULT || algo == HIPTENSOR_ALGO_DEFAULT_PATIENT
@@ -259,7 +260,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
             sprintf(
                 msg, "Internal Error : No Kernels Found (%s)", hiptensorGetErrorString(errorCode));
             logger->logError("hiptensorInitContractionFind", msg);
-            return HIPTENSOR_STATUS_INTERNAL_ERROR;
+            return errorCode;
         }
 
         // Extract the solutions to the candidates vector.
@@ -272,7 +273,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
         sprintf(msg, "Invalid Algo Value (%s)", hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorInitContractionFind", msg);
-        return HIPTENSOR_STATUS_INVALID_VALUE;
+        return errorCode;
     }
 }
 
@@ -296,6 +297,76 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
             (unsigned int)pref,
             (unsigned long)*workspaceSize);
     logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
+
+    if(handle == nullptr || desc == nullptr || find == nullptr || workspaceSize == nullptr)
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        if(handle == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : handle = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(desc == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction descriptor = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(find == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : contraction find = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        else if(workspaceSize == nullptr)
+        {
+            sprintf(msg,
+                    "Initialization Error : workspace size = nullptr (%s)",
+                    hiptensorGetErrorString(errorCode));
+        }
+        logger->logError("hiptensorContractionGetWorkspaceSize", msg);
+        return errorCode;
+    }
+
+    *workspaceSize = 0u;
+
+    for(auto* candidate : find->mCandidates)
+    {
+        auto* solution = (hiptensor::ContractionSolution*)candidate;
+        if(solution->initArgs(nullptr,
+                              nullptr,
+                              nullptr,
+                              nullptr,
+                              nullptr,
+                              nullptr,
+                                toCKVec(desc->mTensorDesc[0].mLengths),
+                                toCKVec(desc->mTensorDesc[0].mStrides),
+                                toCKVec(desc->mTensorDesc[1].mLengths),
+                                toCKVec(desc->mTensorDesc[1].mStrides),
+                                toCKVec(desc->mTensorDesc[2].mLengths),
+                                toCKVec(desc->mTensorDesc[2].mStrides),
+                                toCKVec(desc->mTensorDesc[3].mLengths),
+                                toCKVec(desc->mTensorDesc[3].mStrides),
+                              nullptr))
+        {
+            if(*workspaceSize == 0)
+            {
+                *workspaceSize = solution->workspaceSize();
+            }
+            else
+            {
+                if(pref == HIPTENSOR_WORKSPACE_MIN)
+                {
+                    *workspaceSize = std::min(*workspaceSize, solution->workspaceSize());
+                }
+                else
+                {
+                    *workspaceSize = std::max(*workspaceSize, solution->workspaceSize());
+                }
+            }
+        }
+    }
 
     return HIPTENSOR_STATUS_SUCCESS;
 }

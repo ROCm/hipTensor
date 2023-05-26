@@ -90,8 +90,17 @@ namespace hiptensor
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
-            auto alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
-            auto betaF = hiptensor::readVal<float>(beta, HipDataType_v<typename Traits::EDataT>);
+            auto alphaF = 0.0f;
+            auto betaF = 0.0f; 
+
+            if(alpha != nullptr)
+            {
+                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+            }
+            if(beta != nullptr)
+            {
+                betaF = hiptensor::readVal<float>(beta, HipDataType_v<typename Traits::EDataT>);
+            }
 
             // Initialize the argument pointer
             Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
@@ -187,7 +196,12 @@ namespace hiptensor
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
-            auto alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+            auto alphaF = 0.0f;
+            
+            if(alpha != nullptr)
+            {
+                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+            }
 
             // Initialize the argument pointer
             Base::mArgPtr
