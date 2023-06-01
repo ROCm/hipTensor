@@ -52,6 +52,28 @@ namespace hiptensor
                                       std::vector<std::size_t> const&          e_ms_ns_strides,
                                       const uint64_t                           workspaceSize);
 
+    template <typename A, typename B, typename C, typename D, ContractionOpId_t ContractionOp>
+    struct ActorCriticSelection
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         PerfMetrics*                                            winnerMetrics,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize);
+    };
+
     hiptensorStatus_t
         actorCriticModel(ContractionSolution**                                   winner,
                          PerfMetrics*                                            winnerMetrics,
