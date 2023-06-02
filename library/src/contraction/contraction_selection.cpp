@@ -153,6 +153,356 @@ namespace hiptensor
         }
     }
 
+    template <>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         PerfMetrics*                                            winnerMetrics,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            return HIPTENSOR_STATUS_SUCCESS;
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         PerfMetrics*                                            winnerMetrics,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            return HIPTENSOR_STATUS_SUCCESS;
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         PerfMetrics*                                            winnerMetrics,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            return HIPTENSOR_STATUS_SUCCESS;
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         PerfMetrics*                                            winnerMetrics,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+
+            if(d6 <= 28)
+            {
+                if(d6 <= 8)
+                {
+                    unique_id = 4781938049531404654;
+                }
+                else
+                {
+                    if(d5 <= 32)
+                    {
+                        if(d5 <= 24)
+                        {
+                            unique_id = 4781938049531404654;
+                        }
+                        else
+                        {
+                            if(d6 <= 17)
+                            {
+                                unique_id = 4781938049531404654;
+                            }
+                            else
+                            {
+                                if(d2 <= 369)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 16334338346691940719;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(d4 <= 406)
+                        {
+                            if(d5 <= 52)
+                            {
+                                if(d6 <= 16)
+                                {
+                                    unique_id = 4781938049531404654;
+                                }
+                                else
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                            }
+                            else
+                            {
+                                unique_id = 5897150915348629714;
+                            }
+                        }
+                        else
+                        {
+                            if(d5 <= 56)
+                            {
+                                if(d6 <= 16)
+                                {
+                                    unique_id = 4781938049531404654;
+                                }
+                                else
+                                {
+                                    unique_id = 16334338346691940719;
+                                }
+                            }
+                            else
+                            {
+                                if(d1 <= 457)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 10972102817010133142;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(d5 <= 12)
+                {
+                    if(d5 <= 8)
+                    {
+                        if(d3 <= 491)
+                        {
+                            unique_id = 4781938049531404654;
+                        }
+                        else
+                        {
+                            unique_id = 4781938049531404654;
+                        }
+                    }
+                    else
+                    {
+                        if(d6 <= 56)
+                        {
+                            if(d3 <= 493)
+                            {
+                                unique_id = 4781938049531404654;
+                            }
+                            else
+                            {
+                                if(d1 <= 282)
+                                {
+                                    unique_id = 4781938049531404654;
+                                }
+                                else
+                                {
+                                    unique_id = 16334338346691940719;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(d2 <= 274)
+                            {
+                                unique_id = 5897150915348629714;
+                            }
+                            else
+                            {
+                                if(d4 <= 299)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 16334338346691940719;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if(d6 <= 56)
+                    {
+                        if(d5 <= 50)
+                        {
+                            if(d2 <= 362)
+                            {
+                                unique_id = 5897150915348629714;
+                            }
+                            else
+                            {
+                                if(d4 <= 320)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 16334338346691940719;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(d4 <= 401)
+                            {
+                                if(d6 <= 46)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 10972102817010133142;
+                                }
+                            }
+                            else
+                            {
+                                if(d2 <= 77)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 10972102817010133142;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(d2 <= 302)
+                        {
+                            if(d5 <= 46)
+                            {
+                                if(d1 <= 457)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 10972102817010133142;
+                                }
+                            }
+                            else
+                            {
+                                if(d1 <= 115)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 10972102817010133142;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(d1 <= 43)
+                            {
+                                if(d1 <= 19)
+                                {
+                                    unique_id = 5897150915348629714;
+                                }
+                                else
+                                {
+                                    unique_id = 10972102817010133142;
+                                }
+                            }
+                            else
+                            {
+                                unique_id = 10972102817010133142;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
     hiptensorStatus_t
         actorCriticModel(ContractionSolution**                                   winner,
                          PerfMetrics*                                            winnerMetrics,
@@ -171,257 +521,92 @@ namespace hiptensor
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          const uint64_t                                          workspaceSize)
     {
-
-        int d1 = a_ms_ks_lengths[0];
-        int d2 = a_ms_ks_lengths[1];
-        int d3 = b_ns_ks_lengths[0];
-        int d4 = b_ns_ks_lengths[1];
-        int d5 = a_ms_ks_lengths[2];
-        int d6 = a_ms_ks_lengths[3];
-
-        size_t unique_id = 0;
-
-        if(d6 <= 28)
+        if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F)
         {
-            if(d6 <= 8)
-            {
-                unique_id = 4781938049531404654;
-            }
-            else
-            {
-                if(d5 <= 32)
-                {
-                    if(d5 <= 24)
-                    {
-                        unique_id = 4781938049531404654;
-                    }
-                    else
-                    {
-                        if(d6 <= 17)
-                        {
-                            unique_id = 4781938049531404654;
-                        }
-                        else
-                        {
-                            if(d2 <= 369)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 16334338346691940719;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if(d4 <= 406)
-                    {
-                        if(d5 <= 52)
-                        {
-                            if(d6 <= 16)
-                            {
-                                unique_id = 4781938049531404654;
-                            }
-                            else
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                        }
-                        else
-                        {
-                            unique_id = 5897150915348629714;
-                        }
-                    }
-                    else
-                    {
-                        if(d5 <= 56)
-                        {
-                            if(d6 <= 16)
-                            {
-                                unique_id = 4781938049531404654;
-                            }
-                            else
-                            {
-                                unique_id = 16334338346691940719;
-                            }
-                        }
-                        else
-                        {
-                            if(d1 <= 457)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 10972102817010133142;
-                            }
-                        }
-                    }
-                }
-            }
+            return ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE>::
+                selectWinner(winner,
+                             winnerMetrics,
+                             candidates,
+                             typeA,
+                             a_ms_ks_lengths,
+                             a_ms_ks_strides,
+                             typeB,
+                             b_ns_ks_lengths,
+                             b_ns_ks_strides,
+                             typeD,
+                             d_ms_ns_lengths,
+                             d_ms_ns_strides,
+                             typeE,
+                             e_ms_ns_lengths,
+                             e_ms_ns_strides,
+                             workspaceSize);
         }
-        else
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F
+                && typeE == HIP_R_32F)
         {
-            if(d5 <= 12)
-            {
-                if(d5 <= 8)
-                {
-                    if(d3 <= 491)
-                    {
-                        unique_id = 4781938049531404654;
-                    }
-                    else
-                    {
-                        unique_id = 4781938049531404654;
-                    }
-                }
-                else
-                {
-                    if(d6 <= 56)
-                    {
-                        if(d3 <= 493)
-                        {
-                            unique_id = 4781938049531404654;
-                        }
-                        else
-                        {
-                            if(d1 <= 282)
-                            {
-                                unique_id = 4781938049531404654;
-                            }
-                            else
-                            {
-                                unique_id = 16334338346691940719;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(d2 <= 274)
-                        {
-                            unique_id = 5897150915348629714;
-                        }
-                        else
-                        {
-                            if(d4 <= 299)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 16334338346691940719;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if(d6 <= 56)
-                {
-                    if(d5 <= 50)
-                    {
-                        if(d2 <= 362)
-                        {
-                            unique_id = 5897150915348629714;
-                        }
-                        else
-                        {
-                            if(d4 <= 320)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 16334338346691940719;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(d4 <= 401)
-                        {
-                            if(d6 <= 46)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 10972102817010133142;
-                            }
-                        }
-                        else
-                        {
-                            if(d2 <= 77)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 10972102817010133142;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if(d2 <= 302)
-                    {
-                        if(d5 <= 46)
-                        {
-                            if(d1 <= 457)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 10972102817010133142;
-                            }
-                        }
-                        else
-                        {
-                            if(d1 <= 115)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 10972102817010133142;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(d1 <= 43)
-                        {
-                            if(d1 <= 19)
-                            {
-                                unique_id = 5897150915348629714;
-                            }
-                            else
-                            {
-                                unique_id = 10972102817010133142;
-                            }
-                        }
-                        else
-                        {
-                            unique_id = 10972102817010133142;
-                        }
-                    }
-                }
-            }
+            return ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR>::
+                selectWinner(winner,
+                             winnerMetrics,
+                             candidates,
+                             typeA,
+                             a_ms_ks_lengths,
+                             a_ms_ks_strides,
+                             typeB,
+                             b_ns_ks_lengths,
+                             b_ns_ks_strides,
+                             typeD,
+                             d_ms_ns_lengths,
+                             d_ms_ns_strides,
+                             typeE,
+                             e_ms_ns_lengths,
+                             e_ms_ns_strides,
+                             workspaceSize);
         }
-
-        if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == NONE_TYPE
+                && typeE == HIP_R_64F)
         {
-            *winner = candidate->second;
-            return HIPTENSOR_STATUS_SUCCESS;
+            return ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE>::
+                selectWinner(winner,
+                             winnerMetrics,
+                             candidates,
+                             typeA,
+                             a_ms_ks_lengths,
+                             a_ms_ks_strides,
+                             typeB,
+                             b_ns_ks_lengths,
+                             b_ns_ks_strides,
+                             typeD,
+                             d_ms_ns_lengths,
+                             d_ms_ns_strides,
+                             typeE,
+                             e_ms_ns_lengths,
+                             e_ms_ns_strides,
+                             workspaceSize);
         }
-        else
+        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F
+                && typeE == HIP_R_64F)
         {
-            return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            return ActorCriticSelection<double,
+                                        double,
+                                        double,
+                                        double,
+                                        ContractionOpId_t::BILINEAR>::selectWinner(winner,
+                                                                                   winnerMetrics,
+                                                                                   candidates,
+                                                                                   typeA,
+                                                                                   a_ms_ks_lengths,
+                                                                                   a_ms_ks_strides,
+                                                                                   typeB,
+                                                                                   b_ns_ks_lengths,
+                                                                                   b_ns_ks_strides,
+                                                                                   typeD,
+                                                                                   d_ms_ns_lengths,
+                                                                                   d_ms_ns_strides,
+                                                                                   typeE,
+                                                                                   e_ms_ns_lengths,
+                                                                                   e_ms_ns_strides,
+                                                                                   workspaceSize);
         }
+        return HIPTENSOR_STATUS_EXECUTION_FAILED;
     }
 }
