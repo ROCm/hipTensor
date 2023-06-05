@@ -79,8 +79,6 @@ typedef enum
 
 /**
  * \brief Encodes hiptensor's compute type
- * \note Only the HIPTENSOR_COMPUTE_32F compute is supported.
- * \todo Needs to add support for the other computing types.
  *
  */
 typedef enum
@@ -102,8 +100,6 @@ typedef enum
 
 /**
  * \brief This enum captures the operations supported by the hiptensor library.
- * \todo Other operations supported in the cuTENSOR needs to be adapted in the
- * hiptensor library.
  */
 typedef enum
 {
@@ -115,9 +111,7 @@ typedef enum
  * \brief Allows users to specify the algorithm to be used for performing the
  * tensor contraction. \details This enum gives users finer control over which
  * algorithm should be executed by hiptensorContraction(); values >= 0
- * correspond to certain sub-algorithms of GETT. \note Only the default
- * algorithm(HIPTENSOR_ALGO_DEFAULT) is supported by the hiptensor. \todo need
- * to add support for other algorithm in the hiptensor future releases.
+ * correspond to certain sub-algorithms of GETT.
  */
 typedef enum
 {
@@ -200,8 +194,6 @@ struct hiptensorContractionDescriptor_t
 
 /**
  * \brief Opaque structure representing a candidate.
- * \todo  Needs to adapt the structure as per the GPU devices in the hiptensor
- * future releases.
  *
  */
 struct hiptensorContractionFind_t
