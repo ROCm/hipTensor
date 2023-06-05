@@ -1,5 +1,3 @@
-# Style file for MLSE Libraries based on the modified rocBLAS style
-
 # Common settings
 BasedOnStyle:  WebKit
 TabWidth:        4

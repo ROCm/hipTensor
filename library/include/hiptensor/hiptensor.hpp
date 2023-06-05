@@ -281,14 +281,6 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
  * +---------------+---------------+---------------+-------------------------+
  * \endverbatim
 
- * \par[Example]
- * See
- https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_bilinear_contraction_xdl_fp32.cpp
- \n
- *
- https://github.com/AMD-HPC/hiptensor/blob/develop/test/01_contraction/test_scale_contraction_xdl_fp32.cpp
- * for the concrete examples.
- *
  * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
  * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or pointers are not
  initialized.

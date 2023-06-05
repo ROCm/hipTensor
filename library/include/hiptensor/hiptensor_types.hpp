@@ -85,14 +85,15 @@ typedef enum
  */
 typedef enum
 {
-    HIPTENSOR_COMPUTE_16F = (1U << 0U), ///< floating-point: 5-bit exponent and
-    ///< 10-bit mantissa (aka half)
-    HIPTENSOR_COMPUTE_16BF = (1U << 10U), ///< floating-point: 8-bit exponent and
-    ///< 7-bit mantissa (aka bfloat)
     HIPTENSOR_COMPUTE_32F = (1U << 2U), ///< floating-point: 8-bit exponent and
     ///< 23-bit mantissa (aka float)
     HIPTENSOR_COMPUTE_64F = (1U << 4U), ///< floating-point: 11-bit exponent and
     ///< 52-bit mantissa (aka double)
+    // Following types to be added (TBA)
+    HIPTENSOR_COMPUTE_16F = (1U << 0U), ///< floating-point: 5-bit exponent and
+    ///< 10-bit mantissa (aka half)
+    HIPTENSOR_COMPUTE_16BF = (1U << 10U), ///< floating-point: 8-bit exponent and
+    ///< 7-bit mantissa (aka bfloat)
     HIPTENSOR_COMPUTE_8U  = (1U << 6U), ///< 8-bit unsigned integer
     HIPTENSOR_COMPUTE_8I  = (1U << 8U), ///< 8-bit signed integer
     HIPTENSOR_COMPUTE_32U = (1U << 7U), ///< 32-bit unsigned integer
@@ -120,13 +121,14 @@ typedef enum
  */
 typedef enum
 {
-    HIPTENSOR_ALGO_ACTOR_CRITIC    = -8, ///< Uses novel actor-critic selection model
+    HIPTENSOR_ALGO_ACTOR_CRITIC = -8, ///< Uses novel actor-critic selection model
+    HIPTENSOR_ALGO_DEFAULT      = -1, ///< Lets the internal heuristic choose
+    // Following Algo types to be added (TBA)
     HIPTENSOR_ALGO_DEFAULT_PATIENT = -6, ///< Uses the more accurate but also more
     ///< time-consuming performance model
     HIPTENSOR_ALGO_GETT  = -4, ///< Choose the GETT algorithm
     HIPTENSOR_ALGO_TGETT = -3, ///< Transpose (A or B) + GETT
     HIPTENSOR_ALGO_TTGT  = -2, ///< Transpose-Transpose-GEMM-Transpose (requires additional memory)
-    HIPTENSOR_ALGO_DEFAULT = -1, ///< Lets the internal heuristic choose
 } hiptensorAlgo_t;
 
 /**
