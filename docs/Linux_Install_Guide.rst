@@ -45,7 +45,7 @@ AMD CDNA class GPU featuring matrix core support: gfx908, gfx90a as 'gfx9'
 Download hipTensor
 ^^^^^^^^^^^^^^^^^^
 
-The hipTensor source code is available at the `hipTensor github page <https://github.com/ROCmSoftwarePlatform/hipTensor>`_. hipTensor has a minimum ROCm support version 5.4.
+The hipTensor source code is available at the `hipTensor github page <https://github.com/ROCmSoftwarePlatform/hipTensor>`_. hipTensor has a minimum ROCm support version 5.7.
 Check the ROCm Version on your system. For Ubuntu use
 
 ::
@@ -186,6 +186,6 @@ Run the steps below to build documentation locally.
 
     cd _build/latex
 
-    pdflatex hiptensor.tex 
+    pdflatex hiptensor.tex
 
 Generates hiptensor.pdf here
