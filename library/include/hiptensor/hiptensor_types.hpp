@@ -39,7 +39,7 @@
 
 /**
  * \brief hipTensor status type
- * \details The type is used to indcate the status of hipTensor library functions.
+ * \details The type is used to indicate the status of hipTensor library functions.
  * It can have the following values.
  */
 typedef enum
@@ -48,7 +48,7 @@ typedef enum
     HIPTENSOR_STATUS_SUCCESS = 0,
     /** The handle was not initialized.*/
     HIPTENSOR_STATUS_NOT_INITIALIZED = 1,
-    /** Resource allocation failed inside the hiptensor library.*/
+    /** Resource allocation failed inside the hipTensor library.*/
     HIPTENSOR_STATUS_ALLOC_FAILED = 3,
     /** Invalid value or parameter was passed to the function (indicates an
      user error).*/
@@ -93,7 +93,7 @@ typedef enum
 } hiptensorComputeType_t;
 
 /**
- * \brief This enum captures the operations supported by the hiptensor library.
+ * \brief This enum captures the operations supported by the hipTensor library.
  */
 typedef enum
 {
@@ -140,7 +140,7 @@ typedef enum
 } hiptensorLogLevel_t;
 
 /**
- * \brief hiptensor's library context contained in a opaque handle
+ * \brief hipTensor's library context contained in a opaque handle
  */
 struct hiptensorHandle_t
 {
