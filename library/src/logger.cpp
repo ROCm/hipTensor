@@ -166,9 +166,9 @@ namespace hiptensor
             // Init message
             char buff[2048];
             sprintf(buff,
-                    "[%s][hipTensor][%d][%s][%s] %s\n",
-                    timeStamp(),
+                    "[%d][%s][hipTensor][%s][%s] %s\n",
                     appPid(),
+                    timeStamp(),
                     contextString((LogLevel_t)context),
                     apiFuncName,
                     message);
