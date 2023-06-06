@@ -33,15 +33,15 @@
 #define HIPTENSOR_VERSION_HPP_
 
 // clang-format off
-#define HIPTENSOR_VERSION_MAJOR       @hiptensor_VERSION_MAJOR@
-#define HIPTENSOR_VERSION_MINOR       @hiptensor_VERSION_MINOR@
-#define HIPTENSOR_VERSION_PATCH       @hiptensor_VERSION_PATCH@
+#define HIPTENSOR_MAJOR_VERSION       @hiptensor_VERSION_MAJOR@
+#define HIPTENSOR_MINOR_VERSION       @hiptensor_VERSION_MINOR@
+#define HIPTENSOR_PATCH_VERSION       @hiptensor_VERSION_PATCH@
 // clang-format on
 
 inline size_t hiptensorGetVersion()
 {
-    return HIPTENSOR_VERSION_MAJOR * 10000 + HIPTENSOR_VERSION_MINOR * 100
-           + HIPTENSOR_VERSION_PATCH;
+    return HIPTENSOR_MAJOR_VERSION * 10000 + HIPTENSOR_MINOR_VERSION * 100
+           + HIPTENSOR_PATCH_VERSION;
 }
 
 #endif // HIPTENSOR_VERSION_HPP_
