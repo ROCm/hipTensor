@@ -32,17 +32,15 @@
 /**
  * \brief Allocates an instance of hiptensorHandle_t on the heap and updates the handle pointer
  *
- * \details The device associated with a particular hiptensor handle is assumed
- * to remain unchanged after the hiptensorCreate() call. In order for the
- * hiptensor library to use a different device, the application must set the new
- * device to be used by calling hipInit(0) and then create another hiptensor
+ * \details Creates hipTensor handle for the associated device.
+ * In order for the  hipTensor library to use a different device, set the new
+ * device to be used by calling hipInit(0) and then create another hipTensor
  * handle, which will be associated with the new device, by calling
  * hiptensorCreate().
  *
  * \param[out] handle Pointer to hiptensorHandle_t pointer
  *
  * \returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
- * \remarks blocking, no reentrant, and thread-safe
  */
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle);
@@ -53,7 +51,6 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle);
  * \param[out] handle Pointer to hiptensorHandle_t
  *
  * \returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
- * \remarks blocking, no reentrant, and thread-safe
  */
 
 hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle);
@@ -61,22 +58,17 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle);
 /**
  * \brief Initializes a tensor descriptor
  *
- * \param[in] handle Opaque handle holding hiptensor's library context.
- * \param[out] desc Pointer to the address where the allocated tensor descriptor
- * object is stored. \param[in] numModes Number of modes/dimensions. \param[in]
- * lens Extent of each mode(lengths) (must be larger than zero). \param[in]
- * strides stride[i] denotes the displacement (stride) between two consecutive
- * elements in the ith-mode. If stride is NULL, a packed generalized
- * column-major memory layout is assumed (i.e., the strides increase
- * monotonically from left to right) \param[in] dataType Data type of the stored
- * entries. \param[in] unaryOp Unary operator that will be applied to each
- * element of the corresponding tensor in a lazy fashion (i.e., the algorithm
- * uses this tensor as its operand only once). The original data of this tensor
- * remains unchanged. \pre extent and stride arrays must each contain at least
- * sizeof(int64_t) * numModes bytes \retval HIPTENSOR_STATUS_SUCCESS The
- * operation completed successfully. \retval HIPTENSOR_STATUS_NOT_INITIALIZED if
- * the handle is not initialized. \remarks non-blocking, no reentrant, and
- * thread-safe
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[out] desc Pointer to the allocated tensor descriptor object.
+ * \param[in] numModes Number of modes.
+ * \param[in] lens Extent of each mode(lengths) (must be larger than zero).
+ * \param[in] strides stride[i] denotes the displacement (stride) between two consecutive
+ * elements in the ith-mode. If stride is NULL, generalized packed column-major memory
+ * layout is assumed (i.e., the strides increase monotonically from left to right).
+ * \param[in] dataType Data type of the stored entries.
+ * \param[in] unaryOp Unary operator that will be applied to the tensor
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
  */
 
 hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
@@ -95,15 +87,15 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
 const char* hiptensorGetErrorString(const hiptensorStatus_t error);
 
 /**
- * \brief Computes the minimal alignment requirement for a given pointer and
- * descriptor \param[in] handle Opaque handle holding hiptensor's library
- * context. \param[in] ptr Raw pointer to the data of the respective tensor.
- * \param[in] desc Tensor descriptor for ptr.
+ * \brief Computes the alignment requirement for a given pointer and descriptor.
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[in] ptr Pointer to the respective tensor data.
+ * \param[in] desc Tensor descriptor for ptr data.
  * \param[out] alignmentRequirement Largest alignment requirement that ptr can
- * fulfill (in bytes). \retval HIPTENSOR_STATUS_SUCCESS The operation completed
- * successfully. \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not
- * initialized. \retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported
- * datatype is passed.
+ * fulfill (in bytes).
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported parameter is passed.
  */
 
 hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
@@ -112,48 +104,27 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
                                                    uint32_t* alignmentRequirement);
 
 /**
- * \brief Describes the tensor contraction problem of the form: \f[ D = \alpha
- * \mathcal{A}  \mathcal{B} + \beta \mathcal{C} \f]
+ * \brief Initializes a contraction descriptor for the tensor contraction problem.
  *
- * \details \f[ \mathcal{D}_{{modes}_\mathcal{D}} \gets \alpha
- * \mathcal{A}_{{modes}_\mathcal{A}} B_{{modes}_\mathcal{B}} + \beta
- * \mathcal{C}_{{modes}_\mathcal{C}} \f].
- *
- * \param[in] handle Opaque handle holding hiptensor's library context.
- * \param[out] desc This opaque struct gets filled with the information that
- * encodes the tensor contraction problem. \param[in] descA A descriptor that
- * holds the information about the data type, modes and strides of A. \param[in]
- * modeA Array with 'nmodeA' entries that represent the modes of A. The modeA[i]
- * corresponds to extent[i] and stride[i] w.r.t. the arguments provided to
- * hiptensorInitTensorDescriptor. \param[in] alignmentRequirementA Alignment
- * that hiptensor may require for A's pointer (in bytes); you can use the helper
- * function \ref hiptensorGetAlignmentRequirement to determine the best value
- * for a given pointer. \param[in] descB The B descriptor that holds information
- * about the data type, modes, and strides of B. \param[in] modeB Array with
- * 'nmodeB' entries that represent the modes of B. The modeB[i] corresponds to
- * extent[i] and stride[i] w.r.t. the arguments provided to
- * hiptensorInitTensorDescriptor. \param[in] alignmentRequirementB Alignment
- * that hiptensor may require for B's pointer (in bytes); you can use the helper
- * function \ref hiptensorGetAlignmentRequirement to determine the best value
- * for a given pointer. \param[in] modeC Array with 'nmodeC' entries that
- * represent the modes of C. The modeC[i] corresponds to extent[i] and stride[i]
- * w.r.t. the arguments provided to hiptensorInitTensorDescriptor. \param[in]
- * descC The C descriptor that holds information about the data type, modes, and
- * strides of C. \param[in] alignmentRequirementC Alignment that hiptensor may
- * require for C's pointer (in bytes); you can use the helper function \ref
- * hiptensorGetAlignmentRequirement to determine the best value for a given
- * pointer. \param[in] modeD Array with 'nmodeD' entries that represent the
- * modes of D (must be identical to modeC for now). The modeD[i] corresponds to
- * extent[i] and stride[i] w.r.t. the arguments provided to
- * hiptensorInitTensorDescriptor. \param[in] descD The D descriptor that holds
- * information about the data type, modes, and strides of D (must be identical
- * to descC for now). \param[in] alignmentRequirementD Alignment that hiptensor
- * may require for D's pointer (in bytes); you can use the helper function \ref
- * hiptensorGetAlignmentRequirement to determine the best value for a given
- * pointer. \param[in] typeCompute Datatype of for the intermediate computation
- * of typeCompute T = A * B. \retval HIPTENSOR_STATUS_SUCCESS The operation
- * completed successfully without error \retval HIPTENSOR_STATUS_NOT_INITIALIZED
- * if the handle or tensor descriptors are not initialized.
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[out] desc Tensor contraction problem descriptor.
+ * \param[in] descA A descriptor that holds information about tensor A.
+ * \param[in] modeA Array with 'nmodeA' entries that represent the modes of A.
+ * \param[in] alignmentRequirementA Alignment reqirement for A's pointer (in bytes);
+ * \param[in] descB A descriptor that holds information about tensor B.
+ * \param[in] modeB Array with 'nmodeB' entries that represent the modes of B.
+ * \param[in] alignmentRequirementB Alignment reqirement for B's pointer (in bytes);
+ * \param[in] modeC Array with 'nmodeC' entries that represent the modes of C.
+ * \param[in] descC A descriptor that holds information about tensor C.
+ * \param[in] alignmentRequirementC Alignment requirement for C's pointer (in bytes);
+ * \param[in] modeD Array with 'nmodeD' entries that represent the modes of D
+ * (must be identical to modeC).
+ * \param[in] descD A descriptor that holds information about tensor D
+ * (must be identical to descC).
+ * \param[in] alignmentRequirementD Alignment requirement for D's pointer (in bytes);
+ * \param[in] typeCompute Datatype for the intermediate computation  T = A * B.
+ * \retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
  */
 
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
@@ -173,23 +144,19 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                                      hiptensorComputeType_t typeCompute);
 
 /**
- * \brief Limits the search space of viable candidates (a.k.a. algorithms)
+ * \brief Narrows down the candidates for the contraction problem.
  *
  * \details This function gives the user finer control over the candidates that
  * the subsequent call to \ref hiptensorInitContractionPlan is allowed to
- * evaluate. Currently, the backend provides only one set of algorithms. Need to
- * adapt for the future if multiple set of algorithms (based on different
- * accelerators) are available.
+ * evaluate. Currently, the backend provides few set of algorithms(DEFAULT,
+ * ACTOR_CRITIC).
  *
- *
- * \param[in] handle Opaque handle holding hiptensor's library context.
- * \param[out] find
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[out] find Narrowed set of candidates for the contraction problem.
  * \param[in] algo Allows users to select a specific algorithm.
- * HIPTENSOR_ALGO_DEFAULT only supprted by the CK backend. \retval
- * HIPTENSOR_STATUS_SUCCESS The operation completed successfully. \retval
- * HIPTENSOR_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
- * HIPTENSOR_STATUS_NOT_SUPPORTED is returned. \retval
- * HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
  */
 
 hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
@@ -197,14 +164,14 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
                                                const hiptensorAlgo_t       algo);
 
 /**
- * \brief Determines the required workspaceSize for a given tensor contraction
+ * \brief Computes the size of workspace for a given tensor contraction
  *
  * \param[in] handle Opaque handle holding hipTensor's library context.
- * \param[in] desc This opaque struct encodes the tensor contraction problem.
- * \param[in] find This opaque struct restricts the search space of viable candidates.
- * \param[in] pref This parameter influences the size of the workspace.
- * \param[out] workspaceSize The workspace size (in bytes) that is required for the given tensor contraction.
- * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \param[in] desc Tensor contraction descriptor.
+ * \param[in] find Narrowed set of candidates for the contraction problem.
+ * \param[in] pref Preference to choose the workspace size.
+ * \param[out] workspaceSize Size of the workspace (in bytes).
+ * \retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
  * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
  * \retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
  */
@@ -215,23 +182,20 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
                                                        uint64_t* workspaceSize);
 
 /**
- * \brief Initializes the contraction plan for a given tensor contraction
- * problem
+ * \brief Initializes the contraction plan for a given tensor contraction problem
  *
- * \details This function applies hiptensor's heuristic to select a candidate
- * for a given tensor contraction problem (encoded by desc). The resulting plan
- * can be reused multiple times as long as the tensor contraction problem
- * remains the same.
+ * \details This function creates a contraction plan for the problem by applying
+ * hipTensor's heuristics to select a candidate. The creaated plan can be reused
+ * multiple times for the same tensor contraction problem. The plan is created for
+ * the active HIP device.
  *
- * The plan is created for the active HIP device.
- *
- * \param[in] handle Opaque handle holding hiptensor's library context.
- * \param[out] plan Opaque handle holding the contraction execution plan (i.e.,
- * the candidate that will be executed as well as all it's runtime parameters
- * for the given tensor contraction problem). \param[in] desc This opaque struct
- * encodes the given tensor contraction problem. \param[in] find (unused) This
- * opaque struct is used to restrict the search space of viable candidates.
- * \param[in] workspaceSize (unused) Available workspace size (in bytes).
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[out] plan Opaque handle holding the contraction plan (i.e.,
+ * the algorithm that will be executed, its runtime parameters for the given
+ * tensor contraction problem).
+ * \param[in] desc Tensor contraction descriptor.
+ * \param[in] find Narrows down the candidates for the contraction problem.
+ * \param[in] workspaceSize Available workspace size (in bytes).
  *
  * \retval HIPTENSOR_STATUS_SUCCESS If a viable candidate has been found.
  * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find or desc is not
@@ -244,32 +208,23 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                                const hiptensorContractionFind_t*       find,
                                                const uint64_t workspaceSize);
 /**
- * \brief This routine computes the tensor contraction \f[ D = alpha * A * B +
- beta * C \f]
+ * \brief Computes the tensor contraction \f[ D = alpha * A * B + beta * C \f]
  *
- * \details \f[ \mathcal{D}_{{modes}_\mathcal{D}} \gets \alpha *
- \mathcal{A}_{{modes}_\mathcal{A}} B_{{modes}_\mathcal{B}} + \beta
- \mathcal{C}_{{modes}_\mathcal{C}} \f]
- *
- * The currently active HIP device must match the HIP device that was active at
- the time at which the plan was created.
- * \param[in] handle Opaque handle holding hiptensor's library context.
- * \param[in] plan Opaque handle holding the contraction execution plan.
- * \param[in] alpha Scaling for A*B. Its data type is determined by
- 'typeCompute'. Pointer to the host memory.
- * \param[in] A Pointer to the data corresponding to A in device memory. Pointer
- to the GPU-accessible memory.
- * \param[in] B Pointer to the data corresponding to B. Pointer to the
- GPU-accessible memory.
- * \param[in] beta Scaling for C. Its data type is determined by 'typeCompute'.
- Pointer to the host memory.
- * \param[in] C Pointer to the data corresponding to C. Pointer to the
- GPU-accessible memory.
- * \param[out] D Pointer to the data corresponding to D. Pointer to the
- GPU-accessible memory.
- * \param[out] workspace (unused in this context)
- * \param[in] workspaceSize (unused in this context)
- * \param[in] stream The HIP stream in which all the computation is performed.
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * HIP Device associated with the handle must be same/active at the time,0
+ * the plan was created.
+ * \param[in] plan Opaque handle holding the contraction plan (i.e.,
+ * the algorithm that will be executed, its runtime parameters for the given
+ * tensor contraction problem).
+ * \param[in] alpha Scaling parameter for A*B of data type 'typeCompute'.
+ * \param[in] A Pointer to A's data in device memory.
+ * \param[in] B Pointer to B's data in device memory.
+ * \param[in] beta Scaling parameter for C of data type 'typeCompute'.
+ * \param[in] C Pointer to C's data in device memory.
+ * \param[out] D Pointer to D's data in device memory.
+ * \param[out] workspace Workspace pointer in device memory
+ * \param[in] workspaceSize Available workspace size.
+ * \param[in] stream HIP stream to perform all operations.
  *
  * Supported data-type combinations are:
  *
@@ -279,9 +234,11 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
  * +===============+===============+===============+=========================+
  * |    HIP_R_32F  |    HIP_R_32F  |   HIP_R_32F   |    HIPENSOR_COMPUTE_32F |
  * +---------------+---------------+---------------+-------------------------+
+ * |    HIP_R_64F  |    HIP_R_64F  |   HIP_R_64F   |    HIPENSOR_COMPUTE_64F |
+ * +---------------+---------------+---------------+-------------------------+
  * \endverbatim
 
- * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
  * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or pointers are not
  initialized.
  * \retval HIPTENSOR_STATUS_CK_ERROR if some unknown composable_kernel (CK)
