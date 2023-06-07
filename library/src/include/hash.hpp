@@ -50,7 +50,7 @@ namespace hiptensor
         template <typename T, typename... Ts>
         void operator()(std::size_t& seed, T const& t, Ts const&... ts)
         {
-            seed ^= std::hash<T>{}(t) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            seed ^= std::hash<T>{}(t) + 0x9e3779b9 + (seed * 64) + (seed / 4);
             if constexpr(sizeof...(ts) > 0)
             {
                 operator()(seed, ts...);
