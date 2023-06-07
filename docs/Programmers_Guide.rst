@@ -31,54 +31,61 @@ Internal include files for:
 - Utility Code
 - Generate Tensor Utility 
 
-library/include/hiptensor/internal/ck
-''''''''''''''''''''''''''''''''''''''
+library/src/
+''''''''''''
 
-Contains hipTensor core composable kernel header functions
+Contains logger, device and performance functions.
 
-library/include/hiptensor/internal/ck
-''''''''''''''''''''''''''''''''''''''
+library/src/contraction/
+''''''''''''''''''''''''
+
+Contains hipTensor core composable kerneln header functions and contraction Initialization functions.
+
+library/src/contraction/device
+''''''''''''''''''''''''''''''
 
 Contains hipTensor Bilinear and Scale instance functions
 
-
-library/src/contraction
-'''''''''''''''''''''''
-
-Contains hipTensor Contraction Initialization functions
-
-
-library/src/core
-''''''''''''''''
-
-Contains hipTensor core composable kernel attribute definitions
-
-
 The `samples` directory
 ^^^^^^^^^^^^^^^^^^^^^^^
-01_contraction/test_bilinear_contraction_xdl_fp32.cpp
-'''''''''''''''''''''''''''''''''''''''''''''''''''''
+01_contraction/simple_bilinear_contraction_f32.cpp
+''''''''''''''''''''''''''''''''''''''''''''''''''
 
 sample code for calling bilinear contraction for fp32 input, output and compute types
 
 
-01_contraction/test_scale_contraction_xdl_fp32.cpp
-''''''''''''''''''''''''''''''''''''''''''''''''''
+01_contraction/simple_scale_contraction_f32.cpp
+'''''''''''''''''''''''''''''''''''''''''''''''
 
 sample code for calling scale contraction for fp32 input, output and compute types
 
 The `test` directory
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-01_contraction/test_bilinear_contraction_xdl_fp32
-'''''''''''''''''''''''''''''''''''''''''''''''''
+00_unit/logger
+''''''''''''''
 
-Test code for testing the bilinear contraction functionality and log metrics.
+Test code for testing logger API Functions of hipTensor
 
-01_contraction/test_scale_contraction_xdl_fp32
-''''''''''''''''''''''''''''''''''''''''''''''
+01_contraction/bilinear_contraction_f32
+'''''''''''''''''''''''''''''''''''''''
 
-Test code for testing the scale contraction functionality and log metrics.
+Test code for testing the bilinear contraction functionality and log metrics for F32 types.
+
+01_contraction/bilinear_contraction_f64
+'''''''''''''''''''''''''''''''''''''''
+
+Test code for testing the bilinear contraction functionality and log metrics for F64 types.
+
+01_contraction/scale_contraction_f32
+''''''''''''''''''''''''''''''''''''
+
+Test code for testing the scale contraction functionality and log metrics for F32 types.
+
+01_contraction/scale_contraction_f64
+''''''''''''''''''''''''''''''''''''
+
+Test code for testing the scale contraction functionality and log metrics for F64 types.
 
 Infrastructure
 ^^^^^^^^^^^^^^

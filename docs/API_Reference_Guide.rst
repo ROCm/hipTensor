@@ -32,11 +32,6 @@ hiptensorWorksizePreference_t
 
 .. doxygenenum::  hiptensorWorksizePreference_t
 
-hiptensorContractionOperation_t
--------------------------------
-
-.. doxygenenum::  hiptesnorContractionOperation_t
-
 hiptensorLogLevel_t
 -------------------------------
 
@@ -54,12 +49,6 @@ hiptensorTensorDescriptor_t
 .. doxygenstruct::   hiptensorTensorDescriptor_t
    :members:
 
-tensor_attr
------------
-
-.. doxygenstruct::  tensor_attr
-   :members:
-
 hiptensorContractionDescriptor_t
 --------------------------------
 
@@ -70,12 +59,6 @@ hiptensorContractionFind_t
 --------------------------
 
 .. doxygenstruct::  hiptensorContractionFind_t
-   :members:
-
-hiptensorContractionMetrics_t
------------------------------
-
-.. doxygenstruct::  hiptensorContractionMetrics_t
    :members:
 
 hiptensorContractionPlan_t
@@ -93,12 +76,12 @@ hiptensorGetVersion
 .. doxygenfunction::  hiptensorGetVersion
 
 hiptensorCreate
--------------
+---------------
 
 .. doxygenfunction::  hiptensorCreate
 
 hiptensorDestroy
--------------
+----------------
 
 .. doxygenfunction::  hiptensorDestroy
 
@@ -140,10 +123,10 @@ hiptensorContraction
 
 .. doxygenfunction::  hiptensorContraction
 
-hipTensorContractionGetWorkspaceSize
+hiptensorContractionGetWorkspaceSize
 ------------------------------------
 
-.. doxygenfunction::  hipTensorContractionGetWorkspaceSize
+.. doxygenfunction::  hiptensorContractionGetWorkspaceSize
 
 Logging Functions
 =================

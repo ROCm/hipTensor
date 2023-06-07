@@ -77,7 +77,7 @@ The user can build either
 * library + tests
 
 You only need (library) if you call hipTensor from your code.
-The client contains the test samples and benchmark code.
+The client contains the test and samples code.
 
 Below are the project options available to build hipTensor library with/without clients.
 
@@ -91,16 +91,16 @@ Below are the project options available to build hipTensor library with/without 
 +------------------------------+-------------------------------------+-------------------------------------------+
 |HIPTENSOR_BUILD_TESTS         |Build Tests                          |ON                                         |
 +------------------------------+-------------------------------------+-------------------------------------------+
-|HIPTENSOR_BUILD_SAMPLES       |Build Samples                        |OFF                                        |
+|HIPTENSOR_BUILD_SAMPLES       |Build Samples                        |ON                                         |
 +------------------------------+-------------------------------------+-------------------------------------------+
 
 
 Build only library
 ^^^^^^^^^^^^^^^^^^
 
-ROCm-cmake has a minimum version requirement 0.8.0 for ROCm 5.3.
+ROCm-cmake has a minimum version requirement 0.8.0 for ROCm 5.7.
 
-Minimum ROCm version support is 5.4.
+Minimum ROCm version support is 5.7.
 
 By default, the project is configured as Release mode.
 
@@ -144,8 +144,8 @@ The samples folder in <build_dir> contains executables in the table below.
 =================================== ===================================================================================
 executable name                     description
 =================================== ===================================================================================
-test_bilinear_contraction_xdl_fp32  bilinear contraction using hipTensor API for single-precision floating point types
-test_scale_contraction_xdl_fp32     scale contraction using hipTensor API for single-precision floating point types
+simple_contraction_bilinear_f32     bilinear contraction using hipTensor API for single-precision floating point types
+simple_contraction_scale_f32        scale contraction using hipTensor API for single-precision floating point types
 =================================== ===================================================================================
 
 
@@ -165,8 +165,11 @@ The tests in <build_dir> contains executables in the table below.
 ====================================== ===================================================================================
 executable name                        description
 ====================================== ===================================================================================
-test_bilinear_contraction_xdl_fp32     bilinear contraction using hipTensor API for single-precision floating point types
-test_scale_contraction_xdl_fp32        scale contraction using hipTensor API for single-precision floating point types
+logger_test                            Unit test to validate hipTensor Logger APIs
+scale_contraction_f32_test             scale contraction using hipTensor API for single-precision floating point types
+scale_contraction_f64_test             scale contraction using hipTensor API for double-precision floating point types
+bilinear_contraction_f32_test          bilinear contraction using hipTensor API for single-precision floating point types
+bilinear_contraction_f64_test          bilinear contraction using hipTensor API for double-precision floating point types
 ====================================== ===================================================================================
 
 Build library + Documentation
