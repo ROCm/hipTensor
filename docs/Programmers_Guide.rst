@@ -39,7 +39,7 @@ Contains logger, device and performance functions.
 library/src/contraction/
 ''''''''''''''''''''''''
 
-Contains hipTensor core composable kerneln header functions and contraction Initialization functions.
+Contains hipTensor core composable kernel header functions and contraction initialization functions.
 
 library/src/contraction/device
 ''''''''''''''''''''''''''''''

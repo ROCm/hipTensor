@@ -123,7 +123,7 @@ typedef enum
 
 /**
  * \brief This enum decides the logging context.
- * \details The logger output of certain contexts maybe contsrained to these levels.
+ * \details The logger output of certain contexts maybe constrained to these levels.
  */
 typedef enum
 {
