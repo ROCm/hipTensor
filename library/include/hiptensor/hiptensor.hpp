@@ -148,8 +148,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
  *
  * \details This function gives the user finer control over the candidates that
  * the subsequent call to \ref hiptensorInitContractionPlan is allowed to
- * evaluate. Currently, the backend provides few set of algorithms(DEFAULT,
- * ACTOR_CRITIC).
+ * evaluate. Currently, the backend provides few set of algorithms(DEFAULT).
  *
  * \param[in] handle Opaque handle holding hipTensor's library context.
  * \param[out] find Narrowed set of candidates for the contraction problem.
