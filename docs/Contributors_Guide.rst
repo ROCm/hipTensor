@@ -44,7 +44,6 @@ Interface
 ---------
 
 -  Library code should use C++17
--  Our minimum supported compiler is hipcc 4.4
 -  Avoid CamelCase
 -  This rule applies specifically to publicly visible APIs, but is also
    encouraged (not mandated) for internal code

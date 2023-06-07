@@ -60,7 +60,7 @@ __global__ static void
                 = maxDouble(localRelativeError[offset * threadIdx.x],
                             localRelativeError[offset * (threadIdx.x + i)]);
         }
-        __builtin_amdgcn_s_barrier();
+        __syncthreads();
     }
 }
 

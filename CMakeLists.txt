@@ -66,8 +66,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
-  option( HIPTENSOR_BUILD_DEV "Developer build mode" OFF )
-  option( HIPTENSOR_BUILD_DOCS "Build hiptensor documentation" OFF )
 endif()
 
 # Setup output paths
@@ -126,15 +124,8 @@ if(HIPTENSOR_BUILD_SAMPLES)
   add_subdirectory(samples)
 endif()
 
-# Configure docs build
-if(HIPTENSOR_BUILD_DOCS)
-  # Add the cmake folder so the FindSphinx module is found
-  set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-  add_subdirectory (docs)
-endif()
-
 # Versioning via rocm-cmake
-set ( VERSION_STRING "0.2.0" )
+set ( VERSION_STRING "1.0.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # configure a header file to pass the CMake version settings to the source
