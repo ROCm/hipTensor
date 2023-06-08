@@ -201,17 +201,17 @@ int main(int argc, char* argv[])
 
     for(int64_t i = 0; i < elementsA; i++)
     {
-        A[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
+        A[i] = (((double(std::rand())) / double(RAND_MAX) - 0.5) * 100) / elementsA;
     }
 
     for(int64_t i = 0; i < elementsB; i++)
     {
-        B[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
+        B[i] = (((double(std::rand())) / double(RAND_MAX) - 0.5) * 100) / elementsB;
     }
 
     for(int64_t i = 0; i < elementsC; i++)
     {
-        C[i] = ((double(std::rand())) / double(RAND_MAX) - 0.5) * 100;
+        C[i] = (((double(std::rand())) / double(RAND_MAX) - 0.5) * 100) / elementsC;
     }
 
     for(int64_t i = 0; i < elementsD; i++)
