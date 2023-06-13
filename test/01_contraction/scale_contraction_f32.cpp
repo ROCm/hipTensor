@@ -160,10 +160,8 @@ int main(int argc, char* argv[])
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_d), sizeD));
 
-#if !NDEBUG
     void* D_host_d;
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_host_d), sizeD));
-#endif
 
     /*******************
    * Initialize data
@@ -274,8 +272,6 @@ int main(int argc, char* argv[])
                                                worksize,
                                                0 /* stream */));
 
-#if !NDEBUG
-
     CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
                                                         A,
                                                         B,
@@ -364,8 +360,6 @@ int main(int argc, char* argv[])
     }
 
     HIPTENSOR_FREE_DEVICE(D_host_d);
-
-#endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
