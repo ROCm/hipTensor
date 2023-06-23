@@ -36,7 +36,6 @@ namespace hiptensor
     struct PerfMetrics;
 
     hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,
-                                      PerfMetrics*                             winnerMetrics,
                                       std::vector<ContractionSolution*> const& candidates,
                                       hipDataType                              typeA,
                                       std::vector<std::size_t> const&          a_ms_ks_lengths,
@@ -57,7 +56,6 @@ namespace hiptensor
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
-                         PerfMetrics*                                            winnerMetrics,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -76,7 +74,6 @@ namespace hiptensor
 
     hiptensorStatus_t
         actorCriticModel(ContractionSolution**                                   winner,
-                         PerfMetrics*                                            winnerMetrics,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
