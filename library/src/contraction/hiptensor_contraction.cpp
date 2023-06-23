@@ -453,6 +453,13 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     candidates = toContractionSolutionVec(solutionQ.solutions());
 
+    // Measure timing for solution selection
+    hipEvent_t startEvent, stopEvent;
+    CHECK_HIP_ERROR(hipEventCreate(&startEvent));
+    CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
+
+    CHECK_HIP_ERROR(hipEventRecord(startEvent));
+
     // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
     auto                            result = HIPTENSOR_STATUS_INTERNAL_ERROR;
@@ -494,6 +501,12 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                              workspaceSize);
     }
 
+    CHECK_HIP_ERROR(hipEventRecord(stopEvent));
+    CHECK_HIP_ERROR(hipEventSynchronize(stopEvent));
+
+    auto elapsedTimeMs = 0.0f;
+    CHECK_HIP_ERROR(hipEventElapsedTime(&elapsedTimeMs, startEvent, stopEvent));
+
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
         sprintf(msg, "Init contraction plan not successful (%s)", hiptensorGetErrorString(result));
@@ -503,10 +516,11 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     // Log the selected contraction solution and selection timing
     sprintf(msg,
-            "Algo: %d KernelId: %lu KernelName: %s",
+            "Algo: %d, KernelId: %lu, KernelName: %s, SelectionTime: %0.3f ms",
             find->mSelectionAlgorithm,
             winner->uid(),
-            winner->kernelName().c_str());
+            winner->kernelName().c_str(),
+            elapsedTimeMs);
     logger->logPerformanceTrace("hiptensorInitContractionPlan", msg);
 
     // Assign the contraction descriptor
@@ -699,31 +713,39 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
             return errorCode;
         }
 
-        // if logging perfomance(){}
-        auto time = (*cSolution)(StreamConfig{stream, true});
+        // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
+        if (logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+        {
+            auto time = (*cSolution)(StreamConfig{stream, true});
 
-        int32_t m, n, k;
-        std::tie(m, n, k) = cSolution->problemDims();
-        auto flops        = std::size_t(2) * m * n * k;
-        auto bytes        = cSolution->problemBytes();
+            int32_t m, n, k;
+            std::tie(m, n, k) = cSolution->problemDims();
+            auto flops        = std::size_t(2) * m * n * k;
+            auto bytes        = cSolution->problemBytes();
 
-        hiptensor::PerfMetrics metrics = {
-            cSolution->uid(), // id
-            cSolution->kernelName(), // name
-            time, // avg time
-            static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
-            static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
-        };
+            hiptensor::PerfMetrics metrics = {
+                cSolution->uid(), // id
+                cSolution->kernelName(), // name
+                time, // avg time
+                static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
+                static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
+            };
 
-        // log perf metrics (not name/id)
-        sprintf(msg,
-            "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
-            metrics.mKernelUid,
-            metrics.mKernelName.c_str(),
-            metrics.mAvgTimeMs,
-            metrics.mTflops,
-            metrics.mBandwidth);
-        logger->logPerformanceTrace("hiptensorContraction", msg);
+            // log perf metrics (not name/id)
+            sprintf(msg,
+                "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+                metrics.mKernelUid,
+                metrics.mKernelName.c_str(),
+                metrics.mAvgTimeMs,
+                metrics.mTflops,
+                metrics.mBandwidth);
+            logger->logPerformanceTrace("hiptensorContraction", msg);
+        }
+        // Perform contraction without timing
+        else
+        {
+            (*cSolution)(StreamConfig{stream, false});
+        }
 
         return HIPTENSOR_STATUS_SUCCESS;
     }
