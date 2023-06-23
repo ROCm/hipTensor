@@ -84,20 +84,23 @@ include(ROCMPackageConfigHelpers)
 include(ROCMInstallSymlinks)
 include(CheckCXXCompilerFlag)
 
-rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
-  TARGETS "gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+" )
+# gpu arch configuration
+set( AMDGPU_TARGETS "all" CACHE STRING "Compile for which gpu architectures?")
+set_property( CACHE AMDGPU_TARGETS PROPERTY STRINGS all gfx908:xnack- gfx90a:xnack+ gfx90a:xnack- )
 
-# Variable AMDGPU_TARGET must be a cached variable and must be specified before calling find_package(hip)
-# This is because hip-config.cmake sets --offload-arch via AMDGPU_TARGET cached variable __after__ setting
-# default cached variable AMDGPU_TARGET to "gfx900;gfx906;gfx908;gfx1100;gfx1101;gfx1102", where not all archs are compatible with MFMA instructions
-#
-# By rule, once cached variable is set, it cannot be overridden unless we use the FORCE option
-if(AMDGPU_TARGETS)
-  set(AMDGPU_TARGETS "${AMDGPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
+# Detect if target ID syntax if supported for default all AMDGPU_TARGETS list
+# Sets the AMDGPU_TARGETS with backward compatibility
+if (AMDGPU_TARGETS STREQUAL "all")
+  rocm_check_target_ids(target_list
+      TARGETS "gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-"
+  )
 else()
-  set(AMDGPU_TARGETS "${DEFAULT_AMDGPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
+  rocm_check_target_ids(target_list TARGETS "${AMDGPU_TARGETS}")
 endif()
-message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
+
+# must FORCE set this AMDGPU_TARGETS before any find_package( hip ...),
+# to override CACHE var and set --offload-arch flags via hip-config.cmake hip::device dependency
+set( AMDGPU_TARGETS "${target_list}" CACHE STRING "AMD GPU targets to compile for" FORCE )
 
 # Setup HIP
 find_package(hip REQUIRED )
