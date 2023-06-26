@@ -30,6 +30,23 @@ rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+# Create test executables and deploy
+function(add_hiptensor_component COMPONENT_NAME COMPONENT_SOURCES)
+
+    message( STATUS "adding hiptensor component: ${COMPONENT_NAME}")
+
+    # Ensure that all the sources are captured
+    list(APPEND COMPONENT_SOURCES ${ARGN})
+
+    # Build components as object files.
+    # Make sure they have -fPIC and that they inherit the hip::device environment
+    # so that they build for all archs in AMDGPU_TARGETS
+    add_library(${COMPONENT_NAME} OBJECT ${COMPONENT_SOURCES})
+    set_target_properties(${COMPONENT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_link_libraries(${COMPONENT_NAME} PRIVATE hip::device)
+
+endfunction()
+
 include_directories(BEFORE
     ${PROJECT_SOURCE_DIR}/library/include
     ${PROJECT_SOURCE_DIR}/library/src/include
@@ -48,9 +65,7 @@ set(HIPTENSOR_CORE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/handle.cpp
 )
 
-add_library(hiptensor_core OBJECT ${HIPTENSOR_CORE_SOURCES})
-target_compile_features(hiptensor_core PUBLIC)
-set_target_properties(hiptensor_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+add_hiptensor_component(hiptensor_core ${HIPTENSOR_CORE_SOURCES})
 
 # Generate shared lib
 add_library(hiptensor SHARED
