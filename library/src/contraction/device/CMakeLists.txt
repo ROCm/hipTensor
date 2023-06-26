@@ -43,6 +43,5 @@ set(CK_CONTRACTION_INSTANCE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_mnn_instance.cpp
 )
 
-add_library(hiptensor_contraction_instances OBJECT ${CK_CONTRACTION_INSTANCE_SOURCES})
+add_hiptensor_component(hiptensor_contraction_instances ${CK_CONTRACTION_INSTANCE_SOURCES})
 target_include_directories(hiptensor_contraction_instances PRIVATE ${composable_kernel_INCLUDES})
-set_target_properties(hiptensor_contraction_instances PROPERTIES POSITION_INDEPENDENT_CODE ON)

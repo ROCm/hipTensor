@@ -38,8 +38,7 @@ set(HIPTENSOR_CONTRACTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution.cpp
 )
 
-add_library(hiptensor_contraction OBJECT ${HIPTENSOR_CONTRACTION_SOURCES})
+add_hiptensor_component(hiptensor_contraction ${HIPTENSOR_CONTRACTION_SOURCES})
 target_include_directories(hiptensor_contraction PRIVATE ${composable_kernel_INCLUDES})
-set_target_properties(hiptensor_contraction PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(device)
