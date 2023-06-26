@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (c) 2023 Advanced Micro Devices, Inc.
+ # Copyright 2023 Advanced Micro Devices, Inc.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -38,8 +38,7 @@ set(HIPTENSOR_CONTRACTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_solution.cpp
 )
 
-add_library(hiptensor_contraction OBJECT ${HIPTENSOR_CONTRACTION_SOURCES})
+add_hiptensor_component(hiptensor_contraction ${HIPTENSOR_CONTRACTION_SOURCES})
 target_include_directories(hiptensor_contraction PRIVATE ${composable_kernel_INCLUDES})
-set_target_properties(hiptensor_contraction PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(device)
