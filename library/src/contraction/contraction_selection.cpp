@@ -191,11 +191,11 @@ namespace hiptensor
                     {
                         if(d5 <= 14)
                         {
-                            unique_id = 11803951795078848381;
+                            unique_id = 11803951795078848381ull;
                         }
                         else
                         {
-                            unique_id = 12220255318180845084;
+                            unique_id = 12220255318180845084ull;
                         }
                     }
                     else
@@ -204,17 +204,17 @@ namespace hiptensor
                         {
                             if(d3 <= 437)
                             {
-                                unique_id = 15717866180122059508;
+                                unique_id = 15717866180122059508ull;
                             }
                             else
                             {
                                 if(d2 <= 174)
                                 {
-                                    unique_id = 15717866180122059508;
+                                    unique_id = 15717866180122059508ull;
                                 }
                                 else
                                 {
-                                    unique_id = 10212603695171387835;
+                                    unique_id = 10212603695171387835ull;
                                 }
                             }
                         }
@@ -224,18 +224,18 @@ namespace hiptensor
                             {
                                 if(d6 <= 12)
                                 {
-                                    unique_id = 11803951795078848381;
+                                    unique_id = 11803951795078848381ull;
                                 }
                                 else
                                 {
-                                    unique_id = 12220255318180845084;
+                                    unique_id = 12220255318180845084ull;
                                 }
                             }
                             else
                             {
                                 if(d2 <= 50)
                                 {
-                                    unique_id = 15717866180122059508;
+                                    unique_id = 15717866180122059508ull;
                                 }
                                 else
                                 {
@@ -245,33 +245,33 @@ namespace hiptensor
                                         {
                                             if(d5 <= 17)
                                             {
-                                                unique_id = 14031134003016946658;
+                                                unique_id = 14031134003016946658ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10212603695171387835;
+                                                unique_id = 10212603695171387835ull;
                                             }
                                         }
                                         else
                                         {
-                                            unique_id = 10212603695171387835;
+                                            unique_id = 10212603695171387835ull;
                                         }
                                     }
                                     else
                                     {
                                         if(d5 <= 31)
                                         {
-                                            unique_id = 10212603695171387835;
+                                            unique_id = 10212603695171387835ull;
                                         }
                                         else
                                         {
                                             if(d1 <= 444)
                                             {
-                                                unique_id = 10212603695171387835;
+                                                unique_id = 10212603695171387835ull;
                                             }
                                             else
                                             {
-                                                unique_id = 11587153158789362298;
+                                                unique_id = 11587153158789362298ull;
                                             }
                                         }
                                     }
@@ -288,22 +288,22 @@ namespace hiptensor
                         {
                             if(d5 <= 1)
                             {
-                                unique_id = 14031134003016946658;
+                                unique_id = 14031134003016946658ull;
                             }
                             else
                             {
-                                unique_id = 10212603695171387835;
+                                unique_id = 10212603695171387835ull;
                             }
                         }
                         else
                         {
                             if(d1 <= 444)
                             {
-                                unique_id = 10212603695171387835;
+                                unique_id = 10212603695171387835ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298;
+                                unique_id = 11587153158789362298ull;
                             }
                         }
                     }
@@ -313,22 +313,22 @@ namespace hiptensor
                         {
                             if(d2 <= 222)
                             {
-                                unique_id = 15717866180122059508;
+                                unique_id = 15717866180122059508ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298;
+                                unique_id = 11587153158789362298ull;
                             }
                         }
                         else
                         {
                             if(d2 <= 50)
                             {
-                                unique_id = 15717866180122059508;
+                                unique_id = 15717866180122059508ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298;
+                                unique_id = 11587153158789362298ull;
                             }
                         }
                     }
@@ -348,11 +348,11 @@ namespace hiptensor
                                 {
                                     if(d6 <= 1)
                                     {
-                                        unique_id = 12220255318180845084;
+                                        unique_id = 12220255318180845084ull;
                                     }
                                     else
                                     {
-                                        unique_id = 10212603695171387835;
+                                        unique_id = 10212603695171387835ull;
                                     }
                                 }
                                 else
@@ -361,35 +361,35 @@ namespace hiptensor
                                     {
                                         if(d6 <= 7)
                                         {
-                                            unique_id = 15717866180122059508;
+                                            unique_id = 15717866180122059508ull;
                                         }
                                         else
                                         {
-                                            unique_id = 12220255318180845084;
+                                            unique_id = 12220255318180845084ull;
                                         }
                                     }
                                     else
                                     {
-                                        unique_id = 15717866180122059508;
+                                        unique_id = 15717866180122059508ull;
                                     }
                                 }
                             }
                             else
                             {
-                                unique_id = 10212603695171387835;
+                                unique_id = 10212603695171387835ull;
                             }
                         }
                         else
                         {
                             if(d6 <= 1)
                             {
-                                unique_id = 12220255318180845084;
+                                unique_id = 12220255318180845084ull;
                             }
                             else
                             {
                                 if(d6 <= 3)
                                 {
-                                    unique_id = 10212603695171387835;
+                                    unique_id = 10212603695171387835ull;
                                 }
                                 else
                                 {
@@ -397,16 +397,16 @@ namespace hiptensor
                                     {
                                         if(d6 <= 7)
                                         {
-                                            unique_id = 10212603695171387835;
+                                            unique_id = 10212603695171387835ull;
                                         }
                                         else
                                         {
-                                            unique_id = 12220255318180845084;
+                                            unique_id = 12220255318180845084ull;
                                         }
                                     }
                                     else
                                     {
-                                        unique_id = 10212603695171387835;
+                                        unique_id = 10212603695171387835ull;
                                     }
                                 }
                             }
@@ -418,23 +418,23 @@ namespace hiptensor
                         {
                             if(d6 <= 16)
                             {
-                                unique_id = 12220255318180845084;
+                                unique_id = 12220255318180845084ull;
                             }
                             else
                             {
                                 if(d4 <= 307)
                                 {
-                                    unique_id = 15717866180122059508;
+                                    unique_id = 15717866180122059508ull;
                                 }
                                 else
                                 {
-                                    unique_id = 10212603695171387835;
+                                    unique_id = 10212603695171387835ull;
                                 }
                             }
                         }
                         else
                         {
-                            unique_id = 11587153158789362298;
+                            unique_id = 11587153158789362298ull;
                         }
                     }
                 }
@@ -444,11 +444,11 @@ namespace hiptensor
                     {
                         if(d1 <= 372)
                         {
-                            unique_id = 15717866180122059508;
+                            unique_id = 15717866180122059508ull;
                         }
                         else
                         {
-                            unique_id = 11587153158789362298;
+                            unique_id = 11587153158789362298ull;
                         }
                     }
                     else
@@ -457,11 +457,11 @@ namespace hiptensor
                         {
                             if(d2 <= 293)
                             {
-                                unique_id = 15717866180122059508;
+                                unique_id = 15717866180122059508ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298;
+                                unique_id = 11587153158789362298ull;
                             }
                         }
                         else
@@ -470,11 +470,11 @@ namespace hiptensor
                             {
                                 if(d5 <= 45)
                                 {
-                                    unique_id = 10212603695171387835;
+                                    unique_id = 10212603695171387835ull;
                                 }
                                 else
                                 {
-                                    unique_id = 11587153158789362298;
+                                    unique_id = 11587153158789362298ull;
                                 }
                             }
                             else
@@ -483,16 +483,16 @@ namespace hiptensor
                                 {
                                     if(d4 <= 149)
                                     {
-                                        unique_id = 15717866180122059508;
+                                        unique_id = 15717866180122059508ull;
                                     }
                                     else
                                     {
-                                        unique_id = 11587153158789362298;
+                                        unique_id = 11587153158789362298ull;
                                     }
                                 }
                                 else
                                 {
-                                    unique_id = 11587153158789362298;
+                                    unique_id = 11587153158789362298ull;
                                 }
                             }
                         }
@@ -552,16 +552,16 @@ namespace hiptensor
                         {
                             if(d1 <= 433)
                             {
-                                unique_id = 4781938049531404654;
+                                unique_id = 4781938049531404654ull;
                             }
                             else
                             {
-                                unique_id = 6253145787968798806;
+                                unique_id = 6253145787968798806ull;
                             }
                         }
                         else
                         {
-                            unique_id = 4781938049531404654;
+                            unique_id = 4781938049531404654ull;
                         }
                     }
                     else
@@ -572,23 +572,23 @@ namespace hiptensor
                             {
                                 if(d1 <= 345)
                                 {
-                                    unique_id = 4781938049531404654;
+                                    unique_id = 4781938049531404654ull;
                                 }
                                 else
                                 {
-                                    unique_id = 6253145787968798806;
+                                    unique_id = 6253145787968798806ull;
                                 }
                             }
                             else
                             {
-                                unique_id = 4781938049531404654;
+                                unique_id = 4781938049531404654ull;
                             }
                         }
                         else
                         {
                             if(d1 <= 317)
                             {
-                                unique_id = 4781938049531404654;
+                                unique_id = 4781938049531404654ull;
                             }
                             else
                             {
@@ -596,13 +596,13 @@ namespace hiptensor
                                 {
                                     if(d4 <= 222)
                                     {
-                                        unique_id = 4781938049531404654;
+                                        unique_id = 4781938049531404654ull;
                                     }
                                     else
                                     {
                                         if(d3 <= 166)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
@@ -610,22 +610,22 @@ namespace hiptensor
                                             {
                                                 if(d6 <= 6)
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                             }
                                             else
                                             {
                                                 if(d5 <= 65)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -633,7 +633,7 @@ namespace hiptensor
                                 }
                                 else
                                 {
-                                    unique_id = 4781938049531404654;
+                                    unique_id = 4781938049531404654ull;
                                 }
                             }
                         }
@@ -653,26 +653,26 @@ namespace hiptensor
                                     {
                                         if(d1 <= 429)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
-                                            unique_id = 6253145787968798806;
+                                            unique_id = 6253145787968798806ull;
                                         }
                                     }
                                     else
                                     {
-                                        unique_id = 4781938049531404654;
+                                        unique_id = 4781938049531404654ull;
                                     }
                                 }
                                 else
                                 {
-                                    unique_id = 4781938049531404654;
+                                    unique_id = 4781938049531404654ull;
                                 }
                             }
                             else
                             {
-                                unique_id = 4781938049531404654;
+                                unique_id = 4781938049531404654ull;
                             }
                         }
                         else
@@ -683,29 +683,29 @@ namespace hiptensor
                                 {
                                     if(d6 <= 10)
                                     {
-                                        unique_id = 4781938049531404654;
+                                        unique_id = 4781938049531404654ull;
                                     }
                                     else
                                     {
                                         if(d1 <= 419)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
                                             if(d3 <= 432)
                                             {
-                                                unique_id = 4781938049531404654;
+                                                unique_id = 4781938049531404654ull;
                                             }
                                             else
                                             {
                                                 if(d5 <= 9)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                         }
@@ -713,7 +713,7 @@ namespace hiptensor
                                 }
                                 else
                                 {
-                                    unique_id = 4781938049531404654;
+                                    unique_id = 4781938049531404654ull;
                                 }
                             }
                             else
@@ -722,17 +722,17 @@ namespace hiptensor
                                 {
                                     if(d5 <= 12)
                                     {
-                                        unique_id = 4781938049531404654;
+                                        unique_id = 4781938049531404654ull;
                                     }
                                     else
                                     {
                                         if(d1 <= 337)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
-                                            unique_id = 16334338346691940719;
+                                            unique_id = 16334338346691940719ull;
                                         }
                                     }
                                 }
@@ -740,7 +740,7 @@ namespace hiptensor
                                 {
                                     if(d3 <= 112)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
@@ -748,23 +748,23 @@ namespace hiptensor
                                         {
                                             if(d3 <= 519)
                                             {
-                                                unique_id = 4781938049531404654;
+                                                unique_id = 4781938049531404654ull;
                                             }
                                             else
                                             {
                                                 if(d4 <= 151)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            unique_id = 16334338346691940719;
+                                            unique_id = 16334338346691940719ull;
                                         }
                                     }
                                 }
@@ -783,17 +783,17 @@ namespace hiptensor
                                     {
                                         if(d6 <= 16)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
                                             if(d5 <= 24)
                                             {
-                                                unique_id = 4781938049531404654;
+                                                unique_id = 4781938049531404654ull;
                                             }
                                             else
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                         }
                                     }
@@ -805,33 +805,33 @@ namespace hiptensor
                                             {
                                                 if(d5 <= 32)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                         }
                                         else
                                         {
                                             if(d3 <= 102)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d4 <= 246)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -843,23 +843,23 @@ namespace hiptensor
                                     {
                                         if(d3 <= 119)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d2 <= 509)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d4 <= 158)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -870,17 +870,17 @@ namespace hiptensor
                                         {
                                             if(d3 <= 43)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d4 <= 265)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -888,11 +888,11 @@ namespace hiptensor
                                         {
                                             if(d4 <= 152)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -906,23 +906,23 @@ namespace hiptensor
                                     {
                                         if(d5 <= 32)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
                                             if(d6 <= 12)
                                             {
-                                                unique_id = 4781938049531404654;
+                                                unique_id = 4781938049531404654ull;
                                             }
                                             else
                                             {
                                                 if(d2 <= 543)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -935,27 +935,27 @@ namespace hiptensor
                                             {
                                                 if(d5 <= 32)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                         }
                                         else
                                         {
                                             if(d4 <= 51)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -968,17 +968,17 @@ namespace hiptensor
                                         {
                                             if(d5 <= 24)
                                             {
-                                                unique_id = 4781938049531404654;
+                                                unique_id = 4781938049531404654ull;
                                             }
                                             else
                                             {
                                                 if(d6 <= 11)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -988,16 +988,16 @@ namespace hiptensor
                                             {
                                                 if(d2 <= 65)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -1009,16 +1009,16 @@ namespace hiptensor
                                             {
                                                 if(d6 <= 24)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                         }
                                         else
@@ -1027,16 +1027,16 @@ namespace hiptensor
                                             {
                                                 if(d2 <= 505)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -1051,29 +1051,29 @@ namespace hiptensor
                                 {
                                     if(d2 <= 529)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
                                         if(d4 <= 62)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d3 <= 227)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d1 <= 335)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -1085,17 +1085,17 @@ namespace hiptensor
                                     {
                                         if(d2 <= 585)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d3 <= 48)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -1105,23 +1105,23 @@ namespace hiptensor
                                         {
                                             if(d1 <= 339)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d2 <= 41)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            unique_id = 16334338346691940719;
+                                            unique_id = 16334338346691940719ull;
                                         }
                                     }
                                 }
@@ -1132,7 +1132,7 @@ namespace hiptensor
                                 {
                                     if(d4 <= 151)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
@@ -1140,17 +1140,17 @@ namespace hiptensor
                                         {
                                             if(d4 <= 772)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d3 <= 99)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                         }
@@ -1158,17 +1158,17 @@ namespace hiptensor
                                         {
                                             if(d2 <= 68)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d5 <= 56)
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                         }
@@ -1180,23 +1180,23 @@ namespace hiptensor
                                     {
                                         if(d4 <= 57)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d3 <= 178)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d3 <= 775)
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                             }
                                         }
@@ -1207,11 +1207,11 @@ namespace hiptensor
                                         {
                                             if(d3 <= 48)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                         else
@@ -1220,16 +1220,16 @@ namespace hiptensor
                                             {
                                                 if(d3 <= 49)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -1245,7 +1245,7 @@ namespace hiptensor
                 {
                     if(d5 <= 4)
                     {
-                        unique_id = 4781938049531404654;
+                        unique_id = 4781938049531404654ull;
                     }
                     else
                     {
@@ -1259,23 +1259,23 @@ namespace hiptensor
                                     {
                                         if(d6 <= 48)
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                         else
                                         {
                                             if(d2 <= 510)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        unique_id = 4781938049531404654;
+                                        unique_id = 4781938049531404654ull;
                                     }
                                 }
                                 else
@@ -1284,17 +1284,17 @@ namespace hiptensor
                                     {
                                         if(d5 <= 6)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d1 <= 574)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -1302,11 +1302,11 @@ namespace hiptensor
                                     {
                                         if(d4 <= 457)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                 }
@@ -1323,44 +1323,44 @@ namespace hiptensor
                                             {
                                                 if(d5 <= 12)
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                         }
                                         else
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                     }
                                     else
                                     {
                                         if(d3 <= 190)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d2 <= 63)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d4 <= 140)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -1374,23 +1374,23 @@ namespace hiptensor
                                         {
                                             if(d4 <= 115)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d1 <= 578)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            unique_id = 4781938049531404654;
+                                            unique_id = 4781938049531404654ull;
                                         }
                                     }
                                     else
@@ -1399,17 +1399,17 @@ namespace hiptensor
                                         {
                                             if(d1 <= 578)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d3 <= 96)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -1417,17 +1417,17 @@ namespace hiptensor
                                         {
                                             if(d5 <= 23)
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                             else
                                             {
                                                 if(d6 <= 55)
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 4781938049531404654;
+                                                    unique_id = 4781938049531404654ull;
                                                 }
                                             }
                                         }
@@ -1445,23 +1445,23 @@ namespace hiptensor
                                     {
                                         if(d3 <= 114)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d2 <= 431)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d1 <= 272)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                         }
@@ -1470,11 +1470,11 @@ namespace hiptensor
                                     {
                                         if(d2 <= 406)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                 }
@@ -1482,7 +1482,7 @@ namespace hiptensor
                                 {
                                     if(d4 <= 130)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
@@ -1490,17 +1490,17 @@ namespace hiptensor
                                         {
                                             if(d2 <= 66)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d1 <= 274)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -1510,16 +1510,16 @@ namespace hiptensor
                                             {
                                                 if(d2 <= 514)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 16334338346691940719;
+                                                unique_id = 16334338346691940719ull;
                                             }
                                         }
                                     }
@@ -1533,18 +1533,18 @@ namespace hiptensor
                                     {
                                         if(d2 <= 174)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                     }
                                     else
                                     {
                                         if(d2 <= 66)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
@@ -1552,16 +1552,16 @@ namespace hiptensor
                                             {
                                                 if(d4 <= 760)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1570,7 +1570,7 @@ namespace hiptensor
                                 {
                                     if(d4 <= 59)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
@@ -1578,11 +1578,11 @@ namespace hiptensor
                                         {
                                             if(d2 <= 684)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                         else
@@ -1591,16 +1591,16 @@ namespace hiptensor
                                             {
                                                 if(d3 <= 24)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1619,23 +1619,23 @@ namespace hiptensor
                             {
                                 if(d2 <= 67)
                                 {
-                                    unique_id = 5897150915348629714;
+                                    unique_id = 5897150915348629714ull;
                                 }
                                 else
                                 {
                                     if(d1 <= 104)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
                                         if(d6 <= 61)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                 }
@@ -1644,11 +1644,11 @@ namespace hiptensor
                             {
                                 if(d5 <= 52)
                                 {
-                                    unique_id = 5897150915348629714;
+                                    unique_id = 5897150915348629714ull;
                                 }
                                 else
                                 {
-                                    unique_id = 10972102817010133142;
+                                    unique_id = 10972102817010133142ull;
                                 }
                             }
                         }
@@ -1658,29 +1658,29 @@ namespace hiptensor
                             {
                                 if(d6 <= 60)
                                 {
-                                    unique_id = 5897150915348629714;
+                                    unique_id = 5897150915348629714ull;
                                 }
                                 else
                                 {
                                     if(d2 <= 18)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
                                         if(d1 <= 514)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d5 <= 51)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1696,40 +1696,40 @@ namespace hiptensor
                                         {
                                             if(d3 <= 288)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d2 <= 68)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                     else
                                     {
                                         if(d3 <= 152)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d4 <= 90)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1744,33 +1744,33 @@ namespace hiptensor
                                             {
                                                 if(d1 <= 649)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                         else
                                         {
                                             if(d4 <= 225)
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                             else
                                             {
                                                 if(d3 <= 50)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                         }
@@ -1779,11 +1779,11 @@ namespace hiptensor
                                     {
                                         if(d3 <= 38)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                 }
@@ -1800,23 +1800,23 @@ namespace hiptensor
                                 {
                                     if(d2 <= 505)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
                                         if(d4 <= 148)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d1 <= 27)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1827,17 +1827,17 @@ namespace hiptensor
                                     {
                                         if(d3 <= 50)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d4 <= 73)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1847,17 +1847,17 @@ namespace hiptensor
                                         {
                                             if(d4 <= 140)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
                                                 if(d4 <= 774)
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                         }
@@ -1867,16 +1867,16 @@ namespace hiptensor
                                             {
                                                 if(d4 <= 148)
                                                 {
-                                                    unique_id = 5897150915348629714;
+                                                    unique_id = 5897150915348629714ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1888,23 +1888,23 @@ namespace hiptensor
                                 {
                                     if(d2 <= 517)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
                                         if(d4 <= 119)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
                                             if(d1 <= 19)
                                             {
-                                                unique_id = 5897150915348629714;
+                                                unique_id = 5897150915348629714ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1915,28 +1915,28 @@ namespace hiptensor
                                     {
                                         if(d1 <= 499)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                     else
                                     {
                                         if(d3 <= 39)
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                         else
                                         {
                                             if(d2 <= 422)
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -1949,17 +1949,17 @@ namespace hiptensor
                             {
                                 if(d4 <= 335)
                                 {
-                                    unique_id = 5897150915348629714;
+                                    unique_id = 5897150915348629714ull;
                                 }
                                 else
                                 {
                                     if(d1 <= 16)
                                     {
-                                        unique_id = 5897150915348629714;
+                                        unique_id = 5897150915348629714ull;
                                     }
                                     else
                                     {
-                                        unique_id = 10972102817010133142;
+                                        unique_id = 10972102817010133142ull;
                                     }
                                 }
                             }
@@ -1971,22 +1971,22 @@ namespace hiptensor
                                     {
                                         if(d3 <= 167)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                     else
                                     {
                                         if(d3 <= 172)
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                 }
@@ -1996,11 +1996,11 @@ namespace hiptensor
                                     {
                                         if(d6 <= 61)
                                         {
-                                            unique_id = 5897150915348629714;
+                                            unique_id = 5897150915348629714ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142;
+                                            unique_id = 10972102817010133142ull;
                                         }
                                     }
                                     else
@@ -2011,22 +2011,22 @@ namespace hiptensor
                                             {
                                                 if(d3 <= 790)
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                             else
                                             {
                                                 if(d2 <= 988)
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 16334338346691940719;
+                                                    unique_id = 16334338346691940719ull;
                                                 }
                                             }
                                         }
@@ -2036,16 +2036,16 @@ namespace hiptensor
                                             {
                                                 if(d4 <= 155)
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 10972102817010133142;
+                                                    unique_id = 10972102817010133142ull;
                                                 }
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142;
+                                                unique_id = 10972102817010133142ull;
                                             }
                                         }
                                     }
@@ -2105,17 +2105,17 @@ namespace hiptensor
                 {
                     if(d6 <= 17)
                     {
-                        unique_id = 8512122806347362414;
+                        unique_id = 8512122806347362414ull;
                     }
                     else
                     {
                         if(d5 <= 1)
                         {
-                            unique_id = 8512122806347362414;
+                            unique_id = 8512122806347362414ull;
                         }
                         else
                         {
-                            unique_id = 6766074198369117690;
+                            unique_id = 6766074198369117690ull;
                         }
                     }
                 }
@@ -2125,28 +2125,28 @@ namespace hiptensor
                     {
                         if(d5 <= 37)
                         {
-                            unique_id = 8512122806347362414;
+                            unique_id = 8512122806347362414ull;
                         }
                         else
                         {
-                            unique_id = 6766074198369117690;
+                            unique_id = 6766074198369117690ull;
                         }
                     }
                     else
                     {
                         if(d6 <= 33)
                         {
-                            unique_id = 6766074198369117690;
+                            unique_id = 6766074198369117690ull;
                         }
                         else
                         {
                             if(d5 <= 57)
                             {
-                                unique_id = 6766074198369117690;
+                                unique_id = 6766074198369117690ull;
                             }
                             else
                             {
-                                unique_id = 5863879104640185307;
+                                unique_id = 5863879104640185307ull;
                             }
                         }
                     }
@@ -2160,29 +2160,29 @@ namespace hiptensor
                     {
                         if(d5 <= 1)
                         {
-                            unique_id = 8512122806347362414;
+                            unique_id = 8512122806347362414ull;
                         }
                         else
                         {
                             if(d6 <= 63)
                             {
-                                unique_id = 6766074198369117690;
+                                unique_id = 6766074198369117690ull;
                             }
                             else
                             {
                                 if(d5 <= 28)
                                 {
-                                    unique_id = 6766074198369117690;
+                                    unique_id = 6766074198369117690ull;
                                 }
                                 else
                                 {
                                     if(d1 <= 253)
                                     {
-                                        unique_id = 6766074198369117690;
+                                        unique_id = 6766074198369117690ull;
                                     }
                                     else
                                     {
-                                        unique_id = 8205318106496093444;
+                                        unique_id = 8205318106496093444ull;
                                     }
                                 }
                             }
@@ -2192,17 +2192,17 @@ namespace hiptensor
                     {
                         if(d6 <= 59)
                         {
-                            unique_id = 6766074198369117690;
+                            unique_id = 6766074198369117690ull;
                         }
                         else
                         {
                             if(d1 <= 254)
                             {
-                                unique_id = 6766074198369117690;
+                                unique_id = 6766074198369117690ull;
                             }
                             else
                             {
-                                unique_id = 5863879104640185307;
+                                unique_id = 5863879104640185307ull;
                             }
                         }
                     }
@@ -2217,17 +2217,17 @@ namespace hiptensor
                             {
                                 if(d6 <= 50)
                                 {
-                                    unique_id = 6766074198369117690;
+                                    unique_id = 6766074198369117690ull;
                                 }
                                 else
                                 {
                                     if(d5 <= 47)
                                     {
-                                        unique_id = 5863879104640185307;
+                                        unique_id = 5863879104640185307ull;
                                     }
                                     else
                                     {
-                                        unique_id = 8205318106496093444;
+                                        unique_id = 8205318106496093444ull;
                                     }
                                 }
                             }
@@ -2235,7 +2235,7 @@ namespace hiptensor
                             {
                                 if(d5 <= 55)
                                 {
-                                    unique_id = 5863879104640185307;
+                                    unique_id = 5863879104640185307ull;
                                 }
                                 else
                                 {
@@ -2243,30 +2243,30 @@ namespace hiptensor
                                     {
                                         if(d5 <= 56)
                                         {
-                                            unique_id = 8205318106496093444;
+                                            unique_id = 8205318106496093444ull;
                                         }
                                         else
                                         {
                                             if(d6 <= 47)
                                             {
-                                                unique_id = 5863879104640185307;
+                                                unique_id = 5863879104640185307ull;
                                             }
                                             else
                                             {
                                                 if(d6 <= 48)
                                                 {
-                                                    unique_id = 8205318106496093444;
+                                                    unique_id = 8205318106496093444ull;
                                                 }
                                                 else
                                                 {
-                                                    unique_id = 5863879104640185307;
+                                                    unique_id = 5863879104640185307ull;
                                                 }
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        unique_id = 5863879104640185307;
+                                        unique_id = 5863879104640185307ull;
                                     }
                                 }
                             }
@@ -2277,11 +2277,11 @@ namespace hiptensor
                             {
                                 if(d5 <= 64)
                                 {
-                                    unique_id = 8205318106496093444;
+                                    unique_id = 8205318106496093444ull;
                                 }
                                 else
                                 {
-                                    unique_id = 5863879104640185307;
+                                    unique_id = 5863879104640185307ull;
                                 }
                             }
                             else
@@ -2292,28 +2292,28 @@ namespace hiptensor
                                     {
                                         if(d5 <= 64)
                                         {
-                                            unique_id = 8205318106496093444;
+                                            unique_id = 8205318106496093444ull;
                                         }
                                         else
                                         {
                                             if(d6 <= 48)
                                             {
-                                                unique_id = 8205318106496093444;
+                                                unique_id = 8205318106496093444ull;
                                             }
                                             else
                                             {
-                                                unique_id = 5863879104640185307;
+                                                unique_id = 5863879104640185307ull;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        unique_id = 8205318106496093444;
+                                        unique_id = 8205318106496093444ull;
                                     }
                                 }
                                 else
                                 {
-                                    unique_id = 8205318106496093444;
+                                    unique_id = 8205318106496093444ull;
                                 }
                             }
                         }
@@ -2324,30 +2324,30 @@ namespace hiptensor
                         {
                             if(d6 <= 64)
                             {
-                                unique_id = 8205318106496093444;
+                                unique_id = 8205318106496093444ull;
                             }
                             else
                             {
                                 if(d5 <= 47)
                                 {
-                                    unique_id = 5863879104640185307;
+                                    unique_id = 5863879104640185307ull;
                                 }
                                 else
                                 {
                                     if(d5 <= 48)
                                     {
-                                        unique_id = 8205318106496093444;
+                                        unique_id = 8205318106496093444ull;
                                     }
                                     else
                                     {
-                                        unique_id = 5863879104640185307;
+                                        unique_id = 5863879104640185307ull;
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            unique_id = 8205318106496093444;
+                            unique_id = 8205318106496093444ull;
                         }
                     }
                 }
@@ -2401,11 +2401,11 @@ namespace hiptensor
                 {
                     if(d6 <= 7)
                     {
-                        unique_id = 2415201861364427301;
+                        unique_id = 2415201861364427301ull;
                     }
                     else
                     {
-                        unique_id = 6902287373350592119;
+                        unique_id = 6902287373350592119ull;
                     }
                 }
                 else
@@ -2416,11 +2416,11 @@ namespace hiptensor
                         {
                             if(d5 <= 13)
                             {
-                                unique_id = 2415201861364427301;
+                                unique_id = 2415201861364427301ull;
                             }
                             else
                             {
-                                unique_id = 550562982100054122;
+                                unique_id = 550562982100054122ull;
                             }
                         }
                         else
@@ -2429,16 +2429,16 @@ namespace hiptensor
                             {
                                 if(d6 <= 7)
                                 {
-                                    unique_id = 6902287373350592119;
+                                    unique_id = 6902287373350592119ull;
                                 }
                                 else
                                 {
-                                    unique_id = 550562982100054122;
+                                    unique_id = 550562982100054122ull;
                                 }
                             }
                             else
                             {
-                                unique_id = 550562982100054122;
+                                unique_id = 550562982100054122ull;
                             }
                         }
                     }
@@ -2446,11 +2446,11 @@ namespace hiptensor
                     {
                         if(d6 <= 25)
                         {
-                            unique_id = 550562982100054122;
+                            unique_id = 550562982100054122ull;
                         }
                         else
                         {
-                            unique_id = 3324992315903551472;
+                            unique_id = 3324992315903551472ull;
                         }
                     }
                 }
@@ -2461,7 +2461,7 @@ namespace hiptensor
                 {
                     if(d6 <= 64)
                     {
-                        unique_id = 550562982100054122;
+                        unique_id = 550562982100054122ull;
                     }
                     else
                     {
@@ -2469,22 +2469,22 @@ namespace hiptensor
                         {
                             if(d5 <= 1)
                             {
-                                unique_id = 3324992315903551472;
+                                unique_id = 3324992315903551472ull;
                             }
                             else
                             {
-                                unique_id = 550562982100054122;
+                                unique_id = 550562982100054122ull;
                             }
                         }
                         else
                         {
                             if(d2 <= 223)
                             {
-                                unique_id = 550562982100054122;
+                                unique_id = 550562982100054122ull;
                             }
                             else
                             {
-                                unique_id = 3324992315903551472;
+                                unique_id = 3324992315903551472ull;
                             }
                         }
                     }
@@ -2497,17 +2497,17 @@ namespace hiptensor
                         {
                             if(d6 <= 48)
                             {
-                                unique_id = 550562982100054122;
+                                unique_id = 550562982100054122ull;
                             }
                             else
                             {
                                 if(d5 <= 36)
                                 {
-                                    unique_id = 550562982100054122;
+                                    unique_id = 550562982100054122ull;
                                 }
                                 else
                                 {
-                                    unique_id = 3324992315903551472;
+                                    unique_id = 3324992315903551472ull;
                                 }
                             }
                         }
@@ -2519,27 +2519,27 @@ namespace hiptensor
                                 {
                                     if(d6 <= 40)
                                     {
-                                        unique_id = 550562982100054122;
+                                        unique_id = 550562982100054122ull;
                                     }
                                     else
                                     {
-                                        unique_id = 3324992315903551472;
+                                        unique_id = 3324992315903551472ull;
                                     }
                                 }
                                 else
                                 {
-                                    unique_id = 3324992315903551472;
+                                    unique_id = 3324992315903551472ull;
                                 }
                             }
                             else
                             {
                                 if(d5 <= 63)
                                 {
-                                    unique_id = 3324992315903551472;
+                                    unique_id = 3324992315903551472ull;
                                 }
                                 else
                                 {
-                                    unique_id = 4157899012150127975;
+                                    unique_id = 4157899012150127975ull;
                                 }
                             }
                         }
@@ -2550,23 +2550,23 @@ namespace hiptensor
                         {
                             if(d5 <= 47)
                             {
-                                unique_id = 3324992315903551472;
+                                unique_id = 3324992315903551472ull;
                             }
                             else
                             {
                                 if(d6 <= 67)
                                 {
-                                    unique_id = 3324992315903551472;
+                                    unique_id = 3324992315903551472ull;
                                 }
                                 else
                                 {
                                     if(d1 <= 416)
                                     {
-                                        unique_id = 3324992315903551472;
+                                        unique_id = 3324992315903551472ull;
                                     }
                                     else
                                     {
-                                        unique_id = 4157899012150127975;
+                                        unique_id = 4157899012150127975ull;
                                     }
                                 }
                             }
@@ -2579,21 +2579,21 @@ namespace hiptensor
                                 {
                                     if(d3 <= 252)
                                     {
-                                        unique_id = 4157899012150127975;
+                                        unique_id = 4157899012150127975ull;
                                     }
                                     else
                                     {
-                                        unique_id = 3324992315903551472;
+                                        unique_id = 3324992315903551472ull;
                                     }
                                 }
                                 else
                                 {
-                                    unique_id = 4157899012150127975;
+                                    unique_id = 4157899012150127975ull;
                                 }
                             }
                             else
                             {
-                                unique_id = 4157899012150127975;
+                                unique_id = 4157899012150127975ull;
                             }
                         }
                     }
