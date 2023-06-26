@@ -2595,18 +2595,7 @@ namespace hiptensor
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
-                auto* solution = candidate->second;
-
-                PerfMetrics metrics = {
-                    solution->uid(), // id
-                    solution->kernelName(), // name
-                    0, // avg time
-                    0, // tflops
-                    0  // BW
-                };
-
-                *winner = solution;
-
+                *winner = candidate->second;
                 return HIPTENSOR_STATUS_SUCCESS;
             }
             else
