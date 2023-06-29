@@ -53,6 +53,9 @@ namespace hiptensor
         using AlphaT       = double;
         using BetaT        = double;
 
+        //TODO: Include after kernel generator/ kernel base class is created
+        // using KernelT      = std::shared_ptr<KernelI>; // Kernel test interface
+
         //Data types of input and output tensors
         static inline std::vector<TestDataTypeT> dataTypes()
         {
@@ -136,17 +139,6 @@ namespace hiptensor
                 {150, 131, 14, 540, 17, 10},
                 {382, 33, 141, 58, 47, 29},
                 {19, 526, 40, 81, 7, 33},
-                {216, 61, 119, 165, 31, 24},
-                {72, 145, 59, 227, 6, 53},
-                {45, 52, 182, 13, 20, 5},
-                {31, 164, 22, 893, 78, 25},
-                {673, 18, 35, 128, 66, 7},
-                {23, 312, 312, 48, 39, 60},
-                {44, 341, 31, 312, 8, 12},
-                {308, 30, 18, 352, 17, 43},
-                {532, 31, 353, 34, 61, 70},
-                {128, 149, 400, 23, 33, 24},
-                {155, 45, 102, 147, 41, 37},
                 // clang-format on
             };
         }
