@@ -72,6 +72,7 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
         endif()
     endif()
     file(APPEND "${INSTALL_TEST_FILE}" "add_test(${BINARY_NAME} \"../${BINARY_NAME}\")\n")
+    file(APPEND "${INSTALL_TEST_FILE}" "set_tests_properties(${BINARY_NAME} PROPERTIES SKIP_REGULAR_EXPRESSION \"HIPTENSOR_STATUS_ARCH_MISMATCH;unsupported host device\")\n")
 
 endfunction()
 
@@ -112,7 +113,7 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
         endif()
     endif()
     file(APPEND "${INSTALL_TEST_FILE}" "add_test(${BINARY_NAME} \"../${BINARY_NAME}\")\n")
-
+    file(APPEND "${INSTALL_TEST_FILE}" "set_tests_properties(${BINARY_NAME} PROPERTIES SKIP_REGULAR_EXPRESSION \"HIPTENSOR_STATUS_ARCH_MISMATCH;unsupported host device\")\n")
 endfunction()
 
 add_subdirectory(01_contraction)
