@@ -36,8 +36,11 @@ file(WRITE "${INSTALL_TEST_FILE}"
 # Target that will trigger build of all tests
 add_custom_target(hiptensor_tests)
 
+set(HIPTENSOR_COMMON_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hip_resource_impl.cpp)
+
 # Create test executables and deploy
 function(add_hiptensor_test BINARY_NAME FILE_NAME)
+    list(APPEND FILE_NAME ${ARGN})
 
     message( STATUS "adding hiptensor test: ${BINARY_NAME}")
     add_executable(${BINARY_NAME} ${FILE_NAME})
