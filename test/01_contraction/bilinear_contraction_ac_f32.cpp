@@ -34,6 +34,7 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+#include "contraction_resource.hpp"
 
 #include "common.hpp"
 
@@ -88,6 +89,15 @@ int main(int argc, char* argv[])
     extent['v'] = 4;
     extent['h'] = 3;
     extent['k'] = 4;
+
+    using DataStorage = hiptensor::ContractionResource;
+    auto& dataInstance = DataStorage::instance();
+
+    hiptensor::ContractionResource::ProblemDims problemSize = {5, 6, 3, 4, 3, 4};
+    hiptensor::ContractionResource::ElementBytes bytesPerElement = 
+        {sizeof(typeA), sizeof(typeB), sizeof(typeC), sizeof(typeD)};
+    dataInstance->resizeStorage(problemSize, bytesPerElement);
+
 
     std::vector<int64_t> c_ms_ns_lengths;
     for(auto mode : modeC)
@@ -173,23 +183,7 @@ int main(int argc, char* argv[])
     size_t elementsD = std::accumulate(
         d_ms_ns_lengths.begin(), d_ms_ns_lengths.end(), size_t{1}, std::multiplies<size_t>());
 
-    size_t sizeA = sizeof(ADataType) * elementsA;
-    size_t sizeB = sizeof(BDataType) * elementsB;
-    size_t sizeC = sizeof(CDataType) * elementsC;
     size_t sizeD = sizeof(DDataType) * elementsD;
-
-    ADataType* A = (ADataType*)malloc(sizeA);
-    BDataType* B = (BDataType*)malloc(sizeB);
-    CDataType* C = (CDataType*)malloc(sizeC);
-    DDataType* D = (DDataType*)malloc(sizeD);
-
-    void *A_d, *B_d, *C_d, *D_d;
-
-    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&A_d), sizeA));
-    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&B_d), sizeB));
-    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&C_d), sizeC));
-    CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_d), sizeD));
-
     void* D_ref_d;
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&D_ref_d), sizeD));
 
@@ -199,22 +193,22 @@ int main(int argc, char* argv[])
 
     for(int64_t i = 0; i < elementsA; i++)
     {
-        A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
+        static_cast<ADataType*>(dataInstance->hostA().get())[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
     }
 
     for(int64_t i = 0; i < elementsB; i++)
     {
-        B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
+        static_cast<BDataType*>(dataInstance->hostB().get())[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
     }
 
     for(int64_t i = 0; i < elementsC; i++)
     {
-        C[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
+        static_cast<CDataType*>(dataInstance->hostC().get())[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 10;
     }
 
     for(int64_t i = 0; i < elementsD; i++)
     {
-        D[i] = std::numeric_limits<DDataType>::signaling_NaN();
+        static_cast<DDataType*>(dataInstance->hostD().get())[i] = std::numeric_limits<DDataType>::signaling_NaN();
     }
 
     /********************************************
@@ -222,10 +216,7 @@ int main(int argc, char* argv[])
    ********************************************/
     std::cout << "Initializing device data..." << std::endl;
 
-    CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(B_d, static_cast<const void*>(B), sizeB, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(D_d, static_cast<const void*>(D), sizeD, hipMemcpyHostToDevice));
+    dataInstance->copyHostToDeviceAll(bytesPerElement);
 
     /************************************************
    * Retrieve the memory alignment for each tensor
@@ -233,19 +224,19 @@ int main(int argc, char* argv[])
 
     uint32_t alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(handle, dataInstance->deviceA().get(), &a_ms_ks, &alignmentRequirementA));
 
     uint32_t alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, B_d, &b_ns_ks, &alignmentRequirementB));
+        hiptensorGetAlignmentRequirement(handle, dataInstance->deviceB().get(), &b_ns_ks, &alignmentRequirementB));
 
     uint32_t alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, C_d, &c_ms_ns, &alignmentRequirementC));
+        hiptensorGetAlignmentRequirement(handle, dataInstance->deviceC().get(), &c_ms_ns, &alignmentRequirementC));
 
     uint32_t alignmentRequirementD;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, D_d, &d_ms_ns, &alignmentRequirementD));
+        hiptensorGetAlignmentRequirement(handle, dataInstance->deviceD().get(), &d_ms_ns, &alignmentRequirementD));
 
     /*******************************
    * Create Contraction Descriptor
@@ -307,21 +298,21 @@ int main(int argc, char* argv[])
     CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
                                                &plan,
                                                (void*)&alpha,
-                                               A_d,
-                                               B_d,
+                                               dataInstance->deviceA().get(),
+                                               dataInstance->deviceB().get(),
                                                (void*)&beta,
-                                               C_d,
-                                               D_d,
+                                               dataInstance->deviceC().get(),
+                                               dataInstance->deviceD().get(),
                                                workspace,
                                                worksize,
                                                0 /* stream */));
 
     CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
-                                                        A,
-                                                        B,
+                                                        dataInstance->hostA().get(),
+                                                        dataInstance->hostB().get(),
                                                         (void*)&beta,
-                                                        C,
-                                                        D,
+                                                        dataInstance->hostC().get(),
+                                                        dataInstance->hostD().get(),
                                                         a_ms_ks.mLengths,
                                                         a_ms_ks.mStrides,
                                                         b_ns_ks.mLengths,
@@ -339,10 +330,10 @@ int main(int argc, char* argv[])
     bool   mValidationResult = false;
     double mMaxRelativeError;
 
-    CHECK_HIP_ERROR(hipMemcpy(D_ref_d, D, sizeD, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(D_ref_d, dataInstance->hostD().get(), sizeD, hipMemcpyHostToDevice));
 
     std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<DDataType>(
-        static_cast<DDataType*>(D_d), static_cast<DDataType*>(D_ref_d), elementsD);
+        static_cast<DDataType*>(dataInstance->deviceD().get()), static_cast<DDataType*>(D_ref_d), elementsD);
 
     if(mValidationResult == true)
     {
@@ -360,7 +351,7 @@ int main(int argc, char* argv[])
 
     if(printElements || storeElements)
     {
-        CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dataInstance->hostD().get(), dataInstance->deviceD().get(), sizeD, hipMemcpyDeviceToHost));
     }
 
     if(printElements)
@@ -368,28 +359,28 @@ int main(int argc, char* argv[])
         if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor A elements:\n";
-            hiptensorPrintArrayElements(A, elementsA);
+            hiptensorPrintArrayElements<ADataType>(static_cast<ADataType*>(dataInstance->hostA().get()), elementsA);
             std::cout << std::endl;
         }
 
         if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor B elements:\n";
-            hiptensorPrintArrayElements(B, elementsB);
+            hiptensorPrintArrayElements(static_cast<BDataType*>(dataInstance->hostB().get()), elementsB);
             std::cout << std::endl;
         }
 
         if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor C elements:\n";
-            hiptensorPrintArrayElements(C, elementsC);
+            hiptensorPrintArrayElements(static_cast<CDataType*>(dataInstance->hostC().get()), elementsC);
             std::cout << std::endl;
         }
 
         if(elementsD < MAX_ELEMENTS_PRINT_COUNT)
         {
-            std::cout << "Tensor D elements:\n";
-            hiptensorPrintArrayElements(D, elementsD);
+            std::cout << "Tensor D Device elements:\n";
+            hiptensorPrintArrayElements(static_cast<DDataType*>(dataInstance->hostD().get()), elementsD);
             std::cout << std::endl;
         }
     }
@@ -399,19 +390,19 @@ int main(int argc, char* argv[])
         std::ofstream tensorA, tensorB, tensorC, tensorD;
 
         tensorA.open("tensor_A.txt");
-        hiptensorPrintElementsToFile(tensorA, A, elementsA, ", ");
+        hiptensorPrintElementsToFile(tensorA, static_cast<ADataType*>(dataInstance->hostA().get()), elementsA, ", ");
         tensorA.close();
 
         tensorB.open("tensor_B.txt");
-        hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
+        hiptensorPrintElementsToFile(tensorB, static_cast<ADataType*>(dataInstance->hostB().get()), elementsB, ", ");
         tensorB.close();
 
         tensorC.open("tensor_C.txt");
-        hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
+        hiptensorPrintElementsToFile(tensorC, static_cast<ADataType*>(dataInstance->hostC().get()), elementsC, ", ");
         tensorC.close();
 
         tensorD.open("tensor_D_bilinear_contraction_results.txt");
-        hiptensorPrintElementsToFile(tensorD, D, elementsD, ", ");
+        hiptensorPrintElementsToFile(tensorD, static_cast<ADataType*>(dataInstance->hostD().get()), elementsD, ", ");
         tensorD.close();
     }
 
@@ -419,15 +410,6 @@ int main(int argc, char* argv[])
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
-    HIPTENSOR_FREE_HOST(A);
-    HIPTENSOR_FREE_HOST(B);
-    HIPTENSOR_FREE_HOST(C);
-    HIPTENSOR_FREE_HOST(D);
-
-    HIPTENSOR_FREE_DEVICE(A_d);
-    HIPTENSOR_FREE_DEVICE(B_d);
-    HIPTENSOR_FREE_DEVICE(C_d);
-    HIPTENSOR_FREE_DEVICE(D_d);
     HIPTENSOR_FREE_DEVICE(workspace);
 
     std::cout << "Finished!" << std::endl;
