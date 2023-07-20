@@ -31,6 +31,7 @@
 #include <vector>
 
 #include <hiptensor/hiptensor_types.hpp>
+#include "contraction_kernel_base.hpp"
 
 namespace hiptensor
 {
@@ -39,7 +40,6 @@ namespace hiptensor
     ///
     struct ContractionCommonTestParams
     {
-        
         using TestDataTypeT = std::vector<hipDataType>;
         using TestComputeTypeT = hiptensorComputeType_t;
  
@@ -54,7 +54,7 @@ namespace hiptensor
         using BetaT        = double;
 
         //TODO: Include after kernel generator/ kernel base class is created
-        // using KernelT      = std::shared_ptr<KernelI>; // Kernel test interface
+        using KernelT      = std::shared_ptr<KernelI>; // Kernel test interface
 
         //Data types of input and output tensors
         static inline std::vector<TestDataTypeT> dataTypes()
@@ -62,9 +62,9 @@ namespace hiptensor
             return
             {
                 // clang-format off
-                {HIP_R_32F, HIP_R_32F, HIP_R_32F}, // scale F32
+                {HIP_R_32F, HIP_R_32F, NONE_TYPE, HIP_R_32F}, // scale F32
                 {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
-                {HIP_R_64F, HIP_R_64F, HIP_R_64F}, // scale F64
+                {HIP_R_64F, HIP_R_64F, NONE_TYPE, HIP_R_64F}, // scale F64
                 {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
                 // clang-format on
             };
@@ -136,6 +136,7 @@ namespace hiptensor
             return
             {
                 // clang-format off
+                //'m','n','u','v','h','k'
                 {150, 131, 14, 540, 17, 10},
                 {382, 33, 141, 58, 47, 29},
                 {19, 526, 40, 81, 7, 33},
