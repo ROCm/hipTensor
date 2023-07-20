@@ -24,7 +24,7 @@
  #
  ###############################################################################
 set(ContractionCommonSources ${HIPTENSOR_COMMON_TEST_SOURCES}
-                             ${CMAKE_CURRENT_SOURCE_DIR}/contraction_resource_impl.cpp)
+                             ${CMAKE_CURRENT_SOURCE_DIR}/contraction_resource.cpp)
 
 
 set(BilinearContractionAcF32Sources ${ContractionCommonSources}
