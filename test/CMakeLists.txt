@@ -24,6 +24,8 @@
  #
  ###############################################################################
 
+find_package(LLVM REQUIRED CONFIG)
+
 # Setup a test manifest
 set(INSTALL_TEST_FILE "${CMAKE_CURRENT_BINARY_DIR}/install_CTestTestfile.cmake")
 file(WRITE "${INSTALL_TEST_FILE}"
@@ -36,7 +38,8 @@ file(WRITE "${INSTALL_TEST_FILE}"
 # Target that will trigger build of all tests
 add_custom_target(hiptensor_tests)
 
-set(HIPTENSOR_COMMON_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hip_resource_impl.cpp)
+set(HIPTENSOR_COMMON_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hip_resource_impl.cpp
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/yaml/yaml_parser_contraction_config.cpp)
 
 # Create test executables and deploy
 function(add_hiptensor_test BINARY_NAME FILE_NAME)
@@ -52,6 +55,19 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
                                ${PROJECT_SOURCE_DIR}/library/src/contraction)
+
+
+    find_library(LLVMObjectYAML_LIBRARY
+        NAMES LLVMObjectYAML
+        PATHS ${LLVM_LIBRARY_DIR})
+    message("LLVMObjectYAML_LIBRARY: ${LLVMObjectYAML_LIBRARY}")
+    #Use LLVM shared libs if LLVMObjectYAML static lib cannot be found
+    if(LLVMObjectYAML_LIBRARY)
+        target_link_libraries(${BINARY_NAME} PRIVATE LLVMObjectYAML )
+    else()
+        target_link_libraries(${BINARY_NAME} PRIVATE LLVM )
+    endif()
+    target_include_directories(${BINARY_NAME} PRIVATE ${LLVM_INCLUDE_DIRS})
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
