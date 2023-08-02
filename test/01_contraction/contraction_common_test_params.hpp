@@ -30,8 +30,9 @@
 #include <tuple>
 #include <vector>
 
+#include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
-#include "contraction_kernel_base.hpp"
+// #include "contraction_kernel_base.hpp"
 
 namespace hiptensor
 {
@@ -40,21 +41,21 @@ namespace hiptensor
     ///
     struct ContractionCommonTestParams
     {
-        using TestDataTypeT = std::vector<hipDataType>;
+        using TestDataTypeT    = std::vector<hipDataType>;
         using TestComputeTypeT = hiptensorComputeType_t;
- 
-        using AlgorithmT = hiptensorAlgo_t;
-        using OperatorT = hiptensorOperator_t;
-        using WorkSizePrefT = hiptensorWorksizePreference_t;
-        using LogLevelT = hiptensorLogLevel_t;
 
-        using LengthsT     = std::vector<std::size_t>;
-        using StridesT     = std::vector<std::size_t>;
-        using AlphaT       = double;
-        using BetaT        = double;
+        using AlgorithmT    = hiptensorAlgo_t;
+        using OperatorT     = hiptensorOperator_t;
+        using WorkSizePrefT = hiptensorWorksizePreference_t;
+        using LogLevelT     = hiptensorLogLevel_t;
+
+        using LengthsT = std::vector<std::size_t>;
+        using StridesT = std::vector<std::size_t>;
+        using AlphaT   = double;
+        using BetaT    = double;
 
         //TODO: Include after kernel generator/ kernel base class is created
-        using KernelT      = std::shared_ptr<KernelI>; // Kernel test interface
+        // using KernelT      = std::shared_ptr<KernelI>; // Kernel test interface
 
         //Data types of input and output tensors
         static inline std::vector<TestDataTypeT> dataTypes()
