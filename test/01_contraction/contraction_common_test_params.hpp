@@ -60,12 +60,11 @@ namespace hiptensor
         //Data types of input and output tensors
         static inline std::vector<TestDataTypeT> dataTypes()
         {
-            return
-            {
+            return {
                 // clang-format off
-                {HIP_R_32F, HIP_R_32F, NONE_TYPE, HIP_R_32F}, // scale F32
+                {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // scale F32
                 {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
-                {HIP_R_64F, HIP_R_64F, NONE_TYPE, HIP_R_64F}, // scale F64
+                {HIP_R_64F, HIP_R_64F, HIP_R_32F, HIP_R_64F}, // scale F64
                 {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
                 // clang-format on
             };
@@ -74,8 +73,7 @@ namespace hiptensor
         // compute type of contraction operation
         static inline std::vector<TestComputeTypeT> computeTypes()
         {
-            return
-            {
+            return {
                 // clang-format off
                 HIPTENSOR_COMPUTE_32F,
                 HIPTENSOR_COMPUTE_64F,
@@ -85,8 +83,7 @@ namespace hiptensor
 
         static inline std::vector<AlgorithmT> algorithms()
         {
-            return
-            {
+            return {
                 // clang-format off
                 HIPTENSOR_ALGO_ACTOR_CRITIC,
                 HIPTENSOR_ALGO_DEFAULT,
@@ -97,8 +94,7 @@ namespace hiptensor
 
         static inline std::vector<OperatorT> operators()
         {
-            return
-            {
+            return {
                 // clang-format off
                 HIPTENSOR_OP_IDENTITY,
                 // clang-format on
@@ -107,8 +103,7 @@ namespace hiptensor
 
         static inline std::vector<WorkSizePrefT> workSizePrefrences()
         {
-            return
-            {
+            return {
                 // clang-format off
                 HIPTENSOR_WORKSPACE_MIN,
                 HIPTENSOR_WORKSPACE_RECOMMENDED,
@@ -119,8 +114,7 @@ namespace hiptensor
 
         static inline std::vector<LogLevelT> logLevels()
         {
-            return
-            {
+            return {
                 // clang-format off
                 HIPTENSOR_LOG_LEVEL_OFF,
                 HIPTENSOR_LOG_LEVEL_ERROR,
@@ -134,8 +128,7 @@ namespace hiptensor
 
         static inline std::vector<LengthsT> problemLengths()
         {
-            return
-            {
+            return {
                 // clang-format off
                 //'m','n','u','v','h','k'
                 {150, 131, 14, 540, 17, 10},
@@ -147,8 +140,7 @@ namespace hiptensor
 
         static inline std::vector<StridesT> problemStrides()
         {
-            return
-            {
+            return {
                 // clang-format off
                 // clang-format on
             };

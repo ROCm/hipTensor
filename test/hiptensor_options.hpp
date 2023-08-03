@@ -60,16 +60,19 @@ namespace hiptensor
 
         void parseOptions()
         {
-            // Get input/output file names
-            llvm::cl::opt<std::string> inputFilename(
-                "i", llvm::cl::desc("Specify input filename"), llvm::cl::value_desc("filename"));
-            llvm::cl::opt<std::string> outputFilename(
-                "o", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
+            //             llvm::cl::opt<std::string> inputFilename(
+            //     "yaml", llvm::cl::desc("Specify input YAML filename"), llvm::cl::value_desc("filename"));
+            // llvm::cl::opt<std::string> outputFilename(
+            //     "out_file", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
 
-            mInputFilename  = inputFilename;
-            mOutputFilename = outputFilename;
-
+            // mInputFilename  = inputFilename;
+            // mOutputFilename = outputFilename;
+            std::cout << "\n\n Command Line Parameters \n\n";
             std::cout << mInputFilename << ", " << mOutputFilename << '\n';
+
+            // if input file is valid hook into YAML parsing for setting parameter values
+
+            // otherwise use default parameter values
         }
 
         void setOmits(int mask)
@@ -113,6 +116,7 @@ namespace hiptensor
         HiptensorOStream mOstream;
 
         bool        mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
+        bool        mUsingYAML;
         std::string mInputFilename, mOutputFilename;
     };
 

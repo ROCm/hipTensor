@@ -245,4 +245,18 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
     return std::make_pair(retval, maxRelativeError);
 }
 
+namespace std
+{
+    template <typename T>
+    static ostream& operator<<(ostream& os, const std::vector<T>& vec)
+    {
+        for(auto element : vec)
+        {
+            os << element << ", ";
+        }
+
+        return os;
+    }
+}
+
 #endif // HIPTENSOR_TEST_CONTRACTION_COMMON_HPP

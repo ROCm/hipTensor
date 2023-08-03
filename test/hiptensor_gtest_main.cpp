@@ -27,10 +27,23 @@
 
 #include <gtest/gtest.h>
 
+// Get input/output file names
+// llvm::cl::opt<std::string> inputFilename(
+//     "y", llvm::cl::desc("Specify input YAML filename"), llvm::cl::value_desc("filename"));
+// llvm::cl::opt<std::string> outputFilename(
+//     "o", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
+llvm::cl::opt<std::string> inputFilename("hiptensor_yaml",
+                                         llvm::cl::desc("Specify input YAML filename"),
+                                         llvm::cl::value_desc("filename"));
+llvm::cl::opt<std::string> outputFilename("hiptensor_out_file",
+                                          llvm::cl::desc("Specify output filename"),
+                                          llvm::cl::value_desc("filename"));
+
 int main(int argc, char** argv)
 {
     // Setup LLVM command line parser
     llvm::cl::ParseCommandLineOptions(argc, argv);
+    // llvm::cl::opt<std::string> OutputFilename("out", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
 
     // Parse hiptensor test options
     using Options     = hiptensor::HiptensorOptions;

@@ -27,6 +27,7 @@
 #ifndef HIPTENSOR_CONTRACTION_TEST_HPP
 #define HIPTENSOR_CONTRACTION_TEST_HPP
 
+#include "common.hpp"
 #include "contraction_common_test_params.hpp"
 
 #include <gtest/gtest.h>
@@ -59,7 +60,24 @@ namespace hiptensor
 
         void SetUp() override {}
 
-        virtual void RunKernel() {}
+        virtual void RunKernel()
+        {
+            auto param        = Base::GetParam();
+            auto testType     = std::get<0>(param);
+            auto computeType  = std::get<1>(param);
+            auto algorithm    = std::get<2>(param);
+            auto operatorType = std::get<3>(param);
+            auto workSizePref = std::get<4>(param);
+            auto logLevel     = std::get<5>(param);
+            auto lengths      = std::get<6>(param);
+            auto strides      = std::get<7>(param);
+            auto alpha        = std::get<8>(param);
+            auto beta         = std::get<9>(param);
+
+            std::cout << testType << ", " << computeType << ", " << algorithm << ", "
+                      << operatorType << ", " << workSizePref << ", " << logLevel << ", " << lengths
+                      << ", " << strides << ", " << alpha << ", " << beta << "\n";
+        }
 
         virtual void Warmup() {}
 
