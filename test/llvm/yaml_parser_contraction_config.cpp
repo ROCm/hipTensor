@@ -36,7 +36,7 @@
 namespace hiptensor
 {
     struct NoneType;
-    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
+    static constexpr hipDataType NONE_TYPE = (hipDataType)31; 
 }
 
 namespace hiptensor
@@ -69,9 +69,16 @@ namespace hiptensor
         std::vector<LengthsT> mProblemLengths;
         std::vector<StridesT> mProblemStrides;
         std::vector<AlphaT> mAlphas;
-        std::vector<BetaT> mBetas;
+        std::vector<BetaT> mBetas; 
     };
 }
+
+// Make custom types for Alpha and Beta types.
+// We want to differentiate their treatment 
+// when vectorized. Under the hood they are
+// doubles.
+LLVM_YAML_STRONG_TYPEDEF(double, AlphaT);
+LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 
 // Treatment of types as vector elements
 // Flow sequence vector is inline comma-separated values [val0, val1, ...]
@@ -86,6 +93,8 @@ LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::size_t>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(AlphaT)
+LLVM_YAML_IS_SEQUENCE_VECTOR(BetaT)
 
 namespace llvm
 {
@@ -93,7 +102,7 @@ namespace llvm
 namespace yaml
 {
     ///
-    // Enumeration definitions
+    // Enums encoding definitions
     ///
 
     template<>
@@ -149,8 +158,11 @@ namespace yaml
         }
     };
 
+    ///
+    // Bitfield for logging
     // Treating the hiptensorLogLevel as a bitfield, which is human readable.
     // Comma-separated values are inlined, but combined (|) into a final bit pattern.
+    ///
     template<>
     struct ScalarBitSetTraits<hiptensorLogLevel_t>
     {
@@ -164,32 +176,71 @@ namespace yaml
         }
     };
 
-    // Finally, mapping of the test param elements for reading / writing.
+    ///
+    // Define treatments of customized datatypes (passthrough to original types)
+    ///
+
+    template<>
+    struct ScalarTraits<AlphaT> : public ScalarTraits<double>
+    {
+        using Base = ScalarTraits<double>;
+
+        static void output(const AlphaT &value, void* v, llvm::raw_ostream &out) 
+        { 
+            Base::output(value, v, out);
+        }
+
+        static StringRef input(StringRef scalar, void* v, AlphaT &value) 
+        {
+            return Base::input(scalar, v, (double&)(value));
+        }
+    };
+
+    template<>
+    struct ScalarTraits<BetaT> : public ScalarTraits<double>
+    {
+        using Base = ScalarTraits<double>;
+
+        static void output(const BetaT &value, void* v, llvm::raw_ostream &out) 
+        { 
+            Base::output(value, v, out);
+        }
+
+        static StringRef input(StringRef scalar, void* v, BetaT &value) 
+        {
+            return Base::input(scalar, v, (double&)(value));
+        }
+    };
+
+    ///
+    // Mapping of the test param elements for reading / writing.
+    ///
     template <>
     struct MappingTraits<hiptensor::ContractionTestParams> 
     {
         static void mapping(IO &io, hiptensor::ContractionTestParams &doc) 
         {
+            // Logging bitfield
             io.mapRequired("Log Level", doc.mLogLevelMask);
+
+            // Sequences of combinatorial fields
             io.mapRequired("Tensor Data Types", doc.mDataTypes);
             io.mapRequired("Compute Types", doc.mComputeTypes);
             io.mapRequired("Algorithm Types", doc.mAlgorithms);
             io.mapRequired("Operators", doc.mOperators);
             io.mapRequired("Worksize Prefs", doc.mWorkSizePrefs);
-            io.mapRequired("Alphas", doc.mAlphas);
+            io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.mAlphas));
+            io.mapOptional("Betas", (std::vector<BetaT>&)(doc.mBetas), std::vector<BetaT>(doc.mAlphas.size(), BetaT(0)));
             io.mapRequired("Lengths", doc.mProblemLengths);
 
             // Default values for optional values
             auto defaultStrides = std::vector<std::vector<std::size_t>>(doc.mProblemLengths);
             for(auto i = 0; i < defaultStrides.size(); i++)
             {
-                defaultStrides[i] = std::vector<std::size_t>(doc.mProblemLengths[i].size(), 0);
+                defaultStrides[i] = std::vector<std::size_t>(doc.mProblemLengths[i].size(), std::size_t(0));
             }
 
-            // Optional values
             io.mapOptional("Strides", doc.mProblemStrides, defaultStrides);
-            io.mapOptional("Betas", doc.mBetas, std::vector<double>(doc.mAlphas.size(), 0));
-                
         }
 
         // Additional validation for input / output of the config
@@ -203,6 +254,16 @@ namespace yaml
             if(doc.mAlphas.size() == 0)
             {
                 return "Error: Empty Alphas";
+            }
+
+            if(doc.mBetas.size() > 0 && doc.mBetas.size() != doc.mAlphas.size())
+            {
+                return "Error: Alphas and betas must have same size";
+            }
+
+            if(doc.mProblemStrides.size() > 0 && doc.mProblemStrides.size() != doc.mProblemLengths.size())
+            {
+                return "Error: Problem strides and lengths must have same size";
             }
 
             return std::string{};

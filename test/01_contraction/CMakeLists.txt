@@ -26,9 +26,6 @@
 set(ContractionCommonSources ${HIPTENSOR_COMMON_TEST_SOURCES}
                              ${CMAKE_CURRENT_SOURCE_DIR}/contraction_resource.cpp)
 
-set(TestYamlSrc ${HIPTENSOR_COMMON_TEST_SOURCES}
-                             ${CMAKE_CURRENT_SOURCE_DIR}/yaml_test.cpp)
-
 
 set(BilinearContractionAcF32Sources ${ContractionCommonSources}
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bilinear_contraction_ac_f32.cpp)
@@ -44,4 +41,3 @@ add_hiptensor_test(scale_contraction_ac_f32_test scale_contraction_ac_f32.cpp)
 add_hiptensor_test(scale_contraction_ac_f64_test scale_contraction_ac_f64.cpp)
 add_hiptensor_test(bilinear_contraction_ac_f32_test ${BilinearContractionAcF32Sources})
 add_hiptensor_test(bilinear_contraction_ac_f64_test bilinear_contraction_ac_f64.cpp)
-add_hiptensor_test(yaml_test ${TestYamlSrc})

@@ -36,7 +36,7 @@
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
 #include "common.hpp"
-#include "../yaml/yaml_parser.hpp"
+#include "yaml_parser.hpp"
 
 namespace hiptensor
 {
