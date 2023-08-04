@@ -28,35 +28,35 @@
 #define HIPTENSOR_CONTRACTION_TEST_HPP
 
 #include "common.hpp"
-#include "contraction_common_test_params.hpp"
+#include "contraction_default_test_params.hpp"
 
 #include <gtest/gtest.h>
 
 namespace hiptensor
 {
     struct ContractionTest : public ::testing::TestWithParam<
-                                 std::tuple<typename ContractionCommonTestParams::TestDataTypeT,
-                                            typename ContractionCommonTestParams::TestComputeTypeT,
-                                            typename ContractionCommonTestParams::AlgorithmT,
-                                            typename ContractionCommonTestParams::OperatorT,
-                                            typename ContractionCommonTestParams::WorkSizePrefT,
-                                            typename ContractionCommonTestParams::LogLevelT,
-                                            typename ContractionCommonTestParams::LengthsT,
-                                            typename ContractionCommonTestParams::StridesT,
-                                            typename ContractionCommonTestParams::AlphaT,
-                                            typename ContractionCommonTestParams::BetaT>>
+                                 std::tuple<typename ContractionDefaultTestParams::TestDataTypeT,
+                                            typename ContractionDefaultTestParams::TestComputeTypeT,
+                                            typename ContractionDefaultTestParams::AlgorithmT,
+                                            typename ContractionDefaultTestParams::OperatorT,
+                                            typename ContractionDefaultTestParams::WorkSizePrefT,
+                                            typename ContractionDefaultTestParams::LogLevelT,
+                                            typename ContractionDefaultTestParams::LengthsT,
+                                            typename ContractionDefaultTestParams::StridesT,
+                                            typename ContractionDefaultTestParams::AlphaT,
+                                            typename ContractionDefaultTestParams::BetaT>>
     {
         using Base = ::testing::TestWithParam<
-            std::tuple<typename ContractionCommonTestParams::TestDataTypeT,
-                       typename ContractionCommonTestParams::TestComputeTypeT,
-                       typename ContractionCommonTestParams::AlgorithmT,
-                       typename ContractionCommonTestParams::OperatorT,
-                       typename ContractionCommonTestParams::WorkSizePrefT,
-                       typename ContractionCommonTestParams::LogLevelT,
-                       typename ContractionCommonTestParams::LengthsT,
-                       typename ContractionCommonTestParams::StridesT,
-                       typename ContractionCommonTestParams::AlphaT,
-                       typename ContractionCommonTestParams::BetaT>>;
+            std::tuple<typename ContractionDefaultTestParams::TestDataTypeT,
+                       typename ContractionDefaultTestParams::TestComputeTypeT,
+                       typename ContractionDefaultTestParams::AlgorithmT,
+                       typename ContractionDefaultTestParams::OperatorT,
+                       typename ContractionDefaultTestParams::WorkSizePrefT,
+                       typename ContractionDefaultTestParams::LogLevelT,
+                       typename ContractionDefaultTestParams::LengthsT,
+                       typename ContractionDefaultTestParams::StridesT,
+                       typename ContractionDefaultTestParams::AlphaT,
+                       typename ContractionDefaultTestParams::BetaT>>;
 
         void SetUp() override
         {

@@ -24,41 +24,29 @@
  *
  *******************************************************************************/
 #include "01_contraction/common.hpp"
-#include "01_contraction/contraction_common_test_params.hpp"
-#include "hiptensor_options.hpp"
+#include "01_contraction/contraction_default_test_params.hpp"
+#include "llvm/hiptensor_options.hpp"
 
 #include <gtest/gtest.h>
 
-// Get input/output file names
-llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
-                                           "Options for hipTensor testing framework");
-llvm::cl::opt<std::string> inputFilename("y",
-                                         llvm::cl::desc("Specify input YAML filename"),
-                                         llvm::cl::value_desc("filename"),
-                                         llvm::cl::cat(HiptensorCategory));
-llvm::cl::opt<std::string> outputFilename("o",
-                                          llvm::cl::desc("Specify output filename"),
-                                          llvm::cl::value_desc("filename"),
-                                          llvm::cl::cat(HiptensorCategory));
+// // Get input/output file names
+// llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
+//                                            "Options for hipTensor testing framework");
+// llvm::cl::opt<std::string> inputFilename("y",
+//                                          llvm::cl::desc("Specify input YAML filename"),
+//                                          llvm::cl::value_desc("filename"),
+//                                          llvm::cl::cat(HiptensorCategory));
+// llvm::cl::opt<std::string> outputFilename("o",
+//                                           llvm::cl::desc("Specify output filename"),
+//                                           llvm::cl::value_desc("filename"),
+//                                           llvm::cl::cat(HiptensorCategory));
 
 int main(int argc, char** argv)
 {
-    // Setup LLVM command line parser
-    llvm::StringMap<llvm::cl::Option*>& optionMap = llvm::cl::getRegisteredOptions();
-
-    assert(optionMap.count("version") > 0);
-    optionMap["version"]->setDescription("Display the version of LLVM used");
-    optionMap["version"]->setArgStr("llvm-version");
-
-    llvm::cl::HideUnrelatedOptions(HiptensorCategory);
-    llvm::cl::ParseCommandLineOptions(argc, argv);
-
-    std::cout << hiptensor::ContractionCommonTestParams::problemLengths();
-
     // Parse hiptensor test options
     using Options     = hiptensor::HiptensorOptions;
     auto& testOptions = Options::instance();
-    testOptions->parseOptions();
+    testOptions->parseOptions(argc, argv);
 
     // Initialize Google Tests
     testing::InitGoogleTest(&argc, argv);

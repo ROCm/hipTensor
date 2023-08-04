@@ -27,14 +27,10 @@
 #ifndef HIPTENSOR_OPTIONS
 #define HIPTENSOR_OPTIONS
 
-#include <llvm/Support/CommandLine.h>
 #include <stdlib.h>
 
 #include "hiptensor_ostream.hpp"
 #include "singleton.hpp"
-
-extern llvm::cl::opt<std::string> inputFilename;
-extern llvm::cl::opt<std::string> outputFilename;
 
 namespace hiptensor
 {
@@ -45,6 +41,7 @@ namespace hiptensor
 
     private: // No public instantiation except make_unique.
              // No copy
+        HiptensorOptions();
         HiptensorOptions(HiptensorOptions const&)            = delete;
         HiptensorOptions& operator=(HiptensorOptions const&) = delete;
 
@@ -52,63 +49,24 @@ namespace hiptensor
         HiptensorOptions(HiptensorOptions&&) = default;
         ~HiptensorOptions()                  = default;
 
-        HiptensorOptions()
-            : mOstream()
-            , mOmitSkipped(false)
-            , mOmitFailed(false)
-            , mOmitPassed(false)
-            , mOmitCout(false)
-        {
-        }
+        // HiptensorOptions()
+        //     : mOstream()
+        //     , mOmitSkipped(false)
+        //     , mOmitFailed(false)
+        //     , mOmitPassed(false)
+        //     , mOmitCout(false)
+        // {
+        // }
 
-        void parseOptions()
-        {
-            mInputFilename  = inputFilename;
-            mOutputFilename = outputFilename;
-            std::cout << "\n\nCommand Line Parameters \n\n";
-            std::cout << mInputFilename << ", " << mOutputFilename << '\n';
+        void parseOptions(int argc, char** argv);
+        void setOmits(int mask);
 
-            // if input file is valid hook into YAML parsing for setting parameter values
+        HiptensorOStream& ostream();
 
-            // otherwise use default parameter values
-        }
-
-        void setOmits(int mask)
-        {
-            if(mask & 1)
-                mOmitSkipped = true;
-            if(mask & 2)
-                mOmitFailed = true;
-            if(mask & 4)
-                mOmitPassed = true;
-            if(mask & 8)
-                mOmitCout = true;
-        }
-
-        HiptensorOStream& ostream()
-        {
-            return mOstream;
-        }
-
-        bool omitSkipped()
-        {
-            return mOmitSkipped;
-        }
-
-        bool omitFailed()
-        {
-            return mOmitFailed;
-        }
-
-        bool omitPassed()
-        {
-            return mOmitPassed;
-        }
-
-        bool omitCout()
-        {
-            return mOmitCout;
-        }
+        bool omitSkipped();
+        bool omitFailed();
+        bool omitPassed();
+        bool omitCout();
 
     protected:
         HiptensorOStream mOstream;

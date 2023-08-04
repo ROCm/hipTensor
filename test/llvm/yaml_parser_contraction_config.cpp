@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2023 Advanced Micro Devices, Inc.
+ * Copyright (c) 2023 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,51 +30,52 @@
 
 #include <hiptensor/hiptensor.hpp>
 
+#include "01_contraction/contraction_test_params.hpp"
 #include "yaml_parser_impl.hpp"
 
 // Fwd declare NoneType
 namespace hiptensor
 {
     struct NoneType;
-    static constexpr hipDataType NONE_TYPE = (hipDataType)31; 
+    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
 }
 
-namespace hiptensor
-{
-    ///
-    /// Generalized params for contraction tests
-    ///
-    struct ContractionTestParams
-    {
-        using TestDataTypeT = std::vector<hipDataType>;
-        using TestComputeTypeT = hiptensorComputeType_t;
- 
-        using AlgorithmT = hiptensorAlgo_t;
-        using OperatorT = hiptensorOperator_t;
-        using WorkSizePrefT = hiptensorWorksizePreference_t;
-        using LogLevelT = hiptensorLogLevel_t;
+// namespace hiptensor
+// {
+//     ///
+//     /// Generalized params for contraction tests
+//     ///
+//     struct ContractionTestParams
+//     {
+//         using TestDataTypeT = std::vector<hipDataType>;
+//         using TestComputeTypeT = hiptensorComputeType_t;
 
-        using LengthsT     = std::vector<std::size_t>;
-        using StridesT     = std::vector<std::size_t>;
-        using AlphaT       = double;
-        using BetaT        = double;
+//         using AlgorithmT = hiptensorAlgo_t;
+//         using OperatorT = hiptensorOperator_t;
+//         using WorkSizePrefT = hiptensorWorksizePreference_t;
+//         using LogLevelT = hiptensorLogLevel_t;
 
-        //Data types of input and output tensors
-        std::vector<TestDataTypeT> mDataTypes;
-        std::vector<TestComputeTypeT> mComputeTypes;
-        std::vector<AlgorithmT> mAlgorithms;
-        std::vector<OperatorT> mOperators;
-        std::vector<WorkSizePrefT> mWorkSizePrefs;
-        LogLevelT mLogLevelMask;
-        std::vector<LengthsT> mProblemLengths;
-        std::vector<StridesT> mProblemStrides;
-        std::vector<AlphaT> mAlphas;
-        std::vector<BetaT> mBetas; 
-    };
-}
+//         using LengthsT     = std::vector<std::size_t>;
+//         using StridesT     = std::vector<std::size_t>;
+//         using AlphaT       = double;
+//         using BetaT        = double;
+
+//         //Data types of input and output tensors
+//         std::vector<TestDataTypeT> mDataTypes;
+//         std::vector<TestComputeTypeT> mComputeTypes;
+//         std::vector<AlgorithmT> mAlgorithms;
+//         std::vector<OperatorT> mOperators;
+//         std::vector<WorkSizePrefT> mWorkSizePrefs;
+//         LogLevelT mLogLevelMask;
+//         std::vector<LengthsT> mProblemLengths;
+//         std::vector<StridesT> mProblemStrides;
+//         std::vector<AlphaT> mAlphas;
+//         std::vector<BetaT> mBetas;
+//     };
+// }
 
 // Make custom types for Alpha and Beta types.
-// We want to differentiate their treatment 
+// We want to differentiate their treatment
 // when vectorized. Under the hood they are
 // doubles.
 LLVM_YAML_STRONG_TYPEDEF(double, AlphaT);
@@ -98,179 +99,190 @@ LLVM_YAML_IS_SEQUENCE_VECTOR(BetaT)
 
 namespace llvm
 {
-    
-namespace yaml
-{
-    ///
-    // Enums encoding definitions
-    ///
 
-    template<>
-    struct ScalarEnumerationTraits<hipDataType>
+    namespace yaml
     {
-        static void enumeration(IO &io, hipDataType &value) 
+        ///
+        // Enums encoding definitions
+        ///
+
+        template <>
+        struct ScalarEnumerationTraits<hipDataType>
         {
-            io.enumCase(value, "HIP_R_32F", HIP_R_32F);
-            io.enumCase(value, "HIP_R_64F", HIP_R_64F);
-            io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
-        }
-    };
-
-    template<>
-    struct ScalarEnumerationTraits<hiptensorComputeType_t>
-    {
-        static void enumeration(IO &io, hiptensorComputeType_t &value) 
-        {
-            io.enumCase(value, "HIPTENSOR_COMPUTE_32F", HIPTENSOR_COMPUTE_32F);
-            io.enumCase(value, "HIPTENSOR_COMPUTE_64F", HIPTENSOR_COMPUTE_64F);
-        }
-    };
-    
-    template<>
-    struct ScalarEnumerationTraits<hiptensorAlgo_t>
-    {
-        static void enumeration(IO &io, hiptensorAlgo_t &value) 
-        {
-            io.enumCase(value, "HIPTENSOR_ALGO_ACTOR_CRITIC", HIPTENSOR_ALGO_ACTOR_CRITIC);
-            io.enumCase(value, "HIPTENSOR_ALGO_DEFAULT", HIPTENSOR_ALGO_DEFAULT);
-            io.enumCase(value, "HIPTENSOR_ALGO_DEFAULT_PATIENT", HIPTENSOR_ALGO_DEFAULT_PATIENT);
-        }
-    };
-
-    template<>
-    struct ScalarEnumerationTraits<hiptensorOperator_t>
-    {
-        static void enumeration(IO &io, hiptensorOperator_t &value) 
-        {
-            io.enumCase(value, "HIPTENSOR_OP_IDENTITY", HIPTENSOR_OP_IDENTITY);
-            io.enumCase(value, "HIPTENSOR_OP_UNKNOWN", HIPTENSOR_OP_UNKNOWN);
-        }
-    };
-
-    template<>
-    struct ScalarEnumerationTraits<hiptensorWorksizePreference_t>
-    {
-        static void enumeration(IO &io, hiptensorWorksizePreference_t &value) 
-        {
-            io.enumCase(value, "HIPTENSOR_WORKSPACE_MIN", HIPTENSOR_WORKSPACE_MIN);
-            io.enumCase(value, "HIPTENSOR_WORKSPACE_RECOMMENDED", HIPTENSOR_WORKSPACE_RECOMMENDED);
-            io.enumCase(value, "HIPTENSOR_WORKSPACE_MAX", HIPTENSOR_WORKSPACE_MAX);
-        }
-    };
-
-    ///
-    // Bitfield for logging
-    // Treating the hiptensorLogLevel as a bitfield, which is human readable.
-    // Comma-separated values are inlined, but combined (|) into a final bit pattern.
-    ///
-    template<>
-    struct ScalarBitSetTraits<hiptensorLogLevel_t>
-    {
-        static void bitset(IO &io, hiptensorLogLevel_t &value) 
-        {
-            io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_ERROR", HIPTENSOR_LOG_LEVEL_ERROR);
-            io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_PERF_TRACE", HIPTENSOR_LOG_LEVEL_PERF_TRACE);
-            io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_PERF_HINT", HIPTENSOR_LOG_LEVEL_PERF_HINT);
-            io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE", HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE);
-            io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_API_TRACE", HIPTENSOR_LOG_LEVEL_API_TRACE);
-        }
-    };
-
-    ///
-    // Define treatments of customized datatypes (passthrough to original types)
-    ///
-
-    template<>
-    struct ScalarTraits<AlphaT> : public ScalarTraits<double>
-    {
-        using Base = ScalarTraits<double>;
-
-        static void output(const AlphaT &value, void* v, llvm::raw_ostream &out) 
-        { 
-            Base::output(value, v, out);
-        }
-
-        static StringRef input(StringRef scalar, void* v, AlphaT &value) 
-        {
-            return Base::input(scalar, v, (double&)(value));
-        }
-    };
-
-    template<>
-    struct ScalarTraits<BetaT> : public ScalarTraits<double>
-    {
-        using Base = ScalarTraits<double>;
-
-        static void output(const BetaT &value, void* v, llvm::raw_ostream &out) 
-        { 
-            Base::output(value, v, out);
-        }
-
-        static StringRef input(StringRef scalar, void* v, BetaT &value) 
-        {
-            return Base::input(scalar, v, (double&)(value));
-        }
-    };
-
-    ///
-    // Mapping of the test param elements for reading / writing.
-    ///
-    template <>
-    struct MappingTraits<hiptensor::ContractionTestParams> 
-    {
-        static void mapping(IO &io, hiptensor::ContractionTestParams &doc) 
-        {
-            // Logging bitfield
-            io.mapRequired("Log Level", doc.mLogLevelMask);
-
-            // Sequences of combinatorial fields
-            io.mapRequired("Tensor Data Types", doc.mDataTypes);
-            io.mapRequired("Compute Types", doc.mComputeTypes);
-            io.mapRequired("Algorithm Types", doc.mAlgorithms);
-            io.mapRequired("Operators", doc.mOperators);
-            io.mapRequired("Worksize Prefs", doc.mWorkSizePrefs);
-            io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.mAlphas));
-            io.mapOptional("Betas", (std::vector<BetaT>&)(doc.mBetas), std::vector<BetaT>(doc.mAlphas.size(), BetaT(0)));
-            io.mapRequired("Lengths", doc.mProblemLengths);
-
-            // Default values for optional values
-            auto defaultStrides = std::vector<std::vector<std::size_t>>(doc.mProblemLengths);
-            for(auto i = 0; i < defaultStrides.size(); i++)
+            static void enumeration(IO& io, hipDataType& value)
             {
-                defaultStrides[i] = std::vector<std::size_t>(doc.mProblemLengths[i].size(), std::size_t(0));
+                io.enumCase(value, "HIP_R_32F", HIP_R_32F);
+                io.enumCase(value, "HIP_R_64F", HIP_R_64F);
+                io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
+            }
+        };
+
+        template <>
+        struct ScalarEnumerationTraits<hiptensorComputeType_t>
+        {
+            static void enumeration(IO& io, hiptensorComputeType_t& value)
+            {
+                io.enumCase(value, "HIPTENSOR_COMPUTE_32F", HIPTENSOR_COMPUTE_32F);
+                io.enumCase(value, "HIPTENSOR_COMPUTE_64F", HIPTENSOR_COMPUTE_64F);
+            }
+        };
+
+        template <>
+        struct ScalarEnumerationTraits<hiptensorAlgo_t>
+        {
+            static void enumeration(IO& io, hiptensorAlgo_t& value)
+            {
+                io.enumCase(value, "HIPTENSOR_ALGO_ACTOR_CRITIC", HIPTENSOR_ALGO_ACTOR_CRITIC);
+                io.enumCase(value, "HIPTENSOR_ALGO_DEFAULT", HIPTENSOR_ALGO_DEFAULT);
+                io.enumCase(
+                    value, "HIPTENSOR_ALGO_DEFAULT_PATIENT", HIPTENSOR_ALGO_DEFAULT_PATIENT);
+            }
+        };
+
+        template <>
+        struct ScalarEnumerationTraits<hiptensorOperator_t>
+        {
+            static void enumeration(IO& io, hiptensorOperator_t& value)
+            {
+                io.enumCase(value, "HIPTENSOR_OP_IDENTITY", HIPTENSOR_OP_IDENTITY);
+                io.enumCase(value, "HIPTENSOR_OP_UNKNOWN", HIPTENSOR_OP_UNKNOWN);
+            }
+        };
+
+        template <>
+        struct ScalarEnumerationTraits<hiptensorWorksizePreference_t>
+        {
+            static void enumeration(IO& io, hiptensorWorksizePreference_t& value)
+            {
+                io.enumCase(value, "HIPTENSOR_WORKSPACE_MIN", HIPTENSOR_WORKSPACE_MIN);
+                io.enumCase(
+                    value, "HIPTENSOR_WORKSPACE_RECOMMENDED", HIPTENSOR_WORKSPACE_RECOMMENDED);
+                io.enumCase(value, "HIPTENSOR_WORKSPACE_MAX", HIPTENSOR_WORKSPACE_MAX);
+            }
+        };
+
+        ///
+        // Bitfield for logging
+        // Treating the hiptensorLogLevel as a bitfield, which is human readable.
+        // Comma-separated values are inlined, but combined (|) into a final bit pattern.
+        ///
+        template <>
+        struct ScalarBitSetTraits<hiptensorLogLevel_t>
+        {
+            static void bitset(IO& io, hiptensorLogLevel_t& value)
+            {
+                io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_ERROR", HIPTENSOR_LOG_LEVEL_ERROR);
+                io.bitSetCase(
+                    value, "HIPTENSOR_LOG_LEVEL_PERF_TRACE", HIPTENSOR_LOG_LEVEL_PERF_TRACE);
+                io.bitSetCase(
+                    value, "HIPTENSOR_LOG_LEVEL_PERF_HINT", HIPTENSOR_LOG_LEVEL_PERF_HINT);
+                io.bitSetCase(value,
+                              "HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE",
+                              HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE);
+                io.bitSetCase(
+                    value, "HIPTENSOR_LOG_LEVEL_API_TRACE", HIPTENSOR_LOG_LEVEL_API_TRACE);
+            }
+        };
+
+        ///
+        // Define treatments of customized datatypes (passthrough to original types)
+        ///
+
+        template <>
+        struct ScalarTraits<AlphaT> : public ScalarTraits<double>
+        {
+            using Base = ScalarTraits<double>;
+
+            static void output(const AlphaT& value, void* v, llvm::raw_ostream& out)
+            {
+                Base::output(value, v, out);
             }
 
-            io.mapOptional("Strides", doc.mProblemStrides, defaultStrides);
-        }
+            static StringRef input(StringRef scalar, void* v, AlphaT& value)
+            {
+                return Base::input(scalar, v, (double&)(value));
+            }
+        };
 
-        // Additional validation for input / output of the config
-        static std::string validate(IO &io, hiptensor::ContractionTestParams &doc) 
+        template <>
+        struct ScalarTraits<BetaT> : public ScalarTraits<double>
         {
-            if(doc.mProblemLengths.size() == 0)
+            using Base = ScalarTraits<double>;
+
+            static void output(const BetaT& value, void* v, llvm::raw_ostream& out)
             {
-                return "Error: Empty Lengths";
+                Base::output(value, v, out);
             }
 
-            if(doc.mAlphas.size() == 0)
+            static StringRef input(StringRef scalar, void* v, BetaT& value)
             {
-                return "Error: Empty Alphas";
+                return Base::input(scalar, v, (double&)(value));
+            }
+        };
+
+        ///
+        // Mapping of the test param elements for reading / writing.
+        ///
+        template <>
+        struct MappingTraits<hiptensor::ContractionTestParams>
+        {
+            static void mapping(IO& io, hiptensor::ContractionTestParams& doc)
+            {
+                // Logging bitfield
+                io.mapRequired("Log Level", doc.mLogLevelMask);
+
+                // Sequences of combinatorial fields
+                io.mapRequired("Tensor Data Types", doc.mDataTypes);
+                io.mapRequired("Compute Types", doc.mComputeTypes);
+                io.mapRequired("Algorithm Types", doc.mAlgorithms);
+                io.mapRequired("Operators", doc.mOperators);
+                io.mapRequired("Worksize Prefs", doc.mWorkSizePrefs);
+                io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.mAlphas));
+                io.mapOptional("Betas",
+                               (std::vector<BetaT>&)(doc.mBetas),
+                               std::vector<BetaT>(doc.mAlphas.size(), BetaT(0)));
+                io.mapRequired("Lengths", doc.mProblemLengths);
+
+                // Default values for optional values
+                auto defaultStrides = std::vector<std::vector<std::size_t>>(doc.mProblemLengths);
+                for(auto i = 0; i < defaultStrides.size(); i++)
+                {
+                    defaultStrides[i]
+                        = std::vector<std::size_t>(doc.mProblemLengths[i].size(), std::size_t(0));
+                }
+
+                io.mapOptional("Strides", doc.mProblemStrides, defaultStrides);
             }
 
-            if(doc.mBetas.size() > 0 && doc.mBetas.size() != doc.mAlphas.size())
+            // Additional validation for input / output of the config
+            static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
-                return "Error: Alphas and betas must have same size";
-            }
+                if(doc.mProblemLengths.size() == 0)
+                {
+                    return "Error: Empty Lengths";
+                }
 
-            if(doc.mProblemStrides.size() > 0 && doc.mProblemStrides.size() != doc.mProblemLengths.size())
-            {
-                return "Error: Problem strides and lengths must have same size";
-            }
+                if(doc.mAlphas.size() == 0)
+                {
+                    return "Error: Empty Alphas";
+                }
 
-            return std::string{};
-        }
-    };
-    
-} // namespace yaml
+                if(doc.mBetas.size() > 0 && doc.mBetas.size() != doc.mAlphas.size())
+                {
+                    return "Error: Alphas and betas must have same size";
+                }
+
+                if(doc.mProblemStrides.size() > 0
+                   && doc.mProblemStrides.size() != doc.mProblemLengths.size())
+                {
+                    return "Error: Problem strides and lengths must have same size";
+                }
+
+                return std::string{};
+            }
+        };
+
+    } // namespace yaml
 
 } // namespace llvm
 

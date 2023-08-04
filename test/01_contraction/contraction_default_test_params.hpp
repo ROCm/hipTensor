@@ -24,22 +24,22 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_COMMON_TEST_PARAMS_HPP
-#define HIPTENSOR_CONTRACTION_COMMON_TEST_PARAMS_HPP
+#ifndef HIPTENSOR_CONTRACTION_DEFAULT_TEST_PARAMS_HPP
+#define HIPTENSOR_CONTRACTION_DEFAULT_TEST_PARAMS_HPP
 
 #include <tuple>
 #include <vector>
 
+#include "contraction_test_params.hpp"
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
-// #include "contraction_kernel_base.hpp"
 
 namespace hiptensor
 {
     ///
     /// Generalized params for contraction tests
     ///
-    struct ContractionCommonTestParams
+    struct ContractionDefaultTestParams : public ContractionTestParams
     {
         using TestDataTypeT    = std::vector<hipDataType>;
         using TestComputeTypeT = hiptensorComputeType_t;
@@ -160,4 +160,4 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_COMMON_TEST_PARAMS_HPP
+#endif // HIPTENSOR_CONTRACTION_DEFAULT_TEST_PARAMS_HPP

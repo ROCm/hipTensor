@@ -29,11 +29,11 @@
 
 #include "contraction_test.hpp"
 // #include "detail/dlrm_dot.hpp"
-#include "contraction_common_test_params.hpp"
+#include "contraction_default_test_params.hpp"
 
 namespace hiptensor
 {
-    struct TestParams : public ContractionCommonTestParams
+    struct TestParams : public ContractionDefaultTestParams
     {
     };
 
