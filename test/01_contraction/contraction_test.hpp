@@ -58,9 +58,7 @@ namespace hiptensor
                        typename ContractionCommonTestParams::AlphaT,
                        typename ContractionCommonTestParams::BetaT>>;
 
-        void SetUp() override {}
-
-        virtual void RunKernel()
+        void SetUp() override
         {
             auto param        = Base::GetParam();
             auto testType     = std::get<0>(param);
@@ -77,6 +75,23 @@ namespace hiptensor
             std::cout << testType << ", " << computeType << ", " << algorithm << ", "
                       << operatorType << ", " << workSizePref << ", " << logLevel << ", " << lengths
                       << ", " << strides << ", " << alpha << ", " << beta << "\n";
+        }
+
+        virtual void RunKernel()
+        {
+            auto param        = Base::GetParam();
+            auto testType     = std::get<0>(param);
+            auto computeType  = std::get<1>(param);
+            auto algorithm    = std::get<2>(param);
+            auto operatorType = std::get<3>(param);
+            auto workSizePref = std::get<4>(param);
+            auto logLevel     = std::get<5>(param);
+            auto lengths      = std::get<6>(param);
+            auto strides      = std::get<7>(param);
+            auto alpha        = std::get<8>(param);
+            auto beta         = std::get<9>(param);
+
+            EXPECT_TRUE(beta > 0.0);
         }
 
         virtual void Warmup() {}

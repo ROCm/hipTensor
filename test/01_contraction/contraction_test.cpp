@@ -35,24 +35,6 @@ namespace hiptensor
 {
     struct TestParams : public ContractionCommonTestParams
     {
-        // // Types: 32 and 16 bit float
-        // // Block Sizes: 16 x 16 x 16
-        // using Base         = ContractionCommonTestParams;
-        // using Types        = typename Base::DataTypes;
-        // using TileSizes    = typename Base::TileSizes;
-        // using KernelParams = typename CombineLists<Types, TileSizes>::Result;
-
-        // using GeneratorImpl   = ContractionGenerator;
-        // using KernelGenerator = KernelGenerator<KernelParams, GeneratorImpl>;
-
-        // // Sanity check for kernel generator
-        // static_assert(std::is_same<typename GeneratorImpl::ResultT, typename Base::KernelT>::value,
-        //               "Kernels from this generator do not match testing interface");
-
-        // static inline typename KernelGenerator::ResultT kernels()
-        // {
-        //     return KernelGenerator::generate();
-        // }
     };
 
 } // namespace hiptensor

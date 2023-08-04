@@ -23,27 +23,37 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include "01_contraction/common.hpp"
+#include "01_contraction/contraction_common_test_params.hpp"
 #include "hiptensor_options.hpp"
 
 #include <gtest/gtest.h>
 
 // Get input/output file names
-// llvm::cl::opt<std::string> inputFilename(
-//     "y", llvm::cl::desc("Specify input YAML filename"), llvm::cl::value_desc("filename"));
-// llvm::cl::opt<std::string> outputFilename(
-//     "o", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
-llvm::cl::opt<std::string> inputFilename("hiptensor_yaml",
+llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
+                                           "Options for hipTensor testing framework");
+llvm::cl::opt<std::string> inputFilename("y",
                                          llvm::cl::desc("Specify input YAML filename"),
-                                         llvm::cl::value_desc("filename"));
-llvm::cl::opt<std::string> outputFilename("hiptensor_out_file",
+                                         llvm::cl::value_desc("filename"),
+                                         llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<std::string> outputFilename("o",
                                           llvm::cl::desc("Specify output filename"),
-                                          llvm::cl::value_desc("filename"));
+                                          llvm::cl::value_desc("filename"),
+                                          llvm::cl::cat(HiptensorCategory));
 
 int main(int argc, char** argv)
 {
     // Setup LLVM command line parser
+    llvm::StringMap<llvm::cl::Option*>& optionMap = llvm::cl::getRegisteredOptions();
+
+    assert(optionMap.count("version") > 0);
+    optionMap["version"]->setDescription("Display the version of LLVM used");
+    optionMap["version"]->setArgStr("llvm-version");
+
+    llvm::cl::HideUnrelatedOptions(HiptensorCategory);
     llvm::cl::ParseCommandLineOptions(argc, argv);
-    // llvm::cl::opt<std::string> OutputFilename("out", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
+
+    std::cout << hiptensor::ContractionCommonTestParams::problemLengths();
 
     // Parse hiptensor test options
     using Options     = hiptensor::HiptensorOptions;

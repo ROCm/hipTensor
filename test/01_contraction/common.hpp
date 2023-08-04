@@ -34,6 +34,7 @@
 #include <mutex>
 #include <numeric>
 #include <unordered_map>
+#include <vector>
 
 // hiptensor includes
 #include <hiptensor/hiptensor.hpp>
@@ -248,11 +249,18 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
 namespace std
 {
     template <typename T>
-    static ostream& operator<<(ostream& os, const std::vector<T>& vec)
+    ostream& operator<<(ostream& os, const std::vector<T>& vec)
     {
-        for(auto element : vec)
+        for(auto i = 0; i < vec.size(); i++)
         {
-            os << element << ", ";
+            if(i < vec.size() - 1)
+            {
+                os << vec[i] << ", ";
+            }
+            else
+            {
+                os << vec[i];
+            }
         }
 
         return os;

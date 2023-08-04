@@ -33,6 +33,9 @@
 #include "hiptensor_ostream.hpp"
 #include "singleton.hpp"
 
+extern llvm::cl::opt<std::string> inputFilename;
+extern llvm::cl::opt<std::string> outputFilename;
+
 namespace hiptensor
 {
     struct HiptensorOptions : public LazySingleton<HiptensorOptions>
@@ -60,14 +63,9 @@ namespace hiptensor
 
         void parseOptions()
         {
-            //             llvm::cl::opt<std::string> inputFilename(
-            //     "yaml", llvm::cl::desc("Specify input YAML filename"), llvm::cl::value_desc("filename"));
-            // llvm::cl::opt<std::string> outputFilename(
-            //     "out_file", llvm::cl::desc("Specify output filename"), llvm::cl::value_desc("filename"));
-
-            // mInputFilename  = inputFilename;
-            // mOutputFilename = outputFilename;
-            std::cout << "\n\n Command Line Parameters \n\n";
+            mInputFilename  = inputFilename;
+            mOutputFilename = outputFilename;
+            std::cout << "\n\nCommand Line Parameters \n\n";
             std::cout << mInputFilename << ", " << mOutputFilename << '\n';
 
             // if input file is valid hook into YAML parsing for setting parameter values

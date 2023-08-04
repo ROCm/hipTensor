@@ -142,6 +142,7 @@ namespace hiptensor
         {
             return {
                 // clang-format off
+                {}
                 // clang-format on
             };
         }
