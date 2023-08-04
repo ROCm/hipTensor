@@ -24,6 +24,9 @@
  #
  ###############################################################################
 
+# Find / configure LLVM
+add_subdirectory(llvm)
+
 # Setup a test manifest
 set(INSTALL_TEST_FILE "${CMAKE_CURRENT_BINARY_DIR}/install_CTestTestfile.cmake")
 file(WRITE "${INSTALL_TEST_FILE}"
@@ -47,11 +50,13 @@ function(add_hiptensor_test BINARY_NAME FILE_NAME)
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
-                               ${PROJECT_SOURCE_DIR}/library/src/contraction)
+                               ${PROJECT_SOURCE_DIR}/library/src/contraction
+                               ${PROJECT_SOURCE_DIR}/test)
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
@@ -87,11 +92,12 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
-                               ${PROJECT_SOURCE_DIR}/library/src/include)
+                               ${PROJECT_SOURCE_DIR}/library/src/include
+                               ${PROJECT_SOURCE_DIR}/test)
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
@@ -118,8 +124,8 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
 endfunction()
 
+add_subdirectory(00_unit)
 add_subdirectory(01_contraction)
-add_subdirectory(00_unit/logger)
 
 rocm_install(
     FILES "${INSTALL_TEST_FILE}"

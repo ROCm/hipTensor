@@ -24,4 +24,5 @@
  #
  ###############################################################################
 
- add_hiptensor_unit_test(logger_test logger_test.cpp)
+ add_hiptensor_unit_test(logger_test ${CMAKE_CURRENT_SOURCE_DIR}/logger_test.cpp)
+ add_hiptensor_unit_test(yaml_test ${CMAKE_CURRENT_SOURCE_DIR}/yaml_test.cpp)
