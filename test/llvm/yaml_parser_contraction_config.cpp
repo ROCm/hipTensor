@@ -229,51 +229,51 @@ namespace llvm
             static void mapping(IO& io, hiptensor::ContractionTestParams& doc)
             {
                 // Logging bitfield
-                io.mapRequired("Log Level", doc.mLogLevelMask);
+                io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
-                io.mapRequired("Tensor Data Types", doc.mDataTypes);
-                io.mapRequired("Compute Types", doc.mComputeTypes);
-                io.mapRequired("Algorithm Types", doc.mAlgorithms);
-                io.mapRequired("Operators", doc.mOperators);
-                io.mapRequired("Worksize Prefs", doc.mWorkSizePrefs);
-                io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.mAlphas));
+                io.mapRequired("Tensor Data Types", doc.dataTypes());
+                io.mapRequired("Compute Types", doc.computeTypes());
+                io.mapRequired("Algorithm Types", doc.algorithms());
+                io.mapRequired("Operators", doc.operators());
+                io.mapRequired("Worksize Prefs", doc.workSizePrefrences());
+                io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapOptional("Betas",
-                               (std::vector<BetaT>&)(doc.mBetas),
-                               std::vector<BetaT>(doc.mAlphas.size(), BetaT(0)));
-                io.mapRequired("Lengths", doc.mProblemLengths);
+                               (std::vector<BetaT>&)(doc.betas()),
+                               std::vector<BetaT>(doc.alphas().size(), BetaT(0)));
+                io.mapRequired("Lengths", doc.problemLengths());
 
                 // Default values for optional values
-                auto defaultStrides = std::vector<std::vector<std::size_t>>(doc.mProblemLengths);
+                auto defaultStrides = std::vector<std::vector<std::size_t>>(doc.problemLengths());
                 for(auto i = 0; i < defaultStrides.size(); i++)
                 {
                     defaultStrides[i]
-                        = std::vector<std::size_t>(doc.mProblemLengths[i].size(), std::size_t(0));
+                        = std::vector<std::size_t>(doc.problemLengths()[i].size(), std::size_t(0));
                 }
 
-                io.mapOptional("Strides", doc.mProblemStrides, defaultStrides);
+                io.mapOptional("Strides", doc.problemStrides(), defaultStrides);
             }
 
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
-                if(doc.mProblemLengths.size() == 0)
+                if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
 
-                if(doc.mAlphas.size() == 0)
+                if(doc.alphas().size() == 0)
                 {
                     return "Error: Empty Alphas";
                 }
 
-                if(doc.mBetas.size() > 0 && doc.mBetas.size() != doc.mAlphas.size())
+                if(doc.betas().size() > 0 && doc.betas().size() != doc.alphas().size())
                 {
                     return "Error: Alphas and betas must have same size";
                 }
 
-                if(doc.mProblemStrides.size() > 0
-                   && doc.mProblemStrides.size() != doc.mProblemLengths.size())
+                if(doc.problemStrides().size() > 0
+                   && doc.problemStrides().size() != doc.problemLengths().size())
                 {
                     return "Error: Problem strides and lengths must have same size";
                 }

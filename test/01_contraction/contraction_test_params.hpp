@@ -51,6 +51,58 @@ namespace hiptensor
         using AlphaT   = double;
         using BetaT    = double;
 
+    public:
+        std::vector<TestDataTypeT>& dataTypes()
+        {
+            return mDataTypes;
+        }
+
+        std::vector<TestComputeTypeT>& computeTypes()
+        {
+            return mComputeTypes;
+        }
+
+        std::vector<AlgorithmT>& algorithms()
+        {
+            return mAlgorithms;
+        }
+
+        std::vector<OperatorT>& operators()
+        {
+            return mOperators;
+        }
+
+        std::vector<WorkSizePrefT>& workSizePrefrences()
+        {
+            return mWorkSizePrefs;
+        }
+
+        LogLevelT& logLevelMask()
+        {
+            return mLogLevelMask;
+        }
+
+        std::vector<LengthsT>& problemLengths()
+        {
+            return mProblemLengths;
+        }
+
+        std::vector<StridesT>& problemStrides()
+        {
+            return mProblemStrides;
+        }
+
+        std::vector<AlphaT>& alphas()
+        {
+            return mAlphas;
+        }
+
+        std::vector<BetaT>& betas()
+        {
+            return mBetas;
+        }
+
+    private:
         //Data types of input and output tensors
         std::vector<TestDataTypeT>    mDataTypes;
         std::vector<TestComputeTypeT> mComputeTypes;

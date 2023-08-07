@@ -117,4 +117,9 @@ namespace hiptensor
         return mOmitCout;
     }
 
+    auto HiptensorOptions::testParams() -> ContractionTestParams&
+    {
+        return mTestParams;
+    }
+
 } // namespace hiptensor

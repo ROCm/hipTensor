@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 
+#include "01_contraction/contraction_test_params.hpp"
 #include "hiptensor_ostream.hpp"
 #include "singleton.hpp"
 
@@ -68,8 +69,11 @@ namespace hiptensor
         bool omitPassed();
         bool omitCout();
 
+        ContractionTestParams& testParams();
+
     protected:
-        HiptensorOStream mOstream;
+        HiptensorOStream      mOstream;
+        ContractionTestParams mTestParams;
 
         bool        mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
         bool        mUsingYAML;
