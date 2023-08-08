@@ -24,22 +24,9 @@
  *
  *******************************************************************************/
 #include "01_contraction/common.hpp"
-#include "01_contraction/contraction_default_test_params.hpp"
 #include "llvm/hiptensor_options.hpp"
 
 #include <gtest/gtest.h>
-
-// // Get input/output file names
-// llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
-//                                            "Options for hipTensor testing framework");
-// llvm::cl::opt<std::string> inputFilename("y",
-//                                          llvm::cl::desc("Specify input YAML filename"),
-//                                          llvm::cl::value_desc("filename"),
-//                                          llvm::cl::cat(HiptensorCategory));
-// llvm::cl::opt<std::string> outputFilename("o",
-//                                           llvm::cl::desc("Specify output filename"),
-//                                           llvm::cl::value_desc("filename"),
-//                                           llvm::cl::cat(HiptensorCategory));
 
 int main(int argc, char** argv)
 {

@@ -29,7 +29,6 @@
 
 #include <stdlib.h>
 
-#include "01_contraction/contraction_test_params.hpp"
 #include "hiptensor_ostream.hpp"
 #include "singleton.hpp"
 
@@ -50,36 +49,24 @@ namespace hiptensor
         HiptensorOptions(HiptensorOptions&&) = default;
         ~HiptensorOptions()                  = default;
 
-        // HiptensorOptions()
-        //     : mOstream()
-        //     , mOmitSkipped(false)
-        //     , mOmitFailed(false)
-        //     , mOmitPassed(false)
-        //     , mOmitCout(false)
-        //     , mUsingDefaultParams(true)
-        // {
-        // }
-
         void parseOptions(int argc, char** argv);
         void setOmits(int mask);
 
         HiptensorOStream& ostream();
 
-        bool omitSkipped();
-        bool omitFailed();
-        bool omitPassed();
-        bool omitCout();
-        bool usingDefaultConfig();
-
-        ContractionTestParams& testParams();
-        void                   loadDefaultParameters(std::string path);
+        bool        omitSkipped();
+        bool        omitFailed();
+        bool        omitPassed();
+        bool        omitCout();
+        bool        usingDefaultConfig();
+        std::string inputFilename();
 
     protected:
-        HiptensorOStream      mOstream;
-        ContractionTestParams mTestParams;
+        HiptensorOStream mOstream;
 
-        bool        mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
-        bool        mUsingDefaultParams;
+        bool mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
+        bool mUsingDefaultParams;
+
         std::string mInputFilename, mOutputFilename;
     };
 

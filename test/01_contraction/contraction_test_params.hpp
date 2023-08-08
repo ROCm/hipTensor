@@ -134,23 +134,4 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-// namespace std
-// {
-//     template <typename T>
-//     ostream& operator<<(ostream& os, hiptensor::ContractionTestParams const& params)
-//     {
-//         os << params.dataTypes() << std::endl
-//            << params.computeTypes() << std::endl
-//            << params.algorithms() << std::endl
-//            << params.operators() << std::endl
-//            << params.workSizePrefrences() << std::endl
-//            << params.logLevelMask() << std::endl
-//            << params.problemLengths() << std::endl
-//            << params.problemStrides() << std::endl
-//            << params.alphas() << std::endl
-//            << params.betas() << std::endl;
-
-//         return os;
-//     }
-// } // namespace std
 #endif // HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP

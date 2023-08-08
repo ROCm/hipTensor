@@ -28,36 +28,37 @@
 #define HIPTENSOR_CONTRACTION_TEST_HPP
 
 #include "common.hpp"
-#include "contraction_default_test_params.hpp"
+#include "contraction_test_params.hpp"
 #include "llvm/hiptensor_options.hpp"
+#include "llvm/yaml_parser.hpp"
 
 #include <gtest/gtest.h>
 
 namespace hiptensor
 {
     struct ContractionTest : public ::testing::TestWithParam<
-                                 std::tuple<typename ContractionDefaultTestParams::TestDataTypeT,
-                                            typename ContractionDefaultTestParams::TestComputeTypeT,
-                                            typename ContractionDefaultTestParams::AlgorithmT,
-                                            typename ContractionDefaultTestParams::OperatorT,
-                                            typename ContractionDefaultTestParams::WorkSizePrefT,
-                                            typename ContractionDefaultTestParams::LogLevelT,
-                                            typename ContractionDefaultTestParams::LengthsT,
-                                            typename ContractionDefaultTestParams::StridesT,
-                                            typename ContractionDefaultTestParams::AlphaT,
-                                            typename ContractionDefaultTestParams::BetaT>>
+                                 std::tuple<typename ContractionTestParams::TestDataTypeT,
+                                            typename ContractionTestParams::TestComputeTypeT,
+                                            typename ContractionTestParams::AlgorithmT,
+                                            typename ContractionTestParams::OperatorT,
+                                            typename ContractionTestParams::WorkSizePrefT,
+                                            typename ContractionTestParams::LogLevelT,
+                                            typename ContractionTestParams::LengthsT,
+                                            typename ContractionTestParams::StridesT,
+                                            typename ContractionTestParams::AlphaT,
+                                            typename ContractionTestParams::BetaT>>
     {
-        using Base = ::testing::TestWithParam<
-            std::tuple<typename ContractionDefaultTestParams::TestDataTypeT,
-                       typename ContractionDefaultTestParams::TestComputeTypeT,
-                       typename ContractionDefaultTestParams::AlgorithmT,
-                       typename ContractionDefaultTestParams::OperatorT,
-                       typename ContractionDefaultTestParams::WorkSizePrefT,
-                       typename ContractionDefaultTestParams::LogLevelT,
-                       typename ContractionDefaultTestParams::LengthsT,
-                       typename ContractionDefaultTestParams::StridesT,
-                       typename ContractionDefaultTestParams::AlphaT,
-                       typename ContractionDefaultTestParams::BetaT>>;
+        using Base
+            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestDataTypeT,
+                                                  typename ContractionTestParams::TestComputeTypeT,
+                                                  typename ContractionTestParams::AlgorithmT,
+                                                  typename ContractionTestParams::OperatorT,
+                                                  typename ContractionTestParams::WorkSizePrefT,
+                                                  typename ContractionTestParams::LogLevelT,
+                                                  typename ContractionTestParams::LengthsT,
+                                                  typename ContractionTestParams::StridesT,
+                                                  typename ContractionTestParams::AlphaT,
+                                                  typename ContractionTestParams::BetaT>>;
 
         void SetUp() override
         {
@@ -95,21 +96,10 @@ namespace hiptensor
             EXPECT_TRUE(beta > 0.0);
         }
 
-        virtual void Warmup()
-        {
-            // using Options     = hiptensor::HiptensorOptions;
-            // auto& testOptions = Options::instance();
-            // std::cout << "Running warmup\n";
-            // if (testOptions->usingDefaultConfig())
-            // {
-            //     std::cout << "Loading default test params\n";
-            //     testOptions->loadDefaultParameters("../test/01_contraction/configs/brute_force_test_params.yaml");
-            // }
-        }
+        virtual void Warmup() {}
 
         void TearDown() override {}
     };
-    // pass enum template values through Base::<name>
 
 } // namespace rocwmma
 

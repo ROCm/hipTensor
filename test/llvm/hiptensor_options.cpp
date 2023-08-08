@@ -27,10 +27,6 @@
 #include <llvm/Support/CommandLine.h>
 
 #include "hiptensor_options.hpp"
-#include "yaml_parser.hpp"
-
-// extern llvm::cl::opt<std::string> inputFilename;
-// extern llvm::cl::opt<std::string> outputFilename;
 
 // Get input/output file names
 llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
@@ -74,30 +70,11 @@ namespace hiptensor
         mInputFilename  = hiptensorInputFilename;
         mOutputFilename = hiptensorOutputFilename;
 
-        std::cout << "\n\nCommand Line Parameters \n\n";
-        std::cout << mInputFilename << ", " << mOutputFilename << '\n';
-
         // Load testing params from YAML file if present
         if(!mInputFilename.empty())
         {
-            std::cout << "Loading test params from file\n";
             mUsingDefaultParams = false;
-            mTestParams
-                = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(
-                    mInputFilename);
         }
-
-        std::cout << "mTestParams = \n";
-        mTestParams.printParams();
-    }
-
-    void HiptensorOptions::loadDefaultParameters(std::string path)
-    {
-        std::cout << "loading default params\n";
-        mTestParams
-            = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(path);
-        std::cout << "mTestParams = \n";
-        mTestParams.printParams();
     }
 
     void HiptensorOptions::setOmits(int mask)
@@ -142,9 +119,9 @@ namespace hiptensor
         return mUsingDefaultParams;
     }
 
-    auto HiptensorOptions::testParams() -> ContractionTestParams&
+    std::string HiptensorOptions::inputFilename()
     {
-        return mTestParams;
+        return mInputFilename;
     }
 
 } // namespace hiptensor
