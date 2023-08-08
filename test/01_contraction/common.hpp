@@ -41,7 +41,7 @@
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
-#include "contraction_cpu_reference.hpp"
+// #include "contraction_cpu_reference.hpp"
 #include "device/common.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \

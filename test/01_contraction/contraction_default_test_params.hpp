@@ -112,7 +112,7 @@ namespace hiptensor
             };
         }
 
-        static inline std::vector<LogLevelT> logLevels()
+        static inline std::vector<LogLevelT> logLevelMask()
         {
             return {
                 // clang-format off

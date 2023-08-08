@@ -272,7 +272,7 @@ namespace llvm
                     return "Error: Alphas and betas must have same size";
                 }
 
-                if(doc.problemStrides().size() > 0
+                if(doc.problemStrides().size() > 1
                    && doc.problemStrides().size() != doc.problemLengths().size())
                 {
                     return "Error: Problem strides and lengths must have same size";

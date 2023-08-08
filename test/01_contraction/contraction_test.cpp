@@ -27,20 +27,28 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 
-#include "contraction_test.hpp"
-// #include "detail/dlrm_dot.hpp"
 #include "contraction_default_test_params.hpp"
+#include "contraction_test.hpp"
 
 namespace hiptensor
 {
     struct TestParams : public ContractionDefaultTestParams
     {
     };
-
 } // namespace hiptensor
 
 class ContractionTestBasic : public hiptensor::ContractionTest
 {
+    // ContractionTestBasic::ContractionTestBasic()
+    // {
+    //     using Options     = hiptensor::HiptensorOptions;
+    //     // auto& testOptions = Options::instance();
+    //     if (Options::instance()->usingDefaultConfig())
+    //     {
+    //         std::cout << "Loading default test params\n";
+    //         Options::instance()->loadDefaultParameters("../test/01_contraction/configs/brute_force_test_params.yaml");
+    //     }
+    // }
 };
 
 TEST_P(ContractionTestBasic, RunKernel)
@@ -54,16 +62,31 @@ TEST_P(ContractionTestBasic, RunKernel)
     this->RunKernel();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ContractionTests,
-    ContractionTestBasic,
-    ::testing::Combine(::testing::ValuesIn(hiptensor::TestParams::dataTypes()),
-                       ::testing::ValuesIn(hiptensor::TestParams::computeTypes()),
-                       ::testing::ValuesIn(hiptensor::TestParams::algorithms()),
-                       ::testing::ValuesIn(hiptensor::TestParams::operators()),
-                       ::testing::ValuesIn(hiptensor::TestParams::workSizePrefrences()),
-                       ::testing::ValuesIn(hiptensor::TestParams::logLevels()),
-                       ::testing::ValuesIn(hiptensor::TestParams::problemLengths()),
-                       ::testing::ValuesIn(hiptensor::TestParams::problemStrides()),
-                       ::testing::ValuesIn(hiptensor::TestParams::alphas()),
-                       ::testing::ValuesIn(hiptensor::TestParams::betas())));
+auto loadConfig()
+{
+    using Options = hiptensor::HiptensorOptions;
+    // auto& testOptions = Options::instance();
+    if(Options::instance()->usingDefaultConfig())
+    {
+        std::cout << "Loading default test params\n";
+        Options::instance()->loadDefaultParameters(
+            "../test/01_contraction/configs/brute_force_test_params.yaml");
+    }
+
+    // move mtestParams here
+
+    return ::testing::Combine(
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().dataTypes()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().computeTypes()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().algorithms()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().operators()),
+        ::testing::ValuesIn(
+            hiptensor::HiptensorOptions::instance()->testParams().workSizePrefrences()),
+        ::testing::Values(hiptensor::HiptensorOptions::instance()->testParams().logLevelMask()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().problemLengths()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().problemStrides()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().alphas()),
+        ::testing::ValuesIn(hiptensor::HiptensorOptions::instance()->testParams().betas()));
+}
+
+INSTANTIATE_TEST_SUITE_P(ContractionTests, ContractionTestBasic, loadConfig());

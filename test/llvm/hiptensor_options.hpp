@@ -56,6 +56,7 @@ namespace hiptensor
         //     , mOmitFailed(false)
         //     , mOmitPassed(false)
         //     , mOmitCout(false)
+        //     , mUsingDefaultParams(true)
         // {
         // }
 
@@ -68,15 +69,17 @@ namespace hiptensor
         bool omitFailed();
         bool omitPassed();
         bool omitCout();
+        bool usingDefaultConfig();
 
         ContractionTestParams& testParams();
+        void                   loadDefaultParameters(std::string path);
 
     protected:
         HiptensorOStream      mOstream;
         ContractionTestParams mTestParams;
 
         bool        mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
-        bool        mUsingYAML;
+        bool        mUsingDefaultParams;
         std::string mInputFilename, mOutputFilename;
     };
 

@@ -33,6 +33,8 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
+
 namespace hiptensor
 {
 
@@ -102,6 +104,20 @@ namespace hiptensor
             return mBetas;
         }
 
+        void printParams()
+        {
+            std::cout << "DataTypes: " << mDataTypes << std::endl
+                      << "ComputeTypes: " << mComputeTypes << std::endl
+                      << "Algorithms: " << mAlgorithms << std::endl
+                      << "Operators: " << mOperators << std::endl
+                      << "WorkSizePrefs: " << mWorkSizePrefs << std::endl
+                      << "LogLevelMask: " << mLogLevelMask << std::endl
+                      << "ProblemLengths: " << mProblemLengths << std::endl
+                      << "ProblemStrides: " << mProblemStrides << std::endl
+                      << "Alphas: " << mAlphas << std::endl
+                      << "Betas: " << mBetas << std::endl;
+        }
+
     private:
         //Data types of input and output tensors
         std::vector<TestDataTypeT>    mDataTypes;
@@ -118,4 +134,23 @@ namespace hiptensor
 
 } // namespace hiptensor
 
+// namespace std
+// {
+//     template <typename T>
+//     ostream& operator<<(ostream& os, hiptensor::ContractionTestParams const& params)
+//     {
+//         os << params.dataTypes() << std::endl
+//            << params.computeTypes() << std::endl
+//            << params.algorithms() << std::endl
+//            << params.operators() << std::endl
+//            << params.workSizePrefrences() << std::endl
+//            << params.logLevelMask() << std::endl
+//            << params.problemLengths() << std::endl
+//            << params.problemStrides() << std::endl
+//            << params.alphas() << std::endl
+//            << params.betas() << std::endl;
+
+//         return os;
+//     }
+// } // namespace std
 #endif // HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP

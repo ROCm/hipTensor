@@ -27,6 +27,7 @@
 #include <llvm/Support/CommandLine.h>
 
 #include "hiptensor_options.hpp"
+#include "yaml_parser.hpp"
 
 // extern llvm::cl::opt<std::string> inputFilename;
 // extern llvm::cl::opt<std::string> outputFilename;
@@ -51,7 +52,7 @@ namespace hiptensor
         , mOmitFailed(false)
         , mOmitPassed(false)
         , mOmitCout(false)
-        , mUsingYAML(false)
+        , mUsingDefaultParams(true)
         , mInputFilename("")
         , mOutputFilename("")
     {
@@ -72,12 +73,31 @@ namespace hiptensor
         // set I/O files if present
         mInputFilename  = hiptensorInputFilename;
         mOutputFilename = hiptensorOutputFilename;
+
         std::cout << "\n\nCommand Line Parameters \n\n";
         std::cout << mInputFilename << ", " << mOutputFilename << '\n';
 
-        // if input file is valid hook into YAML parsing for setting parameter values
+        // Load testing params from YAML file if present
+        if(!mInputFilename.empty())
+        {
+            std::cout << "Loading test params from file\n";
+            mUsingDefaultParams = false;
+            mTestParams
+                = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(
+                    mInputFilename);
+        }
 
-        // otherwise use default parameter values
+        std::cout << "mTestParams = \n";
+        mTestParams.printParams();
+    }
+
+    void HiptensorOptions::loadDefaultParameters(std::string path)
+    {
+        std::cout << "loading default params\n";
+        mTestParams
+            = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(path);
+        std::cout << "mTestParams = \n";
+        mTestParams.printParams();
     }
 
     void HiptensorOptions::setOmits(int mask)
@@ -115,6 +135,11 @@ namespace hiptensor
     bool HiptensorOptions::omitCout()
     {
         return mOmitCout;
+    }
+
+    bool HiptensorOptions::usingDefaultConfig()
+    {
+        return mUsingDefaultParams;
     }
 
     auto HiptensorOptions::testParams() -> ContractionTestParams&

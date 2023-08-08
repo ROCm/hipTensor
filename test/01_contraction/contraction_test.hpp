@@ -29,6 +29,7 @@
 
 #include "common.hpp"
 #include "contraction_default_test_params.hpp"
+#include "llvm/hiptensor_options.hpp"
 
 #include <gtest/gtest.h>
 
@@ -94,7 +95,17 @@ namespace hiptensor
             EXPECT_TRUE(beta > 0.0);
         }
 
-        virtual void Warmup() {}
+        virtual void Warmup()
+        {
+            // using Options     = hiptensor::HiptensorOptions;
+            // auto& testOptions = Options::instance();
+            // std::cout << "Running warmup\n";
+            // if (testOptions->usingDefaultConfig())
+            // {
+            //     std::cout << "Loading default test params\n";
+            //     testOptions->loadDefaultParameters("../test/01_contraction/configs/brute_force_test_params.yaml");
+            // }
+        }
 
         void TearDown() override {}
     };
