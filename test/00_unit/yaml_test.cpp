@@ -96,8 +96,9 @@ int main(int argc, char* argv[])
         = {hiptensorLogLevel_t(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE)};
     yee.mProblemLengths
         = {{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}};
-    yee.mAlphas = {0, 1, 1};
-    yee.mBetas  = {2, 2, 2};
+    yee.mProblemStrides = {{}};
+    yee.mAlphas         = {0, 1, 1};
+    yee.mBetas          = {2, 2, 2};
 
     hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile("test-out.yaml",
                                                                                yee);
