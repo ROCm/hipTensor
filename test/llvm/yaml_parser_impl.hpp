@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2023 Advanced Micro Devices, Inc.
+ * Copyright (c) 2023 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,32 +27,34 @@
 #ifndef HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP
 #define HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP
 
-#include <llvm/Support/YAMLParser.h>
 #include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/YAMLParser.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include "yaml_parser.hpp"
 
 namespace hiptensor
 {
-    template<typename ConfigT>
+    template <typename ConfigT>
     /* static */
     ConfigT YamlConfigLoader<ConfigT>::loadFromFile(std::string const& filePath)
     {
+        auto result = ConfigT{};
+
         auto in = llvm::MemoryBuffer::getFile(filePath, true);
-        if (std::error_code ec = in.getError()) 
+        if(std::error_code ec = in.getError())
         {
             llvm::errs() << "Cannot open file for reading: " << filePath << "\n";
             llvm::errs() << ec.message() << '\n';
-        } 
-        else 
+            return result;
+        }
+        else
         {
             llvm::outs() << "Opened file for reading: " << filePath << "\n";
         }
 
         llvm::yaml::Input reader(**in);
 
-        auto result = ConfigT{};
         reader >> result;
 
         if(reader.error())
@@ -63,20 +65,20 @@ namespace hiptensor
         return result;
     }
 
-    template<typename ConfigT>
+    template <typename ConfigT>
     /* static */
     void YamlConfigLoader<ConfigT>::storeToFile(std::string const& filePath, ConfigT const& config)
     {
-        std::error_code ec;
+        std::error_code      ec;
         llvm::raw_fd_ostream out(filePath, ec);
 
-        if(ec) 
+        if(ec)
         {
             llvm::errs() << "Cannot open file for writing: " << filePath << "\n";
             llvm::errs() << "Error: " << ec.message() << "\n";
             out.close();
-        } 
-        else 
+        }
+        else
         {
             llvm::outs() << "Opened file for writing: " << filePath << "\n";
         }

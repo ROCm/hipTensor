@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (c) 2021-2023 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,77 +29,66 @@
 
 #include <hip/hip_runtime_api.h>
 
-#include <hiptensor/internal/hiptensor_utility.hpp>
 #include "hip_resource.hpp"
+#include <hiptensor/internal/hiptensor_utility.hpp>
 
 namespace hiptensor
 {
 
-    auto  HipResource::allocDevice(int64_t numBytes) -> DevicePtrT
+    auto HipResource::allocDevice(int64_t numBytes) -> DevicePtrT
     {
         char* data;
         CHECK_HIP_ERROR(hipMalloc(&data, numBytes));
         return DevicePtrT(data, DeviceDeleter());
     }
 
-     void HipResource::reallocDevice(DevicePtrT& devicePtr, int64_t numBytes)
+    void HipResource::reallocDevice(DevicePtrT& devicePtr, int64_t numBytes)
     {
         // Free existing ptr first before alloc in case of big sizes.
         devicePtr.reset(nullptr);
         devicePtr = std::move(allocDevice(numBytes));
     }
 
-    auto  HipResource::allocHost(int64_t numBytes) -> HostPtrT
+    auto HipResource::allocHost(int64_t numBytes) -> HostPtrT
     {
-        void* data;
-        data = operator new (numBytes);
+        void*  data;
+        data = operator new(numBytes);
         return HostPtrT(data, HostDeleter());
     }
 
-     void HipResource::reallocHost(HostPtrT& hostPtr, int64_t numBytes)
+    void HipResource::reallocHost(HostPtrT& hostPtr, int64_t numBytes)
     {
         // Free existing ptr first before alloc in case of big sizes.
         hostPtr.reset(nullptr);
         hostPtr = std::move(allocHost(numBytes));
     }
 
-     void HipResource::reallocDeviceHostPair(DevicePtrT& devicePtr,
-                                                   HostPtrT&   hostPtr,
-                                                   int64_t     numBytes)
+    void HipResource::reallocDeviceHostPair(DevicePtrT& devicePtr,
+                                            HostPtrT&   hostPtr,
+                                            int64_t     numBytes)
     {
         reallocDevice(devicePtr, numBytes);
         reallocHost(hostPtr, numBytes);
     }
 
-    void HipResource::copyData(HostPtrT&         dst,
-                               DevicePtrT const& src,
-                               int64_t           numBytes)
+    void HipResource::copyData(HostPtrT& dst, DevicePtrT const& src, int64_t numBytes)
     {
-        CHECK_HIP_ERROR(
-            hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyDeviceToHost));
     }
 
-    void HipResource::copyData(DevicePtrT&     dst,
-                               HostPtrT const& src,
-                               int64_t         numBytes)
+    void HipResource::copyData(DevicePtrT& dst, HostPtrT const& src, int64_t numBytes)
     {
-        CHECK_HIP_ERROR(
-            hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyHostToDevice));
     }
 
-    void
-        HipResource::copyData(HostPtrT& dst, HostPtrT const& src, int64_t numBytes)
+    void HipResource::copyData(HostPtrT& dst, HostPtrT const& src, int64_t numBytes)
     {
-        CHECK_HIP_ERROR(
-            hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyHostToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyHostToHost));
     }
 
-    void HipResource::copyData(DevicePtrT&       dst,
-                               DevicePtrT const& src,
-                               int64_t           numBytes)
+    void HipResource::copyData(DevicePtrT& dst, DevicePtrT const& src, int64_t numBytes)
     {
-        CHECK_HIP_ERROR(
-            hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyDeviceToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dst.get(), src.get(), numBytes, hipMemcpyDeviceToDevice));
     }
 
 } // namespace hiptensor

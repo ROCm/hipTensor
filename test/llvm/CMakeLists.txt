@@ -27,7 +27,7 @@
 # Find / configure LLVM
 find_package(LLVM REQUIRED CONFIG)
 
-# Required: 
+# Required:
 # LLVMObjectYAML for YAML parsing
 # LLVMSupport for CL processing
 find_library(LLVMObjectYAML_LIBRARY NAMES LLVMObjectYAML PATHS ${LLVM_LIBRARY_DIR})
@@ -56,10 +56,12 @@ set(HIPTENSOR_LLVM_LIBS "-L${LLVM_LIBRARY_DIR}"
 # Includes
 set(HIPTENSOR_LLVM_INCLUDES ${LLVM_INCLUDE_DIRS}
                             ${PROJECT_SOURCE_DIR}/library/include
+                            ${PROJECT_SOURCE_DIR}/test
                             )
 
 # Sources for this static object
-set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_contraction_config.cpp)
+set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_contraction_config.cpp
+                           ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options.cpp)
 
 # Create hiptensor_llvm object target
 # All LLVM resources are private to this object.
@@ -69,3 +71,4 @@ set_target_properties(hiptensor_llvm PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(hiptensor_llvm PRIVATE ${HIPTENSOR_LLVM_LIBS})
 target_include_directories(hiptensor_llvm PRIVATE ${HIPTENSOR_LLVM_INCLUDES})
 target_include_directories(hiptensor_llvm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(hiptensor_llvm PRIVATE -fno-rtti)

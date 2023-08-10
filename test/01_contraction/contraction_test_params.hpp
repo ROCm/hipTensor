@@ -19,29 +19,25 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  *******************************************************************************/
 
-#include <algorithm>
-#include <fstream>
-#include <iterator>
-#include <numeric>
-#include <unordered_map>
+#ifndef HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP
+#define HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP
 
-// hiptensor includes
+#include <tuple>
+#include <vector>
+
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
-#include <hiptensor/internal/hiptensor_utility.hpp>
 
 #include "common.hpp"
-#include "yaml_parser.hpp"
 
 namespace hiptensor
 {
-    struct NoneType;
-    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
+
     struct ContractionTestParams
     {
         using TestDataTypeT    = std::vector<hipDataType>;
@@ -57,6 +53,72 @@ namespace hiptensor
         using AlphaT   = double;
         using BetaT    = double;
 
+    public:
+        std::vector<TestDataTypeT>& dataTypes()
+        {
+            return mDataTypes;
+        }
+
+        std::vector<TestComputeTypeT>& computeTypes()
+        {
+            return mComputeTypes;
+        }
+
+        std::vector<AlgorithmT>& algorithms()
+        {
+            return mAlgorithms;
+        }
+
+        std::vector<OperatorT>& operators()
+        {
+            return mOperators;
+        }
+
+        std::vector<WorkSizePrefT>& workSizePrefrences()
+        {
+            return mWorkSizePrefs;
+        }
+
+        LogLevelT& logLevelMask()
+        {
+            return mLogLevelMask;
+        }
+
+        std::vector<LengthsT>& problemLengths()
+        {
+            return mProblemLengths;
+        }
+
+        std::vector<StridesT>& problemStrides()
+        {
+            return mProblemStrides;
+        }
+
+        std::vector<AlphaT>& alphas()
+        {
+            return mAlphas;
+        }
+
+        std::vector<BetaT>& betas()
+        {
+            return mBetas;
+        }
+
+        void printParams()
+        {
+            std::cout << "DataTypes: " << mDataTypes << std::endl
+                      << "ComputeTypes: " << mComputeTypes << std::endl
+                      << "Algorithms: " << mAlgorithms << std::endl
+                      << "Operators: " << mOperators << std::endl
+                      << "WorkSizePrefs: " << mWorkSizePrefs << std::endl
+                      << "LogLevelMask: " << mLogLevelMask << std::endl
+                      << "ProblemLengths: " << mProblemLengths << std::endl
+                      << "ProblemStrides: " << mProblemStrides << std::endl
+                      << "Alphas: " << mAlphas << std::endl
+                      << "Betas: " << mBetas << std::endl;
+        }
+
+    private:
         //Data types of input and output tensors
         std::vector<TestDataTypeT>    mDataTypes;
         std::vector<TestComputeTypeT> mComputeTypes;
@@ -69,41 +131,7 @@ namespace hiptensor
         std::vector<AlphaT>           mAlphas;
         std::vector<BetaT>            mBetas;
     };
-}
 
-#define MAX_ELEMENTS_PRINT_COUNT 512
+} // namespace hiptensor
 
-int main(int argc, char* argv[])
-{
-    auto yee          = hiptensor::ContractionTestParams{};
-    yee.mLogLevelMask = (hiptensorLogLevel_t)(HIPTENSOR_LOG_LEVEL_OFF);
-    yee.mDataTypes    = {
-        // clang-format off
-                {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F}, // scale F32
-                {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
-                {HIP_R_64F, HIP_R_64F, hiptensor::NONE_TYPE, HIP_R_64F}, // scale F64
-                {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
-        // clang-format on
-    };
-
-    yee.mComputeTypes = {HIPTENSOR_COMPUTE_32F, HIPTENSOR_COMPUTE_64F};
-    yee.mAlgorithms
-        = {HIPTENSOR_ALGO_DEFAULT, HIPTENSOR_ALGO_DEFAULT_PATIENT, HIPTENSOR_ALGO_ACTOR_CRITIC};
-    yee.mOperators = {HIPTENSOR_OP_IDENTITY};
-    yee.mWorkSizePrefs
-        = {HIPTENSOR_WORKSPACE_RECOMMENDED, HIPTENSOR_WORKSPACE_MIN, HIPTENSOR_WORKSPACE_MAX};
-    yee.mLogLevelMask
-        = {hiptensorLogLevel_t(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE)};
-    yee.mProblemLengths
-        = {{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}};
-    yee.mProblemStrides = {{}};
-    yee.mAlphas         = {0, 1, 1};
-    yee.mBetas          = {2, 2, 2};
-
-    hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile("test-out.yaml",
-                                                                               yee);
-    auto yee1 = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(
-        "test-out.yaml");
-
-    return 0;
-}
+#endif // HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP

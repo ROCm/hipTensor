@@ -34,13 +34,14 @@
 #include <mutex>
 #include <numeric>
 #include <unordered_map>
+#include <vector>
 
 // hiptensor includes
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
-#include "contraction_cpu_reference.hpp"
+// #include "contraction_cpu_reference.hpp"
 #include "device/common.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
@@ -243,6 +244,27 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
     }
 
     return std::make_pair(retval, maxRelativeError);
+}
+
+namespace std
+{
+    template <typename T>
+    ostream& operator<<(ostream& os, const std::vector<T>& vec)
+    {
+        for(auto i = 0; i < vec.size(); i++)
+        {
+            if(i < vec.size() - 1)
+            {
+                os << vec[i] << ", ";
+            }
+            else
+            {
+                os << vec[i];
+            }
+        }
+
+        return os;
+    }
 }
 
 #endif // HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
