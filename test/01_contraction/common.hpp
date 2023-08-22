@@ -83,6 +83,26 @@ inline bool isF64Supported()
     return (deviceName.find("gfx90a") != std::string::npos);
 }
 
+// fill kernel for 'elementSize' elements
+template <typename DataType>
+__host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
+{
+    auto blockDim = dim3(1024, 1, 1);
+    auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
+    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize);
+}
+
+// fill kernel wrapper for 'elementSize' elements with a specific value
+template <typename DataType>
+__host__ static inline void
+    fillValLaunchKernel(DataType* data, uint32_t elementSize, DataType value)
+{
+    auto blockDim = dim3(1024, 1, 1);
+    auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
+    hipLaunchKernelGGL(
+        (fillValKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize, value);
+}
+
 template <typename intT1,
           class = typename std::enable_if<std::is_integral<intT1>::value>::type,
           typename intT2,
