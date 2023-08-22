@@ -73,6 +73,7 @@ namespace hiptensor
         // False = skip test
         virtual bool checkDevice() const
         {
+            return true;
         }
 
         virtual bool checkSizes() const
