@@ -61,7 +61,7 @@ namespace hiptensor
         using HostPtrT = Base::HostPtrT;
 
         // M, N, U, V, H, K
-        using ProblemDims = std::tuple<int64_t, int64_t, int64_t, int64_t, int64_t, int64_t>;
+        using ProblemDims = std::vector<std::size_t>;;
 
         // MatrixA, MatrixB, MatrixC, MatrixD (# of elements)
         using MatrixElements = std::tuple<int64_t, int64_t, int64_t, int64_t>;

@@ -85,10 +85,10 @@ namespace hiptensor
         // elements MatrixC = M * N * U * V
         // elements MatrixD = M * N * U * V
         resizeStorage(
-            std::make_tuple(std::get<M>(size) * std::get<N>(size) * std::get<H>(size) * std::get<K>(size), 
-                            std::get<U>(size) * std::get<V>(size) * std::get<H>(size) * std::get<K>(size), 
-                            std::get<M>(size) * std::get<N>(size) * std::get<U>(size) * std::get<V>(size), 
-                            std::get<M>(size) * std::get<N>(size) * std::get<U>(size) * std::get<V>(size)),
+            std::make_tuple(size[M] * size[N] * size[H] * size[K],
+                            size[U] * size[V] * size[H] * size[K],
+                            size[M] * size[N] * size[U] * size[V],
+                            size[M] * size[N] * size[U] * size[V]),
             bytesPerElement); 
     }
 
