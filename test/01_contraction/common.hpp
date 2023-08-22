@@ -83,6 +83,15 @@ inline bool isF64Supported()
     return (deviceName.find("gfx90a") != std::string::npos);
 }
 
+template <typename intT1,
+          class = typename std::enable_if<std::is_integral<intT1>::value>::type,
+          typename intT2,
+          class = typename std::enable_if<std::is_integral<intT2>::value>::type>
+static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
+{
+    return (numerator + divisor - 1) / divisor;
+}
+
 // fill kernel for 'elementSize' elements
 template <typename DataType>
 __host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
@@ -101,15 +110,6 @@ __host__ static inline void
     auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
     hipLaunchKernelGGL(
         (fillValKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize, value);
-}
-
-template <typename intT1,
-          class = typename std::enable_if<std::is_integral<intT1>::value>::type,
-          typename intT2,
-          class = typename std::enable_if<std::is_integral<intT2>::value>::type>
-static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
-{
-    return (numerator + divisor - 1) / divisor;
 }
 
 template <typename DDataType>
