@@ -367,8 +367,6 @@ namespace hiptensor
                     hiptensorPrintArrayElements<double>(stream, (double*)D.get(), elementsCD);
                     stream << std::endl;
                 }
-
-    
             }
         }
 
