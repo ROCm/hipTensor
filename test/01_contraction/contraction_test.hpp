@@ -71,9 +71,10 @@ namespace hiptensor
         // Kernel run checks. Virtual as different Contraction kernels have different requirements
         // True = run test
         // False = skip test
-        virtual bool checkDevice() const
+        virtual bool checkDevice(hipDataType datatype) const
         {
-            return true;
+            return (isF32Supported() && datatype == HIP_R_32F)
+                    || (isF64Supported() && datatype == HIP_R_64F);
         }
 
         virtual bool checkSizes() const
@@ -129,6 +130,8 @@ namespace hiptensor
             mRunFlag &= ((BDataType == HIP_R_32F) || (BDataType == HIP_R_64F));
             mRunFlag &= ((CDataType == HIP_R_32F) || (CDataType == HIP_R_64F) || (CDataType == NONE_TYPE));
             mRunFlag &= ((DDataType == HIP_R_32F) || (DDataType == HIP_R_64F));
+
+            mRunFlag &= checkDevice(DDataType);
 
             if(mRunFlag)
             {
