@@ -92,6 +92,26 @@ static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
     return (numerator + divisor - 1) / divisor;
 }
 
+// fill kernel for 'elementSize' elements
+template <typename DataType>
+__host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
+{
+    auto blockDim = dim3(1024, 1, 1);
+    auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
+    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize);
+}
+
+// fill kernel wrapper for 'elementSize' elements with a specific value
+template <typename DataType>
+__host__ static inline void
+    fillValLaunchKernel(DataType* data, uint32_t elementSize, DataType value)
+{
+    auto blockDim = dim3(1024, 1, 1);
+    auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
+    hipLaunchKernelGGL(
+        (fillValKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize, value);
+}
+
 template <typename DDataType>
 std::pair<bool, double> compareEqual(DDataType const* deviceD,
                                      DDataType const* hostD,

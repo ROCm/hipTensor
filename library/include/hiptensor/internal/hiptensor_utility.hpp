@@ -61,18 +61,18 @@
 #endif
 
 template <typename T>
-void hiptensorPrintArrayElements(T* vec, size_t size)
+void hiptensorPrintArrayElements(std::ostream& stream, T* vec, size_t size)
 {
     int index = 0;
     while(index != size)
     {
         if(index == size - 1)
         {
-            std::cout << vec[index];
+            stream << vec[index];
         }
         else
         {
-            std::cout << vec[index] << ", ";
+            stream << vec[index] << ", ";
         }
 
         index++;
