@@ -54,7 +54,7 @@ auto loadConfig()
 
     if(testOptions->usingDefaultConfig())
     {
-        path = "../test/01_contraction/configs/bilinear_f32_test_params.yaml";
+        path = "/home/mkarunan/WORKSPACE/hipTensor-test/test/01_contraction/configs/bilinear_f32_test_params.yaml";
     }
     else
     {

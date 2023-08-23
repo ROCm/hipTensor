@@ -72,7 +72,7 @@ __global__ void fillKernel(DataType* data, uint32_t elementSize)
 
     if(index < elementSize)
     {
-        auto value = (((DataType(std::rand())) / DataType(RAND_MAX) - 0.5) * 100) / elementSize;
+        auto value = (DataType(index / DataType(RAND_MAX) - 0.5) * 100) / elementSize;
         data[index] = static_cast<DataType>(value);
     }
 }

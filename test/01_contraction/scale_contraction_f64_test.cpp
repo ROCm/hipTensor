@@ -29,11 +29,11 @@
 
 #include "contraction_test.hpp"
 
-class BilinearF32ContractionTest : public hiptensor::ContractionTest
+class ScaleF64ContractionTest : public hiptensor::ContractionTest
 {
 };
 
-TEST_P(BilinearF32ContractionTest, RunKernel)
+TEST_P(ScaleF64ContractionTest, RunKernel)
 {
     static bool ranWarmup = false;
     if(!ranWarmup)
@@ -76,4 +76,4 @@ auto loadConfig()
                               ::testing::ValuesIn(testParams.betas()));
 }
 
-INSTANTIATE_TEST_SUITE_P(ContractionTests, BilinearF32ContractionTest, loadConfig());
+INSTANTIATE_TEST_SUITE_P(ContractionTests, ScaleF64ContractionTest, loadConfig());
