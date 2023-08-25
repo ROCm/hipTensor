@@ -298,7 +298,7 @@ hiptensorStatus_t hiptensorLoggerSetLevel(hiptensorLogLevel_t level);
  * \brief User-specified logging mask. A mask may be a binary OR combination of
  * several log levels together. Logs in other contexts will not be recorded.
  *
- * \param[in] level This parameter is the logging mask to be enforced.
+ * \param[in] mask This parameter is the logging mask to be enforced.
  * \retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
  * \retval HIPTENSOR_STATUS_INVALID_VALUE if the given log mask is invalid.
  */
