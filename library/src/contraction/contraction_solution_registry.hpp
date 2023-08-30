@@ -37,6 +37,7 @@
 
 namespace hiptensor
 {
+    // @cond
     class ContractionSolution;
 
     class ContractionSolutionRegistry
@@ -165,6 +166,7 @@ namespace hiptensor
         std::vector<std::unique_ptr<ContractionSolution>> mSolutionStorage;
         Query                                             mSolutionQuery;
     };
+    // @endcond
 
 } // namespace hiptensor
 
