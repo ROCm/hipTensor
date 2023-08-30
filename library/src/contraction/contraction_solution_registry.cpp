@@ -33,6 +33,7 @@ namespace hiptensor
     /// Class ContractionSolutionRegistry::Query ///
     ////////////////////////////////////////////////
 
+    // @cond
     ContractionSolutionRegistry::Query::Query(Query const& other)
         : mAllSolutions(other.mAllSolutions)
         , mSolutionHash(other.mSolutionHash)
@@ -289,5 +290,6 @@ namespace hiptensor
     {
         return mSolutionStorage.size();
     }
+    // @endcond
 
 } // namespace hiptensor
