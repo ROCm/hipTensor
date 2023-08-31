@@ -40,15 +40,3 @@ add_hiptensor_test(bilinear_contraction_f32_test ${BilinearContractionF32TestSou
 add_hiptensor_test(bilinear_contraction_f64_test ${BilinearContractionF64TestSources})
 add_hiptensor_test(scale_contraction_f32_test ${ScaleContractionF32TestSources})
 add_hiptensor_test(scale_contraction_f64_test ${ScaleContractionF64TestSources})
-
-# Brute force tests
-# add_hiptensor_test(scale_contraction_f32_test scale_contraction_f32.cpp)
-# add_hiptensor_test(scale_contraction_f64_test scale_contraction_f64.cpp)
-# add_hiptensor_test(bilinear_contraction_f32_test bilinear_contraction_f32.cpp)
-# add_hiptensor_test(bilinear_contraction_f64_test bilinear_contraction_f64.cpp)
-
-# Actor-critic tests
-# add_hiptensor_test(scale_contraction_ac_f32_test scale_contraction_ac_f32.cpp)
-# add_hiptensor_test(scale_contraction_ac_f64_test scale_contraction_ac_f64.cpp)
-# add_hiptensor_test(bilinear_contraction_ac_f32_test ${BilinearContractionAcF32Sources})
-# add_hiptensor_test(bilinear_contraction_ac_f64_test bilinear_contraction_ac_f64.cpp)
