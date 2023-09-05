@@ -44,36 +44,4 @@ TEST_P(ScaleF32ContractionTest, RunKernel)
     this->RunKernel();
 }
 
-auto loadConfig()
-{
-    hiptensor::ContractionTestParams testParams;
-    std::string                      path = "";
-
-    using Options     = hiptensor::HiptensorOptions;
-    auto& testOptions = Options::instance();
-
-    if(testOptions->usingDefaultConfig())
-    {
-        path = "../test/01_contraction/configs/scale_f32_test_params.yaml";
-    }
-    else
-    {
-        path = testOptions->inputFilename();
-    }
-
-    testParams = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(path);
-    // testParams.printParams();
-
-    return ::testing::Combine(::testing::ValuesIn(testParams.dataTypes()),
-                              ::testing::ValuesIn(testParams.computeTypes()),
-                              ::testing::ValuesIn(testParams.algorithms()),
-                              ::testing::ValuesIn(testParams.operators()),
-                              ::testing::ValuesIn(testParams.workSizePrefrences()),
-                              ::testing::Values(testParams.logLevelMask()),
-                              ::testing::ValuesIn(testParams.problemLengths()),
-                              ::testing::ValuesIn(testParams.problemStrides()),
-                              ::testing::ValuesIn(testParams.alphas()),
-                              ::testing::ValuesIn(testParams.betas()));
-}
-
-INSTANTIATE_TEST_SUITE_P(ContractionTests, ScaleF32ContractionTest, loadConfig());
+INSTANTIATE_TEST_SUITE_P(ContractionTests, ScaleF32ContractionTest, load_config_helper());

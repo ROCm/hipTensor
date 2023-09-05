@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2023 Advanced Micro Devices, Inc.
+ * Copyright (c) 2023 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,11 +32,12 @@
 // Load / store interface for YAML test config files
 namespace hiptensor
 {
-    template<typename ConfigT>
+    template <typename ConfigT>
     struct YamlConfigLoader
     {
         static ConfigT loadFromFile(std::string const& filePath);
-        static void storeToFile(std::string const& filePath, ConfigT const& config);
+        static ConfigT loadFromString(std::string const& yaml = "");
+        static void    storeToFile(std::string const& filePath, ConfigT const& config);
     };
 }
 

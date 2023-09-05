@@ -67,6 +67,35 @@ namespace hiptensor
 
     template <typename ConfigT>
     /* static */
+    ConfigT YamlConfigLoader<ConfigT>::loadFromString(std::string const& yaml /*= ""*/)
+    {
+        auto result = ConfigT{};
+
+        auto in = llvm::MemoryBuffer::getMemBuffer(llvm::StringRef(yaml.c_str()));
+        if(in->getBufferSize() == 0)
+        {
+            llvm::errs() << "Cannot use empty string for MemoryBuffer\n";
+            return result;
+        }
+        else
+        {
+            llvm::outs() << "Using yaml input string for buffer.\n";
+        }
+
+        llvm::yaml::Input reader(*in);
+
+        reader >> result;
+
+        if(reader.error())
+        {
+            llvm::errs() << "Error reading input config: " << yaml << "\n";
+        }
+
+        return result;
+    }
+
+    template <typename ConfigT>
+    /* static */
     void YamlConfigLoader<ConfigT>::storeToFile(std::string const& filePath, ConfigT const& config)
     {
         std::error_code      ec;
