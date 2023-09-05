@@ -34,13 +34,13 @@
 #include <mutex>
 #include <numeric>
 #include <unordered_map>
+#include <vector>
 
 // hiptensor includes
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
-#include "contraction_cpu_reference.hpp"
 #include "device/common.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
@@ -89,6 +89,26 @@ template <typename intT1,
 static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
 {
     return (numerator + divisor - 1) / divisor;
+}
+
+// fill kernel for 'elementSize' elements
+template <typename DataType>
+__host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
+{
+    auto blockDim = dim3(1024, 1, 1);
+    auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
+    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize);
+}
+
+// fill kernel wrapper for 'elementSize' elements with a specific value
+template <typename DataType>
+__host__ static inline void
+    fillValLaunchKernel(DataType* data, uint32_t elementSize, DataType value)
+{
+    auto blockDim = dim3(1024, 1, 1);
+    auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
+    hipLaunchKernelGGL(
+        (fillValKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize, value);
 }
 
 template <typename DDataType>
@@ -243,6 +263,27 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
     }
 
     return std::make_pair(retval, maxRelativeError);
+}
+
+namespace std
+{
+    template <typename T>
+    ostream& operator<<(ostream& os, const std::vector<T>& vec)
+    {
+        for(auto i = 0; i < vec.size(); i++)
+        {
+            if(i < vec.size() - 1)
+            {
+                os << vec[i] << ", ";
+            }
+            else
+            {
+                os << vec[i];
+            }
+        }
+
+        return os;
+    }
 }
 
 #endif // HIPTENSOR_TEST_CONTRACTION_COMMON_HPP

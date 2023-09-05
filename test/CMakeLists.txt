@@ -24,6 +24,29 @@
  #
  ###############################################################################
 
+# Find / configure LLVM
+add_subdirectory(llvm)
+
+include( FetchContent )
+
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG release-1.12.1
+)
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  # Fetch the content using default details
+  FetchContent_Populate(googletest)
+  # Save the shared libs setting, then force to static libs
+  set(BUILD_SHARED_LIBS_OLD ${BUILD_SHARED_LIBS})
+  set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build SHARED libraries" FORCE)
+  # Add gtest targets as static libs
+  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+  # Restore shared libs setting
+  set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_OLD} CACHE INTERNAL "Build SHARED libraries" FORCE)
+endif()
+
 # Setup a test manifest
 set(INSTALL_TEST_FILE "${CMAKE_CURRENT_BINARY_DIR}/install_CTestTestfile.cmake")
 file(WRITE "${INSTALL_TEST_FILE}"
@@ -36,19 +59,54 @@ file(WRITE "${INSTALL_TEST_FILE}"
 # Target that will trigger build of all tests
 add_custom_target(hiptensor_tests)
 
-# Create test executables and deploy
-function(add_hiptensor_test BINARY_NAME FILE_NAME)
+set(HIPTENSOR_COMMON_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hip_resource.cpp
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_gtest_main.cpp)
 
-    message( STATUS "adding hiptensor test: ${BINARY_NAME}")
-    add_executable(${BINARY_NAME} ${FILE_NAME})
+# Create test executables and deploy
+function(add_hiptensor_test BINARY_NAME YAML_CONFIG_FILE TEST_SOURCES)
+
+    # Make sure that all sources are appended to the list.
+    list(APPEND TEST_SOURCES ${ARGN})
+
+    message(STATUS "adding hiptensor test: ${BINARY_NAME}")
+    message(STATUS "test config file: ${YAML_CONFIG_FILE}")
+
+    # Read in the YAML config file that we wish to bundle
+    file(READ ${YAML_CONFIG_FILE} hiptensor_test_YAML_STRING)
+
+    # Build a file header that includes the YAML config string
+    # Must define in cmake:
+    # - hiptensor_test_NAME
+    # - hiptensor_test_YAML_STRING
+    # - hiptensor_test_YAML_INCLUDE_FILE
+    get_filename_component(hiptensor_test_YAML_DIR "${YAML_CONFIG_FILE}" PATH)
+    get_filename_component(hiptensor_test_NAME "${YAML_CONFIG_FILE}" NAME_WE)
+    set(hiptensor_test_YAML_INCLUDE_FILE "${hiptensor_test_NAME}.hpp")
+    configure_file("${PROJECT_SOURCE_DIR}/test/hiptensor-test-yaml.hpp.in"
+                  "${hiptensor_test_YAML_DIR}/${hiptensor_test_YAML_INCLUDE_FILE}" )
+
+    # message(STATUS "test config dir: ${hiptensor_test_YAML_DIR}")
+    # message(STATUS "test name: ${hiptensor_test_NAME}")
+    # message(STATUS "test yaml config: ${hiptensor_test_YAML_STRING}")
+    # message(STATUS "test config include: ${hiptensor_test_YAML_INCLUDE_FILE}")
+
+    add_executable(${BINARY_NAME} ${TEST_SOURCES})
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm gtest "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
-                               ${PROJECT_SOURCE_DIR}/library/src/contraction)
+                               ${PROJECT_SOURCE_DIR}/library/src/contraction
+                               ${PROJECT_SOURCE_DIR}/test
+                               ${hiptensor_test_YAML_DIR})
+
+    # C++ code handles the following symbols defined:
+    # - HIPTENSOR_TEST_YAML_INCLUDE
+    # When defined, the test code will attempt to load bundled YAML string.
+    target_compile_definitions(${BINARY_NAME} PRIVATE -D HIPTENSOR_TEST_YAML_INCLUDE=\"${hiptensor_test_YAML_INCLUDE_FILE}\")
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
@@ -84,11 +142,12 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
-                               ${PROJECT_SOURCE_DIR}/library/src/include)
+                               ${PROJECT_SOURCE_DIR}/library/src/include
+                               ${PROJECT_SOURCE_DIR}/test)
 
     # Build this test under custom target
     add_dependencies(hiptensor_tests ${BINARY_NAME})
@@ -116,8 +175,8 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
 endfunction()
 
+add_subdirectory(00_unit)
 add_subdirectory(01_contraction)
-add_subdirectory(00_unit/logger)
 
 rocm_install(
     FILES "${INSTALL_TEST_FILE}"
