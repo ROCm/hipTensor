@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (c) 2023 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,29 +19,21 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  *******************************************************************************/
 
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#ifndef HIPTENSOR_TEST_ @hiptensor_test_NAME @_YAML_HPP
+#define HIPTENSOR_TEST_ @hiptensor_test_NAME @_YAML_HPP
 
-#include "contraction_test.hpp"
+#define HIPTENSOR_TEST_GET_YAML @hiptensor_test_NAME @_get_yaml()
 
-class BilinearF64ContractionTest : public hiptensor::ContractionTest
+#include <string>
+
+static inline std::string @hiptensor_test_NAME @_get_yaml()
 {
-};
-
-TEST_P(BilinearF64ContractionTest, RunKernel)
-{
-    static bool ranWarmup = false;
-    if(!ranWarmup)
-    {
-        this->Warmup();
-        ranWarmup = true;
-    }
-    this->RunKernel();
+    return std::string(R"(@hiptensor_test_YAML_STRING@)");
 }
 
-INSTANTIATE_TEST_SUITE_P(ContractionTests, BilinearF64ContractionTest, load_config_helper());
+#endif // HIPTENSOR_TEST_@hiptensor_test_NAME@_YAML_HPP_
