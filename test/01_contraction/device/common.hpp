@@ -64,6 +64,31 @@ __global__ static void
     }
 }
 
+// fill kernel for 'elementSize' elements
+template <typename DataType>
+__global__ void fillKernel(DataType* data, uint32_t elementSize)
+{
+    uint32_t index = (blockIdx.x * blockDim.x + threadIdx.x);
+
+    if(index < elementSize)
+    {
+        auto value = (DataType(index / DataType(RAND_MAX) - 0.5) * 100) / elementSize;
+        data[index] = static_cast<DataType>(value);
+    }
+}
+
+// fill kernel wrapper for 'elementSize' elements with a specific value
+template <typename DataType>
+__global__ void fillValKernel(DataType* data, uint32_t elementSize, DataType value)
+{
+    uint32_t index = (blockIdx.x * blockDim.x + threadIdx.x);
+
+    if(index < elementSize)
+    {
+        data[index] = value;
+    }
+}
+
 template <typename DDataType>
 __global__ void compareEqualKernel(DDataType* deviceD,
                                    DDataType* hostD,
