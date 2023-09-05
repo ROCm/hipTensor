@@ -78,6 +78,12 @@ add_library(hiptensor::hiptensor ALIAS hiptensor)
 
 target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
 
+set ( hiptensor_SOVERSION 0.1 )
+# nvcc can not recognize shared libraray file name with suffix other than *.so when linking.
+if (NOT BUILD_WITH_COMPILER STREQUAL "HIP-NVCC")
+  rocm_set_soversion(hiptensor ${hiptensor_SOVERSION})
+endif()
+
 # Users of hiptensor will need HIP libs
 target_link_libraries(hiptensor INTERFACE hip::device hip::host)
 target_link_libraries(hiptensor PRIVATE Threads::Threads)
