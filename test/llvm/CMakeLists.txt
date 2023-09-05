@@ -37,7 +37,6 @@ message(STATUS "adding hiptensor component: hiptensor_llvm")
 message(STATUS "LLVM_LIBRARY_DIR: ${LLVM_LIBRARY_DIR}")
 message(STATUS "LLVMObjectYAML_LIBRARY: ${LLVMObjectYAML_LIBRARY}")
 message(STATUS "LLVMSupport_LIBRARY: ${LLVMSupport_LIBRARY}")
-message(STATUS "LLVMDemangle_LIBRARY: ${LLVMDemangle_LIBRARY}")
 
 if(NOT LLVMObjectYAML_LIBRARY)
     message(ERROR "Could not find library: LLVMObjectYAML" )

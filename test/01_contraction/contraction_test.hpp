@@ -559,7 +559,7 @@ auto load_config_helper()
             testOptions->inputFilename());
     }
 
-    testParams.printParams();
+    // testParams.printParams();
 
     return ::testing::Combine(::testing::ValuesIn(testParams.dataTypes()),
                               ::testing::ValuesIn(testParams.computeTypes()),
