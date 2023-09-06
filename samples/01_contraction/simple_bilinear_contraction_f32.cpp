@@ -311,21 +311,21 @@ int main(int argc, char* argv[])
         if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor A elements:\n";
-            hiptensorPrintArrayElements(A, elementsA);
+            hiptensorPrintArrayElements(std::cout, A, elementsA);
             std::cout << std::endl;
         }
 
         if(elementsB < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor B elements:\n";
-            hiptensorPrintArrayElements(B, elementsB);
+            hiptensorPrintArrayElements(std::cout, B, elementsB);
             std::cout << std::endl;
         }
 
         if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
         {
             std::cout << "Tensor C elements:\n";
-            hiptensorPrintArrayElements(C, elementsC);
+            hiptensorPrintArrayElements(std::cout, C, elementsC);
             std::cout << std::endl;
         }
     }
