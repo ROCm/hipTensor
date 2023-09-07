@@ -66,7 +66,8 @@ inline bool isF32Supported()
     std::string deviceName(mProps.gcnArchName);
 
     return (deviceName.find("gfx908") != std::string::npos)
-           || (deviceName.find("gfx90a") != std::string::npos);
+           || (deviceName.find("gfx90a") != std::string::npos)
+           || (deviceName.find("gfx940") != std::string::npos);
 }
 
 inline bool isF64Supported()
@@ -79,7 +80,8 @@ inline bool isF64Supported()
 
     std::string deviceName(mProps.gcnArchName);
 
-    return (deviceName.find("gfx90a") != std::string::npos);
+    return (deviceName.find("gfx90a") != std::string::npos)
+           || (deviceName.find("gfx940") != std::string::npos);
 }
 
 template <typename intT1,
