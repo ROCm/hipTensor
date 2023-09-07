@@ -58,7 +58,8 @@ inline bool isF32Supported()
     std::string deviceName(mProps.gcnArchName);
 
     return (deviceName.find("gfx908") != std::string::npos)
-           || (deviceName.find("gfx90a") != std::string::npos);
+            || (deviceName.find("gfx90a") != std::string::npos)
+            || (deviceName.find("gfx940") != std::string::npos);
 }
 
 int main(int argc, char* argv[])

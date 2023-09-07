@@ -52,6 +52,10 @@ namespace hiptensor
         {
             mGcnArch = hipGcnArch_t::GFX90A;
         }
+        else if(deviceName.find("gfx940") != std::string::npos)
+        {
+            mGcnArch = hipGcnArch_t::GFX940;
+        }
 
         switch(mProps.warpSize)
         {
@@ -107,7 +111,7 @@ namespace hiptensor
 
     bool HipDevice::supportsF64() const
     {
-        return (mGcnArch == HipDevice::hipGcnArch_t::GFX90A);
+        return (mGcnArch == HipDevice::hipGcnArch_t::GFX90A || mGcnArch == HipDevice::hipGcnArch_t::GFX940);
     }
 
 } // namespace hiptensor
