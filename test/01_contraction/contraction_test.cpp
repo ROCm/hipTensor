@@ -34,11 +34,11 @@
 
 namespace hiptensor
 {
-    /*static*/ std::stringstream ContractionTest::sOutputBuff = std::stringstream();
+    /*static*/ std::stringstream ContractionTest::sAPILogBuff = std::stringstream();
 
     static void logMessage(int32_t logLevel, const char* funcName /*=""*/, const char* msg /*=""*/)
     {
-        ContractionTest::sOutputBuff << msg;
+        ContractionTest::sAPILogBuff << msg;
     }
 
     ContractionTest::ContractionTest()
@@ -85,6 +85,9 @@ namespace hiptensor
 
     void ContractionTest::SetUp()
     {
+        // reset API log buffer
+        sAPILogBuff.str(std::string());
+
         auto param        = Base::GetParam();
         auto testType     = std::get<0>(param);
         auto computeType  = std::get<1>(param);
@@ -97,6 +100,7 @@ namespace hiptensor
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
 
+        // 4D tensors only at the moment.
         EXPECT_EQ(testType.size(), 4);
         EXPECT_EQ(lengths.size(), 6); // Format {'m', 'n', 'u', 'v', 'h', 'k'}
         if(!strides.empty())
@@ -467,24 +471,23 @@ namespace hiptensor
             using Options        = hiptensor::HiptensorOptions;
             auto& loggingOptions = Options::instance();
 
-            reportResults(sOutputBuff,
-                          DDataType,
-                          loggingOptions->omitSkipped(),
-                          loggingOptions->omitFailed(),
-                          loggingOptions->omitPassed());
-
             if(!loggingOptions->omitCout())
             {
-                std::cout << sOutputBuff.str() << std::endl;
+                reportResults(std::cout,
+                              DDataType,
+                              loggingOptions->omitSkipped(),
+                              loggingOptions->omitFailed(),
+                              loggingOptions->omitPassed());
             }
 
             if(loggingOptions->ostream().isOpen())
             {
-                loggingOptions->ostream().fstream() << sOutputBuff.str() << std::endl;
+                reportResults(loggingOptions->ostream().fstream(),
+                              DDataType,
+                              loggingOptions->omitSkipped(),
+                              loggingOptions->omitFailed(),
+                              loggingOptions->omitPassed());
             }
-
-            // reset output buffer
-            sOutputBuff.str(std::string());
         }
     }
 
