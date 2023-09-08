@@ -27,23 +27,12 @@
 #ifndef HIPTENSOR_CONTRACTION_TEST_HPP
 #define HIPTENSOR_CONTRACTION_TEST_HPP
 
-#include "../library/src/include/types.hpp"
-#include <hiptensor/hiptensor.hpp>
+#include <sstream>
 
-#include "common.hpp"
-#include "contraction_cpu_reference.hpp"
+#include <hiptensor/hiptensor_types.hpp>
+
 #include "contraction_resource.hpp"
 #include "contraction_test_params.hpp"
-
-#include "llvm/hiptensor_options.hpp"
-#include "llvm/yaml_parser.hpp"
-
-#ifdef HIPTENSOR_TEST_YAML_INCLUDE
-#include HIPTENSOR_TEST_YAML_INCLUDE
-#define HIPTENSOR_TEST_YAML_BUNDLE 1
-#else
-#define HIPTENSOR_TEST_YAML_BUNDLE 0
-#endif // HIPTENSOR_TEST_YAML_INCLUDE
 
 #include <gtest/gtest.h>
 
@@ -132,36 +121,5 @@ namespace hiptensor
     };
 
 } // namespace hiptensor
-
-auto inline load_config_helper()
-{
-    hiptensor::ContractionTestParams testParams;
-    using Options     = hiptensor::HiptensorOptions;
-    auto& testOptions = Options::instance();
-
-    if(testOptions->usingDefaultConfig() && HIPTENSOR_TEST_YAML_BUNDLE)
-    {
-        testParams = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromString(
-            HIPTENSOR_TEST_GET_YAML);
-    }
-    else
-    {
-        testParams = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(
-            testOptions->inputFilename());
-    }
-
-    // testParams.printParams();
-
-    return ::testing::Combine(::testing::ValuesIn(testParams.dataTypes()),
-                              ::testing::ValuesIn(testParams.computeTypes()),
-                              ::testing::ValuesIn(testParams.algorithms()),
-                              ::testing::ValuesIn(testParams.operators()),
-                              ::testing::ValuesIn(testParams.workSizePrefrences()),
-                              ::testing::Values(testParams.logLevelMask()),
-                              ::testing::ValuesIn(testParams.problemLengths()),
-                              ::testing::ValuesIn(testParams.problemStrides()),
-                              ::testing::ValuesIn(testParams.alphas()),
-                              ::testing::ValuesIn(testParams.betas()));
-}
 
 #endif // HIPTENSOR_CONTRACTION_TEST_HPP

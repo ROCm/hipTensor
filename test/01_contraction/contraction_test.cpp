@@ -23,28 +23,14 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-
-#include "contraction_test.hpp"
+#include <hiptensor/hiptensor.hpp>
 
 #include "../library/src/include/types.hpp"
-#include <hiptensor/hiptensor.hpp>
+#include "llvm/hiptensor_options.hpp"
 
 #include "common.hpp"
 #include "contraction_cpu_reference.hpp"
-#include "contraction_resource.hpp"
-#include "contraction_test_params.hpp"
-
-#include "llvm/hiptensor_options.hpp"
-#include "llvm/yaml_parser.hpp"
-
-#ifdef HIPTENSOR_TEST_YAML_INCLUDE
-#include HIPTENSOR_TEST_YAML_INCLUDE
-#define HIPTENSOR_TEST_YAML_BUNDLE 1
-#else
-#define HIPTENSOR_TEST_YAML_BUNDLE 0
-#endif // HIPTENSOR_TEST_YAML_INCLUDE
-
-#include <gtest/gtest.h>
+#include "contraction_test.hpp"
 
 namespace hiptensor
 {
