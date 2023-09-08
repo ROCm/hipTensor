@@ -117,7 +117,7 @@ namespace hiptensor
         double   mMaxRelativeError;
 
         // Output buffer
-        static std::stringstream sOutputBuff;
+        static std::stringstream sAPILogBuff;
     };
 
 } // namespace hiptensor
