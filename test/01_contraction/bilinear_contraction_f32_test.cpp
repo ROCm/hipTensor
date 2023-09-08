@@ -28,6 +28,7 @@
 #include <hiptensor/hiptensor_types.hpp>
 
 #include "contraction_test.hpp"
+#include "contraction_test_helpers.hpp"
 
 class BilinearF32ContractionTest : public hiptensor::ContractionTest
 {
