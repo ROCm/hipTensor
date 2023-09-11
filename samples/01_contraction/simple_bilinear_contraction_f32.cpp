@@ -33,34 +33,7 @@
 #include <numeric>
 #include <unordered_map>
 
-#define MAX_ELEMENTS_PRINT_COUNT 512
-
-#define HIPTENSOR_FREE_DEVICE(ptr)     \
-    if(ptr != nullptr)                 \
-    {                                  \
-        CHECK_HIP_ERROR(hipFree(ptr)); \
-    }
-
-#define HIPTENSOR_FREE_HOST(ptr) \
-    if(ptr != nullptr)           \
-    {                            \
-        free(ptr);               \
-    }
-
-inline bool isF32Supported()
-{
-    hipDevice_t     mHandle;
-    hipDeviceProp_t mProps;
-
-    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
-    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
-
-    std::string deviceName(mProps.gcnArchName);
-
-    return (deviceName.find("gfx908") != std::string::npos)
-            || (deviceName.find("gfx90a") != std::string::npos)
-            || (deviceName.find("gfx940") != std::string::npos);
-}
+#include "common.hpp"
 
 int main(int argc, char* argv[])
 {
