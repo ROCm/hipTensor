@@ -24,7 +24,8 @@
  #
  ###############################################################################
 set(ContractionCommonSources ${HIPTENSOR_COMMON_TEST_SOURCES}
-                             ${CMAKE_CURRENT_SOURCE_DIR}/contraction_resource.cpp)
+                             ${CMAKE_CURRENT_SOURCE_DIR}/contraction_resource.cpp
+                             ${CMAKE_CURRENT_SOURCE_DIR}/contraction_test.cpp)
 
 # Bilinear f32
 set (BilinearContractionF32TestSources ${ContractionCommonSources}

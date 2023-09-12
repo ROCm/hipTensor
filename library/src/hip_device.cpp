@@ -110,4 +110,26 @@ namespace hiptensor
         return (mGcnArch == HipDevice::hipGcnArch_t::GFX90A);
     }
 
+    // Need to check the host device target support statically before hip modules attempt
+    // to load any kernels. Not safe to proceed if the host device is unsupported.
+    struct HipStaticDeviceGuard
+    {
+        static bool testSupportedDevice()
+        {
+            auto device = HipDevice();
+
+            if((device.getGcnArch() == HipDevice::hipGcnArch_t::UNSUPPORTED_ARCH)
+               || (device.warpSize() == HipDevice::hipWarpSize_t::UNSUPPORTED_WARP_SIZE))
+            {
+                std::cerr << "Cannot proceed: unsupported host device detected. Exiting."
+                          << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            return true;
+        }
+        static bool sResult;
+    };
+
+    bool HipStaticDeviceGuard::sResult = HipStaticDeviceGuard::testSupportedDevice();
+
 } // namespace hiptensor
