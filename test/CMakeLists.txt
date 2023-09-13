@@ -41,6 +41,8 @@ if(NOT googletest_POPULATED)
   # Save the shared libs setting, then force to static libs
   set(BUILD_SHARED_LIBS_OLD ${BUILD_SHARED_LIBS})
   set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build SHARED libraries" FORCE)
+  # Turn off gtest installation
+  set(INSTALL_GTEST OFF)
   # Add gtest targets as static libs
   add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
   # Restore shared libs setting
@@ -94,7 +96,7 @@ function(add_hiptensor_test BINARY_NAME YAML_CONFIG_FILE TEST_SOURCES)
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm gtest "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm gtest "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
 
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
@@ -142,7 +144,7 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
-    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+    target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor hiptensor_llvm "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
