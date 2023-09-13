@@ -37,7 +37,7 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
 
         # Sample must propagate the build interface includes to make sure
         # hiptensor includes are captured at runtime.
-        target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=${HIP_CLANG_ROOT}/lib")
+        target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
         target_include_directories(${BINARY_NAME} PRIVATE
                                 ${CMAKE_CURRENT_SOURCE_DIR}
                                 ${PROJECT_SOURCE_DIR}/library/include)
