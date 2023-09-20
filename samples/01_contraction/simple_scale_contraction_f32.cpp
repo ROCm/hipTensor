@@ -32,22 +32,19 @@
 #include <numeric>
 #include <unordered_map>
 
-#define MAX_ELEMENTS_PRINT_COUNT 512
-
-#define HIPTENSOR_FREE_DEVICE(ptr)     \
-    if(ptr != nullptr)                 \
-    {                                  \
-        CHECK_HIP_ERROR(hipFree(ptr)); \
-    }
-
-#define HIPTENSOR_FREE_HOST(ptr) \
-    if(ptr != nullptr)           \
-    {                            \
-        free(ptr);               \
-    }
+#include "common.hpp"
 
 int main(int argc, char* argv[])
 {
+   /***************************************
+   * Check device support                 *
+   **************************************/
+    if(!isF32Supported())
+    {
+        std::cout << "unsupported host device" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     typedef float ADataType;
     typedef float BDataType;
     typedef float DDataType;

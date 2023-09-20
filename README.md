@@ -2,9 +2,9 @@
 hiptensor is AMD's C++ library for accelerating tensor primitives based on the composable kernel library, through general purpose kernel languages, like HIP C++.
 
 ## GPU Support
-* AMD CDNA class GPU featuring matrix core support: gfx908, gfx90a as 'gfx9'
+* AMD CDNA class GPU featuring matrix core support: gfx908, gfx90a, gfx940, gfx941, gfx942 as 'gfx9'
 
-`Note: Double precision FP64 datatype support requires gfx90a`
+`Note: Double precision FP64 datatype support requires gfx90a, gfx940, gfx941 or gfx942`
 
 ## Minimum Software Requirements
 * ROCm stack minimum version 5.7
@@ -56,7 +56,7 @@ git push origin <new_branch>
 ### Project options
 |Option|Description|Default Value|
 |---|---|---|
-|AMDGPU_TARGETS|Build code for specific GPU target(s)|gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+|
+|AMDGPU_TARGETS|Build code for specific GPU target(s)|gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+;gfx940;gfx941;gfx942|
 |HIPTENSOR_BUILD_TESTS|Build Tests|ON|
 |HIPTENSOR_BUILD_SAMPLES|Build Samples|ON|
 

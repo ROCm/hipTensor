@@ -38,9 +38,9 @@ As a general rule, 8GB of system memory is required for a full hipTensor build. 
 
 GPU Support
 ^^^^^^^^^^^
-AMD CDNA class GPU featuring matrix core support: gfx908, gfx90a as 'gfx9'
+AMD CDNA class GPU featuring matrix core support: gfx908, gfx90a, gfx940, gfx941, gfx942 as 'gfx9'
 
-`Note: Double precision FP64 datatype support requires gfx90a`
+`Note: Double precision FP64 datatype support requires gfx90a, gfx940, gfx941 or gfx942`
 
 Download hipTensor
 ^^^^^^^^^^^^^^^^^^
@@ -84,15 +84,15 @@ Below are the project options available to build hipTensor library with/without 
 .. tabularcolumns::
    |C|C|C|
 
-+------------------------------+-------------------------------------+-------------------------------------------+
-|Option                        |Description                          |Default Value                              |
-+==============================+=====================================+===========================================+
-|AMDGPU_TARGETS                |Build code for specific GPU target(s)|gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+  |
-+------------------------------+-------------------------------------+-------------------------------------------+
-|HIPTENSOR_BUILD_TESTS         |Build Tests                          |ON                                         |
-+------------------------------+-------------------------------------+-------------------------------------------+
-|HIPTENSOR_BUILD_SAMPLES       |Build Samples                        |ON                                         |
-+------------------------------+-------------------------------------+-------------------------------------------+
++------------------------------+-------------------------------------+----------------------------------------------------------------+
+|Option                        |Description                          |Default Value                                                   |
++==============================+=====================================+================================================================+
+|AMDGPU_TARGETS                |Build code for specific GPU target(s)|gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+;gfx940;gfx941;gfx942  |
++------------------------------+-------------------------------------+----------------------------------------------------------------+
+|HIPTENSOR_BUILD_TESTS         |Build Tests                          |ON                                                              |
++------------------------------+-------------------------------------+----------------------------------------------------------------+
+|HIPTENSOR_BUILD_SAMPLES       |Build Samples                        |ON                                                              |
++------------------------------+-------------------------------------+----------------------------------------------------------------+
 
 
 Build only library
