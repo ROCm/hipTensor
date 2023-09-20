@@ -79,7 +79,7 @@ include(ROCMInstallSymlinks)
 include(CheckCXXCompilerFlag)
 
 rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
-  TARGETS "gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+" )
+  TARGETS "gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+;gfx940;gfx941;gfx942" )
 
 # Variable AMDGPU_TARGET must be a cached variable and must be specified before calling find_package(hip)
 # This is because hip-config.cmake sets --offload-arch via AMDGPU_TARGET cached variable __after__ setting
