@@ -92,6 +92,46 @@ namespace hiptensor
         }
     }
 
+    hiptensorComputeType_t convertToComputeType(hipDataType hipType)
+    {
+        if(hipType == HIP_R_16BF)
+        {
+            return HIPTENSOR_COMPUTE_16BF;
+        }
+        else if(hipType == HIP_R_16F)
+        {
+            return HIPTENSOR_COMPUTE_16F;
+        }
+        else if(hipType == HIP_R_32F)
+        {
+            return HIPTENSOR_COMPUTE_32F;
+        }
+        else if(hipType == HIP_R_64F)
+        {
+            return HIPTENSOR_COMPUTE_64F;
+        }
+        else if(hipType == HIP_R_8I)
+        {
+            return HIPTENSOR_COMPUTE_8I;
+        }
+        else if(hipType == HIP_R_8U)
+        {
+            return HIPTENSOR_COMPUTE_8U;
+        }
+        else if(hipType == HIP_R_32I)
+        {
+            return HIPTENSOR_COMPUTE_32I;
+        }
+        else if(hipType == HIP_R_32U)
+        {
+            return HIPTENSOR_COMPUTE_32U;
+        }
+        else
+        {
+            return HIPTENSOR_COMPUTE_NONE;
+        }
+    }
+
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
