@@ -90,23 +90,25 @@ namespace hiptensor
 
         auto param        = Base::GetParam();
         auto testType     = std::get<0>(param);
-        auto computeType  = std::get<1>(param);
-        auto algorithm    = std::get<2>(param);
-        auto operatorType = std::get<3>(param);
-        auto workSizePref = std::get<4>(param);
-        auto logLevel     = std::get<5>(param);
-        auto lengths      = std::get<6>(param);
-        auto strides      = std::get<7>(param);
-        auto alpha        = std::get<8>(param);
-        auto beta         = std::get<9>(param);
+        auto algorithm    = std::get<1>(param);
+        auto operatorType = std::get<2>(param);
+        auto workSizePref = std::get<3>(param);
+        auto logLevel     = std::get<4>(param);
+        auto lengths      = std::get<5>(param);
+        auto strides      = std::get<6>(param);
+        auto alpha        = std::get<7>(param);
+        auto beta         = std::get<8>(param);
 
         // 4D tensors only at the moment.
-        EXPECT_EQ(testType.size(), 4);
+        EXPECT_EQ(testType.size(), 5);
         EXPECT_EQ(lengths.size(), 6); // Format {'m', 'n', 'u', 'v', 'h', 'k'}
         if(!strides.empty())
         {
             EXPECT_EQ(strides.size(), 6);
         }
+
+        // Separate compute type from test types
+        auto computeType = convertToComputeType(testType[4]);
 
         auto ADataType = testType[0];
         auto BDataType = testType[1];
@@ -392,15 +394,14 @@ namespace hiptensor
     {
         auto param        = Base::GetParam();
         auto testType     = std::get<0>(param);
-        auto computeType  = std::get<1>(param);
-        auto algorithm    = std::get<2>(param);
-        auto operatorType = std::get<3>(param);
-        auto workSizePref = std::get<4>(param);
-        auto logLevel     = std::get<5>(param);
-        auto lengths      = std::get<6>(param);
-        auto strides      = std::get<7>(param);
-        auto alpha        = std::get<8>(param);
-        auto beta         = std::get<9>(param);
+        auto algorithm    = std::get<1>(param);
+        auto operatorType = std::get<2>(param);
+        auto workSizePref = std::get<3>(param);
+        auto logLevel     = std::get<4>(param);
+        auto lengths      = std::get<5>(param);
+        auto strides      = std::get<6>(param);
+        auto alpha        = std::get<7>(param);
+        auto beta         = std::get<8>(param);
 
         if(mRunFlag)
         {
@@ -408,6 +409,8 @@ namespace hiptensor
             auto BDataType = testType[1];
             auto CDataType = testType[2];
             auto DDataType = testType[3];
+
+            auto computeType = convertToComputeType(testType[4]);
 
             CHECK_HIPTENSOR_ERROR(
                 hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));

@@ -59,7 +59,6 @@ auto inline load_config_helper()
     // testParams.printParams();
 
     return ::testing::Combine(::testing::ValuesIn(testParams.dataTypes()),
-                              ::testing::ValuesIn(testParams.computeTypes()),
                               ::testing::ValuesIn(testParams.algorithms()),
                               ::testing::ValuesIn(testParams.operators()),
                               ::testing::ValuesIn(testParams.workSizePrefrences()),

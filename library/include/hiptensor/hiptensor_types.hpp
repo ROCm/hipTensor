@@ -84,12 +84,13 @@ typedef enum
     HIPTENSOR_COMPUTE_32F = (1U << 2U),
     HIPTENSOR_COMPUTE_64F = (1U << 4U),
     /*!< Following types to be added (TBA) */
-    HIPTENSOR_COMPUTE_16F = (1U << 0U),
+    HIPTENSOR_COMPUTE_16F  = (1U << 0U),
     HIPTENSOR_COMPUTE_16BF = (1U << 10U),
-    HIPTENSOR_COMPUTE_8U  = (1U << 6U),
-    HIPTENSOR_COMPUTE_8I  = (1U << 8U),
-    HIPTENSOR_COMPUTE_32U = (1U << 7U),
-    HIPTENSOR_COMPUTE_32I = (1U << 9U),
+    HIPTENSOR_COMPUTE_8U   = (1U << 6U),
+    HIPTENSOR_COMPUTE_8I   = (1U << 8U),
+    HIPTENSOR_COMPUTE_32U  = (1U << 7U),
+    HIPTENSOR_COMPUTE_32I  = (1U << 9U),
+    HIPTENSOR_COMPUTE_NONE = 0
 } hiptensorComputeType_t;
 
 /**
