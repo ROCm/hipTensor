@@ -224,7 +224,7 @@ namespace hiptensor
                                                                         hipDataTypeSize(BDataType),
                                                                         hipDataTypeSize(CDataType),
                                                                         hipDataTypeSize(DDataType));
-
+                                                                        
             auto resource = getResource();
             resource->resizeStorage(lengths, elementBytes);
 
@@ -322,6 +322,8 @@ namespace hiptensor
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
+            stream << ContractionTest::sAPILogBuff.str();
+            
             if(mPrintElements)
             {
                 auto resource = getResource();

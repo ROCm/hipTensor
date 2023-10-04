@@ -158,6 +158,7 @@ namespace llvm
         {
             static void bitset(IO& io, hiptensorLogLevel_t& value)
             {
+                io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_OFF", HIPTENSOR_LOG_LEVEL_OFF);
                 io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_ERROR", HIPTENSOR_LOG_LEVEL_ERROR);
                 io.bitSetCase(
                     value, "HIPTENSOR_LOG_LEVEL_PERF_TRACE", HIPTENSOR_LOG_LEVEL_PERF_TRACE);
