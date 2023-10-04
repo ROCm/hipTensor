@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,18 +64,42 @@ namespace hiptensor
 
     void ContractionResource::copyHostToDeviceAll(ElementBytes const& bytesPerElement)
     {
-        Base::copyData(mDeviceA, mHostA, std::get<MatrixA>(mCurrentMatrixElements) * std::get<MatrixA>(bytesPerElement));
-        Base::copyData(mDeviceB, mHostB, std::get<MatrixB>(mCurrentMatrixElements) * std::get<MatrixB>(bytesPerElement));
-        Base::copyData(mDeviceC, mHostC, std::get<MatrixC>(mCurrentMatrixElements) * std::get<MatrixC>(bytesPerElement));
-        Base::copyData(mDeviceD, mHostD, std::get<MatrixD>(mCurrentMatrixElements) * std::get<MatrixD>(bytesPerElement));
+        Base::copyData(mDeviceA,
+                       mHostA,
+                       std::get<MatrixA>(mCurrentMatrixElements)
+                           * std::get<MatrixA>(bytesPerElement));
+        Base::copyData(mDeviceB,
+                       mHostB,
+                       std::get<MatrixB>(mCurrentMatrixElements)
+                           * std::get<MatrixB>(bytesPerElement));
+        Base::copyData(mDeviceC,
+                       mHostC,
+                       std::get<MatrixC>(mCurrentMatrixElements)
+                           * std::get<MatrixC>(bytesPerElement));
+        Base::copyData(mDeviceD,
+                       mHostD,
+                       std::get<MatrixD>(mCurrentMatrixElements)
+                           * std::get<MatrixD>(bytesPerElement));
     }
 
     void ContractionResource::copyDeviceToHostAll(ElementBytes const& bytesPerElement)
     {
-        Base::copyData(mHostA, mDeviceA, std::get<MatrixA>(mCurrentMatrixElements) * std::get<MatrixA>(bytesPerElement));
-        Base::copyData(mHostB, mDeviceB, std::get<MatrixB>(mCurrentMatrixElements) * std::get<MatrixB>(bytesPerElement));
-        Base::copyData(mHostC, mDeviceC, std::get<MatrixC>(mCurrentMatrixElements) * std::get<MatrixC>(bytesPerElement));
-        Base::copyData(mHostD, mDeviceD, std::get<MatrixD>(mCurrentMatrixElements) * std::get<MatrixD>(bytesPerElement));
+        Base::copyData(mHostA,
+                       mDeviceA,
+                       std::get<MatrixA>(mCurrentMatrixElements)
+                           * std::get<MatrixA>(bytesPerElement));
+        Base::copyData(mHostB,
+                       mDeviceB,
+                       std::get<MatrixB>(mCurrentMatrixElements)
+                           * std::get<MatrixB>(bytesPerElement));
+        Base::copyData(mHostC,
+                       mDeviceC,
+                       std::get<MatrixC>(mCurrentMatrixElements)
+                           * std::get<MatrixC>(bytesPerElement));
+        Base::copyData(mHostD,
+                       mDeviceD,
+                       std::get<MatrixD>(mCurrentMatrixElements)
+                           * std::get<MatrixD>(bytesPerElement));
     }
 
     void ContractionResource::resizeStorage(ProblemDims const& size, ElementBytes bytesPerElement)
@@ -84,15 +108,15 @@ namespace hiptensor
         // elements MatrixB = U * V * H * K
         // elements MatrixC = M * N * U * V
         // elements MatrixD = M * N * U * V
-        resizeStorage(
-            std::make_tuple(size[M] * size[N] * size[H] * size[K],
-                            size[U] * size[V] * size[H] * size[K],
-                            size[M] * size[N] * size[U] * size[V],
-                            size[M] * size[N] * size[U] * size[V]),
-            bytesPerElement); 
+        resizeStorage(std::make_tuple(size[M] * size[N] * size[H] * size[K],
+                                      size[U] * size[V] * size[H] * size[K],
+                                      size[M] * size[N] * size[U] * size[V],
+                                      size[M] * size[N] * size[U] * size[V]),
+                      bytesPerElement);
     }
 
-    void ContractionResource::resizeStorage(MatrixElements const& newMatrixElements, ElementBytes bytesPerElement)
+    void ContractionResource::resizeStorage(MatrixElements const& newMatrixElements,
+                                            ElementBytes          bytesPerElement)
     {
         auto conditionalReallocDeviceHostPair = [](auto&    devicePtr,
                                                    auto&    hostPtr,
@@ -130,9 +154,9 @@ namespace hiptensor
 
         // Always update the current matrix element count
         mCurrentMatrixElements = newMatrixElements;
-        // std::cout << std::get<MatrixA>(mCurrentAllocElements) << ", " 
-        //           << std::get<MatrixB>(mCurrentAllocElements) << ", " 
-        //           << std::get<MatrixC>(mCurrentAllocElements) << ", " 
+        // std::cout << std::get<MatrixA>(mCurrentAllocElements) << ", "
+        //           << std::get<MatrixB>(mCurrentAllocElements) << ", "
+        //           << std::get<MatrixC>(mCurrentAllocElements) << ", "
         //           << std::get<MatrixD>(mCurrentAllocElements) << std::endl;
     }
 

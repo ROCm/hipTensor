@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,12 +84,12 @@ typedef enum
     HIPTENSOR_COMPUTE_32F = (1U << 2U),
     HIPTENSOR_COMPUTE_64F = (1U << 4U),
     /*!< Following types to be added (TBA) */
-    HIPTENSOR_COMPUTE_16F = (1U << 0U),
+    HIPTENSOR_COMPUTE_16F  = (1U << 0U),
     HIPTENSOR_COMPUTE_16BF = (1U << 10U),
-    HIPTENSOR_COMPUTE_8U  = (1U << 6U),
-    HIPTENSOR_COMPUTE_8I  = (1U << 8U),
-    HIPTENSOR_COMPUTE_32U = (1U << 7U),
-    HIPTENSOR_COMPUTE_32I = (1U << 9U),
+    HIPTENSOR_COMPUTE_8U   = (1U << 6U),
+    HIPTENSOR_COMPUTE_8I   = (1U << 8U),
+    HIPTENSOR_COMPUTE_32U  = (1U << 7U),
+    HIPTENSOR_COMPUTE_32I  = (1U << 9U),
 } hiptensorComputeType_t;
 
 /**
