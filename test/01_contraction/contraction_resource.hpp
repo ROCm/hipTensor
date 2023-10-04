@@ -114,12 +114,14 @@ namespace hiptensor
         void reset() final;
 
     protected:
-        DevicePtrT  mDeviceA, mDeviceB;
-        DevicePtrT mDeviceC, mDeviceD;
-        HostPtrT    mHostA, mHostB;
-        HostPtrT   mHostC, mHostD;
-        MatrixElements      mCurrentMatrixElements;
-        MatrixElements      mCurrentAllocElements;
+        DevicePtrT     mDeviceA, mDeviceB;
+        DevicePtrT     mDeviceC, mDeviceD;
+        HostPtrT       mHostA, mHostB;
+        HostPtrT       mHostC, mHostD;
+        ElementBytes   mCurrentElementBytes;
+        ElementBytes   mCurrentAllocBytes;
+        MatrixElements mCurrentMatrixElements;
+        MatrixElements mCurrentAllocElements;
     };
 
 } // namespace hiptensor
