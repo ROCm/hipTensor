@@ -50,6 +50,7 @@ set(HIPTENSOR_LLVM_LIBS "-L${LLVM_LIBRARY_DIR}"
                         "-Wl,-rpath=${LLVM_LIBRARY_DIR}"
                         LLVMObjectYAML
                         LLVMSupport
+                        hip::device
                         )
 
 # Includes
