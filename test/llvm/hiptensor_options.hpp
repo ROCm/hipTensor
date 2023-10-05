@@ -60,6 +60,7 @@ namespace hiptensor
         bool        omitCout();
         bool        usingDefaultConfig();
         std::string inputFilename();
+        std::string outputFilename();
 
     protected:
         HiptensorOStream mOstream;

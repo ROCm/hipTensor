@@ -48,7 +48,6 @@ namespace hiptensor
 //     struct ContractionTestParams
 //     {
 //         using TestDataTypeT = std::vector<hipDataType>;
-//         using TestComputeTypeT = hiptensorComputeType_t;
 
 //         using AlgorithmT = hiptensorAlgo_t;
 //         using OperatorT = hiptensorOperator_t;
@@ -62,7 +61,6 @@ namespace hiptensor
 
 //         //Data types of input and output tensors
 //         std::vector<TestDataTypeT> mDataTypes;
-//         std::vector<TestComputeTypeT> mComputeTypes;
 //         std::vector<AlgorithmT> mAlgorithms;
 //         std::vector<OperatorT> mOperators;
 //         std::vector<WorkSizePrefT> mWorkSizePrefs;
@@ -88,7 +86,6 @@ LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 // - val1
 // ...
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
-LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorComputeType_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
@@ -114,16 +111,6 @@ namespace llvm
                 io.enumCase(value, "HIP_R_32F", HIP_R_32F);
                 io.enumCase(value, "HIP_R_64F", HIP_R_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
-            }
-        };
-
-        template <>
-        struct ScalarEnumerationTraits<hiptensorComputeType_t>
-        {
-            static void enumeration(IO& io, hiptensorComputeType_t& value)
-            {
-                io.enumCase(value, "HIPTENSOR_COMPUTE_32F", HIPTENSOR_COMPUTE_32F);
-                io.enumCase(value, "HIPTENSOR_COMPUTE_64F", HIPTENSOR_COMPUTE_64F);
             }
         };
 
@@ -171,6 +158,7 @@ namespace llvm
         {
             static void bitset(IO& io, hiptensorLogLevel_t& value)
             {
+                io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_OFF", HIPTENSOR_LOG_LEVEL_OFF);
                 io.bitSetCase(value, "HIPTENSOR_LOG_LEVEL_ERROR", HIPTENSOR_LOG_LEVEL_ERROR);
                 io.bitSetCase(
                     value, "HIPTENSOR_LOG_LEVEL_PERF_TRACE", HIPTENSOR_LOG_LEVEL_PERF_TRACE);
@@ -233,7 +221,6 @@ namespace llvm
 
                 // Sequences of combinatorial fields
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
-                io.mapRequired("Compute Types", doc.computeTypes());
                 io.mapRequired("Algorithm Types", doc.algorithms());
                 io.mapRequired("Operators", doc.operators());
                 io.mapRequired("Worksize Prefs", doc.workSizePrefrences());
