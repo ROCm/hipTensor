@@ -40,8 +40,7 @@ namespace hiptensor
 
     struct ContractionTestParams
     {
-        using TestDataTypeT    = std::vector<hipDataType>;
-        using TestComputeTypeT = hiptensorComputeType_t;
+        using TestTypesT = std::vector<hipDataType>;
 
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;
@@ -54,14 +53,9 @@ namespace hiptensor
         using BetaT    = double;
 
     public:
-        std::vector<TestDataTypeT>& dataTypes()
+        std::vector<TestTypesT>& dataTypes()
         {
             return mDataTypes;
-        }
-
-        std::vector<TestComputeTypeT>& computeTypes()
-        {
-            return mComputeTypes;
         }
 
         std::vector<AlgorithmT>& algorithms()
@@ -107,7 +101,6 @@ namespace hiptensor
         void printParams()
         {
             std::cout << "DataTypes: " << mDataTypes << std::endl
-                      << "ComputeTypes: " << mComputeTypes << std::endl
                       << "Algorithms: " << mAlgorithms << std::endl
                       << "Operators: " << mOperators << std::endl
                       << "WorkSizePrefs: " << mWorkSizePrefs << std::endl
@@ -120,16 +113,15 @@ namespace hiptensor
 
     private:
         //Data types of input and output tensors
-        std::vector<TestDataTypeT>    mDataTypes;
-        std::vector<TestComputeTypeT> mComputeTypes;
-        std::vector<AlgorithmT>       mAlgorithms;
-        std::vector<OperatorT>        mOperators;
-        std::vector<WorkSizePrefT>    mWorkSizePrefs;
-        LogLevelT                     mLogLevelMask;
-        std::vector<LengthsT>         mProblemLengths;
-        std::vector<StridesT>         mProblemStrides;
-        std::vector<AlphaT>           mAlphas;
-        std::vector<BetaT>            mBetas;
+        std::vector<TestTypesT>    mDataTypes;
+        std::vector<AlgorithmT>    mAlgorithms;
+        std::vector<OperatorT>     mOperators;
+        std::vector<WorkSizePrefT> mWorkSizePrefs;
+        LogLevelT                  mLogLevelMask;
+        std::vector<LengthsT>      mProblemLengths;
+        std::vector<StridesT>      mProblemStrides;
+        std::vector<AlphaT>        mAlphas;
+        std::vector<BetaT>         mBetas;
     };
 
 } // namespace hiptensor
