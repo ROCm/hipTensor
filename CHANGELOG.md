@@ -1,8 +1,8 @@
 # Change Log for hipTensor
 
-Full documentation for hipTensor is available at [hiptensor.readthedocs.io](https://hiptensor.readthedocs.io/en/latest/).
+Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-## hipTensor 1.1.0  for ROCm 6.0.0
+## (Unreleased) hipTensor 1.1.0  for ROCm 6.0.0
 
 ### Added
 - Added architecture support for gfx940, gfx941 and gfx942
