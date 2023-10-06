@@ -25,11 +25,10 @@
  *******************************************************************************/
 
 #include <algorithm>
-#include <filesystem>
+#include <cstdio>
 #include <fstream>
 #include <iterator>
 #include <numeric>
-#include <random>
 #include <unordered_map>
 
 // hiptensor includes
@@ -73,33 +72,6 @@ namespace hiptensor
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
-std::filesystem::path create_temporary_directory(unsigned long long max_tries = 1000)
-{
-    auto                                    tmp_dir = std::filesystem::temp_directory_path();
-    unsigned long long                      i       = 0;
-    std::random_device                      dev;
-    std::mt19937                            prng(dev());
-    std::uniform_int_distribution<uint64_t> rand(0);
-    std::filesystem::path                   path;
-    while(true)
-    {
-        std::stringstream ss;
-        ss << std::hex << rand(prng);
-        path = tmp_dir / ss.str();
-        // true if the directory was created.
-        if(std::filesystem::create_directory(path))
-        {
-            break;
-        }
-        if(i == max_tries)
-        {
-            throw std::runtime_error("could not find non-existing directory");
-        }
-        i++;
-    }
-    return path;
-}
-
 int main(int argc, char* argv[])
 {
     auto yee          = hiptensor::ContractionTestParams{};
@@ -125,28 +97,29 @@ int main(int argc, char* argv[])
     yee.mAlphas         = {0, 1, 1};
     yee.mBetas          = {2, 2, 2};
 
-    struct TmpDirWrapper
+    struct TmpFileWrapper
     {
-        TmpDirWrapper(std::filesystem::path const& dir)
-            : tmpDir(dir)
+        TmpFileWrapper()
         {
+            // use std C function to create tmp file since filesystem is not supported on some platforms
+            char tmpFilenameBuf[L_tmpnam];
+            std::tmpnam(tmpFilenameBuf);
+            tmpFilename.assign(tmpFilenameBuf);
         }
-        ~TmpDirWrapper()
+        ~TmpFileWrapper()
         {
-            std::filesystem::remove_all(tmpDir);
+            ::remove(tmpFilename.c_str());
         }
-        auto getTmpDir() const
+        std::string getTmpFile() const
         {
-            return tmpDir;
+            return tmpFilename;
         }
 
     private:
-        std::filesystem::path tmpDir;
-    } tmpDirWrapper(create_temporary_directory());
+        std::string tmpFilename;
+    } tmpDirWrapper;
 
-    auto tmpDir  = tmpDirWrapper.getTmpDir();
-    auto tmpFile = tmpDir / "test-out.yaml";
-
+    auto tmpFile = tmpDirWrapper.getTmpFile();
     hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile(tmpFile, yee);
     auto yee1
         = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(tmpFile);
