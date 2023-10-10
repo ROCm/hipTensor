@@ -83,6 +83,12 @@ namespace hiptensor
         {
             mUsingDefaultParams = false;
         }
+
+        // Initialize output stream
+        if (!mOutputFilename.empty())
+        {
+            mOstream.initializeStream(mOutputFilename);
+        }
     }
 
     void HiptensorOptions::setOmits(int mask)
@@ -130,6 +136,11 @@ namespace hiptensor
     std::string HiptensorOptions::inputFilename()
     {
         return mInputFilename;
+    }
+
+    std::string HiptensorOptions::outputFilename()
+    {
+        return mOutputFilename;
     }
 
 } // namespace hiptensor

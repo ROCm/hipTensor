@@ -30,11 +30,11 @@
 #include "contraction_test.hpp"
 #include "contraction_test_helpers.hpp"
 
-class BilinearF32ContractionTest : public hiptensor::ContractionTest
+class BilinearContractionTest : public hiptensor::ContractionTest
 {
 };
 
-TEST_P(BilinearF32ContractionTest, RunKernel)
+TEST_P(BilinearContractionTest, RunKernel)
 {
     static bool ranWarmup = false;
     if(!ranWarmup)
@@ -45,4 +45,4 @@ TEST_P(BilinearF32ContractionTest, RunKernel)
     this->RunKernel();
 }
 
-INSTANTIATE_TEST_SUITE_P(ContractionTests, BilinearF32ContractionTest, load_config_helper());
+INSTANTIATE_TEST_SUITE_P(ContractionTests, BilinearContractionTest, load_config_helper());
