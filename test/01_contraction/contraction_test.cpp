@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -224,7 +224,7 @@ namespace hiptensor
                                                                         hipDataTypeSize(BDataType),
                                                                         hipDataTypeSize(CDataType),
                                                                         hipDataTypeSize(DDataType));
-                                                                        
+
             auto resource = getResource();
             resource->resizeStorage(lengths, elementBytes);
 
@@ -323,7 +323,7 @@ namespace hiptensor
            && (!mValidationResult || !omitPassed))
         {
             stream << ContractionTest::sAPILogBuff.str();
-            
+
             if(mPrintElements)
             {
                 auto resource = getResource();
