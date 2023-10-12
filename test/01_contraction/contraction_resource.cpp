@@ -42,6 +42,8 @@ namespace hiptensor
         , mHostB(Base::allocHost(0))
         , mHostC(Base::allocHost(0))
         , mHostD(Base::allocHost(0))
+        , mCurrentElementBytes({0, 0, 0, 0})
+        , mCurrentAllocBytes({0, 0, 0, 0})
         , mCurrentMatrixElements({0, 0, 0, 0})
         , mCurrentAllocElements({0, 0, 0, 0})
     {
@@ -57,6 +59,8 @@ namespace hiptensor
         , mHostB(std::move(rhs.mHostB))
         , mHostC(std::move(rhs.mHostC))
         , mHostD(std::move(rhs.mHostD))
+        , mCurrentElementBytes(rhs.mCurrentElementBytes)
+        , mCurrentAllocBytes(rhs.mCurrentAllocBytes)
         , mCurrentMatrixElements(rhs.mCurrentMatrixElements)
         , mCurrentAllocElements(rhs.mCurrentAllocElements)
     {
@@ -122,12 +126,14 @@ namespace hiptensor
                                                    auto&    hostPtr,
                                                    int64_t& currentAllocElements,
                                                    int64_t  newAllocElements,
-                                                   int32_t  elementBytes) {
+                                                   int32_t& currentElementBytes,
+                                                   int32_t  newElementBytes) {
             // Only realloc if required (e.g. current allocation won't fit new sizes)
-            if(currentAllocElements < newAllocElements)
+            if((currentAllocElements * currentElementBytes) < (newAllocElements * newElementBytes))
             {
-                Base::reallocDeviceHostPair(devicePtr, hostPtr, newAllocElements * elementBytes);
+                Base::reallocDeviceHostPair(devicePtr, hostPtr, newAllocElements * newElementBytes);
                 currentAllocElements = newAllocElements;
+                currentElementBytes = newElementBytes;
             }
         };
 
@@ -135,28 +141,33 @@ namespace hiptensor
                                          mHostA,
                                          std::get<MatrixA>(mCurrentAllocElements),
                                          std::get<MatrixA>(newMatrixElements),
+                                         std::get<MatrixA>(mCurrentElementBytes),
                                          std::get<MatrixA>(bytesPerElement));
         conditionalReallocDeviceHostPair(mDeviceB,
                                          mHostB,
                                          std::get<MatrixB>(mCurrentAllocElements),
                                          std::get<MatrixB>(newMatrixElements),
+                                         std::get<MatrixB>(mCurrentElementBytes),
                                          std::get<MatrixB>(bytesPerElement));
         conditionalReallocDeviceHostPair(mDeviceC,
                                          mHostC,
                                          std::get<MatrixC>(mCurrentAllocElements),
                                          std::get<MatrixC>(newMatrixElements),
+                                         std::get<MatrixC>(mCurrentElementBytes),
                                          std::get<MatrixC>(bytesPerElement));
         conditionalReallocDeviceHostPair(mDeviceD,
                                          mHostD,
                                          std::get<MatrixD>(mCurrentAllocElements),
                                          std::get<MatrixD>(newMatrixElements),
+                                         std::get<MatrixD>(mCurrentElementBytes),
                                          std::get<MatrixD>(bytesPerElement));
 
-        // Always update the current matrix element count
+        // Always update the current matrix element count & element size
         mCurrentMatrixElements = newMatrixElements;
-        // std::cout << std::get<MatrixA>(mCurrentAllocElements) << ", "
-        //           << std::get<MatrixB>(mCurrentAllocElements) << ", "
-        //           << std::get<MatrixC>(mCurrentAllocElements) << ", "
+        mCurrentAllocBytes = bytesPerElement;
+        // std::cout << std::get<MatrixA>(mCurrentAllocElements) << ", " 
+        //           << std::get<MatrixB>(mCurrentAllocElements) << ", " 
+        //           << std::get<MatrixC>(mCurrentAllocElements) << ", " 
         //           << std::get<MatrixD>(mCurrentAllocElements) << std::endl;
     }
 

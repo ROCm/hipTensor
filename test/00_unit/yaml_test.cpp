@@ -25,6 +25,7 @@
  *******************************************************************************/
 
 #include <algorithm>
+#include <cstdio>
 #include <fstream>
 #include <iterator>
 #include <numeric>
@@ -44,8 +45,7 @@ namespace hiptensor
     static constexpr hipDataType NONE_TYPE = (hipDataType)31;
     struct ContractionTestParams
     {
-        using TestDataTypeT    = std::vector<hipDataType>;
-        using TestComputeTypeT = hiptensorComputeType_t;
+        using TestTypesT = std::vector<hipDataType>;
 
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;
@@ -58,16 +58,15 @@ namespace hiptensor
         using BetaT    = double;
 
         //Data types of input and output tensors
-        std::vector<TestDataTypeT>    mDataTypes;
-        std::vector<TestComputeTypeT> mComputeTypes;
-        std::vector<AlgorithmT>       mAlgorithms;
-        std::vector<OperatorT>        mOperators;
-        std::vector<WorkSizePrefT>    mWorkSizePrefs;
-        LogLevelT                     mLogLevelMask;
-        std::vector<LengthsT>         mProblemLengths;
-        std::vector<StridesT>         mProblemStrides;
-        std::vector<AlphaT>           mAlphas;
-        std::vector<BetaT>            mBetas;
+        std::vector<TestTypesT>    mDataTypes;
+        std::vector<AlgorithmT>    mAlgorithms;
+        std::vector<OperatorT>     mOperators;
+        std::vector<WorkSizePrefT> mWorkSizePrefs;
+        LogLevelT                  mLogLevelMask;
+        std::vector<LengthsT>      mProblemLengths;
+        std::vector<StridesT>      mProblemStrides;
+        std::vector<AlphaT>        mAlphas;
+        std::vector<BetaT>         mBetas;
     };
 }
 
@@ -79,14 +78,12 @@ int main(int argc, char* argv[])
     yee.mLogLevelMask = (hiptensorLogLevel_t)(HIPTENSOR_LOG_LEVEL_OFF);
     yee.mDataTypes    = {
         // clang-format off
-                {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F}, // scale F32
-                {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
-                {HIP_R_64F, HIP_R_64F, hiptensor::NONE_TYPE, HIP_R_64F}, // scale F64
-                {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
+                {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F, HIP_R_32F}, // scale F32
+                {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
+                {HIP_R_64F, HIP_R_64F, hiptensor::NONE_TYPE, HIP_R_64F, HIP_R_64F}, // scale F64
+                {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
         // clang-format on
     };
-
-    yee.mComputeTypes = {HIPTENSOR_COMPUTE_32F, HIPTENSOR_COMPUTE_64F};
     yee.mAlgorithms
         = {HIPTENSOR_ALGO_DEFAULT, HIPTENSOR_ALGO_DEFAULT_PATIENT, HIPTENSOR_ALGO_ACTOR_CRITIC};
     yee.mOperators = {HIPTENSOR_OP_IDENTITY};
@@ -100,10 +97,32 @@ int main(int argc, char* argv[])
     yee.mAlphas         = {0, 1, 1};
     yee.mBetas          = {2, 2, 2};
 
-    hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile("test-out.yaml",
-                                                                               yee);
-    auto yee1 = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(
-        "test-out.yaml");
+    struct TmpFileWrapper
+    {
+        TmpFileWrapper()
+        {
+            // use std C function to create tmp file since filesystem is not supported on some platforms
+            char tmpFilenameBuf[L_tmpnam];
+            std::tmpnam(tmpFilenameBuf);
+            tmpFilename.assign(tmpFilenameBuf);
+        }
+        ~TmpFileWrapper()
+        {
+            ::remove(tmpFilename.c_str());
+        }
+        std::string getTmpFile() const
+        {
+            return tmpFilename;
+        }
+
+    private:
+        std::string tmpFilename;
+    } tmpDirWrapper;
+
+    auto tmpFile = tmpDirWrapper.getTmpFile();
+    hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile(tmpFile, yee);
+    auto yee1
+        = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(tmpFile);
 
     return 0;
 }

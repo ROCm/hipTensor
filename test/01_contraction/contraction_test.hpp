@@ -40,22 +40,20 @@ namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
-    class ContractionTest : public ::testing::TestWithParam<
-                                std::tuple<typename ContractionTestParams::TestDataTypeT,
-                                           typename ContractionTestParams::TestComputeTypeT,
-                                           typename ContractionTestParams::AlgorithmT,
-                                           typename ContractionTestParams::OperatorT,
-                                           typename ContractionTestParams::WorkSizePrefT,
-                                           typename ContractionTestParams::LogLevelT,
-                                           typename ContractionTestParams::LengthsT,
-                                           typename ContractionTestParams::StridesT,
-                                           typename ContractionTestParams::AlphaT,
-                                           typename ContractionTestParams::BetaT>>
+    class ContractionTest
+        : public ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestTypesT,
+                                                     typename ContractionTestParams::AlgorithmT,
+                                                     typename ContractionTestParams::OperatorT,
+                                                     typename ContractionTestParams::WorkSizePrefT,
+                                                     typename ContractionTestParams::LogLevelT,
+                                                     typename ContractionTestParams::LengthsT,
+                                                     typename ContractionTestParams::StridesT,
+                                                     typename ContractionTestParams::AlphaT,
+                                                     typename ContractionTestParams::BetaT>>
     {
     protected: // Types
         using Base
-            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestDataTypeT,
-                                                  typename ContractionTestParams::TestComputeTypeT,
+            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestTypesT,
                                                   typename ContractionTestParams::AlgorithmT,
                                                   typename ContractionTestParams::OperatorT,
                                                   typename ContractionTestParams::WorkSizePrefT,

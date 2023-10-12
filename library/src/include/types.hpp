@@ -55,6 +55,9 @@ namespace hiptensor
     // Get data size in bytes from id
     uint32_t hipDataTypeSize(hipDataType id);
 
+    // Convert hipDataType to hiptensorComputeType_t
+    hiptensorComputeType_t convertToComputeType(hipDataType hipType);
+
     // Read a single value from void pointer, casted to T
     template <typename T>
     T readVal(void const* value, hipDataType id);

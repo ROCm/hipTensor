@@ -118,6 +118,8 @@ namespace hiptensor
         DevicePtrT     mDeviceC, mDeviceD;
         HostPtrT       mHostA, mHostB;
         HostPtrT       mHostC, mHostD;
+        ElementBytes   mCurrentElementBytes;
+        ElementBytes   mCurrentAllocBytes;
         MatrixElements mCurrentMatrixElements;
         MatrixElements mCurrentAllocElements;
     };
