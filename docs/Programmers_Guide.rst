@@ -29,7 +29,7 @@ library/include/hiptensor/internal
 Internal include files for:
 
 - Utility Code
-- Generate Tensor Utility 
+- Generate Tensor Utility
 
 library/src/
 ''''''''''''

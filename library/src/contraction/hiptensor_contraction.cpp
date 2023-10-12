@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@
 #include "handle.hpp"
 #include "hip_device.hpp"
 #include "logger.hpp"
-
 
 // Convert between vectors of void ptrs stored in opaque API objects
 // to vectors of ContractionSolution ptrs with simple cast.
@@ -714,7 +713,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
 
         // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
-        if (logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+        if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
         {
             auto time = (*cSolution)(StreamConfig{stream, true});
 
@@ -733,12 +732,12 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
 
             // log perf metrics (not name/id)
             sprintf(msg,
-                "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
-                metrics.mKernelUid,
-                metrics.mKernelName.c_str(),
-                metrics.mAvgTimeMs,
-                metrics.mTflops,
-                metrics.mBandwidth);
+                    "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+                    metrics.mKernelUid,
+                    metrics.mKernelName.c_str(),
+                    metrics.mAvgTimeMs,
+                    metrics.mTflops,
+                    metrics.mBandwidth);
             logger->logPerformanceTrace("hiptensorContraction", msg);
         }
         // Perform contraction without timing

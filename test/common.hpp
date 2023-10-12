@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,17 @@ namespace hiptensor
     struct HostDeleter
     {
         void operator()(void* ptr)
-        { operator delete(ptr); }
+        {
+            operator delete(ptr);
+        }
     };
 
     struct DeviceDeleter
     {
         void operator()(void* ptr)
-        { CHECK_HIP_ERROR(hipFree(ptr)); }
+        {
+            CHECK_HIP_ERROR(hipFree(ptr));
+        }
     };
 } // namespace hiptensor
 
