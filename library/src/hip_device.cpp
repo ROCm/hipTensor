@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,8 +119,10 @@ namespace hiptensor
 
     bool HipDevice::supportsF64() const
     {
-        return (mGcnArch == HipDevice::hipGcnArch_t::GFX90A || mGcnArch == HipDevice::hipGcnArch_t::GFX940 ||
-                mGcnArch == HipDevice::hipGcnArch_t::GFX941 || mGcnArch == HipDevice::hipGcnArch_t::GFX942);
+        return (mGcnArch == HipDevice::hipGcnArch_t::GFX90A
+                || mGcnArch == HipDevice::hipGcnArch_t::GFX940
+                || mGcnArch == HipDevice::hipGcnArch_t::GFX941
+                || mGcnArch == HipDevice::hipGcnArch_t::GFX942);
     }
 
     // Need to check the host device target support statically before hip modules attempt

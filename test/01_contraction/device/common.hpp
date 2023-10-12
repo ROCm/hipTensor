@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ __global__ void fillKernel(DataType* data, uint32_t elementSize)
 
     if(index < elementSize)
     {
-        auto value = (DataType(index / DataType(RAND_MAX) - 0.5) * 100) / elementSize;
+        auto value  = (DataType(index / DataType(RAND_MAX) - 0.5) * 100) / elementSize;
         data[index] = static_cast<DataType>(value);
     }
 }

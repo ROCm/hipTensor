@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,17 +51,17 @@ namespace hiptensor
     struct ContractionResource : public HipResource, public LazySingleton<ContractionResource>
     {
         // For static initialization
-        friend std::unique_ptr<ContractionResource>
-            std::make_unique<ContractionResource>();
+        friend std::unique_ptr<ContractionResource> std::make_unique<ContractionResource>();
 
         using Base = HipResource;
 
     public:
         using DevicePtrT = Base::DevicePtrT;
-        using HostPtrT = Base::HostPtrT;
+        using HostPtrT   = Base::HostPtrT;
 
         // M, N, U, V, H, K
-        using ProblemDims = std::vector<std::size_t>;;
+        using ProblemDims = std::vector<std::size_t>;
+        ;
 
         // MatrixA, MatrixB, MatrixC, MatrixD (# of elements)
         using MatrixElements = std::tuple<int64_t, int64_t, int64_t, int64_t>;

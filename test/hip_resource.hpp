@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright 2021-2023 Advanced Micro Devices, Inc.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@
 #ifndef HIPTENSOR_HIP_RESOURCE_HPP
 #define HIPTENSOR_HIP_RESOURCE_HPP
 
-#include <memory>
 #include "common.hpp"
+#include <memory>
 
 // The HipResource class is intended as a wrapper for allocation, deletion and copying
 // between host and device resources using the HIP backend.
@@ -52,26 +52,21 @@ namespace hiptensor
 
         // Types
         using DevicePtrT = std::unique_ptr<void, DeviceDeleter>;
-        using HostPtrT = std::unique_ptr<void, HostDeleter>;
+        using HostPtrT   = std::unique_ptr<void, HostDeleter>;
 
         // Alloc
-        static  DevicePtrT allocDevice(int64_t numBytes);
-        static  void reallocDevice(DevicePtrT& devicePtr, int64_t numBytes);
-        static  HostPtrT allocHost(int64_t numBytes);
-        static  void reallocHost(HostPtrT& hostPtr, int64_t numBytes);
-        static  void reallocDeviceHostPair(DevicePtrT& devicePtr,
-                                                 HostPtrT&   hostPtr,
-                                                 int64_t     numBytes);
+        static DevicePtrT allocDevice(int64_t numBytes);
+        static void       reallocDevice(DevicePtrT& devicePtr, int64_t numBytes);
+        static HostPtrT   allocHost(int64_t numBytes);
+        static void       reallocHost(HostPtrT& hostPtr, int64_t numBytes);
+        static void
+            reallocDeviceHostPair(DevicePtrT& devicePtr, HostPtrT& hostPtr, int64_t numBytes);
 
         // Transfer wrappers
-        static void
-            copyData(HostPtrT& dst, DevicePtrT const& src, int64_t numBytes);
-        static void
-            copyData(DevicePtrT& dst, HostPtrT const& src, int64_t numBytes);
-        static void 
-            copyData(HostPtrT& dst, HostPtrT const& src, int64_t numBytes);
-        static void
-            copyData(DevicePtrT& dst, DevicePtrT const& src, int64_t numBytes);
+        static void copyData(HostPtrT& dst, DevicePtrT const& src, int64_t numBytes);
+        static void copyData(DevicePtrT& dst, HostPtrT const& src, int64_t numBytes);
+        static void copyData(HostPtrT& dst, HostPtrT const& src, int64_t numBytes);
+        static void copyData(DevicePtrT& dst, DevicePtrT const& src, int64_t numBytes);
 
         virtual void reset() = 0;
     };
