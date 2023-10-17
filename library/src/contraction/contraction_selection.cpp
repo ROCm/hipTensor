@@ -179,38 +179,66 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            if(d5 <= 36)
+            if(d6 <= 43)
             {
-                if(d6 <= 53)
+                if(d5 <= 61)
                 {
-                    if(d6 <= 2)
+                    if(d3 <= 236)
                     {
-                        if(d5 <= 14)
+                        if(d4 <= 519)
                         {
-                            unique_id = 11803951795078848381ull;
+                            if(d1 <= 744)
+                            {
+                                if(d6 <= 8)
+                                {
+                                    unique_id = 4671301146928673150ull;
+                                }
+                                else
+                                {
+                                    unique_id = 17304057348073251997ull;
+                                }
+                            }
+                            else
+                            {
+                                unique_id = 4671301146928673150ull;
+                            }
                         }
                         else
                         {
-                            unique_id = 12220255318180845084ull;
+                            if(d3 <= 32)
+                            {
+                                unique_id = 17304057348073251997ull;
+                            }
+                            else
+                            {
+                                unique_id = 4671301146928673150ull;
+                            }
                         }
                     }
                     else
                     {
-                        if(d4 <= 208)
+                        if(d6 <= 2)
                         {
-                            if(d3 <= 437)
+                            if(d5 <= 15)
                             {
-                                unique_id = 15717866180122059508ull;
+                                unique_id = 17618515137355245877ull;
                             }
                             else
                             {
-                                if(d2 <= 174)
+                                if(d6 <= 1)
                                 {
-                                    unique_id = 15717866180122059508ull;
+                                    unique_id = 10830479759059230274ull;
                                 }
                                 else
                                 {
-                                    unique_id = 10212603695171387835ull;
+                                    if(d5 <= 32)
+                                    {
+                                        unique_id = 10830479759059230274ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 4671301146928673150ull;
+                                    }
                                 }
                             }
                         }
@@ -218,56 +246,63 @@ namespace hiptensor
                         {
                             if(d5 <= 2)
                             {
-                                if(d6 <= 12)
+                                if(d6 <= 8)
                                 {
-                                    unique_id = 11803951795078848381ull;
+                                    unique_id = 17618515137355245877ull;
                                 }
                                 else
                                 {
-                                    unique_id = 12220255318180845084ull;
+                                    unique_id = 10830479759059230274ull;
                                 }
                             }
                             else
                             {
-                                if(d2 <= 50)
+                                if(d1 <= 54)
                                 {
-                                    unique_id = 15717866180122059508ull;
+                                    unique_id = 17304057348073251997ull;
                                 }
                                 else
                                 {
-                                    if(d6 <= 31)
+                                    if(d4 <= 218)
                                     {
-                                        if(d6 <= 6)
+                                        if(d5 <= 36)
                                         {
-                                            if(d5 <= 17)
-                                            {
-                                                unique_id = 14031134003016946658ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10212603695171387835ull;
-                                            }
+                                            unique_id = 4671301146928673150ull;
                                         }
                                         else
                                         {
-                                            unique_id = 10212603695171387835ull;
+                                            if(d6 <= 31)
+                                            {
+                                                unique_id = 4671301146928673150ull;
+                                            }
+                                            else
+                                            {
+                                                unique_id = 16481146763982821264ull;
+                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if(d5 <= 31)
+                                        if(d2 <= 50)
                                         {
-                                            unique_id = 10212603695171387835ull;
+                                            unique_id = 4671301146928673150ull;
                                         }
                                         else
                                         {
-                                            if(d1 <= 444)
+                                            if(d6 <= 31)
                                             {
-                                                unique_id = 10212603695171387835ull;
+                                                unique_id = 4671301146928673150ull;
                                             }
                                             else
                                             {
-                                                unique_id = 11587153158789362298ull;
+                                                if(d6 <= 32)
+                                                {
+                                                    unique_id = 10830479759059230274ull;
+                                                }
+                                                else
+                                                {
+                                                    unique_id = 4671301146928673150ull;
+                                                }
                                             }
                                         }
                                     }
@@ -278,53 +313,32 @@ namespace hiptensor
                 }
                 else
                 {
-                    if(d5 <= 15)
+                    if(d6 <= 18)
                     {
-                        if(d6 <= 68)
-                        {
-                            if(d5 <= 1)
-                            {
-                                unique_id = 14031134003016946658ull;
-                            }
-                            else
-                            {
-                                unique_id = 10212603695171387835ull;
-                            }
-                        }
-                        else
-                        {
-                            if(d1 <= 444)
-                            {
-                                unique_id = 10212603695171387835ull;
-                            }
-                            else
-                            {
-                                unique_id = 11587153158789362298ull;
-                            }
-                        }
+                        unique_id = 4671301146928673150ull;
                     }
                     else
                     {
-                        if(d1 <= 223)
+                        if(d4 <= 557)
                         {
-                            if(d2 <= 222)
+                            if(d2 <= 165)
                             {
-                                unique_id = 15717866180122059508ull;
+                                unique_id = 4671301146928673150ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298ull;
+                                unique_id = 16481146763982821264ull;
                             }
                         }
                         else
                         {
-                            if(d2 <= 50)
+                            if(d5 <= 68)
                             {
-                                unique_id = 15717866180122059508ull;
+                                unique_id = 4671301146928673150ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298ull;
+                                unique_id = 16481146763982821264ull;
                             }
                         }
                     }
@@ -332,163 +346,156 @@ namespace hiptensor
             }
             else
             {
-                if(d6 <= 23)
+                if(d5 <= 24)
                 {
-                    if(d6 <= 15)
+                    if(d3 <= 435)
                     {
-                        if(d4 <= 454)
+                        if(d5 <= 7)
                         {
-                            if(d3 <= 650)
+                            if(d5 <= 1)
                             {
-                                if(d6 <= 4)
-                                {
-                                    if(d6 <= 1)
-                                    {
-                                        unique_id = 12220255318180845084ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 10212603695171387835ull;
-                                    }
-                                }
-                                else
-                                {
-                                    if(d6 <= 8)
-                                    {
-                                        if(d6 <= 7)
-                                        {
-                                            unique_id = 15717866180122059508ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 12220255318180845084ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        unique_id = 15717866180122059508ull;
-                                    }
-                                }
+                                unique_id = 3454820663416883703ull;
                             }
                             else
                             {
-                                unique_id = 10212603695171387835ull;
+                                unique_id = 4671301146928673150ull;
                             }
                         }
                         else
                         {
-                            if(d6 <= 1)
+                            if(d1 <= 744)
                             {
-                                unique_id = 12220255318180845084ull;
+                                unique_id = 17304057348073251997ull;
                             }
                             else
                             {
-                                if(d6 <= 3)
+                                if(d6 <= 60)
                                 {
-                                    unique_id = 10212603695171387835ull;
+                                    unique_id = 4671301146928673150ull;
                                 }
                                 else
                                 {
-                                    if(d6 <= 8)
-                                    {
-                                        if(d6 <= 7)
-                                        {
-                                            unique_id = 10212603695171387835ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 12220255318180845084ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        unique_id = 10212603695171387835ull;
-                                    }
+                                    unique_id = 17304057348073251997ull;
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if(d5 <= 50)
+                        if(d5 <= 1)
                         {
-                            if(d6 <= 16)
-                            {
-                                unique_id = 12220255318180845084ull;
-                            }
-                            else
-                            {
-                                if(d4 <= 307)
-                                {
-                                    unique_id = 15717866180122059508ull;
-                                }
-                                else
-                                {
-                                    unique_id = 10212603695171387835ull;
-                                }
-                            }
+                            unique_id = 3454820663416883703ull;
                         }
                         else
                         {
-                            unique_id = 11587153158789362298ull;
+                            if(d5 <= 13)
+                            {
+                                if(d5 <= 7)
+                                {
+                                    unique_id = 4671301146928673150ull;
+                                }
+                                else
+                                {
+                                    unique_id = 4671301146928673150ull;
+                                }
+                            }
+                            else
+                            {
+                                if(d6 <= 58)
+                                {
+                                    unique_id = 4671301146928673150ull;
+                                }
+                                else
+                                {
+                                    if(d1 <= 642)
+                                    {
+                                        unique_id = 17304057348073251997ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 16481146763982821264ull;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
                 else
                 {
-                    if(d2 <= 52)
+                    if(d6 <= 54)
                     {
-                        if(d1 <= 372)
+                        if(d5 <= 37)
                         {
-                            unique_id = 15717866180122059508ull;
+                            if(d4 <= 556)
+                            {
+                                unique_id = 16481146763982821264ull;
+                            }
+                            else
+                            {
+                                unique_id = 4671301146928673150ull;
+                            }
                         }
                         else
                         {
-                            unique_id = 11587153158789362298ull;
+                            if(d1 <= 222)
+                            {
+                                if(d4 <= 556)
+                                {
+                                    unique_id = 16481146763982821264ull;
+                                }
+                                else
+                                {
+                                    unique_id = 4671301146928673150ull;
+                                }
+                            }
+                            else
+                            {
+                                unique_id = 16481146763982821264ull;
+                            }
                         }
                     }
                     else
                     {
-                        if(d1 <= 78)
+                        if(d4 <= 44)
                         {
-                            if(d2 <= 293)
+                            if(d3 <= 436)
                             {
-                                unique_id = 15717866180122059508ull;
+                                unique_id = 17304057348073251997ull;
                             }
                             else
                             {
-                                unique_id = 11587153158789362298ull;
+                                unique_id = 16481146763982821264ull;
                             }
                         }
                         else
                         {
-                            if(d6 <= 31)
+                            if(d1 <= 220)
                             {
-                                if(d5 <= 45)
+                                if(d2 <= 107)
                                 {
-                                    unique_id = 10212603695171387835ull;
+                                    unique_id = 17304057348073251997ull;
                                 }
                                 else
                                 {
-                                    unique_id = 11587153158789362298ull;
+                                    unique_id = 16481146763982821264ull;
                                 }
                             }
                             else
                             {
-                                if(d3 <= 114)
+                                if(d3 <= 72)
                                 {
-                                    if(d4 <= 149)
-                                    {
-                                        unique_id = 15717866180122059508ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 11587153158789362298ull;
-                                    }
+                                    unique_id = 16481146763982821264ull;
                                 }
                                 else
                                 {
-                                    unique_id = 11587153158789362298ull;
+                                    if(d2 <= 18)
+                                    {
+                                        unique_id = 4671301146928673150ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 16481146763982821264ull;
+                                    }
                                 }
                             }
                         }
@@ -537,697 +544,39 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            if(d6 <= 45)
+            if(d6 <= 9)
             {
-                if(d6 <= 8)
+                if(d6 <= 4)
                 {
-                    if(d6 <= 4)
-                    {
-                        if(d5 <= 2)
-                        {
-                            if(d1 <= 433)
-                            {
-                                unique_id = 4781938049531404654ull;
-                            }
-                            else
-                            {
-                                unique_id = 6253145787968798806ull;
-                            }
-                        }
-                        else
-                        {
-                            unique_id = 4781938049531404654ull;
-                        }
-                    }
-                    else
-                    {
-                        if(d5 <= 26)
-                        {
-                            if(d5 <= 1)
-                            {
-                                if(d1 <= 345)
-                                {
-                                    unique_id = 4781938049531404654ull;
-                                }
-                                else
-                                {
-                                    unique_id = 6253145787968798806ull;
-                                }
-                            }
-                            else
-                            {
-                                unique_id = 4781938049531404654ull;
-                            }
-                        }
-                        else
-                        {
-                            if(d1 <= 317)
-                            {
-                                unique_id = 4781938049531404654ull;
-                            }
-                            else
-                            {
-                                if(d6 <= 7)
-                                {
-                                    if(d4 <= 222)
-                                    {
-                                        unique_id = 4781938049531404654ull;
-                                    }
-                                    else
-                                    {
-                                        if(d3 <= 166)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            if(d5 <= 51)
-                                            {
-                                                if(d6 <= 6)
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if(d5 <= 65)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    unique_id = 4781938049531404654ull;
-                                }
-                            }
-                        }
-                    }
+                    unique_id = 9622108777680582053ull;
                 }
                 else
                 {
                     if(d5 <= 16)
                     {
-                        if(d5 <= 8)
-                        {
-                            if(d5 <= 6)
-                            {
-                                if(d5 <= 1)
-                                {
-                                    if(d6 <= 13)
-                                    {
-                                        if(d1 <= 429)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 6253145787968798806ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        unique_id = 4781938049531404654ull;
-                                    }
-                                }
-                                else
-                                {
-                                    unique_id = 4781938049531404654ull;
-                                }
-                            }
-                            else
-                            {
-                                unique_id = 4781938049531404654ull;
-                            }
-                        }
-                        else
-                        {
-                            if(d6 <= 33)
-                            {
-                                if(d6 <= 21)
-                                {
-                                    if(d6 <= 10)
-                                    {
-                                        unique_id = 4781938049531404654ull;
-                                    }
-                                    else
-                                    {
-                                        if(d1 <= 419)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 432)
-                                            {
-                                                unique_id = 4781938049531404654ull;
-                                            }
-                                            else
-                                            {
-                                                if(d5 <= 9)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    unique_id = 4781938049531404654ull;
-                                }
-                            }
-                            else
-                            {
-                                if(d2 <= 259)
-                                {
-                                    if(d5 <= 12)
-                                    {
-                                        unique_id = 4781938049531404654ull;
-                                    }
-                                    else
-                                    {
-                                        if(d1 <= 337)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 16334338346691940719ull;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(d3 <= 112)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d1 <= 329)
-                                        {
-                                            if(d3 <= 519)
-                                            {
-                                                unique_id = 4781938049531404654ull;
-                                            }
-                                            else
-                                            {
-                                                if(d4 <= 151)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            unique_id = 16334338346691940719ull;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        unique_id = 9622108777680582053ull;
                     }
                     else
                     {
-                        if(d5 <= 50)
+                        if(d2 <= 196)
                         {
-                            if(d3 <= 175)
-                            {
-                                if(d6 <= 24)
-                                {
-                                    if(d5 <= 29)
-                                    {
-                                        if(d6 <= 16)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            if(d5 <= 24)
-                                            {
-                                                unique_id = 4781938049531404654ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 528)
-                                        {
-                                            if(d6 <= 16)
-                                            {
-                                                if(d5 <= 32)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 102)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d4 <= 246)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(d2 <= 680)
-                                    {
-                                        if(d3 <= 119)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 509)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d4 <= 158)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d3 <= 108)
-                                        {
-                                            if(d3 <= 43)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d4 <= 265)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d4 <= 152)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if(d4 <= 151)
-                                {
-                                    if(d6 <= 16)
-                                    {
-                                        if(d5 <= 32)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            if(d6 <= 12)
-                                            {
-                                                unique_id = 4781938049531404654ull;
-                                            }
-                                            else
-                                            {
-                                                if(d2 <= 543)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 746)
-                                        {
-                                            if(d6 <= 24)
-                                            {
-                                                if(d5 <= 32)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d4 <= 51)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(d6 <= 16)
-                                    {
-                                        if(d5 <= 29)
-                                        {
-                                            if(d5 <= 24)
-                                            {
-                                                unique_id = 4781938049531404654ull;
-                                            }
-                                            else
-                                            {
-                                                if(d6 <= 11)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 168)
-                                            {
-                                                if(d2 <= 65)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 68)
-                                        {
-                                            if(d5 <= 32)
-                                            {
-                                                if(d6 <= 24)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d1 <= 156)
-                                            {
-                                                if(d2 <= 505)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            unique_id = 9622108777680582053ull;
                         }
                         else
                         {
-                            if(d6 <= 20)
+                            if(d1 <= 113)
                             {
-                                if(d4 <= 151)
-                                {
-                                    if(d2 <= 529)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d4 <= 62)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 227)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d1 <= 335)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(d3 <= 119)
-                                    {
-                                        if(d2 <= 585)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 48)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 81)
-                                        {
-                                            if(d1 <= 339)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d2 <= 41)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            unique_id = 16334338346691940719ull;
-                                        }
-                                    }
-                                }
+                                unique_id = 9622108777680582053ull;
                             }
                             else
                             {
-                                if(d2 <= 420)
+                                if(d3 <= 219)
                                 {
-                                    if(d4 <= 151)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d3 <= 186)
-                                        {
-                                            if(d4 <= 772)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d3 <= 99)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 68)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d5 <= 56)
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                        }
-                                    }
+                                    unique_id = 9622108777680582053ull;
                                 }
                                 else
                                 {
-                                    if(d4 <= 150)
-                                    {
-                                        if(d4 <= 57)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 178)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d3 <= 775)
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 887)
-                                        {
-                                            if(d3 <= 48)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 327)
-                                            {
-                                                if(d3 <= 49)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
+                                    unique_id = 13257779901106960809ull;
                                 }
                             }
                         }
@@ -1236,369 +585,47 @@ namespace hiptensor
             }
             else
             {
-                if(d5 <= 37)
+                if(d5 <= 8)
                 {
-                    if(d5 <= 4)
+                    if(d6 <= 28)
                     {
-                        unique_id = 4781938049531404654ull;
+                        unique_id = 9622108777680582053ull;
                     }
                     else
                     {
-                        if(d5 <= 24)
+                        if(d5 <= 2)
                         {
-                            if(d5 <= 8)
+                            if(d6 <= 58)
                             {
-                                if(d6 <= 64)
-                                {
-                                    if(d5 <= 5)
-                                    {
-                                        if(d6 <= 48)
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 510)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        unique_id = 4781938049531404654ull;
-                                    }
-                                }
-                                else
-                                {
-                                    if(d2 <= 686)
-                                    {
-                                        if(d5 <= 6)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d1 <= 574)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d4 <= 457)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
-                                    }
-                                }
+                                unique_id = 9622108777680582053ull;
                             }
                             else
                             {
-                                if(d2 <= 306)
+                                if(d5 <= 1)
                                 {
-                                    if(d1 <= 578)
-                                    {
-                                        if(d5 <= 23)
-                                        {
-                                            if(d6 <= 52)
-                                            {
-                                                if(d5 <= 12)
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d3 <= 190)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 63)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d4 <= 140)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                    }
+                                    unique_id = 9622108777680582053ull;
                                 }
                                 else
                                 {
-                                    if(d4 <= 257)
-                                    {
-                                        if(d5 <= 23)
-                                        {
-                                            if(d4 <= 115)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d1 <= 578)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            unique_id = 4781938049531404654ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d3 <= 180)
-                                        {
-                                            if(d1 <= 578)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d3 <= 96)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d5 <= 23)
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                            else
-                                            {
-                                                if(d6 <= 55)
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 4781938049531404654ull;
-                                                }
-                                            }
-                                        }
-                                    }
+                                    unique_id = 13257779901106960809ull;
                                 }
                             }
                         }
                         else
                         {
-                            if(d6 <= 58)
+                            if(d2 <= 163)
                             {
-                                if(d3 <= 212)
-                                {
-                                    if(d4 <= 744)
-                                    {
-                                        if(d3 <= 114)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 431)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d1 <= 272)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 406)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(d4 <= 130)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 169)
-                                        {
-                                            if(d2 <= 66)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d1 <= 274)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d1 <= 203)
-                                            {
-                                                if(d2 <= 514)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 16334338346691940719ull;
-                                            }
-                                        }
-                                    }
-                                }
+                                unique_id = 9622108777680582053ull;
                             }
                             else
                             {
-                                if(d2 <= 421)
+                                if(d1 <= 465)
                                 {
-                                    if(d1 <= 207)
-                                    {
-                                        if(d2 <= 174)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d2 <= 66)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 186)
-                                            {
-                                                if(d4 <= 760)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                    }
+                                    unique_id = 9622108777680582053ull;
                                 }
                                 else
                                 {
-                                    if(d4 <= 59)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d1 <= 105)
-                                        {
-                                            if(d2 <= 684)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d3 <= 102)
-                                            {
-                                                if(d3 <= 24)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                    }
+                                    unique_id = 13257779901106960809ull;
                                 }
                             }
                         }
@@ -1606,333 +633,123 @@ namespace hiptensor
                 }
                 else
                 {
-                    if(d2 <= 171)
+                    if(d3 <= 121)
                     {
-                        if(d1 <= 214)
+                        if(d4 <= 483)
                         {
-                            if(d4 <= 752)
+                            if(d6 <= 29)
                             {
-                                if(d2 <= 67)
+                                if(d5 <= 32)
                                 {
-                                    unique_id = 5897150915348629714ull;
+                                    unique_id = 9622108777680582053ull;
                                 }
                                 else
                                 {
-                                    if(d1 <= 104)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d6 <= 61)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
-                                    }
+                                    unique_id = 222393107113976106ull;
                                 }
                             }
                             else
                             {
-                                if(d5 <= 52)
+                                if(d5 <= 39)
                                 {
-                                    unique_id = 5897150915348629714ull;
+                                    unique_id = 222393107113976106ull;
                                 }
                                 else
                                 {
-                                    unique_id = 10972102817010133142ull;
+                                    if(d2 <= 152)
+                                    {
+                                        unique_id = 222393107113976106ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 13257779901106960809ull;
+                                    }
                                 }
                             }
                         }
                         else
                         {
-                            if(d2 <= 37)
+                            if(d3 <= 37)
                             {
-                                if(d6 <= 60)
-                                {
-                                    unique_id = 5897150915348629714ull;
-                                }
-                                else
-                                {
-                                    if(d2 <= 18)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d1 <= 514)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d5 <= 51)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                    }
-                                }
+                                unique_id = 222393107113976106ull;
                             }
                             else
                             {
-                                if(d5 <= 50)
+                                if(d6 <= 29)
                                 {
-                                    if(d6 <= 60)
+                                    if(d5 <= 32)
                                     {
-                                        if(d4 <= 769)
-                                        {
-                                            if(d3 <= 288)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d2 <= 68)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
+                                        unique_id = 9622108777680582053ull;
                                     }
                                     else
                                     {
-                                        if(d3 <= 152)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d4 <= 90)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
+                                        unique_id = 15066925687960442338ull;
                                     }
                                 }
                                 else
                                 {
-                                    if(d6 <= 59)
-                                    {
-                                        if(d2 <= 67)
-                                        {
-                                            if(d4 <= 755)
-                                            {
-                                                if(d1 <= 649)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d4 <= 225)
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                            else
-                                            {
-                                                if(d3 <= 50)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d3 <= 38)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
-                                    }
+                                    unique_id = 15066925687960442338ull;
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if(d5 <= 50)
+                        if(d4 <= 135)
                         {
-                            if(d6 <= 58)
+                            if(d3 <= 413)
                             {
-                                if(d1 <= 204)
+                                if(d6 <= 30)
                                 {
-                                    if(d2 <= 505)
+                                    if(d5 <= 32)
                                     {
-                                        unique_id = 5897150915348629714ull;
+                                        unique_id = 9622108777680582053ull;
                                     }
                                     else
                                     {
-                                        if(d4 <= 148)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d1 <= 27)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
+                                        unique_id = 222393107113976106ull;
                                     }
                                 }
                                 else
                                 {
-                                    if(d3 <= 328)
+                                    if(d5 <= 39)
                                     {
-                                        if(d3 <= 50)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d4 <= 73)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
+                                        unique_id = 222393107113976106ull;
                                     }
                                     else
                                     {
-                                        if(d6 <= 50)
-                                        {
-                                            if(d4 <= 140)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                if(d4 <= 774)
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 420)
-                                            {
-                                                if(d4 <= 148)
-                                                {
-                                                    unique_id = 5897150915348629714ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
+                                        unique_id = 13257779901106960809ull;
                                     }
                                 }
                             }
                             else
                             {
-                                if(d1 <= 104)
+                                if(d4 <= 36)
                                 {
-                                    if(d2 <= 517)
-                                    {
-                                        unique_id = 5897150915348629714ull;
-                                    }
-                                    else
-                                    {
-                                        if(d4 <= 119)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            if(d1 <= 19)
-                                            {
-                                                unique_id = 5897150915348629714ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                    }
+                                    unique_id = 222393107113976106ull;
                                 }
                                 else
                                 {
-                                    if(d4 <= 60)
+                                    if(d2 <= 120)
                                     {
-                                        if(d1 <= 499)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
+                                        unique_id = 222393107113976106ull;
                                     }
                                     else
                                     {
-                                        if(d3 <= 39)
+                                        if(d6 <= 32)
                                         {
-                                            unique_id = 10972102817010133142ull;
-                                        }
-                                        else
-                                        {
-                                            if(d2 <= 422)
+                                            if(d5 <= 32)
                                             {
-                                                unique_id = 10972102817010133142ull;
+                                                unique_id = 13257779901106960809ull;
                                             }
                                             else
                                             {
-                                                unique_id = 10972102817010133142ull;
+                                                unique_id = 15066925687960442338ull;
                                             }
+                                        }
+                                        else
+                                        {
+                                            unique_id = 15066925687960442338ull;
                                         }
                                     }
                                 }
@@ -1940,110 +757,103 @@ namespace hiptensor
                         }
                         else
                         {
-                            if(d1 <= 46)
+                            if(d2 <= 115)
                             {
-                                if(d4 <= 335)
+                                if(d6 <= 40)
                                 {
-                                    unique_id = 5897150915348629714ull;
-                                }
-                                else
-                                {
-                                    if(d1 <= 16)
+                                    if(d2 <= 51)
                                     {
-                                        unique_id = 5897150915348629714ull;
+                                        unique_id = 222393107113976106ull;
                                     }
                                     else
                                     {
-                                        unique_id = 10972102817010133142ull;
+                                        if(d5 <= 32)
+                                        {
+                                            unique_id = 9622108777680582053ull;
+                                        }
+                                        else
+                                        {
+                                            if(d4 <= 486)
+                                            {
+                                                unique_id = 222393107113976106ull;
+                                            }
+                                            else
+                                            {
+                                                unique_id = 15066925687960442338ull;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if(d1 <= 235)
+                                    {
+                                        unique_id = 222393107113976106ull;
+                                    }
+                                    else
+                                    {
+                                        if(d2 <= 22)
+                                        {
+                                            unique_id = 222393107113976106ull;
+                                        }
+                                        else
+                                        {
+                                            unique_id = 15066925687960442338ull;
+                                        }
                                     }
                                 }
                             }
                             else
                             {
-                                if(d4 <= 59)
+                                if(d6 <= 32)
                                 {
-                                    if(d1 <= 321)
+                                    if(d5 <= 26)
                                     {
-                                        if(d3 <= 167)
+                                        if(d6 <= 23)
                                         {
-                                            unique_id = 5897150915348629714ull;
+                                            if(d1 <= 116)
+                                            {
+                                                unique_id = 9622108777680582053ull;
+                                            }
+                                            else
+                                            {
+                                                unique_id = 13257779901106960809ull;
+                                            }
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142ull;
+                                            if(d5 <= 18)
+                                            {
+                                                unique_id = 13257779901106960809ull;
+                                            }
+                                            else
+                                            {
+                                                unique_id = 15066925687960442338ull;
+                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if(d3 <= 172)
+                                        if(d5 <= 32)
                                         {
-                                            unique_id = 10972102817010133142ull;
+                                            if(d6 <= 16)
+                                            {
+                                                unique_id = 13257779901106960809ull;
+                                            }
+                                            else
+                                            {
+                                                unique_id = 15066925687960442338ull;
+                                            }
                                         }
                                         else
                                         {
-                                            unique_id = 10972102817010133142ull;
+                                            unique_id = 15066925687960442338ull;
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    if(d3 <= 26)
-                                    {
-                                        if(d6 <= 61)
-                                        {
-                                            unique_id = 5897150915348629714ull;
-                                        }
-                                        else
-                                        {
-                                            unique_id = 10972102817010133142ull;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if(d6 <= 50)
-                                        {
-                                            if(d5 <= 55)
-                                            {
-                                                if(d3 <= 790)
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if(d2 <= 988)
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 16334338346691940719ull;
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if(d1 <= 205)
-                                            {
-                                                if(d4 <= 155)
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 10972102817010133142ull;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                unique_id = 10972102817010133142ull;
-                                            }
-                                        }
-                                    }
+                                    unique_id = 15066925687960442338ull;
                                 }
                             }
                         }
@@ -2093,54 +903,117 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            if(d6 <= 40)
+            if(d5 <= 36)
             {
-                if(d5 <= 4)
+                if(d6 <= 35)
                 {
-                    if(d6 <= 17)
+                    if(d1 <= 763)
                     {
-                        unique_id = 8512122806347362414ull;
-                    }
-                    else
-                    {
-                        if(d5 <= 1)
+                        if(d6 <= 3)
                         {
-                            unique_id = 8512122806347362414ull;
+                            if(d5 <= 8)
+                            {
+                                unique_id = 9769367948782541618ull;
+                            }
+                            else
+                            {
+                                unique_id = 3344638327382374968ull;
+                            }
                         }
                         else
                         {
-                            unique_id = 6766074198369117690ull;
+                            unique_id = 3344638327382374968ull;
+                        }
+                    }
+                    else
+                    {
+                        if(d6 <= 24)
+                        {
+                            unique_id = 3344638327382374968ull;
+                        }
+                        else
+                        {
+                            if(d5 <= 17)
+                            {
+                                unique_id = 3344638327382374968ull;
+                            }
+                            else
+                            {
+                                unique_id = 2770278462698889442ull;
+                            }
                         }
                     }
                 }
                 else
                 {
-                    if(d6 <= 2)
+                    if(d5 <= 9)
                     {
-                        if(d5 <= 37)
-                        {
-                            unique_id = 8512122806347362414ull;
-                        }
-                        else
-                        {
-                            unique_id = 6766074198369117690ull;
-                        }
+                        unique_id = 3344638327382374968ull;
                     }
                     else
                     {
-                        if(d6 <= 33)
+                        if(d1 <= 759)
                         {
-                            unique_id = 6766074198369117690ull;
-                        }
-                        else
-                        {
-                            if(d5 <= 57)
+                            if(d6 <= 67)
                             {
-                                unique_id = 6766074198369117690ull;
+                                if(d3 <= 535)
+                                {
+                                    unique_id = 3344638327382374968ull;
+                                }
+                                else
+                                {
+                                    if(d4 <= 615)
+                                    {
+                                        unique_id = 3344638327382374968ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 2770278462698889442ull;
+                                    }
+                                }
                             }
                             else
                             {
-                                unique_id = 5863879104640185307ull;
+                                if(d5 <= 25)
+                                {
+                                    if(d4 <= 428)
+                                    {
+                                        unique_id = 3344638327382374968ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 2770278462698889442ull;
+                                    }
+                                }
+                                else
+                                {
+                                    unique_id = 16588612317409292216ull;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(d6 <= 64)
+                            {
+                                if(d3 <= 65)
+                                {
+                                    unique_id = 3344638327382374968ull;
+                                }
+                                else
+                                {
+                                    unique_id = 2770278462698889442ull;
+                                }
+                            }
+                            else
+                            {
+                                if(d5 <= 25)
+                                {
+                                    unique_id = 2770278462698889442ull;
+                                }
+                                else
+                                {
+                                    unique_id = 16588612317409292216ull;
+                                }
                             }
                         }
                     }
@@ -2148,200 +1021,116 @@ namespace hiptensor
             }
             else
             {
-                if(d5 <= 39)
+                if(d6 <= 33)
                 {
-                    if(d5 <= 33)
+                    if(d6 <= 8)
                     {
-                        if(d5 <= 1)
-                        {
-                            unique_id = 8512122806347362414ull;
-                        }
-                        else
-                        {
-                            if(d6 <= 63)
-                            {
-                                unique_id = 6766074198369117690ull;
-                            }
-                            else
-                            {
-                                if(d5 <= 28)
-                                {
-                                    unique_id = 6766074198369117690ull;
-                                }
-                                else
-                                {
-                                    if(d1 <= 253)
-                                    {
-                                        unique_id = 6766074198369117690ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 8205318106496093444ull;
-                                    }
-                                }
-                            }
-                        }
+                        unique_id = 3344638327382374968ull;
                     }
                     else
                     {
-                        if(d6 <= 59)
+                        if(d2 <= 565)
                         {
-                            unique_id = 6766074198369117690ull;
-                        }
-                        else
-                        {
-                            if(d1 <= 254)
+                            if(d1 <= 646)
                             {
-                                unique_id = 6766074198369117690ull;
+                                unique_id = 3344638327382374968ull;
                             }
                             else
                             {
-                                unique_id = 5863879104640185307ull;
+                                if(d6 <= 27)
+                                {
+                                    unique_id = 3344638327382374968ull;
+                                }
+                                else
+                                {
+                                    if(d5 <= 53)
+                                    {
+                                        unique_id = 2770278462698889442ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 16588612317409292216ull;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(d6 <= 20)
+                            {
+                                if(d3 <= 168)
+                                {
+                                    unique_id = 3344638327382374968ull;
+                                }
+                                else
+                                {
+                                    unique_id = 2770278462698889442ull;
+                                }
+                            }
+                            else
+                            {
+                                if(d5 <= 64)
+                                {
+                                    if(d1 <= 648)
+                                    {
+                                        unique_id = 3344638327382374968ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 2770278462698889442ull;
+                                    }
+                                }
+                                else
+                                {
+                                    if(d6 <= 25)
+                                    {
+                                        unique_id = 3344638327382374968ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 16588612317409292216ull;
+                                    }
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    if(d6 <= 63)
+                    if(d5 <= 45)
                     {
-                        if(d5 <= 63)
+                        if(d6 <= 50)
                         {
-                            if(d5 <= 48)
+                            if(d3 <= 168)
                             {
-                                if(d6 <= 50)
-                                {
-                                    unique_id = 6766074198369117690ull;
-                                }
-                                else
-                                {
-                                    if(d5 <= 47)
-                                    {
-                                        unique_id = 5863879104640185307ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 8205318106496093444ull;
-                                    }
-                                }
+                                unique_id = 3344638327382374968ull;
                             }
                             else
                             {
-                                if(d5 <= 55)
-                                {
-                                    unique_id = 5863879104640185307ull;
-                                }
-                                else
-                                {
-                                    if(d6 <= 55)
-                                    {
-                                        if(d5 <= 56)
-                                        {
-                                            unique_id = 8205318106496093444ull;
-                                        }
-                                        else
-                                        {
-                                            if(d6 <= 47)
-                                            {
-                                                unique_id = 5863879104640185307ull;
-                                            }
-                                            else
-                                            {
-                                                if(d6 <= 48)
-                                                {
-                                                    unique_id = 8205318106496093444ull;
-                                                }
-                                                else
-                                                {
-                                                    unique_id = 5863879104640185307ull;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        unique_id = 5863879104640185307ull;
-                                    }
-                                }
+                                unique_id = 2770278462698889442ull;
                             }
                         }
                         else
                         {
-                            if(d6 <= 47)
-                            {
-                                if(d5 <= 64)
-                                {
-                                    unique_id = 8205318106496093444ull;
-                                }
-                                else
-                                {
-                                    unique_id = 5863879104640185307ull;
-                                }
-                            }
-                            else
-                            {
-                                if(d6 <= 55)
-                                {
-                                    if(d5 <= 71)
-                                    {
-                                        if(d5 <= 64)
-                                        {
-                                            unique_id = 8205318106496093444ull;
-                                        }
-                                        else
-                                        {
-                                            if(d6 <= 48)
-                                            {
-                                                unique_id = 8205318106496093444ull;
-                                            }
-                                            else
-                                            {
-                                                unique_id = 5863879104640185307ull;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        unique_id = 8205318106496093444ull;
-                                    }
-                                }
-                                else
-                                {
-                                    unique_id = 8205318106496093444ull;
-                                }
-                            }
+                            unique_id = 16588612317409292216ull;
                         }
                     }
                     else
                     {
-                        if(d5 <= 51)
+                        if(d6 <= 43)
                         {
-                            if(d6 <= 64)
+                            if(d5 <= 52)
                             {
-                                unique_id = 8205318106496093444ull;
+                                unique_id = 2770278462698889442ull;
                             }
                             else
                             {
-                                if(d5 <= 47)
-                                {
-                                    unique_id = 5863879104640185307ull;
-                                }
-                                else
-                                {
-                                    if(d5 <= 48)
-                                    {
-                                        unique_id = 8205318106496093444ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 5863879104640185307ull;
-                                    }
-                                }
+                                unique_id = 16588612317409292216ull;
                             }
                         }
                         else
                         {
-                            unique_id = 8205318106496093444ull;
+                            unique_id = 16588612317409292216ull;
                         }
                     }
                 }
@@ -2388,205 +1177,212 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            if(d6 <= 33)
+            if(d5 <= 39)
             {
-                if(d5 <= 2)
+                if(d3 <= 937)
                 {
-                    if(d6 <= 7)
+                    if(d6 <= 1)
                     {
-                        unique_id = 2415201861364427301ull;
+                        unique_id = 1830537384143755749ull;
                     }
                     else
                     {
-                        unique_id = 6902287373350592119ull;
+                        if(d4 <= 754)
+                        {
+                            if(d5 <= 33)
+                            {
+                                if(d5 <= 1)
+                                {
+                                    if(d6 <= 25)
+                                    {
+                                        unique_id = 3423207643344265161ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 1830537384143755749ull;
+                                    }
+                                }
+                                else
+                                {
+                                    if(d6 <= 6)
+                                    {
+                                        if(d5 <= 8)
+                                        {
+                                            unique_id = 3423207643344265161ull;
+                                        }
+                                        else
+                                        {
+                                            unique_id = 1830537384143755749ull;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        unique_id = 1830537384143755749ull;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                unique_id = 1830537384143755749ull;
+                            }
+                        }
+                        else
+                        {
+                            if(d1 <= 404)
+                            {
+                                unique_id = 1830537384143755749ull;
+                            }
+                            else
+                            {
+                                if(d6 <= 50)
+                                {
+                                    unique_id = 1830537384143755749ull;
+                                }
+                                else
+                                {
+                                    if(d5 <= 33)
+                                    {
+                                        unique_id = 1830537384143755749ull;
+                                    }
+                                    else
+                                    {
+                                        unique_id = 4992687403741300893ull;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    if(d5 <= 65)
-                    {
-                        if(d6 <= 2)
-                        {
-                            if(d5 <= 13)
-                            {
-                                unique_id = 2415201861364427301ull;
-                            }
-                            else
-                            {
-                                unique_id = 550562982100054122ull;
-                            }
-                        }
-                        else
-                        {
-                            if(d5 <= 7)
-                            {
-                                if(d6 <= 7)
-                                {
-                                    unique_id = 6902287373350592119ull;
-                                }
-                                else
-                                {
-                                    unique_id = 550562982100054122ull;
-                                }
-                            }
-                            else
-                            {
-                                unique_id = 550562982100054122ull;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if(d6 <= 25)
-                        {
-                            unique_id = 550562982100054122ull;
-                        }
-                        else
-                        {
-                            unique_id = 3324992315903551472ull;
-                        }
-                    }
+                    unique_id = 1830537384143755749ull;
                 }
             }
             else
             {
-                if(d5 <= 32)
+                if(d6 <= 32)
                 {
-                    if(d6 <= 64)
+                    if(d2 <= 832)
                     {
-                        unique_id = 550562982100054122ull;
+                        unique_id = 1830537384143755749ull;
                     }
                     else
                     {
-                        if(d5 <= 24)
+                        if(d6 <= 8)
                         {
-                            if(d5 <= 1)
-                            {
-                                unique_id = 3324992315903551472ull;
-                            }
-                            else
-                            {
-                                unique_id = 550562982100054122ull;
-                            }
+                            unique_id = 1830537384143755749ull;
                         }
                         else
                         {
-                            if(d2 <= 223)
+                            if(d6 <= 24)
                             {
-                                unique_id = 550562982100054122ull;
+                                unique_id = 17689908062647780665ull;
                             }
                             else
                             {
-                                unique_id = 3324992315903551472ull;
+                                if(d5 <= 64)
+                                {
+                                    unique_id = 1830537384143755749ull;
+                                }
+                                else
+                                {
+                                    unique_id = 4992687403741300893ull;
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    if(d6 <= 54)
+                    if(d6 <= 46)
                     {
-                        if(d5 <= 48)
+                        if(d5 <= 54)
                         {
-                            if(d6 <= 48)
+                            if(d1 <= 460)
                             {
-                                unique_id = 550562982100054122ull;
+                                unique_id = 1830537384143755749ull;
                             }
                             else
                             {
-                                if(d5 <= 36)
+                                if(d5 <= 49)
                                 {
-                                    unique_id = 550562982100054122ull;
+                                    unique_id = 1830537384143755749ull;
                                 }
                                 else
                                 {
-                                    unique_id = 3324992315903551472ull;
+                                    unique_id = 4992687403741300893ull;
                                 }
                             }
                         }
                         else
                         {
-                            if(d6 <= 47)
+                            if(d1 <= 182)
                             {
-                                if(d5 <= 56)
+                                if(d5 <= 65)
                                 {
-                                    if(d6 <= 40)
-                                    {
-                                        unique_id = 550562982100054122ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 3324992315903551472ull;
-                                    }
+                                    unique_id = 1830537384143755749ull;
                                 }
                                 else
                                 {
-                                    unique_id = 3324992315903551472ull;
+                                    unique_id = 4992687403741300893ull;
                                 }
                             }
                             else
                             {
-                                if(d5 <= 63)
+                                if(d2 <= 33)
                                 {
-                                    unique_id = 3324992315903551472ull;
+                                    unique_id = 1830537384143755749ull;
                                 }
                                 else
                                 {
-                                    unique_id = 4157899012150127975ull;
+                                    unique_id = 4992687403741300893ull;
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if(d5 <= 54)
+                        if(d5 <= 49)
                         {
-                            if(d5 <= 47)
+                            if(d6 <= 64)
                             {
-                                unique_id = 3324992315903551472ull;
-                            }
-                            else
-                            {
-                                if(d6 <= 67)
+                                if(d1 <= 411)
                                 {
-                                    unique_id = 3324992315903551472ull;
-                                }
-                                else
-                                {
-                                    if(d1 <= 416)
+                                    if(d2 <= 396)
                                     {
-                                        unique_id = 3324992315903551472ull;
+                                        unique_id = 1830537384143755749ull;
                                     }
                                     else
                                     {
-                                        unique_id = 4157899012150127975ull;
+                                        unique_id = 4992687403741300893ull;
                                     }
                                 }
+                                else
+                                {
+                                    unique_id = 4992687403741300893ull;
+                                }
+                            }
+                            else
+                            {
+                                unique_id = 4992687403741300893ull;
                             }
                         }
                         else
                         {
-                            if(d5 <= 63)
+                            if(d2 <= 53)
                             {
-                                if(d6 <= 63)
+                                if(d1 <= 222)
                                 {
-                                    if(d3 <= 252)
-                                    {
-                                        unique_id = 4157899012150127975ull;
-                                    }
-                                    else
-                                    {
-                                        unique_id = 3324992315903551472ull;
-                                    }
+                                    unique_id = 1830537384143755749ull;
                                 }
                                 else
                                 {
-                                    unique_id = 4157899012150127975ull;
+                                    unique_id = 4992687403741300893ull;
                                 }
                             }
                             else
                             {
-                                unique_id = 4157899012150127975ull;
+                                unique_id = 4992687403741300893ull;
                             }
                         }
                     }
