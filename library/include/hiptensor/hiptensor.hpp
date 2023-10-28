@@ -87,6 +87,35 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
 const char* hiptensorGetErrorString(const hiptensorStatus_t error);
 
 /**
+ * \brief Tensor permutation
+ *
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[in] alpha Scaling factor for A of the type typeScalar. Pointer to the host memory. If alpha is zero, A is not read and the corresponding unary operator is not applied.
+ * \param[in] A Multi-mode tensor of type typeA with nmodeA modes. Pointer to the GPU-accessible memory.
+ * \param[in] descA A descriptor that holds information about the data type, modes, and strides of A.
+ * \param[in] modeA Array of size descA->numModes that holds the names of the modes of A.
+ * \param[in,out] B Multi-mode tensor of type typeB with nmodeB modes. Pointer to the GPU-accessible memory.
+ * \param[in] descB A descriptor that holds information about the data type, modes, and strides of B.
+ * \param[in] modeB Array of size descB->numModes that holds the names of the modes of B
+ * \param[in] typeScalar data type of alpha
+ * \param[in] stream HIP stream to perform all operations.
+ * \retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ */
+hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
+                                       const void*                        alpha,
+                                       const void*                        A,
+                                       const hiptensorTensorDescriptor_t* descA,
+                                       const int32_t                      modeA[],
+                                       void*                              B,
+                                       const hiptensorTensorDescriptor_t* descB,
+                                       const int32_t                      modeB[],
+                                       const hipDataType                  typeScalar,
+                                       const hipStream_t                  stream);
+
+/**
  * \brief Computes the alignment requirement for a given pointer and descriptor.
  * \param[in] handle Opaque handle holding hipTensor's library context.
  * \param[in] ptr Pointer to the respective tensor data.
