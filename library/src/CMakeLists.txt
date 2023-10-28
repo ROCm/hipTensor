@@ -54,6 +54,8 @@ include_directories(BEFORE
 
 # Generates hiptensor_contraction and hiptensor_contraction_instances
 add_subdirectory(contraction)
+# Generates hiptensor_permutation and hiptensor_permutation_instances
+add_subdirectory(permutation)
 
 # Core API code
 set(HIPTENSOR_CORE_SOURCES
@@ -69,10 +71,11 @@ add_hiptensor_component(hiptensor_core ${HIPTENSOR_CORE_SOURCES})
 
 # Generate shared lib
 add_library(hiptensor SHARED
-	    $<TARGET_OBJECTS:hiptensor_core>
-	    $<TARGET_OBJECTS:hiptensor_contraction>
-        $<TARGET_OBJECTS:hiptensor_contraction_instances>
-        )
+    $<TARGET_OBJECTS:hiptensor_core>
+    $<TARGET_OBJECTS:hiptensor_contraction>
+    $<TARGET_OBJECTS:hiptensor_contraction_instances>
+    $<TARGET_OBJECTS:hiptensor_permutation>
+    )
 
 add_library(hiptensor::hiptensor ALIAS hiptensor)
 
