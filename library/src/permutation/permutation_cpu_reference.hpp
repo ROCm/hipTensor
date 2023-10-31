@@ -23,30 +23,28 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
+
+#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+
+#include <hip/library_types.h>
+
 #include <hiptensor/hiptensor.hpp>
-
-#include "permutation_cpu_reference.hpp"
-
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
-                                       const void*                        alpha,
-                                       const void*                        A,
+namespace hiptensor
+{
+    namespace detail
+    {
+        template <typename DataType>
+        hiptensorStatus_t permuteByCpu(const void*                        alpha,
+                                       const DataType*                    A,
                                        const hiptensorTensorDescriptor_t* descA,
                                        const int32_t                      modeA[],
-                                       void*                              B,
+                                       DataType*                          B,
                                        const hiptensorTensorDescriptor_t* descB,
                                        const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar,
-                                       const hipStream_t                  stream)
-{
-    assert(descA->mType == HIP_R_16F || descA->mType == HIP_R_32F);
-    assert(descA->mType == descB->mType);
-    if(descA->mType == HIP_R_16F)
-    {
-        return hiptensor::detail::permuteByCpu(alpha, static_cast<const _Float16 *>(A), descA, modeA, static_cast<_Float16 *>(B), descB, modeB, typeScalar);
+                                       const hipDataType                  typeScalar);
     }
-    else if(descA->mType == HIP_R_32F)
-    {
-        return hiptensor::detail::permuteByCpu(alpha, static_cast<const float *>(A), descA, modeA, static_cast<float *>(B), descB, modeB, typeScalar);
-    }
-    return  HIPTENSOR_STATUS_NOT_SUPPORTED;
 }
+
+#include "permutation_cpu_reference_impl.hpp"
+#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
