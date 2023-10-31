@@ -40,6 +40,7 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
         target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
         target_include_directories(${BINARY_NAME} PRIVATE
                                 ${CMAKE_CURRENT_SOURCE_DIR}
+                                ${PROJECT_SOURCE_DIR}/samples
                                 ${PROJECT_SOURCE_DIR}/library/include)
 
         # Build this sample under custom target
@@ -51,10 +52,6 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
         COMPONENT samples
         )
     endfunction()
-
-    add_subdirectory(01_contraction)
-
-
 # If building hipTensor samples as a standalone Cmake project
 else()
     if(NOT CMAKE_CXX_COMPILER)
@@ -81,6 +78,6 @@ else()
     find_package( hip REQUIRED )
 
     message(STATUS "Build with HIP ${hip_VERSION}")
-
-    add_subdirectory(01_contraction)
 endif()
+add_subdirectory(01_contraction)
+add_subdirectory(02_permutation)
