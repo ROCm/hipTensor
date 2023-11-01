@@ -33,7 +33,7 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 
-#include "common.hpp"
+#include "../utils.hpp"
 
 namespace hiptensor
 {
