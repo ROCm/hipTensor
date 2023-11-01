@@ -28,7 +28,7 @@
 #include "../library/src/include/types.hpp"
 #include "llvm/hiptensor_options.hpp"
 
-#include "common.hpp"
+#include "../utils.hpp"
 #include "contraction_cpu_reference.hpp"
 #include "contraction_test.hpp"
 

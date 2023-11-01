@@ -23,7 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include "01_contraction/common.hpp"
+#include "utils.hpp"
 #include "llvm/hiptensor_options.hpp"
 
 #include <gtest/gtest.h>

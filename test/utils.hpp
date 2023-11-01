@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
-#define HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
+#ifndef HIPTENSOR_TEST_UTILS_HPP
+#define HIPTENSOR_TEST_UTILS_HPP
 
 #include <algorithm>
 #include <fstream>
@@ -292,4 +292,4 @@ namespace std
     }
 }
 
-#endif // HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
+#endif // HIPTENSOR_TEST_UTILS_HPP
