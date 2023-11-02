@@ -57,9 +57,11 @@ git push origin <new_branch>
 ...
 ```
 
+<!-- markdownlint-disable ol-prefix -->
 3. Create a pull request to ROCmSoftwarePlatform/hipTensor develop branch.
 4. Await CI and approval feedback.
 5. Once approved, merge!
+<!-- markdownlint-enable ol-prefix -->
 
 `Note: Please don't forget to install the githooks as there are triggers for clang formatting in commits.`
 
