@@ -31,6 +31,7 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "01_contraction/contraction_test_params.hpp"
+#include "02_permutation/permutation_test_params.hpp"
 #include "yaml_parser_impl.hpp"
 
 // Fwd declare NoneType
@@ -108,6 +109,7 @@ namespace llvm
         {
             static void enumeration(IO& io, hipDataType& value)
             {
+                io.enumCase(value, "HIP_R_16F", HIP_R_16F);
                 io.enumCase(value, "HIP_R_32F", HIP_R_32F);
                 io.enumCase(value, "HIP_R_64F", HIP_R_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
@@ -209,7 +211,7 @@ namespace llvm
         };
 
         ///
-        // Mapping of the test param elements for reading / writing.
+        // Mapping of the test param elements of ContractionTestParams for reading / writing.
         ///
         template <>
         struct MappingTraits<hiptensor::ContractionTestParams>
@@ -269,12 +271,53 @@ namespace llvm
             }
         };
 
+        ///
+        // Mapping of the test param elements of PermutationTestParams for reading / writing.
+        ///
+        template <>
+        struct MappingTraits<hiptensor::PermutationTestParams>
+        {
+            static void mapping(IO& io, hiptensor::PermutationTestParams& doc)
+            {
+                // Logging bitfield
+                io.mapRequired("Log Level", doc.logLevelMask());
+
+                // Sequences of combinatorial fields
+                io.mapRequired("Tensor Data Types", doc.dataTypes());
+                io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
+                io.mapRequired("Lengths", doc.problemLengths());
+                io.mapRequired("Permuted Dims", doc.permutedDims());
+            }
+
+            // Additional validation for input / output of the config
+            static std::string validate(IO& io, hiptensor::PermutationTestParams& doc)
+            {
+                if(doc.problemLengths().size() == 0)
+                {
+                    return "Error: Empty Lengths";
+                }
+
+                if(doc.alphas().size() == 0)
+                {
+                    return "Error: Empty Alphas";
+                }
+
+                if(doc.permutedDims().size() == 0)
+                {
+                    return "Error: Empty Permuted Dims";
+                }
+
+                return std::string{};
+            }
+        };
+
     } // namespace yaml
 
 } // namespace llvm
 
-// Instantiate the yaml loader for the ContractionTestParams
+// Instantiate the yaml loader for the ContractionTestParams and PermutationTestParams
 namespace hiptensor
 {
     template struct YamlConfigLoader<ContractionTestParams>;
+    template struct YamlConfigLoader<PermutationTestParams>;
 }

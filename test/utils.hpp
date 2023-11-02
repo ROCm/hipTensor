@@ -28,6 +28,7 @@
 #define HIPTENSOR_TEST_UTILS_HPP
 
 #include <algorithm>
+#include <ctime>
 #include <fstream>
 #include <iterator>
 #include <math.h>
@@ -49,10 +50,10 @@
         CHECK_HIP_ERROR(hipFree(ptr)); \
     }
 
-#define HIPTENSOR_FREE_HOST(ptr) \
-    if(ptr != nullptr)           \
-    {                            \
-        free(ptr);               \
+#define HIPTENSOR_FREE_HOST(ptr)           \
+    if(ptr != nullptr)                     \
+    {                                      \
+        CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
 
 inline bool isF32Supported()
@@ -97,13 +98,30 @@ static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
     return (numerator + divisor - 1) / divisor;
 }
 
+template <typename Container>
+auto getProduct(const Container&               container,
+                typename Container::value_type init = typename Container::value_type{1})
+{
+    return std::accumulate(std::begin(container),
+                           std::end(container),
+                           init,
+                           std::multiplies<typename Container::value_type>{});
+}
+
 // fill kernel for 'elementSize' elements
 template <typename DataType>
 __host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
-    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize);
+    hipLaunchKernelGGL((fillKernel<DataType>),
+                       gridDim,
+                       blockDim,
+                       0,
+                       0,
+                       data,
+                       elementSize,
+                       static_cast<uint32_t>(std::time(nullptr)));
 }
 
 // fill kernel wrapper for 'elementSize' elements with a specific value
@@ -192,6 +210,19 @@ std::pair<bool, double> compareEqual(DDataType const* deviceD,
 }
 
 template <typename DDataType>
+double getEpsilon()
+{
+    if(std::is_same_v<DDataType, _Float16>)
+    {
+        return 0.0009765625; // numeric_limits<_Float16>::epsilon() => 0
+    }
+    else
+    {
+        return std::numeric_limits<DDataType>::epsilon();
+    }
+};
+
+template <typename DDataType>
 std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
                                                  DDataType*  hostD,
                                                  std::size_t elementsD,
@@ -257,7 +288,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
     auto toDouble
         = [](DDataType const& val) { return static_cast<double>(static_cast<float>(val)); };
 
-    auto eps = toDouble(std::numeric_limits<DDataType>::epsilon());
+    auto eps = getEpsilon<DDataType>();
     if(isNaN)
     {
         retval           = false;
@@ -276,6 +307,7 @@ namespace std
     template <typename T>
     ostream& operator<<(ostream& os, const std::vector<T>& vec)
     {
+        os << "[ ";
         for(auto i = 0; i < vec.size(); i++)
         {
             if(i < vec.size() - 1)
@@ -287,6 +319,7 @@ namespace std
                 os << vec[i];
             }
         }
+        os << " ]";
 
         return os;
     }

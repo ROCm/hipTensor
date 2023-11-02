@@ -101,7 +101,8 @@ function(add_hiptensor_test BINARY_NAME YAML_CONFIG_FILE TEST_SOURCES)
     target_include_directories(${BINARY_NAME} PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}
                                ${PROJECT_SOURCE_DIR}/library/include
-                               ${PROJECT_SOURCE_DIR}/library/src/contraction
+                               ${PROJECT_SOURCE_DIR}/library/src/include
+                               ${PROJECT_SOURCE_DIR}/library/src
                                ${PROJECT_SOURCE_DIR}/test
                                ${hiptensor_test_YAML_DIR})
 
@@ -179,6 +180,7 @@ endfunction()
 
 add_subdirectory(00_unit)
 add_subdirectory(01_contraction)
+add_subdirectory(02_permutation)
 
 rocm_install(
     FILES "${INSTALL_TEST_FILE}"

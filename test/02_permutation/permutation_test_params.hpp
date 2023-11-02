@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP
-#define HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP
+#ifndef HIPTENSOR_PERMUTATION_TEST_PARAMS_HPP
+#define HIPTENSOR_PERMUTATION_TEST_PARAMS_HPP
 
 #include <tuple>
 #include <vector>
@@ -38,39 +38,18 @@
 namespace hiptensor
 {
 
-    struct ContractionTestParams
+    struct PermutationTestParams
     {
-        using TestTypesT = std::vector<hipDataType>;
-
-        using AlgorithmT    = hiptensorAlgo_t;
-        using OperatorT     = hiptensorOperator_t;
-        using WorkSizePrefT = hiptensorWorksizePreference_t;
+        using TestTypesT    = std::vector<hipDataType>;
         using LogLevelT     = hiptensorLogLevel_t;
-
-        using LengthsT = std::vector<std::size_t>;
-        using StridesT = std::vector<std::size_t>;
-        using AlphaT   = double;
-        using BetaT    = double;
+        using LengthsT      = std::vector<std::size_t>;
+        using AlphaT        = double;
+        using PermutedDimsT = std::vector<std::size_t>;
 
     public:
         std::vector<TestTypesT>& dataTypes()
         {
             return mDataTypes;
-        }
-
-        std::vector<AlgorithmT>& algorithms()
-        {
-            return mAlgorithms;
-        }
-
-        std::vector<OperatorT>& operators()
-        {
-            return mOperators;
-        }
-
-        std::vector<WorkSizePrefT>& workSizePrefrences()
-        {
-            return mWorkSizePrefs;
         }
 
         LogLevelT& logLevelMask()
@@ -83,9 +62,9 @@ namespace hiptensor
             return mProblemLengths;
         }
 
-        std::vector<StridesT>& problemStrides()
+        std::vector<PermutedDimsT>& permutedDims()
         {
-            return mProblemStrides;
+            return mPermutedDims;
         }
 
         std::vector<AlphaT>& alphas()
@@ -93,37 +72,24 @@ namespace hiptensor
             return mAlphas;
         }
 
-        std::vector<BetaT>& betas()
-        {
-            return mBetas;
-        }
-
         void printParams()
         {
-            std::cout << "DataTypes: " << mDataTypes << std::endl
-                      << "Algorithms: " << mAlgorithms << std::endl
-                      << "Operators: " << mOperators << std::endl
-                      << "WorkSizePrefs: " << mWorkSizePrefs << std::endl
-                      << "LogLevelMask: " << mLogLevelMask << std::endl
-                      << "ProblemLengths: " << mProblemLengths << std::endl
-                      << "ProblemStrides: " << mProblemStrides << std::endl
-                      << "Alphas: " << mAlphas << std::endl
-                      << "Betas: " << mBetas << std::endl;
+            std::cout << "DataTypes: " << mDataTypes << "\n"
+                      << "LogLevelMask: " << mLogLevelMask << "\n"
+                      << "ProblemLengths: " << mProblemLengths << "\n"
+                      << "Alphas: " << mAlphas << "\n"
+                      << "PermutedDims: " << mPermutedDims << "\n";
         }
 
     private:
         //Data types of input and output tensors
         std::vector<TestTypesT>    mDataTypes;
-        std::vector<AlgorithmT>    mAlgorithms;
-        std::vector<OperatorT>     mOperators;
-        std::vector<WorkSizePrefT> mWorkSizePrefs;
         LogLevelT                  mLogLevelMask;
         std::vector<LengthsT>      mProblemLengths;
-        std::vector<StridesT>      mProblemStrides;
         std::vector<AlphaT>        mAlphas;
-        std::vector<BetaT>         mBetas;
+        std::vector<PermutedDimsT> mPermutedDims;
     };
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_TEST_PARAMS_HPP
+#endif // HIPTENSOR_PERMUTATION_TEST_PARAMS_HPP
