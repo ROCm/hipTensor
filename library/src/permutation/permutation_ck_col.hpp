@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,30 +19,30 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  *******************************************************************************/
-
-#ifndef HIPTENSOR_TEST_SINGLETON_HPP
-#define HIPTENSOR_TEST_SINGLETON_HPP
-
-#include <memory>
+#ifndef HIPTENSOR_PERMUTATION_CK_COL_HPP
+#define HIPTENSOR_PERMUTATION_CK_COL_HPP
+#include <hiptensor/hiptensor.hpp>
 
 namespace hiptensor
 {
-
-    template <typename T>
-    class LazySingleton
+    namespace detail
     {
-    public:
-        static inline std::unique_ptr<T> const& instance()
-        {
-            static auto sInstance = std::make_unique<T>();
-            return sInstance;
-        }
-    };
+        template <typename DataType>
+        hiptensorStatus_t permuteByCk(const void*                        alpha,
+                                      const DataType*                    A,
+                                      const hiptensorTensorDescriptor_t* descA,
+                                      const int32_t                      modeA[],
+                                      DataType*                          B,
+                                      const hiptensorTensorDescriptor_t* descB,
+                                      const int32_t                      modeB[],
+                                      const hipDataType                  typeScalar);
 
-} // namespace hiptensor
+    }
+}
 
-#endif // HIPTENSOR_TEST_SINGLETON_HPP
+#include "permutation_ck_col_impl.hpp"
+#endif // HIPTENSOR_PERMUTATION_CK_COL_HPP

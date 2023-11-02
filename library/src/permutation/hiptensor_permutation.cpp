@@ -25,7 +25,8 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
-#include "permutation_cpu_reference.hpp"
+#include "logger.hpp"
+#include "permutation_ck_col.hpp"
 
 hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
                                        const void*                        alpha,
@@ -38,15 +39,133 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                        const hipDataType                  typeScalar,
                                        const hipStream_t                  stream)
 {
-    assert(descA->mType == HIP_R_16F || descA->mType == HIP_R_32F);
-    assert(descA->mType == descB->mType);
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[2048];
+    snprintf(msg,
+             sizeof(msg),
+             "handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, B=%p, descB=%p, modeB=%p, "
+             "typeScalar=0x%02X, stream=%p",
+             handle,
+             alpha,
+             A,
+             descA,
+             modeA,
+             B,
+             descB,
+             modeB,
+             (unsigned int)typeScalar,
+             stream);
+
+    logger->logAPITrace("hiptensorPermutation", msg);
+
+    if(!handle || !alpha || !A || !descA || !modeA || !B || !descB || !modeB)
+    {
+        auto errorCode         = HIPTENSOR_STATUS_NOT_INITIALIZED;
+        auto printErrorMessage = [&logger, errorCode](const std::string& paramName) {
+            char msg[512];
+            snprintf(msg,
+                     sizeof(msg),
+                     "Initialization Error : %s = nullptr (%s)",
+                     paramName.c_str(),
+                     hiptensorGetErrorString(errorCode));
+            logger->logError("hiptensorPermutation", msg);
+        };
+        if(!handle)
+        {
+            printErrorMessage("handle");
+        }
+        if(!alpha)
+        {
+            printErrorMessage("alpha");
+        }
+        if(!A)
+        {
+            printErrorMessage("A");
+        }
+        if(!descA)
+        {
+            printErrorMessage("descA");
+        }
+        if(!modeA)
+        {
+            printErrorMessage("modeA");
+        }
+        if(!B)
+        {
+            printErrorMessage("B");
+        }
+        if(!descB)
+        {
+            printErrorMessage("descB");
+        }
+        if(!modeB)
+        {
+            printErrorMessage("modeB");
+        }
+        return errorCode;
+    }
+
+    if(descA->mType != HIP_R_16F && descA->mType != HIP_R_32F)
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Unsupported Data Type Error : The supported data types of A and B are HIP_R_16F "
+                 "and HIP_R_32F (%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorPermutation", msg);
+        return errorCode;
+    }
+
+    if(descA->mType != descB->mType)
+    {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Mismatched Data Type Error : Data types of A and B are not the same. (%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorPermutation", msg);
+        return errorCode;
+    }
+
+    if(typeScalar != HIP_R_16F && typeScalar != HIP_R_32F)
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Unsupported Data Type Error : The supported data types of alpha are HIP_R_16F "
+                 "and HIP_R_32F (%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorPermutation", msg);
+        return errorCode;
+    }
+
     if(descA->mType == HIP_R_16F)
     {
-        return hiptensor::detail::permuteByCpu(alpha, static_cast<const _Float16 *>(A), descA, modeA, static_cast<_Float16 *>(B), descB, modeB, typeScalar);
+        return hiptensor::detail::permuteByCk(alpha,
+                                              static_cast<const _Float16*>(A),
+                                              descA,
+                                              modeA,
+                                              static_cast<_Float16*>(B),
+                                              descB,
+                                              modeB,
+                                              typeScalar,
+                                              stream);
     }
     else if(descA->mType == HIP_R_32F)
     {
-        return hiptensor::detail::permuteByCpu(alpha, static_cast<const float *>(A), descA, modeA, static_cast<float *>(B), descB, modeB, typeScalar);
+        return hiptensor::detail::permuteByCk(alpha,
+                                              static_cast<const float*>(A),
+                                              descA,
+                                              modeA,
+                                              static_cast<float*>(B),
+                                              descB,
+                                              modeB,
+                                              typeScalar,
+                                              stream);
     }
-    return  HIPTENSOR_STATUS_NOT_SUPPORTED;
+    return HIPTENSOR_STATUS_NOT_SUPPORTED;
 }

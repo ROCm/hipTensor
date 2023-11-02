@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_RESOURCE_HPP
-#define HIPTENSOR_CONTRACTION_RESOURCE_HPP
+#ifndef HIPTENSOR_PERMUTATION_RESOURCE_HPP
+#define HIPTENSOR_PERMUTATION_RESOURCE_HPP
 
 #include <memory>
 #include <tuple>
@@ -33,7 +33,7 @@
 #include "hip_resource.hpp"
 #include "singleton.hpp"
 
-// ContractionResource class is intended to manage a shared pool of resources for
+// PermutationResource class is intended to manage a shared pool of resources for
 // testing hiptensor contraction kernels on the GPU.
 //
 // It minimizes the memory handling overhead for launching thousands of GPU
@@ -48,10 +48,10 @@
 namespace hiptensor
 {
 
-    struct ContractionResource : public HipResource, public LazySingleton<ContractionResource>
+    struct PermutationResource : public HipResource, public LazySingleton<PermutationResource>
     {
         // For static initialization
-        friend std::unique_ptr<ContractionResource> std::make_unique<ContractionResource>();
+        friend std::unique_ptr<PermutationResource> std::make_unique<PermutationResource>();
 
         using Base = HipResource;
 
@@ -59,71 +59,46 @@ namespace hiptensor
         using DevicePtrT = Base::DevicePtrT;
         using HostPtrT   = Base::HostPtrT;
 
-        // M, N, U, V, H, K
+        // N, C, W, H
         using ProblemDims = std::vector<std::size_t>;
-        ;
-
-        // MatrixA, MatrixB, MatrixC, MatrixD (# of elements)
-        using MatrixElements = std::tuple<int64_t, int64_t, int64_t, int64_t>;
-
-        // Bytes per element for matrices A/B/C/D
-        using ElementBytes = std::tuple<int32_t, int32_t, int32_t, int32_t>;
-
-        enum : uint32_t
-        {
-            // Matrix size indices
-            MatrixA = 0,
-            MatrixB = 1,
-            MatrixC = 2,
-            MatrixD = 3,
-
-            // Problem size indices
-            M = 0,
-            N = 1,
-            U = 2,
-            V = 3,
-            H = 4,
-            K = 5
-        };
 
     private: // No public instantiation except make_unique.
              // No copy
-        ContractionResource();
-        ContractionResource(const ContractionResource&)            = delete;
-        ContractionResource& operator=(const ContractionResource&) = delete;
+        PermutationResource();
+        PermutationResource(const PermutationResource&)            = delete;
+        PermutationResource& operator=(const PermutationResource&) = delete;
 
     public:
-        ContractionResource(ContractionResource&&);
-        ~ContractionResource() = default;
+        PermutationResource(PermutationResource&&);
+        virtual ~PermutationResource() = default;
 
-        void copyHostToDeviceAll(ElementBytes const& bytesPerElement);
-        void copyDeviceToHostAll(ElementBytes const& bytesPerElement);
-        void resizeStorage(ProblemDims const& size, ElementBytes bytesPerElement);
-        void resizeStorage(MatrixElements const& size, ElementBytes bytesPerElement);
+        void setupStorage(ProblemDims const& dimSizes, hipDataType dataType);
+        void fillRandToA();
+        void copyBToHost();
+        void copyReferenceToDevice();
 
         HostPtrT& hostA();
         HostPtrT& hostB();
-        HostPtrT& hostC();
-        HostPtrT& hostD();
+        HostPtrT& hostReference();
 
         DevicePtrT& deviceA();
         DevicePtrT& deviceB();
-        DevicePtrT& deviceC();
-        DevicePtrT& deviceD();
+        DevicePtrT& deviceReference();
 
-        void reset() final;
+        size_t getCurrentMatrixElement() const;
+        size_t getCurrentMatrixMemorySize() const;
+        void   reset() final;
 
     protected:
-        DevicePtrT     mDeviceA, mDeviceB;
-        DevicePtrT     mDeviceC, mDeviceD;
-        HostPtrT       mHostA, mHostB;
-        HostPtrT       mHostC, mHostD;
-        ElementBytes   mCurrentElementBytes;
-        ElementBytes   mCurrentAllocBytes;
-        MatrixElements mCurrentMatrixElements;
-        MatrixElements mCurrentAllocElements;
+        DevicePtrT mDeviceA, mDeviceB, mDeviceReference;
+        HostPtrT   mHostA, mHostB, mHostReference;
+
+        size_t mCurrentMatrixElement; /**< Element count of A/B */
+        hipDataType
+            mCurrentDataType; /**< Type size of element of A/B, only support HIP_R_16F, HIP_R_32F */
+        size_t mCurrentAllocByte; /**< Allocated size of memory */
     };
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_RESOURCE_HPP
+#endif // HIPTENSOR_PERMUTATION_RESOURCE_HPP

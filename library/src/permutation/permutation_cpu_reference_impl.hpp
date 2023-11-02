@@ -26,8 +26,8 @@
 #ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_IMPL_HPP
 #define HIPTENSOR_PERMUTATION_CPU_REFERENCE_IMPL_HPP
 #include <hiptensor/hiptensor.hpp>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "permutation_cpu_reference.hpp"
 #include "types.hpp"
@@ -63,8 +63,9 @@ namespace hiptensor
             {
                 bStrides[i] = descB->mLengths[i - 1] * bStrides[i - 1];
             }
-            auto bIndices     = std::vector<int32_t>(modeSize, 0);
-            auto elementCount = hiptensor::elementsFromLengths(aLens);
+            auto  bIndices     = std::vector<int32_t>(modeSize, 0);
+            auto  elementCount = hiptensor::elementsFromLengths(aLens);
+            float alphaValue   = readVal<float>(alpha, typeScalar);
             for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
             {
                 auto index = elementIndex;
@@ -75,7 +76,7 @@ namespace hiptensor
                 }
                 auto bOffset
                     = std::inner_product(bIndices.begin(), bIndices.end(), bStrides.begin(), 0);
-                B[bOffset] = A[elementIndex];
+                B[bOffset] = static_cast<DataType>(A[elementIndex] * alphaValue);
             }
 
             return HIPTENSOR_STATUS_SUCCESS;
