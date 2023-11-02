@@ -1,12 +1,16 @@
 # hipTensor
 
-hiptensor is AMD's C++ library for accelerating tensor primitives based on the composable kernel library, through general purpose kernel languages, like HIP C++.
+hiptensor is AMD's C++ library for accelerating tensor primitives
+based on the composable kernel library,
+through general purpose kernel languages, like HIP C++.
 
 ## GPU Support
 
-* AMD CDNA class GPU featuring matrix core support: gfx908, gfx90a, gfx940, gfx941, gfx942 as 'gfx9'
+* AMD CDNA class GPU featuring matrix core support:
+gfx908, gfx90a, gfx940, gfx941, gfx942 as 'gfx9'
 
-`Note: Double precision FP64 datatype support requires gfx90a, gfx940, gfx941 or gfx942`
+> Note: Double precision FP64 datatype support requires
+> gfx90a, gfx940, gfx941 or gfx942
 
 ## Minimum Software Requirements
 
@@ -124,7 +128,8 @@ o <build_dir>/bin/simple_contraction_scale_f32
 
 ### Build Samples as external client
 
-Client application links to hipTensor library, and therefore hipTensor library needs to be installed before building client applications.
+Client application links to hipTensor library,
+and therefore hipTensor library needs to be installed before building client applications.
 
 ## Build
 
