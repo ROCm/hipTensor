@@ -165,13 +165,14 @@ namespace hiptensor
         {
             // Init message
             char buff[2048];
-            sprintf(buff,
-                    "[%d][%s][hipTensor][%s][%s] %s\n",
-                    appPid(),
-                    timeStamp(),
-                    contextString((LogLevel_t)context),
-                    apiFuncName,
-                    message);
+            snprintf(buff,
+                     sizeof(buff),
+                     "[%d][%s][hipTensor][%s][%s] %s\n",
+                     appPid(),
+                     timeStamp(),
+                     contextString((LogLevel_t)context),
+                     apiFuncName,
+                     message);
 
             // Invoke logger callback
             if(mCallback != nullptr)
