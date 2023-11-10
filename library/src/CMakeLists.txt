@@ -24,7 +24,7 @@
  #
  ###############################################################################
 
-find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_operations )
+find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_contraction_operations device_other_operations)
 rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
