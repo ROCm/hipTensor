@@ -29,8 +29,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "data_types.hpp"
 #include "permutation_cpu_reference.hpp"
-#include "types.hpp"
 #include "util.hpp"
 
 namespace hiptensor

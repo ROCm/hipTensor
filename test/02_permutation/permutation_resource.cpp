@@ -28,7 +28,7 @@
 #define HIPTENSOR_PERMUTATION_RESOURCE_IMPL_HPP
 
 #include "permutation_resource.hpp"
-#include "types.hpp"
+#include "data_types.hpp"
 #include "utils.hpp"
 
 namespace hiptensor

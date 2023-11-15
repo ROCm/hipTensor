@@ -25,10 +25,10 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
+#include "data_types.hpp"
 #include "logger.hpp"
 #include "permutation/permutation_cpu_reference.hpp"
 #include "permutation_test.hpp"
-#include "types.hpp"
 #include "utils.hpp"
 #include "llvm/hiptensor_options.hpp"
 

@@ -25,7 +25,7 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
-#include "types.hpp"
+#include "data_types.hpp"
 #include "llvm/hiptensor_options.hpp"
 
 #include "contraction/contraction_cpu_reference.hpp"

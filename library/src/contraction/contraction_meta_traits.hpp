@@ -34,8 +34,8 @@
 #include <element_wise_operation.hpp>
 
 // hiptensor includes
+#include "data_types.hpp"
 #include "meta_traits.hpp"
-#include "types.hpp"
 
 namespace hiptensor
 {

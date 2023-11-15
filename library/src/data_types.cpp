@@ -24,7 +24,7 @@
  *
  *******************************************************************************/
 
-#include "types.hpp"
+#include "data_types.hpp"
 
 namespace hiptensor
 {

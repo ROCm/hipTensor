@@ -27,9 +27,9 @@
 
 #include <hiptensor/hiptensor.hpp>
 
+#include "data_types.hpp"
 #include "handle.hpp"
 #include "logger.hpp"
-#include "types.hpp"
 #include "util.hpp"
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
