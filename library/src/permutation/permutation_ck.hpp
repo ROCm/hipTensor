@@ -44,5 +44,5 @@ namespace hiptensor
     }
 }
 
-#include "permutation_ck_col_impl.hpp"
+#include "permutation_ck_impl.hpp"
 #endif // HIPTENSOR_PERMUTATION_CK_COL_HPP
