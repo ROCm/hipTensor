@@ -29,8 +29,8 @@
 
 #include "contraction_meta_traits.hpp"
 #include "contraction_solution_params.hpp"
+#include "data_types.hpp"
 #include "hash.hpp"
-#include "types.hpp"
 
 namespace std
 {

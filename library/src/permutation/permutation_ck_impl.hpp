@@ -32,8 +32,8 @@
 #include <ck/tensor_operation/gpu/device/impl/device_elementwise_scale_impl.hpp>
 #include <ck/tensor_operation/gpu/element/binary_element_wise_operation.hpp>
 
+#include "data_types.hpp"
 #include "performance.hpp"
-#include "types.hpp"
 
 namespace hiptensor
 {

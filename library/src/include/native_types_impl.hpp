@@ -23,6 +23,14 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#ifndef HIPTENSOR_NATIVE_TYPES_IMPL_HPP
+#define HIPTENSOR_NATIVE_TYPES_IMPL_HPP
+
 #include "native_types.hpp"
-#include "type_traits.hpp"
-#include "types_ext.hpp"
+
+namespace hiptensor
+{
+
+} // namespace hiptensor
+
+#endif // HIPTENSOR_NATIVE_TYPES_IMPL_HPP

@@ -131,11 +131,6 @@ namespace std
 
         return os;
     }
-    static ostream& operator<<(ostream& os, const _Float16 value)
-    {
-        os << static_cast<float>(value);
-        return os;
-    }
 }
 
 #endif // HIPTENSOR_UTILITY_INTERNAL_HPP
