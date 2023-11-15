@@ -43,6 +43,7 @@
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
 #include "device/common.hpp"
+#include "types.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
     if(ptr != nullptr)                 \
@@ -210,19 +211,6 @@ std::pair<bool, double> compareEqual(DDataType const* deviceD,
 }
 
 template <typename DDataType>
-double getEpsilon()
-{
-    if(std::is_same_v<DDataType, _Float16>)
-    {
-        return 0.0009765625; // numeric_limits<_Float16>::epsilon() => 0
-    }
-    else
-    {
-        return std::numeric_limits<DDataType>::epsilon();
-    }
-};
-
-template <typename DDataType>
 std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
                                                  DDataType*  hostD,
                                                  std::size_t elementsD,
@@ -288,7 +276,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
     auto toDouble
         = [](DDataType const& val) { return static_cast<double>(static_cast<float>(val)); };
 
-    auto eps = getEpsilon<DDataType>();
+    auto eps = toDouble(std::numeric_limits<DDataType>::epsilon());
     if(isNaN)
     {
         retval           = false;
