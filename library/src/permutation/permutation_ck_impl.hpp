@@ -26,11 +26,13 @@
 #ifndef HIPTENSOR_PERMUTATION_CK_COL_IMPL_HPP
 #define HIPTENSOR_PERMUTATION_CK_COL_IMPL_HPP
 #include <cstdlib>
+#include <unordered_map>
 
 #include <ck/ck.hpp>
 #include <ck/tensor_operation/gpu/device/impl/device_elementwise_scale_impl.hpp>
 #include <ck/tensor_operation/gpu/element/binary_element_wise_operation.hpp>
 
+#include "performance.hpp"
 #include "types.hpp"
 
 namespace hiptensor
@@ -74,35 +76,50 @@ namespace hiptensor
                 modeToLength[modeA[index]] = descA->mLengths[index];
             }
 
+            float                                alphaValue = readVal<float>(alpha, typeScalar);
+            std::array<const void*, 1>           input      = {A};
+            std::array<void*, 1>                 output     = {B};
             std::unordered_map<int32_t, int32_t> bModeToStrides;
-            int32_t                              stride = 1;
-            bModeToStrides[modeB[0]]                    = stride;
+#if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+            std::array<ck::index_t, 4> aStrides
+                = {1,
+                   modeToLength[modeA[0]],
+                   modeToLength[modeA[0]] * modeToLength[modeA[1]],
+                   modeToLength[modeA[0]] * modeToLength[modeA[1]] * modeToLength[modeA[2]]};
+            int32_t stride           = 1;
+            bModeToStrides[modeB[0]] = stride;
             for(int32_t index = 1; index < modeSize; index++)
             {
                 stride *= modeToLength[modeB[index - 1]];
                 bModeToStrides[modeB[index]] = stride;
             }
-
-            float                      alphaValue = readVal<float>(alpha, typeScalar);
-            std::array<const void*, 1> input      = {A};
-            std::array<void*, 1>       output     = {B};
-            std::array<ck::index_t, 4> a_strides
-                = {1,
-                   modeToLength[modeA[0]],
-                   modeToLength[modeA[0]] * modeToLength[modeA[1]],
-                   modeToLength[modeA[0]] * modeToLength[modeA[1]] * modeToLength[modeA[2]]};
-            std::array<ck::index_t, 4> b_strides        = {bModeToStrides[modeA[0]],
+#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+            std::array<ck::index_t, 4> aStrides = {
+                modeToLength[modeA[1]] * modeToLength[modeA[2]] * modeToLength[modeA[3]],
+                modeToLength[modeA[2]] * modeToLength[modeA[3]],
+                modeToLength[modeA[3]],
+                1,
+            };
+            int32_t stride                      = 1;
+            bModeToStrides[modeB[modeSize - 1]] = stride;
+            for(int32_t index = modeSize - 2; index >= 0; index--)
+            {
+                stride *= modeToLength[modeB[index + 1]];
+                bModeToStrides[modeB[index]] = stride;
+            }
+#endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+            std::array<ck::index_t, 4> bStrides         = {bModeToStrides[modeA[0]],
                                                            bModeToStrides[modeA[1]],
                                                            bModeToStrides[modeA[2]],
                                                            bModeToStrides[modeA[3]]};
-            std::array<ck::index_t, 4> ab_lengths       = {modeToLength[modeA[0]],
+            std::array<ck::index_t, 4> abLengths        = {modeToLength[modeA[0]],
                                                            modeToLength[modeA[1]],
                                                            modeToLength[modeA[2]],
                                                            modeToLength[modeA[3]]};
             auto                       broadcastPermute = DeviceElementwisePermuteInstance{};
-            auto                       argument = broadcastPermute.MakeArgumentPointer(ab_lengths,
-                                                                                       {a_strides},
-                                                                                       {b_strides},
+            auto                       argument = broadcastPermute.MakeArgumentPointer(abLengths,
+                                                                                       {aStrides},
+                                                                                       {bStrides},
                                                                  input,
                                                                  output,
                                                                  PassThrough{},
@@ -115,7 +132,44 @@ namespace hiptensor
             };
 
             auto broadcastPermute_invoker_ptr = broadcastPermute.MakeInvokerPointer();
-            broadcastPermute_invoker_ptr->Run(argument.get(), StreamConfig{stream, false});
+
+            // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
+            using hiptensor::Logger;
+            auto& logger             = Logger::instance();
+            bool  measurePermuteTime = logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE;
+
+            auto permuteTime = broadcastPermute_invoker_ptr->Run(
+                argument.get(), StreamConfig{stream, measurePermuteTime});
+            if(measurePermuteTime)
+            {
+                std::size_t problemSize
+                    = std::accumulate(abLengths.begin(), abLengths.end(), 1, std::multiplies{});
+                std::size_t flops = std::size_t(2) * problemSize;
+
+                std::size_t bytes     = 2 * sizeof(DataType) * problemSize;
+                float       tflops    = static_cast<float>(flops) / 1.E9 / permuteTime;
+                float       bandwidth = bytes / 1.E6 / permuteTime;
+
+                hiptensor::PerfMetrics metrics = {
+                    0, // id, permute has only one solution, set id to 0
+                    "default solution", // name
+                    permuteTime, // avg time
+                    tflops, // tflops
+                    bandwidth // BW
+                };
+
+                // log perf metrics (not name/id)
+                char msg[2048];
+                snprintf(msg,
+                         sizeof(msg),
+                         "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+                         metrics.mKernelUid,
+                         metrics.mKernelName.c_str(),
+                         metrics.mAvgTimeMs,
+                         metrics.mTflops,
+                         metrics.mBandwidth);
+                logger->logPerformanceTrace("hiptensorPermutation", msg);
+            }
             return HIPTENSOR_STATUS_SUCCESS;
         }
     }

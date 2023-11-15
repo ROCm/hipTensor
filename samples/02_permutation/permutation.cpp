@@ -63,10 +63,10 @@ int main()
     int              nmodeC = modeC.size();
 
     std::unordered_map<int, int64_t> extent;
-    extent['h'] = 2;
-    extent['w'] = 3;
-    extent['c'] = 4;
-    extent['n'] = 5;
+    extent['h'] = 32;
+    extent['w'] = 33;
+    extent['c'] = 34;
+    extent['n'] = 35;
 
     std::vector<int64_t> extentA;
     for(auto mode : modeA)
@@ -107,6 +107,7 @@ int main()
     hiptensorStatus_t  err;
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(

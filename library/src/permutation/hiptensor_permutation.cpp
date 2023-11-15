@@ -26,7 +26,7 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "logger.hpp"
-#include "permutation_ck_col.hpp"
+#include "permutation_ck.hpp"
 
 hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
                                        const void*                        alpha,

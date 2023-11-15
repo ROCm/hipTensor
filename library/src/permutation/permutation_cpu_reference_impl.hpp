@@ -56,19 +56,26 @@ namespace hiptensor
                 bModeToIndex[modeB[index]] = index;
             }
 
-            auto& aLens = descA->mLengths;
-            // auto bStrides = descB->mStrides; // TODO descB->mStrides contains incorrect strides
-            auto bStrides = std::vector<int32_t>(modeSize, 1);
+            auto& aLens    = descA->mLengths;
+            auto  bStrides = std::vector<int32_t>(modeSize, 1);
+#if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
             for(int i = 1; i < modeSize; i++)
             {
                 bStrides[i] = descB->mLengths[i - 1] * bStrides[i - 1];
             }
+#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+            for(int i = modeSize - 2; i >= 0; i--)
+            {
+                bStrides[i] = descB->mLengths[i + 1] * bStrides[i + 1];
+            }
+#endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
             auto  bIndices     = std::vector<int32_t>(modeSize, 0);
             auto  elementCount = hiptensor::elementsFromLengths(aLens);
             float alphaValue   = readVal<float>(alpha, typeScalar);
             for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
             {
                 auto index = elementIndex;
+#if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                 for(int modeIndex = 0; modeIndex < modeSize; modeIndex++)
                 {
                     bIndices[bModeToIndex[modeA[modeIndex]]] = index % aLens[modeIndex];
@@ -76,6 +83,15 @@ namespace hiptensor
                 }
                 auto bOffset
                     = std::inner_product(bIndices.begin(), bIndices.end(), bStrides.begin(), 0);
+#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+                for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
+                {
+                    bIndices[bModeToIndex[modeA[modeIndex]]] = index % aLens[modeIndex];
+                    index /= aLens[modeIndex];
+                }
+                auto bOffset
+                    = std::inner_product(bIndices.rbegin(), bIndices.rend(), bStrides.rbegin(), 0);
+#endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                 B[bOffset] = static_cast<DataType>(A[elementIndex] * alphaValue);
             }
 
