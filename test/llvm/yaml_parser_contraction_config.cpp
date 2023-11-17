@@ -110,6 +110,8 @@ namespace llvm
             {
                 io.enumCase(value, "HIP_R_32F", HIP_R_32F);
                 io.enumCase(value, "HIP_R_64F", HIP_R_64F);
+                io.enumCase(value, "HIP_C_32F", HIP_C_32F);
+                io.enumCase(value, "HIP_C_64F", HIP_C_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
             }
         };

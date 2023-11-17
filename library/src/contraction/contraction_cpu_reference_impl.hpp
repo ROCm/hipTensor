@@ -168,12 +168,28 @@ namespace hiptensor
                             BDataType valB;
 
                             // Element-wise ops
-                            arg.mOpA(valA, ((ADataType*)arg.mA)[indexA]);
-                            arg.mOpB(valB, ((BDataType*)arg.mB)[indexB]);
+                            valA = ((ADataType*)arg.mA)[indexA];
+                            // TODO : Re-enable with CK support
+                            //arg.mOpA(valA, ((ADataType*)arg.mA)[indexA]);
+
+                            valB = ((BDataType*)arg.mB)[indexB];
+                            // TODO : Re-enable with CK support
+                            //arg.mOpB(valB, ((BDataType*)arg.mB)[indexB]);
 
                             // Mult / accum
+                            if constexpr(std::is_same_v<AccDataType,hipFloatComplex>)
+                            {
+                                hipCaddf(accum, hipCmulf(static_cast<AccDataType>(valA), static_cast<AccDataType>(valB)));
+                            }
+                            else if constexpr(std::is_same_v<AccDataType,hipDoubleComplex>)
+                            {
+                                hipCadd(accum, hipCmul(static_cast<AccDataType>(valA),  static_cast<AccDataType>(valB)));
+                            }
+                            else
+                            {
                             accum
                                 += static_cast<AccDataType>(valA) * static_cast<AccDataType>(valB);
+                            }
                         }
                     }
 
@@ -182,15 +198,22 @@ namespace hiptensor
                     if constexpr(std::is_same_v<CDEElementwiseOperation,
                                                 ck::tensor_operation::element_wise::Scale>)
                     {
-                        arg.mOpCDE(((EDataType*)arg.mE)[indexE], accum);
+                        ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.scale_ * accum;
+
+                        // TODO : Re-enable with CK support
+                        //arg.mOpCDE(((EDataType*)arg.mE)[indexE], accum);
                     }
                     else // bilinear
                     {
                         // NumDTensor will be 1 due to SFINAE of this class
                         auto indexD
                             = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
-                        arg.mOpCDE(
-                            ((EDataType*)arg.mE)[indexE], accum, ((EDataType*)(arg.mD[0]))[indexD]);
+
+                        ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.alpha_ * accum + arg.mOpCDE.beta_ * ((EDataType*)(arg.mD[0]))[indexD];
+
+                        // TODO : Re-enable with CK support
+                        //arg.mOpCDE(
+                        //    ((EDataType*)arg.mE)[indexE], accum, ((EDataType*)(arg.mD[0]))[indexD]);
                     }
                 };
 

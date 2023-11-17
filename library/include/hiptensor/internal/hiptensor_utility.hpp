@@ -28,6 +28,7 @@
 
 #include <fstream>
 #include <hip/hip_runtime.h>
+#include <hip/hip_complex.h>
 #include <iostream>
 
 #include "../hiptensor_types.hpp"
@@ -59,6 +60,16 @@
         exit(EXIT_FAILURE);                                            \
     }
 #endif
+
+inline std::ostream& operator<<(std::ostream& os, const hipFloatComplex& fc)
+{
+    return os << hipCrealf(fc) << " " << hipCimagf(fc);
+}
+
+inline std::ostream& operator<<(std::ostream& os, const hipDoubleComplex& dc)
+{
+    return os << hipCreal(dc) << " " << hipCimag(dc);
+}
 
 template <typename T>
 void hiptensorPrintArrayElements(std::ostream& stream, T* vec, size_t size)

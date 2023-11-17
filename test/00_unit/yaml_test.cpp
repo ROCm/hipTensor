@@ -79,9 +79,13 @@ int main(int argc, char* argv[])
     yee.mDataTypes    = {
         // clang-format off
                 {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F, HIP_R_32F}, // scale F32
+                {HIP_C_32F, HIP_C_32F, hiptensor::NONE_TYPE, HIP_C_32F, HIP_C_32F}, // scale F32 Complex
                 {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
+                {HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F}, // bilinear F32 Complex
                 {HIP_R_64F, HIP_R_64F, hiptensor::NONE_TYPE, HIP_R_64F, HIP_R_64F}, // scale F64
+                {HIP_C_64F, HIP_C_64F, hiptensor::NONE_TYPE, HIP_C_64F, HIP_C_64F}, // scale F64 Complex
                 {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
+                {HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F}, // bilinear F64 Complex
         // clang-format on
     };
     yee.mAlgorithms
