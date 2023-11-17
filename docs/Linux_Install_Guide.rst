@@ -104,9 +104,9 @@ Minimum ROCm version support is 5.7.
 
 By default, the project is configured as Release mode.
 
-To build only library, run the following comomand :
+To build only library, run the following command :
 
-    CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=OFF
+    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=OFF`
 
 Here are some other example project configurations:
 
@@ -116,11 +116,11 @@ Here are some other example project configurations:
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
 |         Configuration             |                                          Command                                                                   |
 +===================================+====================================================================================================================+
-|            Basic                  |                                CC=hipcc CXX=hipcc cmake -B<build_dir> .                                            |
+|            Basic                  |                        :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> .`                                            |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
-|        Targeting gfx908           |                   CC=hipcc CXX=hipcc cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908:xnack-                          |
+|        Targeting gfx908           |           :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908:xnack-`                          |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
-|          Debug build              |                    CC=hipcc CXX=hipcc cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug                               |
+|          Debug build              |                    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`                       |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
 
 After configuration, build with
@@ -131,15 +131,15 @@ After configuration, build with
 Build library + samples
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-To build library and samples, run the following comomand :
+To build library and samples, run the following command:
 
-    CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=ON
+    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=ON`
 
 After configuration, build with
 
-    cmake --build <build_dir> -- -j
+    :code:`cmake --build <build_dir> -- -j`
 
-The samples folder in <build_dir> contains executables in the table below.
+The samples folder in :code:`<build_dir>` contains executables in the table below.
 
 =================================== ===================================================================================
 executable name                     description
@@ -154,13 +154,13 @@ Build library + tests
 
 To build library and tests, run the following command :
 
-    CC=hipcc CXX=hipcc cmake -B<build_dir> .
+    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> .`
 
 After configuration, build with
 
-    cmake --build <build_dir> -- -j
+    :code:`cmake --build <build_dir> -- -j`
 
-The tests in <build_dir> contains executables in the table below.
+The tests in `<build_dir>` contains executables in the table below.
 
 ====================================== ===================================================================================
 executable name                        description
@@ -177,6 +177,7 @@ Build library + Documentation
 
 Run the steps below to build documentation locally.
 
+.. code-block::
     cd docs
 
     sudo apt-get update
@@ -191,4 +192,4 @@ Run the steps below to build documentation locally.
 
     pdflatex hiptensor.tex
 
-Generates hiptensor.pdf here
+Generates :code:`hiptensor.pdf` here
