@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,46 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
+
+#ifndef HIPTENSOR_PERMUTATION_TEST_HELPERS_HPP
+#define HIPTENSOR_PERMUTATION_TEST_HELPERS_HPP
 
 #include <gtest/gtest.h>
 
-int main(int argc, char** argv)
+#include "llvm/hiptensor_options.hpp"
+#include "llvm/yaml_parser.hpp"
+
+#ifdef HIPTENSOR_TEST_YAML_INCLUDE
+#include HIPTENSOR_TEST_YAML_INCLUDE
+#define HIPTENSOR_TEST_YAML_BUNDLE 1
+#else
+#define HIPTENSOR_TEST_YAML_BUNDLE 0
+#endif // HIPTENSOR_TEST_YAML_INCLUDE
+
+auto inline load_config_helper()
 {
-    // Parse hiptensor test options
+    hiptensor::PermutationTestParams testParams;
     using Options     = hiptensor::HiptensorOptions;
     auto& testOptions = Options::instance();
-    testOptions->parseOptions(argc, argv);
 
-    // Initialize Google Tests
-    testing::InitGoogleTest(&argc, argv);
+    if(testOptions->usingDefaultConfig() && HIPTENSOR_TEST_YAML_BUNDLE)
+    {
+        testParams = hiptensor::YamlConfigLoader<hiptensor::PermutationTestParams>::loadFromString(
+            HIPTENSOR_TEST_GET_YAML);
+    }
+    else
+    {
+        testParams = hiptensor::YamlConfigLoader<hiptensor::PermutationTestParams>::loadFromFile(
+            testOptions->inputFilename());
+    }
 
-    // Run the tests
-    int status = RUN_ALL_TESTS();
+    // testParams.printParams();
 
-    return status;
+    return ::testing::Combine(::testing::ValuesIn(testParams.dataTypes()),
+                              ::testing::Values(testParams.logLevelMask()),
+                              ::testing::ValuesIn(testParams.problemLengths()),
+                              ::testing::ValuesIn(testParams.permutedDims()),
+                              ::testing::ValuesIn(testParams.alphas()));
 }
+
+#endif // HIPTENSOR_PERMUTATION_TEST_HELPERS_HPP

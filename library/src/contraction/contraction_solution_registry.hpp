@@ -32,8 +32,8 @@
 #include <vector>
 
 #include "contraction_types.hpp"
+#include "data_types.hpp"
 #include "singleton.hpp"
-#include "types.hpp"
 
 namespace hiptensor
 {

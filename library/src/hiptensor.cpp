@@ -27,9 +27,9 @@
 
 #include <hiptensor/hiptensor.hpp>
 
+#include "data_types.hpp"
 #include "handle.hpp"
 #include "logger.hpp"
-#include "types.hpp"
 #include "util.hpp"
 
 hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
@@ -151,7 +151,8 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    if((lens == nullptr) || ((dataType != HIP_R_32F) && (dataType != HIP_R_64F))
+    if((lens == nullptr)
+       || ((dataType != HIP_R_16F) && (dataType != HIP_R_32F) && (dataType != HIP_R_64F))
        || unaryOp != HIPTENSOR_OP_IDENTITY)
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;

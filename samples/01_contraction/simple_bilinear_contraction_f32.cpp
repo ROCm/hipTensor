@@ -150,9 +150,12 @@ int main(int argc, char* argv[])
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeC = sizeof(CDataType) * elementsC;
 
-    ADataType* A = (ADataType*)malloc(sizeA);
-    BDataType* B = (BDataType*)malloc(sizeB);
-    CDataType* C = (CDataType*)malloc(sizeC);
+    ADataType* A = nullptr;
+    BDataType* B = nullptr;
+    CDataType* C = nullptr;
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&A, sizeA));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&B, sizeB));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&C, sizeC));
 
     void *A_d, *B_d, *C_d;
 

@@ -56,11 +56,13 @@ set(HIPTENSOR_LLVM_LIBS "-L${LLVM_LIBRARY_DIR}"
 # Includes
 set(HIPTENSOR_LLVM_INCLUDES ${LLVM_INCLUDE_DIRS}
                             ${PROJECT_SOURCE_DIR}/library/include
+                            ${PROJECT_SOURCE_DIR}/library/src/include
+                            ${PROJECT_SOURCE_DIR}/library/src
                             ${PROJECT_SOURCE_DIR}/test
                             )
 
 # Sources for this static object
-set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_contraction_config.cpp
+set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_config.cpp
                            ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options.cpp)
 
 # Create hiptensor_llvm object target

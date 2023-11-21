@@ -35,10 +35,10 @@
         CHECK_HIP_ERROR(hipFree(ptr)); \
     }
 
-#define HIPTENSOR_FREE_HOST(ptr) \
-    if(ptr != nullptr)           \
-    {                            \
-        free(ptr);               \
+#define HIPTENSOR_FREE_HOST(ptr)           \
+    if(ptr != nullptr)                     \
+    {                                      \
+        CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
 
 inline bool isF32Supported()
