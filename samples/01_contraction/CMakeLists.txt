@@ -28,6 +28,8 @@
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
     add_hiptensor_sample(simple_contraction_scale_f32 simple_scale_contraction_f32.cpp)
     add_hiptensor_sample(simple_contraction_bilinear_f32 simple_bilinear_contraction_f32.cpp)
+    add_hiptensor_sample(simple_contraction_scale_floatComplex simple_scale_contraction_floatComplex_cpu.cpp)
+    add_hiptensor_sample(simple_contraction_scale_doubleComplex simple_scale_contraction_doubleComplex_cpu.cpp)
 
 # If building hipTensor samples as a standalone Cmake project
 else()
