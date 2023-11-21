@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,26 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
 
-#include <gtest/gtest.h>
+#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
 
-int main(int argc, char** argv)
+#include "permutation_test.hpp"
+#include "permutation_test_helpers.hpp"
+
+class PermutationTest : public hiptensor::PermutationTest
 {
-    // Parse hiptensor test options
-    using Options     = hiptensor::HiptensorOptions;
-    auto& testOptions = Options::instance();
-    testOptions->parseOptions(argc, argv);
+};
 
-    // Initialize Google Tests
-    testing::InitGoogleTest(&argc, argv);
-
-    // Run the tests
-    int status = RUN_ALL_TESTS();
-
-    return status;
+TEST_P(PermutationTest, RunKernel)
+{
+    static bool ranWarmup = false;
+    if(!ranWarmup)
+    {
+        this->Warmup();
+        ranWarmup = true;
+    }
+    this->RunKernel();
 }
+
+INSTANTIATE_TEST_SUITE_P(PermutationTests, PermutationTest, load_config_helper());

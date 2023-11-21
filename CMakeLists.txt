@@ -60,6 +60,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
+  option( HIPTENSOR_DATA_LAYOUT_COL_MAJOR "Set hiptensor data layout to column major" ON )
 endif()
 
 # Setup output paths
@@ -92,6 +93,13 @@ else()
   set(AMDGPU_TARGETS "${DEFAULT_AMDGPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
 endif()
 message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
+
+if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+  add_compile_definitions(HIPTENSOR_DATA_LAYOUT_COL_MAJOR=1)
+else()
+  add_compile_definitions(HIPTENSOR_DATA_LAYOUT_COL_MAJOR=0)
+endif()
+message("-- HIPTENSOR_DATA_LAYOUT_COL_MAJOR=${HIPTENSOR_DATA_LAYOUT_COL_MAJOR}")
 
 # Setup HIP
 find_package(hip REQUIRED )

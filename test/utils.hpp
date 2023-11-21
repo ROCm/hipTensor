@@ -24,10 +24,11 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
-#define HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
+#ifndef HIPTENSOR_TEST_UTILS_HPP
+#define HIPTENSOR_TEST_UTILS_HPP
 
 #include <algorithm>
+#include <ctime>
 #include <fstream>
 #include <iterator>
 #include <math.h>
@@ -42,6 +43,7 @@
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
 #include "device/common.hpp"
+#include "types.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
     if(ptr != nullptr)                 \
@@ -49,10 +51,10 @@
         CHECK_HIP_ERROR(hipFree(ptr)); \
     }
 
-#define HIPTENSOR_FREE_HOST(ptr) \
-    if(ptr != nullptr)           \
-    {                            \
-        free(ptr);               \
+#define HIPTENSOR_FREE_HOST(ptr)           \
+    if(ptr != nullptr)                     \
+    {                                      \
+        CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
 
 inline bool isF32Supported()
@@ -97,13 +99,30 @@ static constexpr intT1 ceilDiv(const intT1 numerator, const intT2 divisor)
     return (numerator + divisor - 1) / divisor;
 }
 
+template <typename Container>
+auto getProduct(const Container&               container,
+                typename Container::value_type init = typename Container::value_type{1})
+{
+    return std::accumulate(std::begin(container),
+                           std::end(container),
+                           init,
+                           std::multiplies<typename Container::value_type>{});
+}
+
 // fill kernel for 'elementSize' elements
 template <typename DataType>
 __host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
-    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize);
+    hipLaunchKernelGGL((fillKernel<DataType>),
+                       gridDim,
+                       blockDim,
+                       0,
+                       0,
+                       data,
+                       elementSize,
+                       static_cast<uint32_t>(std::time(nullptr)));
 }
 
 // fill kernel wrapper for 'elementSize' elements with a specific value
@@ -276,6 +295,7 @@ namespace std
     template <typename T>
     ostream& operator<<(ostream& os, const std::vector<T>& vec)
     {
+        os << "[ ";
         for(auto i = 0; i < vec.size(); i++)
         {
             if(i < vec.size() - 1)
@@ -287,9 +307,10 @@ namespace std
                 os << vec[i];
             }
         }
+        os << " ]";
 
         return os;
     }
 }
 
-#endif // HIPTENSOR_TEST_CONTRACTION_COMMON_HPP
+#endif // HIPTENSOR_TEST_UTILS_HPP

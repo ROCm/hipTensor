@@ -9,7 +9,7 @@ hiptensor_version.hpp
 hiptensor-version.hpp
 
 # Generated source file
-test/01_contraction/configs/*.hpp
+test/*/configs/*.hpp
 
 # Precompiled Headers
 *.gch
