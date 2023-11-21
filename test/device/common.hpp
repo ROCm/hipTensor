@@ -66,7 +66,7 @@ __global__ static void
 
 // fill kernel for 'elementSize' elements
 template <typename DataType>
-__global__ void fillKernel(DataType* data, uint32_t elementSize)
+__global__ void fillKernel(DataType* data, uint32_t elementSize, uint32_t seed)
 {
     uint32_t index = (blockIdx.x * blockDim.x + threadIdx.x);
 

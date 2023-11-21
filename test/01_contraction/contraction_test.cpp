@@ -25,12 +25,12 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
-#include "../library/src/include/types.hpp"
+#include "data_types.hpp"
 #include "llvm/hiptensor_options.hpp"
 
-#include "common.hpp"
-#include "contraction_cpu_reference.hpp"
+#include "contraction/contraction_cpu_reference.hpp"
 #include "contraction_test.hpp"
+#include "utils.hpp"
 
 namespace hiptensor
 {

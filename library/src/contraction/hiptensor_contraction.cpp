@@ -87,7 +87,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     auto& logger = Logger::instance();
 
     // Log API access
-    char msg[1024];
+    char msg[2048];
     snprintf(
         msg,
         sizeof(msg),

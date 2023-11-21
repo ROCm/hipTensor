@@ -19,27 +19,30 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  *******************************************************************************/
-#include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
+#ifndef HIPTENSOR_PERMUTATION_CK_COL_HPP
+#define HIPTENSOR_PERMUTATION_CK_COL_HPP
+#include <hiptensor/hiptensor.hpp>
 
-#include <gtest/gtest.h>
-
-int main(int argc, char** argv)
+namespace hiptensor
 {
-    // Parse hiptensor test options
-    using Options     = hiptensor::HiptensorOptions;
-    auto& testOptions = Options::instance();
-    testOptions->parseOptions(argc, argv);
+    namespace detail
+    {
+        template <typename DataType>
+        hiptensorStatus_t permuteByCk(const void*                        alpha,
+                                      const DataType*                    A,
+                                      const hiptensorTensorDescriptor_t* descA,
+                                      const int32_t                      modeA[],
+                                      DataType*                          B,
+                                      const hiptensorTensorDescriptor_t* descB,
+                                      const int32_t                      modeB[],
+                                      const hipDataType                  typeScalar);
 
-    // Initialize Google Tests
-    testing::InitGoogleTest(&argc, argv);
-
-    // Run the tests
-    int status = RUN_ALL_TESTS();
-
-    return status;
+    }
 }
+
+#include "permutation_ck_impl.hpp"
+#endif // HIPTENSOR_PERMUTATION_CK_COL_HPP

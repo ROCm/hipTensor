@@ -24,44 +24,56 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_SOLUTION_PARAMS_HPP
-#define HIPTENSOR_CONTRACTION_SOLUTION_PARAMS_HPP
+#ifndef HIPTENSOR_LIBRARY_DATA_TYPES_HPP
+#define HIPTENSOR_LIBRARY_DATA_TYPES_HPP
+
+// clang-format off
+// Include order needs to be preserved
+#include <hip/library_types.h>
+#include <hip/hip_bfloat16.h>
+#include <hip/hip_fp16.h>
+#include <hip/hip_complex.h>
+#include <iostream>
 
 #include <hiptensor/hiptensor_types.hpp>
 
-#include "contraction_types.hpp"
-#include "data_types.hpp"
+// clang-format on
 
 namespace hiptensor
 {
-    struct ContractionSolutionParams
-    {
-        ContractionSolutionParams()                                            = default;
-        virtual ~ContractionSolutionParams()                                   = default;
-        ContractionSolutionParams(ContractionSolutionParams const&)            = default;
-        ContractionSolutionParams(ContractionSolutionParams&&)                 = default;
-        ContractionSolutionParams& operator=(ContractionSolutionParams const&) = default;
-        ContractionSolutionParams& operator=(ContractionSolutionParams&&)      = default;
+    // Used to map to empty tensors
+    struct NoneType;
 
-        // Map tensor dimensions
-        virtual int32_t dimsM() const = 0;
-        virtual int32_t dimsN() const = 0;
-        virtual int32_t dimsK() const = 0;
+    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
 
-        // Map to hipDataType
-        virtual hipDataType typeA() const = 0;
-        virtual hipDataType typeB() const = 0;
-        virtual hipDataType typeC() const = 0;
-        virtual hipDataType typeD() const = 0;
+    // Map type to runtime HipDataType
+    template <typename T>
+    struct HipDataType;
 
-        // Map to operators
-        virtual hiptensorOperator_t opA() const   = 0;
-        virtual hiptensorOperator_t opB() const   = 0;
-        virtual ContractionOpId_t   opCDE() const = 0;
-    };
+    template <typename T>
+    static constexpr auto HipDataType_v = HipDataType<T>::value;
+
+    // Get data size in bytes from id
+    uint32_t hipDataTypeSize(hipDataType id);
+
+    // Convert hipDataType to hiptensorComputeType_t
+    hiptensorComputeType_t convertToComputeType(hipDataType hipType);
+
+    // Read a single value from void pointer, casted to T
+    template <typename T>
+    T readVal(void const* value, hipDataType id);
+
+    template <typename T>
+    T readVal(void const* value, hiptensorComputeType_t id);
 
 } // namespace hiptensor
 
-#include "contraction_solution_params_impl.hpp"
+bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);
+bool operator==(hiptensorComputeType_t computeType, hipDataType hipType);
 
-#endif // HIPTENSOR_CONTRACTION_SOLUTION_PARAMS_HPP
+bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType);
+bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType);
+
+#include "data_types_impl.hpp"
+
+#endif // HIPTENSOR_LIBRARY_DATA_TYPES_HPP
