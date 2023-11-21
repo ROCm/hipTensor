@@ -95,11 +95,11 @@ namespace hiptensor
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+                alphaF = hiptensor::readVal<float>(alpha, convertToComputeType(HipDataType_v<typename Traits::EDataT>));
             }
             if(beta != nullptr)
             {
-                betaF = hiptensor::readVal<float>(beta, HipDataType_v<typename Traits::EDataT>);
+                betaF = hiptensor::readVal<float>(beta, convertToComputeType(HipDataType_v<typename Traits::EDataT>));
             }
 
             // CK has its own format for indices...
@@ -205,7 +205,7 @@ namespace hiptensor
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+                alphaF = hiptensor::readVal<float>(alpha, convertToComputeType(HipDataType_v<typename Traits::EDataT>));
             }
 
             // CK has its own format for indices...

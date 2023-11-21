@@ -179,11 +179,11 @@ namespace hiptensor
                             // Mult / accum
                             if constexpr(std::is_same_v<AccDataType,hipFloatComplex>)
                             {
-                                hipCaddf(accum, hipCmulf(static_cast<AccDataType>(valA), static_cast<AccDataType>(valB)));
+                                accum = hipCaddf(accum, hipCmulf(valA, valB));
                             }
                             else if constexpr(std::is_same_v<AccDataType,hipDoubleComplex>)
                             {
-                                hipCadd(accum, hipCmul(static_cast<AccDataType>(valA),  static_cast<AccDataType>(valB)));
+                                accum = hipCadd(accum, hipCmul(valA, valB));
                             }
                             else
                             {
