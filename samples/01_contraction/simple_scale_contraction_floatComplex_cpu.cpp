@@ -33,7 +33,7 @@
 #include <unordered_map>
 
 #include "common.hpp"
-#include "../../library/src/include/types.hpp"
+#include "../../library/src/include/data_types.hpp"
 #include "../../library/src/contraction/contraction_cpu_reference.hpp"
 
 int main(int argc, char* argv[])
@@ -128,9 +128,12 @@ int main(int argc, char* argv[])
     size_t sizeB = sizeof(BDataType) * elementsB;
     size_t sizeD = sizeof(DDataType) * elementsD;
 
-    ADataType* A = (ADataType*)malloc(sizeA);
-    BDataType* B = (BDataType*)malloc(sizeB);
-    DDataType* D = (DDataType*)malloc(sizeD);
+    ADataType* A = nullptr;
+    BDataType* B = nullptr;
+    DDataType* D = nullptr;
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&A, sizeA));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&B, sizeB));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&D, sizeD));
 
     /*******************
    * Initialize data
