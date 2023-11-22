@@ -147,7 +147,8 @@ namespace hiptensor
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType>
     std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions();
 
 } // namespace hiptensor

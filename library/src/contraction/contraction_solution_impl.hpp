@@ -274,7 +274,8 @@ namespace hiptensor
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType = ADataType>
     std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions()
     {
         using ContractionOp
@@ -287,7 +288,8 @@ namespace hiptensor
                                                                        EDataType,
                                                                        AElementwiseOperation,
                                                                        BElementwiseOperation,
-                                                                       CDEElementwiseOperation>;
+                                                                       CDEElementwiseOperation,
+                                                                       ComputeDataType>;
 
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
