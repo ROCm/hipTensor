@@ -57,6 +57,7 @@ namespace hiptensor
         typename AElementwiseOperation,
         typename BElementwiseOperation,
         typename CDEElementwiseOperation,
+        typename ComputeDataType = ADataType,
         ck::enable_if_t<NumDimM == 2 && NumDimN == 2 && NumDimK == 2 && DsDataType::Size() <= 1,
                         bool>
         = false>
@@ -70,7 +71,8 @@ namespace hiptensor
                                                                           EDataType,
                                                                           AElementwiseOperation,
                                                                           BElementwiseOperation,
-                                                                          CDEElementwiseOperation>
+                                                                          CDEElementwiseOperation,
+                                                                          ComputeDataType>
     {
         using BaseArgument = ck::tensor_operation::device::BaseArgument;
         using BaseInvoker  = ck::tensor_operation::device::BaseInvoker;
@@ -324,7 +326,8 @@ namespace hiptensor
               typename AccumDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType>
     struct MetaTraits<ReferenceContraction_M2_N2_K2<NumDimsM,
                                                     NumDimsN,
                                                     NumDimsK,
@@ -335,7 +338,8 @@ namespace hiptensor
                                                     AccumDataType,
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
-                                                    CDEElementwiseOperation>>
+                                                    CDEElementwiseOperation,
+                                                    ComputeDataType>>
         : public MetaTraits<
               ck::tensor_operation::device::DeviceContractionMultipleD<NumDimsM,
                                                                        NumDimsN,
@@ -346,7 +350,8 @@ namespace hiptensor
                                                                        EDataType,
                                                                        AElementwiseOperation,
                                                                        BElementwiseOperation,
-                                                                       CDEElementwiseOperation>>
+                                                                       CDEElementwiseOperation,
+                                                                       ComputeDataType>>
     {
     };
 
@@ -359,7 +364,8 @@ namespace hiptensor
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType = ADataType>
     auto enumerateReferenceSolutions()
     {
         using ReferenceOp = ReferenceContraction_M2_N2_K2<NumDimM,
@@ -372,7 +378,8 @@ namespace hiptensor
                                                           EDataType,
                                                           AElementwiseOperation,
                                                           BElementwiseOperation,
-                                                          CDEElementwiseOperation>;
+                                                          CDEElementwiseOperation,
+                                                          ComputeDataType>;
 
         auto solution = std::make_unique<ContractionSolutionImpl<ReferenceOp>>(
             std::make_unique<ReferenceOp>());

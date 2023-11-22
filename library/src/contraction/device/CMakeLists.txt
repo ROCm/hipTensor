@@ -24,24 +24,40 @@
  #
  ###############################################################################
 
-set(CK_CONTRACTION_INSTANCE_SOURCES
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_kknn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_knnn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_mknn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_mnnn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_kknn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_knnn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_mknn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_mnnn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_kkn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_knn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_mkn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_mnn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_kkn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_knn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_mkn_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_mnn_instance.cpp
-)
+ set(CK_CONTRACTION_INSTANCE_SOURCES
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_kknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_knnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_mknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_mnnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_kknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_knnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_mknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_mnnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_kknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_knnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_mknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_mnnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_kknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_knnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_mknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_mnnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_kkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_knn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_mkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_mnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_kkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_knn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_mkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_mnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_kkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_knn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_mkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_mnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_kkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_knn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_mkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_mnn_instance.cpp
+     )
 
-add_hiptensor_component(hiptensor_contraction_instances ${CK_CONTRACTION_INSTANCE_SOURCES})
-target_include_directories(hiptensor_contraction_instances PRIVATE ${composable_kernel_INCLUDES})
+ add_hiptensor_component(hiptensor_contraction_instances ${CK_CONTRACTION_INSTANCE_SOURCES})
+ target_include_directories(hiptensor_contraction_instances PRIVATE ${composable_kernel_INCLUDES})
