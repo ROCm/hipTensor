@@ -41,9 +41,9 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+#include <hiptensor/internal/types.hpp>
 
 #include "device/common.hpp"
-#include "types.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
     if(ptr != nullptr)                 \

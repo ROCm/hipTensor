@@ -708,17 +708,6 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         return errorCode;
     }
 
-    if(plan->mContractionDesc.mComputeType != plan->mContractionDesc.mTensorDesc[3].mType)
-    {
-        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Internal Error : compute type != D type (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorContraction", msg);
-        return errorCode;
-    }
-
     auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
 
     auto canRun = cSolution->initArgs(alpha,

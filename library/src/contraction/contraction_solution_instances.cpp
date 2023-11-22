@@ -32,6 +32,35 @@ namespace hiptensor
     ContractionSolutionInstances::ContractionSolutionInstances()
     {
         // Register all the solutions exactly once
+
+        // Bilinear bf16
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          ck::bhalf_t,
+                                          ck::bhalf_t,
+                                          ck::Tuple<ck::bhalf_t>,
+                                          ck::bhalf_t,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          float>());
+
+        // Bilinear f16
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          ck::half_t,
+                                          ck::half_t,
+                                          ck::Tuple<ck::half_t>,
+                                          ck::half_t,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          float>());
+
         // Bilinear f32
         registerSolutions(
             enumerateContractionSolutions<2,
@@ -57,6 +86,34 @@ namespace hiptensor
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::Bilinear>());
+
+        // Scale bf16
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          ck::bhalf_t,
+                                          ck::bhalf_t,
+                                          ck::Tuple<>,
+                                          ck::bhalf_t,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Scale,
+                                          float>());
+
+        // Scale f16
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          ck::half_t,
+                                          ck::half_t,
+                                          ck::Tuple<>,
+                                          ck::half_t,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Scale,
+                                          float>());
 
         // Scale f32
         registerSolutions(

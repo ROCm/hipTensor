@@ -32,6 +32,34 @@ namespace hiptensor
     ContractionCpuReferenceInstances::ContractionCpuReferenceInstances()
     {
         // Register all the solutions exactly once
+        // Bilinear f16
+        registerSolutions(
+            enumerateReferenceSolutions<2,
+                                        2,
+                                        2,
+                                        _Float16,
+                                        _Float16,
+                                        ck::Tuple<_Float16>,
+                                        _Float16,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::Bilinear,
+                                        float>());
+
+        // Bilinear bf16
+        registerSolutions(
+            enumerateReferenceSolutions<2,
+                                        2,
+                                        2,
+                                        ck::bhalf_t,
+                                        ck::bhalf_t,
+                                        ck::Tuple<ck::bhalf_t>,
+                                        ck::bhalf_t,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::Bilinear,
+                                        float>());
+
         // Bilinear f32
         registerSolutions(
             enumerateReferenceSolutions<2,
@@ -57,6 +85,34 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::Bilinear>());
+
+        // Scale f16
+        registerSolutions(
+            enumerateReferenceSolutions<2,
+                                        2,
+                                        2,
+                                        _Float16,
+                                        _Float16,
+                                        ck::Tuple<>,
+                                        _Float16,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::Scale,
+                                        float>());
+
+        // Scale bf16
+        registerSolutions(
+            enumerateReferenceSolutions<2,
+                                        2,
+                                        2,
+                                        ck::bhalf_t,
+                                        ck::bhalf_t,
+                                        ck::Tuple<>,
+                                        ck::bhalf_t,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::PassThrough,
+                                        ck::tensor_operation::element_wise::Scale,
+                                        float>());
 
         // Scale f32
         registerSolutions(

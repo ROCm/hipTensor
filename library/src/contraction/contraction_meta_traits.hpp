@@ -49,7 +49,8 @@ namespace hiptensor
               typename DsDataType,
               typename EDataType,
               typename AElementwiseOperation,
-              typename BElementwiseOperation>
+              typename BElementwiseOperation,
+              typename ComputeDataType>
     struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
         NumDimsM,
         NumDimsN,
@@ -60,18 +61,23 @@ namespace hiptensor
         EDataType,
         AElementwiseOperation,
         BElementwiseOperation,
-        ck::tensor_operation::element_wise::Bilinear>>
+        ck::tensor_operation::element_wise::Bilinear,
+        ComputeDataType>>
     {
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;
         constexpr static ck::index_t DimsK = NumDimsK;
-        using ADataT                       = ADataType;
-        using BDataT                       = BDataType;
-        using DDataT                       = DsDataType;
-        using EDataT                       = EDataType;
-        using AOp                          = AElementwiseOperation;
-        using BOp                          = BElementwiseOperation;
-        using CDEOp                        = ck::tensor_operation::element_wise::Bilinear;
+        using ADataT
+            = std::conditional_t<std::is_same_v<ADataType, ck::bhalf_t>, hip_bfloat16, ADataType>;
+        using BDataT
+            = std::conditional_t<std::is_same_v<BDataType, ck::bhalf_t>, hip_bfloat16, BDataType>;
+        using DDataT
+            = std::conditional_t<std::is_same_v<DsDataType, ck::bhalf_t>, hip_bfloat16, DsDataType>;
+        using EDataT
+            = std::conditional_t<std::is_same_v<EDataType, ck::bhalf_t>, hip_bfloat16, EDataType>;
+        using AOp   = AElementwiseOperation;
+        using BOp   = BElementwiseOperation;
+        using CDEOp = ck::tensor_operation::element_wise::Bilinear;
     };
 
     // Partial specialize for Scale contraction
@@ -82,7 +88,8 @@ namespace hiptensor
               typename BDataType,
               typename EDataType,
               typename AElementwiseOperation,
-              typename BElementwiseOperation>
+              typename BElementwiseOperation,
+              typename ComputeDataType>
     struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
         NumDimsM,
         NumDimsN,
@@ -93,18 +100,22 @@ namespace hiptensor
         EDataType,
         AElementwiseOperation,
         BElementwiseOperation,
-        ck::tensor_operation::element_wise::Scale>>
+        ck::tensor_operation::element_wise::Scale,
+        ComputeDataType>>
     {
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;
         constexpr static ck::index_t DimsK = NumDimsK;
-        using ADataT                       = ADataType;
-        using BDataT                       = BDataType;
-        using DDataT                       = NoneType;
-        using EDataT                       = EDataType;
-        using AOp                          = AElementwiseOperation;
-        using BOp                          = BElementwiseOperation;
-        using CDEOp                        = ck::tensor_operation::element_wise::Scale;
+        using ADataT
+            = std::conditional_t<std::is_same_v<ADataType, ck::bhalf_t>, hip_bfloat16, ADataType>;
+        using BDataT
+            = std::conditional_t<std::is_same_v<BDataType, ck::bhalf_t>, hip_bfloat16, BDataType>;
+        using DDataT = NoneType;
+        using EDataT
+            = std::conditional_t<std::is_same_v<EDataType, ck::bhalf_t>, hip_bfloat16, EDataType>;
+        using AOp   = AElementwiseOperation;
+        using BOp   = BElementwiseOperation;
+        using CDEOp = ck::tensor_operation::element_wise::Scale;
     };
 
 } // namespace hiptensor
