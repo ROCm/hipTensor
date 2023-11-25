@@ -63,12 +63,12 @@
 
 inline std::ostream& operator<<(std::ostream& os, const hipFloatComplex& fc)
 {
-    return os << hipCrealf(fc) << " " << hipCimagf(fc);
+    return os << hipCrealf(fc) << " + " << hipCimagf(fc) << "i";
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipDoubleComplex& dc)
 {
-    return os << hipCreal(dc) << " " << hipCimag(dc);
+    return os << hipCreal(dc) << " + " << hipCimag(dc) << "i";
 }
 
 template <typename T>
