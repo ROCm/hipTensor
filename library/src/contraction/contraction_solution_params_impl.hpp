@@ -42,6 +42,7 @@ namespace std
             return hiptensor::Hash{}(s.dimsM(),
                                      s.dimsN(),
                                      s.dimsK(),
+                                     s.typeCompute(),
                                      s.typeA(),
                                      s.typeB(),
                                      s.typeC(),
@@ -100,6 +101,11 @@ namespace hiptensor
         hipDataType typeD() const override
         {
             return HipDataType_v<typename MetaTraitsT::EDataT>;
+        }
+
+        hiptensorComputeType_t typeCompute() const override
+        {
+            return convertToComputeType(HipDataType_v<typename MetaTraitsT::ComputeDataT>);
         }
 
         hiptensorOperator_t opA() const override

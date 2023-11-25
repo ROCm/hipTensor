@@ -28,31 +28,33 @@
 #include "contraction_cpu_reference_impl.hpp"
 #include "contraction_cpu_reference_instances.hpp"
 
-hiptensorStatus_t hiptensorContractionReference(void const*                alpha,
-                                                void const*                A,
-                                                void const*                B,
-                                                void const*                beta,
-                                                void const*                C,
-                                                void*                      D,
-                                                std::vector<size_t> const& a_ms_ks_lengths,
-                                                std::vector<size_t> const& a_ms_ks_strides,
-                                                std::vector<size_t> const& b_ns_ks_lengths,
-                                                std::vector<size_t> const& b_ns_ks_strides,
-                                                std::vector<size_t> const& c_ms_ns_lengths,
-                                                std::vector<size_t> const& c_ms_ns_strides,
-                                                std::vector<size_t> const& d_ms_ns_lengths,
-                                                std::vector<size_t> const& d_ms_ns_strides,
-                                                hipDataType                typeA,
-                                                hipDataType                typeB,
-                                                hipDataType                typeC,
-                                                hipDataType                typeD,
-                                                void*                      workspace)
+hiptensorStatus_t hiptensorContractionReference(const hiptensorContractionPlan_t* plan,
+                                                void const*                       alpha,
+                                                void const*                       A,
+                                                void const*                       B,
+                                                void const*                       beta,
+                                                void const*                       C,
+                                                void*                             D,
+                                                std::vector<size_t> const&        a_ms_ks_lengths,
+                                                std::vector<size_t> const&        a_ms_ks_strides,
+                                                std::vector<size_t> const&        b_ns_ks_lengths,
+                                                std::vector<size_t> const&        b_ns_ks_strides,
+                                                std::vector<size_t> const&        c_ms_ns_lengths,
+                                                std::vector<size_t> const&        c_ms_ns_strides,
+                                                std::vector<size_t> const&        d_ms_ns_lengths,
+                                                std::vector<size_t> const&        d_ms_ns_strides,
+                                                hipDataType                       typeA,
+                                                hipDataType                       typeB,
+                                                hipDataType                       typeC,
+                                                hipDataType                       typeD,
+                                                void*                             workspace)
 {
-    auto& instances = hiptensor::ContractionCpuReferenceInstances::instance();
+    auto& instances   = hiptensor::ContractionCpuReferenceInstances::instance();
+    auto  computeType = plan->mContractionDesc.mComputeType;
     auto  candidates
-        = (C == nullptr)
-              ? instances->allSolutions().query(typeA, typeB, hiptensor::NONE_TYPE, typeD)
-              : instances->allSolutions().query(typeA, typeB, typeC, typeD);
+        = (C == nullptr) ? instances->allSolutions().query(
+              typeA, typeB, hiptensor::NONE_TYPE, typeD, computeType)
+                         : instances->allSolutions().query(typeA, typeB, typeC, typeD, computeType);
 
     auto toCKVec
         = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };

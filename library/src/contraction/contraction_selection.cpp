@@ -54,6 +54,7 @@ namespace hiptensor
                                       hipDataType                              typeE,
                                       std::vector<std::size_t> const&          e_ms_ns_lengths,
                                       std::vector<std::size_t> const&          e_ms_ns_strides,
+                                      hiptensorComputeType_t                   computeType,
                                       const uint64_t                           workspaceSize)
     {
         // Make sure that we calculate full element space incase strides are not packed.
@@ -70,9 +71,11 @@ namespace hiptensor
         auto sizeE = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides)
                      * hipDataTypeSize(typeE);
 
-        void *A_d, *B_d, *D_d, *E_d, *wspace;
-        float alpha = 1.02f;
-        float beta  = 1.03f;
+        void * A_d, *B_d, *D_d, *E_d, *wspace;
+        double alpha = 0.0d;
+        double beta  = 0.0d;
+        writeVal(&alpha, computeType, 1.02);
+        writeVal(&beta, computeType, 1.03);
 
         CHECK_HIP_ALLOC(hipMalloc(&A_d, sizeA));
         CHECK_HIP_ALLOC(hipMalloc(&B_d, sizeB));
@@ -150,9 +153,13 @@ namespace hiptensor
         }
     }
 
-    // test
     template <>
-    struct ActorCriticSelection<_Float16, _Float16, _Float16, _Float16, ContractionOpId_t::SCALE>
+    struct ActorCriticSelection<_Float16,
+                                _Float16,
+                                _Float16,
+                                _Float16,
+                                ContractionOpId_t::SCALE,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -196,7 +203,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<_Float16, _Float16, _Float16, _Float16, ContractionOpId_t::BILINEAR>
+    struct ActorCriticSelection<_Float16,
+                                _Float16,
+                                _Float16,
+                                _Float16,
+                                ContractionOpId_t::BILINEAR,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -224,7 +236,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            // select unique_id
+            // TODO select unique_id
             unique_id = 7255639152084218514;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -244,7 +256,8 @@ namespace hiptensor
                                 hip_bfloat16,
                                 hip_bfloat16,
                                 hip_bfloat16,
-                                ContractionOpId_t::SCALE>
+                                ContractionOpId_t::SCALE,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -292,7 +305,8 @@ namespace hiptensor
                                 hip_bfloat16,
                                 hip_bfloat16,
                                 hip_bfloat16,
-                                ContractionOpId_t::BILINEAR>
+                                ContractionOpId_t::BILINEAR,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -320,7 +334,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            // select unique_id
+            // TODO select unique_id
             unique_id = 8689089455041651212;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -334,10 +348,183 @@ namespace hiptensor
             }
         }
     };
-    // end test
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, _Float16>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+
+            // TODO select unique_id
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR, _Float16>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+            // TODO select unique_id
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, hip_bfloat16>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+            // TODO select unique_id
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<float,
+                                float,
+                                float,
+                                float,
+                                ContractionOpId_t::BILINEAR,
+                                hip_bfloat16>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+            // TODO select unique_id
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -702,7 +889,7 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR>
+    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR, float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1060,7 +1247,92 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE>
+    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE, float>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+            // TODO select unique_id
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR, float>
+    {
+        static hiptensorStatus_t
+            selectWinner(ContractionSolution**                                   winner,
+                         std::unordered_map<size_t, ContractionSolution*> const& candidates,
+                         hipDataType                                             typeA,
+                         std::vector<std::size_t> const&                         a_ms_ks_lengths,
+                         std::vector<std::size_t> const&                         a_ms_ks_strides,
+                         hipDataType                                             typeB,
+                         std::vector<std::size_t> const&                         b_ns_ks_lengths,
+                         std::vector<std::size_t> const&                         b_ns_ks_strides,
+                         hipDataType                                             typeD,
+                         std::vector<std::size_t> const&                         d_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         d_ms_ns_strides,
+                         hipDataType                                             typeE,
+                         std::vector<std::size_t> const&                         e_ms_ns_lengths,
+                         std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         const uint64_t                                          workspaceSize)
+        {
+            int d1 = a_ms_ks_lengths[0];
+            int d2 = a_ms_ks_lengths[1];
+            int d3 = b_ns_ks_lengths[0];
+            int d4 = b_ns_ks_lengths[1];
+            int d5 = a_ms_ks_lengths[2];
+            int d6 = a_ms_ks_lengths[3];
+
+            size_t unique_id = 0;
+            // TODO select unique_id
+
+            if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
+            {
+                *winner = candidate->second;
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
+            else
+            {
+                return HIPTENSOR_STATUS_EXECUTION_FAILED;
+            }
+        }
+    };
+
+    template <>
+    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE, double>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1335,7 +1607,7 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR>
+    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR, double>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1602,181 +1874,344 @@ namespace hiptensor
                          hipDataType                                             typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         hiptensorComputeType_t                                  computeType,
                          const uint64_t                                          workspaceSize)
     {
-        if(typeA == HIP_R_16F && typeB == HIP_R_16F && typeD == NONE_TYPE && typeE == HIP_R_16F)
+        if(typeA == HIP_R_16F && typeB == HIP_R_16F && typeD == NONE_TYPE && typeE == HIP_R_16F
+           && computeType == HIP_R_32F)
         {
             return ActorCriticSelection<_Float16,
                                         _Float16,
                                         _Float16,
                                         _Float16,
-                                        ContractionOpId_t::SCALE>::selectWinner(winner,
-                                                                                candidates,
-                                                                                typeA,
-                                                                                a_ms_ks_lengths,
-                                                                                a_ms_ks_strides,
-                                                                                typeB,
-                                                                                b_ns_ks_lengths,
-                                                                                b_ns_ks_strides,
-                                                                                typeD,
-                                                                                d_ms_ns_lengths,
-                                                                                d_ms_ns_strides,
-                                                                                typeE,
-                                                                                e_ms_ns_lengths,
-                                                                                e_ms_ns_strides,
-                                                                                workspaceSize);
+                                        ContractionOpId_t::SCALE,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
         }
-        else if(typeA == HIP_R_16F && typeB == HIP_R_16F && typeD == HIP_R_16F
-                && typeE == HIP_R_16F)
+        else if(typeA == HIP_R_16F && typeB == HIP_R_16F && typeD == HIP_R_16F && typeE == HIP_R_16F
+                && computeType == HIP_R_32F)
         {
             return ActorCriticSelection<_Float16,
                                         _Float16,
                                         _Float16,
                                         _Float16,
-                                        ContractionOpId_t::BILINEAR>::selectWinner(winner,
-                                                                                   candidates,
-                                                                                   typeA,
-                                                                                   a_ms_ks_lengths,
-                                                                                   a_ms_ks_strides,
-                                                                                   typeB,
-                                                                                   b_ns_ks_lengths,
-                                                                                   b_ns_ks_strides,
-                                                                                   typeD,
-                                                                                   d_ms_ns_lengths,
-                                                                                   d_ms_ns_strides,
-                                                                                   typeE,
-                                                                                   e_ms_ns_lengths,
-                                                                                   e_ms_ns_strides,
-                                                                                   workspaceSize);
+                                        ContractionOpId_t::BILINEAR,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
         }
         else if(typeA == HIP_R_16BF && typeB == HIP_R_16BF && typeD == NONE_TYPE
-                && typeE == HIP_R_16BF)
+                && typeE == HIP_R_16BF && computeType == HIP_R_32F)
         {
             return ActorCriticSelection<hip_bfloat16,
                                         hip_bfloat16,
                                         hip_bfloat16,
                                         hip_bfloat16,
-                                        ContractionOpId_t::SCALE>::selectWinner(winner,
-                                                                                candidates,
-                                                                                typeA,
-                                                                                a_ms_ks_lengths,
-                                                                                a_ms_ks_strides,
-                                                                                typeB,
-                                                                                b_ns_ks_lengths,
-                                                                                b_ns_ks_strides,
-                                                                                typeD,
-                                                                                d_ms_ns_lengths,
-                                                                                d_ms_ns_strides,
-                                                                                typeE,
-                                                                                e_ms_ns_lengths,
-                                                                                e_ms_ns_strides,
-                                                                                workspaceSize);
+                                        ContractionOpId_t::SCALE,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
         }
         else if(typeA == HIP_R_16BF && typeB == HIP_R_16BF && typeD == HIP_R_16BF
-                && typeE == HIP_R_16BF)
+                && typeE == HIP_R_16BF && computeType == HIP_R_32F)
         {
             return ActorCriticSelection<hip_bfloat16,
                                         hip_bfloat16,
                                         hip_bfloat16,
                                         hip_bfloat16,
-                                        ContractionOpId_t::BILINEAR>::selectWinner(winner,
-                                                                                   candidates,
-                                                                                   typeA,
-                                                                                   a_ms_ks_lengths,
-                                                                                   a_ms_ks_strides,
-                                                                                   typeB,
-                                                                                   b_ns_ks_lengths,
-                                                                                   b_ns_ks_strides,
-                                                                                   typeD,
-                                                                                   d_ms_ns_lengths,
-                                                                                   d_ms_ns_strides,
-                                                                                   typeE,
-                                                                                   e_ms_ns_lengths,
-                                                                                   e_ms_ns_strides,
-                                                                                   workspaceSize);
+                                        ContractionOpId_t::BILINEAR,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE
-                && typeE == HIP_R_32F)
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
+                && computeType == HIP_R_16F)
         {
-            return ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE>::
-                selectWinner(winner,
-                             candidates,
-                             typeA,
-                             a_ms_ks_lengths,
-                             a_ms_ks_strides,
-                             typeB,
-                             b_ns_ks_lengths,
-                             b_ns_ks_strides,
-                             typeD,
-                             d_ms_ns_lengths,
-                             d_ms_ns_strides,
-                             typeE,
-                             e_ms_ns_lengths,
-                             e_ms_ns_strides,
-                             workspaceSize);
+            return ActorCriticSelection<float,
+                                        float,
+                                        float,
+                                        float,
+                                        ContractionOpId_t::SCALE,
+                                        _Float16>::selectWinner(winner,
+                                                                candidates,
+                                                                typeA,
+                                                                a_ms_ks_lengths,
+                                                                a_ms_ks_strides,
+                                                                typeB,
+                                                                b_ns_ks_lengths,
+                                                                b_ns_ks_strides,
+                                                                typeD,
+                                                                d_ms_ns_lengths,
+                                                                d_ms_ns_strides,
+                                                                typeE,
+                                                                e_ms_ns_lengths,
+                                                                e_ms_ns_strides,
+                                                                workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F
-                && typeE == HIP_R_32F)
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
+                && computeType == HIP_R_16F)
         {
-            return ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR>::
-                selectWinner(winner,
-                             candidates,
-                             typeA,
-                             a_ms_ks_lengths,
-                             a_ms_ks_strides,
-                             typeB,
-                             b_ns_ks_lengths,
-                             b_ns_ks_strides,
-                             typeD,
-                             d_ms_ns_lengths,
-                             d_ms_ns_strides,
-                             typeE,
-                             e_ms_ns_lengths,
-                             e_ms_ns_strides,
-                             workspaceSize);
+            return ActorCriticSelection<float,
+                                        float,
+                                        float,
+                                        float,
+                                        ContractionOpId_t::BILINEAR,
+                                        _Float16>::selectWinner(winner,
+                                                                candidates,
+                                                                typeA,
+                                                                a_ms_ks_lengths,
+                                                                a_ms_ks_strides,
+                                                                typeB,
+                                                                b_ns_ks_lengths,
+                                                                b_ns_ks_strides,
+                                                                typeD,
+                                                                d_ms_ns_lengths,
+                                                                d_ms_ns_strides,
+                                                                typeE,
+                                                                e_ms_ns_lengths,
+                                                                e_ms_ns_strides,
+                                                                workspaceSize);
         }
-        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == NONE_TYPE
-                && typeE == HIP_R_64F)
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
+                && computeType == HIP_R_16BF)
         {
-            return ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE>::
-                selectWinner(winner,
-                             candidates,
-                             typeA,
-                             a_ms_ks_lengths,
-                             a_ms_ks_strides,
-                             typeB,
-                             b_ns_ks_lengths,
-                             b_ns_ks_strides,
-                             typeD,
-                             d_ms_ns_lengths,
-                             d_ms_ns_strides,
-                             typeE,
-                             e_ms_ns_lengths,
-                             e_ms_ns_strides,
-                             workspaceSize);
+            return ActorCriticSelection<float,
+                                        float,
+                                        float,
+                                        float,
+                                        ContractionOpId_t::SCALE,
+                                        hip_bfloat16>::selectWinner(winner,
+                                                                    candidates,
+                                                                    typeA,
+                                                                    a_ms_ks_lengths,
+                                                                    a_ms_ks_strides,
+                                                                    typeB,
+                                                                    b_ns_ks_lengths,
+                                                                    b_ns_ks_strides,
+                                                                    typeD,
+                                                                    d_ms_ns_lengths,
+                                                                    d_ms_ns_strides,
+                                                                    typeE,
+                                                                    e_ms_ns_lengths,
+                                                                    e_ms_ns_strides,
+                                                                    workspaceSize);
         }
-        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F
-                && typeE == HIP_R_64F)
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
+                && computeType == HIP_R_16BF)
+        {
+            return ActorCriticSelection<float,
+                                        float,
+                                        float,
+                                        float,
+                                        ContractionOpId_t::BILINEAR,
+                                        hip_bfloat16>::selectWinner(winner,
+                                                                    candidates,
+                                                                    typeA,
+                                                                    a_ms_ks_lengths,
+                                                                    a_ms_ks_strides,
+                                                                    typeB,
+                                                                    b_ns_ks_lengths,
+                                                                    b_ns_ks_strides,
+                                                                    typeD,
+                                                                    d_ms_ns_lengths,
+                                                                    d_ms_ns_strides,
+                                                                    typeE,
+                                                                    e_ms_ns_lengths,
+                                                                    e_ms_ns_strides,
+                                                                    workspaceSize);
+        }
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
+                && computeType == HIP_R_32F)
+        {
+            return ActorCriticSelection<float,
+                                        float,
+                                        float,
+                                        float,
+                                        ContractionOpId_t::SCALE,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
+        }
+        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
+                && computeType == HIP_R_32F)
+        {
+            return ActorCriticSelection<float,
+                                        float,
+                                        float,
+                                        float,
+                                        ContractionOpId_t::BILINEAR,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
+        }
+        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == NONE_TYPE && typeE == HIP_R_64F
+                && computeType == HIP_R_32F)
         {
             return ActorCriticSelection<double,
                                         double,
                                         double,
                                         double,
-                                        ContractionOpId_t::BILINEAR>::selectWinner(winner,
-                                                                                   candidates,
-                                                                                   typeA,
-                                                                                   a_ms_ks_lengths,
-                                                                                   a_ms_ks_strides,
-                                                                                   typeB,
-                                                                                   b_ns_ks_lengths,
-                                                                                   b_ns_ks_strides,
-                                                                                   typeD,
-                                                                                   d_ms_ns_lengths,
-                                                                                   d_ms_ns_strides,
-                                                                                   typeE,
-                                                                                   e_ms_ns_lengths,
-                                                                                   e_ms_ns_strides,
-                                                                                   workspaceSize);
+                                        ContractionOpId_t::SCALE,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
+        }
+        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F && typeE == HIP_R_64F
+                && computeType == HIP_R_32F)
+        {
+            return ActorCriticSelection<double,
+                                        double,
+                                        double,
+                                        double,
+                                        ContractionOpId_t::BILINEAR,
+                                        float>::selectWinner(winner,
+                                                             candidates,
+                                                             typeA,
+                                                             a_ms_ks_lengths,
+                                                             a_ms_ks_strides,
+                                                             typeB,
+                                                             b_ns_ks_lengths,
+                                                             b_ns_ks_strides,
+                                                             typeD,
+                                                             d_ms_ns_lengths,
+                                                             d_ms_ns_strides,
+                                                             typeE,
+                                                             e_ms_ns_lengths,
+                                                             e_ms_ns_strides,
+                                                             workspaceSize);
+        }
+        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == NONE_TYPE && typeE == HIP_R_64F
+                && computeType == HIP_R_64F)
+        {
+            return ActorCriticSelection<double,
+                                        double,
+                                        double,
+                                        double,
+                                        ContractionOpId_t::SCALE,
+                                        double>::selectWinner(winner,
+                                                              candidates,
+                                                              typeA,
+                                                              a_ms_ks_lengths,
+                                                              a_ms_ks_strides,
+                                                              typeB,
+                                                              b_ns_ks_lengths,
+                                                              b_ns_ks_strides,
+                                                              typeD,
+                                                              d_ms_ns_lengths,
+                                                              d_ms_ns_strides,
+                                                              typeE,
+                                                              e_ms_ns_lengths,
+                                                              e_ms_ns_strides,
+                                                              workspaceSize);
+        }
+        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F && typeE == HIP_R_64F
+                && computeType == HIP_R_64F)
+        {
+            return ActorCriticSelection<double,
+                                        double,
+                                        double,
+                                        double,
+                                        ContractionOpId_t::BILINEAR,
+                                        double>::selectWinner(winner,
+                                                              candidates,
+                                                              typeA,
+                                                              a_ms_ks_lengths,
+                                                              a_ms_ks_strides,
+                                                              typeB,
+                                                              b_ns_ks_lengths,
+                                                              b_ns_ks_strides,
+                                                              typeD,
+                                                              d_ms_ns_lengths,
+                                                              d_ms_ns_strides,
+                                                              typeE,
+                                                              e_ms_ns_lengths,
+                                                              e_ms_ns_strides,
+                                                              workspaceSize);
         }
         return HIPTENSOR_STATUS_EXECUTION_FAILED;
     }

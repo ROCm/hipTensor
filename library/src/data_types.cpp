@@ -132,6 +132,49 @@ namespace hiptensor
         }
     }
 
+    void writeVal(void const* addr, hiptensorComputeType_t id, double value)
+    {
+        if(id == HIPTENSOR_COMPUTE_16F)
+        {
+            *(_Float16*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_16BF)
+        {
+            *(hip_bfloat16*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_32F)
+        {
+            *(float*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_64F)
+        {
+            *(double*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_8U)
+        {
+            *(uint8_t*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_8I)
+        {
+            *(int8_t*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_32U)
+        {
+            *(uint32_t*)addr = value;
+        }
+        else if(id == HIPTENSOR_COMPUTE_32I)
+        {
+            *(int32_t*)addr = value;
+        }
+        else
+        {
+#if !NDEBUG
+            std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+#endif // !NDEBUG
+            return;
+        }
+    }
+
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
