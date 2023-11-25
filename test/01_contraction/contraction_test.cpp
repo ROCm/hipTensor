@@ -125,6 +125,9 @@ namespace hiptensor
                     || (CDataType == NONE_TYPE));
         EXPECT_TRUE((DDataType == HIP_R_16F) || (DDataType == HIP_R_16BF)
                     || (DDataType == HIP_R_32F) || (DDataType == HIP_R_64F));
+        EXPECT_TRUE(
+            (computeType == HIPTENSOR_COMPUTE_16F) || (computeType == HIPTENSOR_COMPUTE_16BF)
+            || (computeType == HIPTENSOR_COMPUTE_32F) || (computeType == HIPTENSOR_COMPUTE_64F));
 
         mRunFlag &= checkDevice(DDataType);
 
@@ -488,7 +491,11 @@ namespace hiptensor
             auto CDataType = testType[2];
             auto DDataType = testType[3];
 
-            auto computeType = convertToComputeType(testType[4]);
+            auto   computeType = convertToComputeType(testType[4]);
+            double alphaBuf    = 0.;
+            double betaBuf     = 0.;
+            writeVal(&alphaBuf, computeType, alpha);
+            writeVal(&betaBuf, computeType, beta);
 
             CHECK_HIPTENSOR_ERROR(
                 hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
@@ -497,20 +504,21 @@ namespace hiptensor
 
             CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
                                                        &plan,
-                                                       (void*)&alpha,
+                                                       (void*)&alphaBuf,
                                                        resource->deviceA().get(),
                                                        resource->deviceB().get(),
-                                                       (void*)&beta,
+                                                       (void*)&betaBuf,
                                                        resource->deviceC().get(),
                                                        resource->deviceD().get(),
                                                        workspace,
                                                        worksize,
                                                        0 /* stream */));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorContractionReference((void*)&alpha,
+            CHECK_HIPTENSOR_ERROR(hiptensorContractionReference(&plan,
+                                                                (void*)&alphaBuf,
                                                                 resource->hostA().get(),
                                                                 resource->hostB().get(),
-                                                                (void*)&beta,
+                                                                (void*)&betaBuf,
                                                                 resource->hostC().get(),
                                                                 resource->hostD().get(),
                                                                 a_ms_ks.mLengths,

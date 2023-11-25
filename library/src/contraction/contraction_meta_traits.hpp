@@ -75,9 +75,12 @@ namespace hiptensor
             = std::conditional_t<std::is_same_v<DsDataType, ck::bhalf_t>, hip_bfloat16, DsDataType>;
         using EDataT
             = std::conditional_t<std::is_same_v<EDataType, ck::bhalf_t>, hip_bfloat16, EDataType>;
-        using AOp   = AElementwiseOperation;
-        using BOp   = BElementwiseOperation;
-        using CDEOp = ck::tensor_operation::element_wise::Bilinear;
+        using ComputeDataT = std::conditional_t<std::is_same_v<ComputeDataType, ck::bhalf_t>,
+                                                hip_bfloat16,
+                                                ComputeDataType>;
+        using AOp          = AElementwiseOperation;
+        using BOp          = BElementwiseOperation;
+        using CDEOp        = ck::tensor_operation::element_wise::Bilinear;
     };
 
     // Partial specialize for Scale contraction
@@ -113,9 +116,12 @@ namespace hiptensor
         using DDataT = NoneType;
         using EDataT
             = std::conditional_t<std::is_same_v<EDataType, ck::bhalf_t>, hip_bfloat16, EDataType>;
-        using AOp   = AElementwiseOperation;
-        using BOp   = BElementwiseOperation;
-        using CDEOp = ck::tensor_operation::element_wise::Scale;
+        using ComputeDataT = std::conditional_t<std::is_same_v<ComputeDataType, ck::bhalf_t>,
+                                                hip_bfloat16,
+                                                ComputeDataType>;
+        using AOp          = AElementwiseOperation;
+        using BOp          = BElementwiseOperation;
+        using CDEOp        = ck::tensor_operation::element_wise::Scale;
     };
 
 } // namespace hiptensor
