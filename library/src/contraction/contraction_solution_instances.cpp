@@ -72,7 +72,34 @@ namespace hiptensor
                                           float,
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Bilinear>());
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          float>());
+
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          float,
+                                          float,
+                                          ck::Tuple<float>,
+                                          float,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          ck::half_t>());
+
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          float,
+                                          float,
+                                          ck::Tuple<float>,
+                                          float,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          ck::bhalf_t>());
 
         // Bilinear f64
         registerSolutions(
@@ -85,7 +112,20 @@ namespace hiptensor
                                           double,
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Bilinear>());
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          float>());
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          double,
+                                          double,
+                                          ck::Tuple<double>,
+                                          double,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Bilinear,
+                                          double>());
 
         // Scale bf16
         registerSolutions(
@@ -126,8 +166,34 @@ namespace hiptensor
                                           float,
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Scale>());
+                                          ck::tensor_operation::element_wise::Scale,
+                                          float>());
 
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          float,
+                                          float,
+                                          ck::Tuple<>,
+                                          float,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Scale,
+                                          ck::half_t>());
+
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          float,
+                                          float,
+                                          ck::Tuple<>,
+                                          float,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Scale,
+                                          ck::bhalf_t>());
         // Scale f64
         registerSolutions(
             enumerateContractionSolutions<2,
@@ -139,6 +205,20 @@ namespace hiptensor
                                           double,
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::Scale>());
+                                          ck::tensor_operation::element_wise::Scale,
+                                          float>());
+
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          double,
+                                          double,
+                                          ck::Tuple<>,
+                                          double,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::Scale,
+                                          double>());
     }
 } // namespace hiptensor

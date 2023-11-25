@@ -49,9 +49,15 @@ namespace hiptensor
                                       hipDataType                              typeE,
                                       std::vector<std::size_t> const&          e_ms_ns_lengths,
                                       std::vector<std::size_t> const&          e_ms_ns_strides,
+                                      hiptensorComputeType_t                   computeType,
                                       const uint64_t                           workspaceSize);
 
-    template <typename A, typename B, typename C, typename D, ContractionOpId_t ContractionOp>
+    template <typename A,
+              typename B,
+              typename C,
+              typename D,
+              ContractionOpId_t ContractionOp,
+              typename ComputeType>
     struct ActorCriticSelection
     {
         static hiptensorStatus_t
@@ -87,6 +93,7 @@ namespace hiptensor
                          hipDataType                                             typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
+                         hiptensorComputeType_t                                  computeType,
                          const uint64_t                                          workspaceSize);
 
 } // namespace hiptensor
