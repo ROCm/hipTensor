@@ -6,61 +6,61 @@ Introduction
 hiptensor Data Types
 ====================
 
-hiptensorStatus_t
+:code:`hiptensorStatus_t`
 -----------------
 
 .. doxygenenum::  hiptensorStatus_t
 
-hiptensorComputeType_t
+:code:`hiptensorComputeType_t`
 ----------------------
 
 .. doxygenenum::  hiptensorComputeType_t
 
-hiptensorOperator_t
+:code:`hiptensorOperator_t`
 -------------------
 
 .. doxygenenum::  hiptensorOperator_t
 
-hiptensorAlgo_t
+:code:`hiptensorAlgo_t`
 ---------------
 
 .. doxygenenum::  hiptensorAlgo_t
 
-hiptensorWorksizePreference_t
+:code:`hiptensorWorksizePreference_t`
 -----------------------------
 
 .. doxygenenum::  hiptensorWorksizePreference_t
 
-hiptensorLogLevel_t
+:code:`hiptensorLogLevel_t`
 -------------------------------
 
 .. doxygenenum::  hiptensorLogLevel_t
 
-hiptensorHandle_t
+:code:`hiptensorHandle_t`
 -----------------
 
 .. doxygenstruct::  hiptensorHandle_t
    :members:
 
-hiptensorTensorDescriptor_t
+:code:`hiptensorTensorDescriptor_t`
 ---------------------------
 
 .. doxygenstruct::   hiptensorTensorDescriptor_t
    :members:
 
-hiptensorContractionDescriptor_t
+:code:`hiptensorContractionDescriptor_t`
 --------------------------------
 
 .. doxygenstruct::  hiptensorContractionDescriptor_t
    :members:
 
-hiptensorContractionFind_t
+:code:`hiptensorContractionFind_t`
 --------------------------
 
 .. doxygenstruct::  hiptensorContractionFind_t
    :members:
 
-hiptensorContractionPlan_t
+:code:`hiptensorContractionPlan_t`
 --------------------------
 
 .. doxygenstruct::  hiptensorContractionPlan_t
@@ -69,32 +69,32 @@ hiptensorContractionPlan_t
 Helper Functions
 ================
 
-hiptensorGetVersion
+:code:`hiptensorGetVersion`
 -------------------
 
 .. doxygenfunction::  hiptensorGetVersion
 
-hiptensorCreate
+:code:`hiptensorCreate`
 ---------------
 
 .. doxygenfunction::  hiptensorCreate
 
-hiptensorDestroy
+:code:`hiptensorDestroy`
 ----------------
 
 .. doxygenfunction::  hiptensorDestroy
 
-hiptensorInitTensorDescriptor
+:code:`hiptensorInitTensorDescriptor`
 -----------------------------
 
 .. doxygenfunction::  hiptensorInitTensorDescriptor
 
-hiptensorGetAlignmentRequirement
+:code:`hiptensorGetAlignmentRequirement`
 --------------------------------
 
 .. doxygenfunction::  hiptensorGetAlignmentRequirement
 
-hiptensorGetErrorString
+:code:`hiptensorGetErrorString`
 -----------------------
 
 .. doxygenfunction::  hiptensorGetErrorString
@@ -102,27 +102,27 @@ hiptensorGetErrorString
 Contraction Operations
 ======================
 
-hiptensorInitContractionDescriptor
+:code:`hiptensorInitContractionDescriptor`
 ----------------------------------
 
 .. doxygenfunction::  hiptensorInitContractionDescriptor
 
-hiptensorInitContractionFind
+:code:`hiptensorInitContractionFind`
 ----------------------------
 
 .. doxygenfunction::  hiptensorInitContractionFind
 
-hiptensorInitContractionPlan
+:code:`hiptensorInitContractionPlan`
 ----------------------------
 
 .. doxygenfunction::  hiptensorInitContractionPlan
 
-hiptensorContraction
+:code:`hiptensorContraction`
 --------------------
 
 .. doxygenfunction::  hiptensorContraction
 
-hiptensorContractionGetWorkspaceSize
+:code:`hiptensorContractionGetWorkspaceSize`
 ------------------------------------
 
 .. doxygenfunction::  hiptensorContractionGetWorkspaceSize
@@ -130,32 +130,32 @@ hiptensorContractionGetWorkspaceSize
 Logging Functions
 =================
 
-hiptensorLoggerSetCallback
+:code:`hiptensorLoggerSetCallback`
 --------------------------
 
 .. doxygenfunction::  hiptensorLoggerSetCallback
 
-hiptensorLoggerSetFile
+:code:`hiptensorLoggerSetFile`
 ----------------------
 
 .. doxygenfunction::  hiptensorLoggerSetFile
 
-hiptensorLoggerOpenFile
+:code:`hiptensorLoggerOpenFile`
 -----------------------
 
 .. doxygenfunction::  hiptensorLoggerOpenFile
 
-hiptensorLoggerSetLevel
+:code:`hiptensorLoggerSetLevel`
 -----------------------
 
 .. doxygenfunction::  hiptensorLoggerSetLevel
 
-hiptensorLoggerSetMask
+:code:`hiptensorLoggerSetMask`
 ----------------------
 
 .. doxygenfunction::  hiptensorLoggerSetMask
 
-hiptensorLoggerForceDisable
+:code:`hiptensorLoggerForceDisable`
 ---------------------------
 
 .. doxygenfunction::  hiptensorLoggerForceDisable

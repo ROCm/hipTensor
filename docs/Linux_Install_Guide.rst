@@ -125,7 +125,7 @@ Here are some other example project configurations:
 
 After configuration, build with
 
-    cmake --build <build_dir> -- -j
+    :code:`cmake --build <build_dir> -- -j`
 
 
 Build library + samples
