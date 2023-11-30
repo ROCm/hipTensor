@@ -3,7 +3,7 @@
 Introduction
 ************
 
-hiptensor Data Types
+hipTensor Data Types
 ====================
 
 .. <!-- spellcheck-disable -->
