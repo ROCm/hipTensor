@@ -38,7 +38,6 @@ namespace hiptensor
         , mBytes(0)
         , mValid(false)
         , mDeviceOp(std::move(deviceOp))
-        , mParams(std::move(params))
     {
     }
 
@@ -49,9 +48,6 @@ namespace hiptensor
         , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
-        , mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
-        , mInvokerPtr(std::move(other.mInvokerPtr))
     {
     }
 
@@ -66,85 +62,14 @@ namespace hiptensor
             mBytes = other.mBytes;
             mValid = other.mValid;
 
-            mParams     = std::move(other.mParams);
             mDeviceOp   = std::move(other.mDeviceOp);
-            mArgPtr     = std::move(other.mArgPtr);
-            mInvokerPtr = std::move(other.mInvokerPtr);
         }
         return *this;
-    }
-
-    float ContractionSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
-    {
-        if(!mArgPtr || !mInvokerPtr || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
-        {
-#if !NDEBUG
-            std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        if(!mValid)
-        {
-#if !NDEBUG
-            std::cout << kernelName() << " does not support this problem" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
-    }
-
-    float ContractionSolution::operator()(void const*                     alpha,
-                                          void const*                     A,
-                                          void const*                     B,
-                                          void const*                     beta,
-                                          void const*                     D,
-                                          void*                           E,
-                                          std::vector<std::size_t> const& a_ms_ns_lengths,
-                                          std::vector<std::size_t> const& a_ms_ks_strides,
-                                          std::vector<std::size_t> const& b_ns_ks_lengths,
-                                          std::vector<std::size_t> const& b_ns_ks_strides,
-                                          std::vector<std::size_t> const& ds_ms_ns_lengths,
-                                          std::vector<std::size_t> const& ds_ms_ns_strides,
-                                          std::vector<std::size_t> const& e_ms_ns_lengths,
-                                          std::vector<std::size_t> const& e_ms_ns_strides,
-                                          void*                           workspacePtr,
-                                          StreamConfig const& streamConfig /*= StreamConfig{}*/)
-    {
-        if(!initArgs(alpha,
-                     A,
-                     B,
-                     beta,
-                     D,
-                     E,
-                     a_ms_ns_lengths,
-                     a_ms_ks_strides,
-                     b_ns_ks_lengths,
-                     b_ns_ks_strides,
-                     ds_ms_ns_lengths,
-                     ds_ms_ns_strides,
-                     e_ms_ns_lengths,
-                     e_ms_ns_strides,
-                     workspacePtr))
-        {
-#if !NDEBUG
-            std::cout << kernelName() << " does not support this problem" << std::endl;
-#endif // !NDEBUG
-            return -1.0f;
-        }
-
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
     }
 
     bool ContractionSolution::isValid() const
     {
         return mValid;
-    }
-
-    std::unique_ptr<ContractionSolutionParams> const& ContractionSolution::params() const
-    {
-        return mParams;
     }
 
     size_t ContractionSolution::uid() const
@@ -171,27 +96,12 @@ namespace hiptensor
         return mDeviceOp->GetTypeString();
     }
 
-    size_t ContractionSolution::workspaceSize() const
-    {
-        if(mValid)
-        {
-            return mDeviceOp->GetWorkSpaceSize(mArgPtr.get());
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
     void ContractionSolution::resetArgs()
     {
         mM     = 0;
         mN     = 0;
         mK     = 0;
         mBytes = 0;
-
-        mArgPtr.reset(nullptr);
-        mInvokerPtr.reset(nullptr);
 
         mValid = false;
     }

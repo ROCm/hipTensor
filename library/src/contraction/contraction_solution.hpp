@@ -80,9 +80,9 @@ namespace hiptensor
                               void*                           workspacePtr)
             = 0;
 
-        float operator()(StreamConfig const& streamConfig = StreamConfig{});
+        virtual float operator()(StreamConfig const& streamConfig = StreamConfig{}) = 0;
 
-        float operator()(void const*                     alpha,
+        virtual float operator()(void const*                     alpha,
                          void const*                     A,
                          void const*                     B,
                          void const*                     beta,
@@ -97,7 +97,7 @@ namespace hiptensor
                          std::vector<std::size_t> const& e_ms_ns_lengths,
                          std::vector<std::size_t> const& e_ms_ns_strides,
                          void*                           workspacePtr,
-                         StreamConfig const&             streamConfig = StreamConfig{});
+                         StreamConfig const&             streamConfig = StreamConfig{}) = 0;
 
         /// Accessors
 
@@ -105,7 +105,7 @@ namespace hiptensor
         bool isValid() const;
 
         // Run-time solution parameters
-        std::unique_ptr<ContractionSolutionParams> const& params() const;
+        virtual std::unique_ptr<ContractionSolutionParams> const& params() const = 0;
 
         // Unique ID for the kernel
         size_t uid() const;
@@ -120,7 +120,7 @@ namespace hiptensor
         std::string kernelName() const;
 
         // Kernel's required workspace size
-        size_t workspaceSize() const;
+        virtual size_t workspaceSize() const = 0;
 
         // Reset all arguments
         void resetArgs();
@@ -132,10 +132,8 @@ namespace hiptensor
         bool        mValid;
 
         // Kernel Params
-        std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
-        std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
-        std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
+
     };
 
     template <ck::index_t NumDimM,

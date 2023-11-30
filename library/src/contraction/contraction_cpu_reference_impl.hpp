@@ -397,7 +397,7 @@ namespace hiptensor
                                                           BElementwiseOperation,
                                                           CDEElementwiseOperation>;
 
-        auto solution = std::make_unique<ContractionSolutionImpl<ReferenceOp>>(
+        auto solution = std::make_unique<ContractionSolutionImpl<ReferenceOp, ADataType>>(
             std::make_unique<ReferenceOp>());
         auto result = std::vector<std::unique_ptr<ContractionSolution>>();
         result.push_back(std::move(solution));
