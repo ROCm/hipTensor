@@ -72,8 +72,8 @@ namespace hiptensor
                      * hipDataTypeSize(typeE);
 
         void * A_d, *B_d, *D_d, *E_d, *wspace;
-        double alpha = 0.0d;
-        double beta  = 0.0d;
+        double alpha = 0.0;
+        double beta  = 0.0;
         writeVal(&alpha, computeType, 1.02);
         writeVal(&beta, computeType, 1.03);
 
@@ -188,7 +188,7 @@ namespace hiptensor
             size_t unique_id = 0;
 
             // TODO select unique_id
-            unique_id = 7255639152084218514;
+            unique_id = 7255639152084218514ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -237,7 +237,7 @@ namespace hiptensor
             size_t unique_id = 0;
 
             // TODO select unique_id
-            unique_id = 7255639152084218514;
+            unique_id = 7255639152084218514ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -286,7 +286,7 @@ namespace hiptensor
             size_t unique_id = 0;
 
             // TODO select unique_id
-            unique_id = 8689089455041651212;
+            unique_id = 8689089455041651212ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -335,7 +335,7 @@ namespace hiptensor
             size_t unique_id = 0;
 
             // TODO select unique_id
-            unique_id = 8689089455041651212;
+            unique_id = 8689089455041651212ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -379,6 +379,7 @@ namespace hiptensor
             size_t unique_id = 0;
 
             // TODO select unique_id
+            unique_id = 1078559130597702989ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -421,6 +422,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
             // TODO select unique_id
+            unique_id = 6506383527825239632ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -463,6 +465,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
             // TODO select unique_id
+            unique_id = 14486135440731032454ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -510,6 +513,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
             // TODO select unique_id
+            unique_id = 11931735240548010466ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -1276,6 +1280,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
             // TODO select unique_id
+            unique_id = 11912251726020349830ull;
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
             {
@@ -1317,6 +1322,7 @@ namespace hiptensor
             int d6 = a_ms_ks_lengths[3];
 
             size_t unique_id = 0;
+            unique_id        = 15375432626310194825ull;
             // TODO select unique_id
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
