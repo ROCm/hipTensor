@@ -26,7 +26,7 @@
 
 # Check whether building within hiptensor context
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
-    add_hiptensor_sample(permutation permutation.cpp)
+    add_hiptensor_sample(simple_permutation permutation.cpp)
 # If building hipTensor samples as a standalone Cmake project
 else()
     add_executable(permutation permutation.cpp)
