@@ -6,6 +6,8 @@ Introduction
 hiptensor Data Types
 ====================
 
+.. <!-- spellcheck-disable -->
+
 hiptensorStatus_t
 -----------------
 
@@ -159,3 +161,5 @@ hiptensorLoggerForceDisable
 ---------------------------
 
 .. doxygenfunction::  hiptensorLoggerForceDisable
+
+.. <!-- spellcheck-enable -->
