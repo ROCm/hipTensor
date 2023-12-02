@@ -53,9 +53,10 @@ namespace hiptensor
     class ContractionSolutionImpl<
         DeviceOp,
         DataType,
-        std::enable_if_t<!std::is_same<DataType, hipFloatComplex>{} &&
+        std::enable_if_t<(!(std::is_same<DataType, hipFloatComplex>{} ||
+                          std::is_same<DataType, hipDoubleComplex>{})) &&
                           std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Bilinear>>>
+                                         ck::tensor_operation::element_wise::Bilinear>>>
         : public ContractionSolution
     {
     protected :
@@ -282,7 +283,8 @@ namespace hiptensor
     class ContractionSolutionImpl<
         DeviceOp,
         DataType,
-        std::enable_if_t<!std::is_same<DataType, hipFloatComplex>{} &&
+        std::enable_if_t<(!(std::is_same<DataType, hipFloatComplex>{} ||
+                          std::is_same<DataType, hipDoubleComplex>{})) &&
                           std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
                                          ck::tensor_operation::element_wise::Scale>>>
         : public ContractionSolution
@@ -507,8 +509,9 @@ namespace hiptensor
     class ContractionSolutionImpl<
         DeviceOp,
         DataType,
-        std::enable_if_t<std::is_same<DataType, hipFloatComplex>{} &&
-                         std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+        std::enable_if_t<(std::is_same<DataType, hipFloatComplex>{} ||
+                          std::is_same<DataType, hipDoubleComplex>{}) &&
+                          std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
                                         ck::tensor_operation::element_wise::Bilinear>>>
         : public ContractionSolution
     {
@@ -518,7 +521,20 @@ namespace hiptensor
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseArgument>> mArgPtr;
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseInvoker>>  mInvokerPtr;
 
-        void *A_re, *A_img, *B_re, *B_img, *D_re, *D_img, *E_re, *E_img;
+        using elementType = typename std::conditional<std::is_same<DataType, hipFloatComplex>::value,
+                                                      float, double>::type;
+
+        std::unique_ptr<elementType, DeviceDeleter> A_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> A_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> B_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> B_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> D_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> D_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> E_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> E_d_imag;
+
+        size_t  elementsE;
+        void*   E_copy;
 
     public:
         using Base   = ContractionSolution;
@@ -624,18 +640,56 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            //TODO
-            // Extract A_re, A_img from A
-            // Extract B_re, B_img from B
-            // Extract D_re, D_img from D
-            // Extract E_re, E_img from E
+            //Allocate Real and Imaginary inputs
+            auto elementsA  = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides);
+            auto elementsB  = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
+            auto elementsD  = elementSpaceFromLengthsAndStrides(ds_ms_ns_lengths, ds_ms_ns_strides);
+            elementsE       = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
+
+            A_d_real.reset(nullptr);
+            A_d_real = std::move(allocDevice<elementType>(elementsA));
+            A_d_imag.reset(nullptr);
+            A_d_imag = std::move(allocDevice<elementType>(elementsA));
+            B_d_real.reset(nullptr);
+            B_d_real = std::move(allocDevice<elementType>(elementsB));
+            B_d_imag.reset(nullptr);
+            B_d_imag = std::move(allocDevice<elementType>(elementsB));
+            D_d_real.reset(nullptr);
+            D_d_real = std::move(allocDevice<elementType>(elementsD));
+            D_d_imag.reset(nullptr);
+            D_d_imag = std::move(allocDevice<elementType>(elementsD));
+            E_d_real.reset(nullptr);
+            E_d_real = std::move(allocDevice<elementType>(elementsE));
+            E_d_imag.reset(nullptr);
+            E_d_imag = std::move(allocDevice<elementType>(elementsE));
+
+            auto blockDim = dim3(1024, 1, 1);
+            auto gridDim  = dim3(ceilDiv(elementsA, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)A,
+                            (elementType*)A_d_real.get(), (elementType*)A_d_imag.get(), elementsA);
+
+            gridDim  = dim3(ceilDiv(elementsB, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)B,
+                            (elementType*)B_d_real.get(), (elementType*)B_d_imag.get(), elementsB);
+
+            gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)D,
+                            (elementType*)D_d_real.get(), (elementType*)D_d_imag.get(), elementsD);
+
+            gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
+                            (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
 
             // Initialize the argument pointer
             mArgPtr[0] = std::move(deviceOp->MakeArgumentPointer(
-                A_re,
-                B_re,
-                std::array<const void*, 1>{D_re},
-                E_re,
+                A_d_real.get(),
+                B_d_real.get(),
+                std::array<const void*, 1>{D_d_real.get()},
+                E_d_real.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
                 toCKVec(b_ns_ks_lengths),
@@ -655,10 +709,10 @@ namespace hiptensor
             mInvokerPtr[0] = std::move(deviceOp->MakeInvokerPointer());
 
             mArgPtr[1] = std::move(deviceOp->MakeArgumentPointer(
-                A_img,
-                B_img,
-                std::array<const void*, 1>{E_re}, // Confirm if it can do in place fma, else create intermediate pointer result
-                E_re,
+                A_d_imag.get(),
+                B_d_imag.get(),
+                std::array<const void*, 1>{E_d_real.get()}, // Confirm if it can do in place fma, else create intermediate pointer result
+                E_d_real.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
                 toCKVec(b_ns_ks_lengths),
@@ -674,10 +728,10 @@ namespace hiptensor
             mInvokerPtr[1] = std::move(deviceOp->MakeInvokerPointer());
 
             mArgPtr[2] = std::move(deviceOp->MakeArgumentPointer(
-                A_re,
-                B_img,
-                std::array<const void*, 1>{D_img},
-                E_img,
+                A_d_real.get(),
+                B_d_imag.get(),
+                std::array<const void*, 1>{D_d_imag.get()},
+                E_d_imag.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
                 toCKVec(b_ns_ks_lengths),
@@ -693,10 +747,10 @@ namespace hiptensor
             mInvokerPtr[2] = std::move(deviceOp->MakeInvokerPointer());
 
             mArgPtr[3] = std::move(deviceOp->MakeArgumentPointer(
-                A_img,
-                B_re,
-                std::array<const void*, 1>{E_img},
-                E_img,
+                A_d_imag.get(),
+                B_d_real.get(),
+                std::array<const void*, 1>{E_d_imag.get()},
+                E_d_imag.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
                 toCKVec(b_ns_ks_lengths),
@@ -739,12 +793,14 @@ namespace hiptensor
                            deviceOp->IsSupportedArgument(mArgPtr[2].get()) &&
                            deviceOp->IsSupportedArgument(mArgPtr[3].get());
 
+            E_copy = E;
+
             return Base::mValid;
         }
 
         float operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)  override
         {
-        if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr[0] || !mInvokerPtr[1] || !mInvokerPtr[2] || !mInvokerPtr[3] || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
+            if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr[0] || !mInvokerPtr[1] || !mInvokerPtr[2] || !mInvokerPtr[3] || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
             {
     #if !NDEBUG
                 std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -765,8 +821,16 @@ namespace hiptensor
                               mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
                               mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
 
-            if( isValidRun ) {}
-                // Construct E from E_re and E_img
+            if( isValidRun )
+            {
+                // Construct E from E_d_real and E_d_imag
+                auto blockDim = dim3(1024, 1, 1);
+                auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (pack<elementType, DataType>), gridDim, blockDim, 0, 0,
+                                (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(),
+                                (DataType*)E_copy, elementsE);
+            }
 
             return isValidRun;
         }
@@ -810,15 +874,23 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            bool isRunValid = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
+            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
                               mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
                               mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
                               mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
 
-            if( isRunValid ) {}
-                //Construct E from E_re and E_img
+            if( isValidRun )
+            {
+                // Construct E from E_d_real and E_d_imag
+                auto blockDim = dim3(1024, 1, 1);
+                auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (pack<elementType, DataType>), gridDim, blockDim, 0, 0,
+                                (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(),
+                                (DataType*)E, elementsE);
+            }
 
-            return isRunValid;
+            return isValidRun;
         }
     };
 
@@ -826,8 +898,9 @@ namespace hiptensor
     class ContractionSolutionImpl<
         DeviceOp,
         DataType,
-        std::enable_if_t<std::is_same<DataType, hipFloatComplex>{} &&
-                         std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+        std::enable_if_t<(std::is_same<DataType, hipFloatComplex>{} ||
+                          std::is_same<DataType, hipDoubleComplex>{}) &&
+                          std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
                                         ck::tensor_operation::element_wise::Scale>>>
         : public ContractionSolution
     {
@@ -837,7 +910,20 @@ namespace hiptensor
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseArgument>> mArgPtr;
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseInvoker>>  mInvokerPtr;
 
-        void *A_re, *A_img, *B_re, *B_img, *E_re, *E_img;
+        using elementType = typename std::conditional<std::is_same<DataType, hipFloatComplex>::value,
+                                                      float, double>::type;
+
+        std::unique_ptr<elementType, DeviceDeleter> A_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> A_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> B_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> B_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> D_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> D_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> E_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> E_d_imag;
+
+        size_t  elementsE;
+        void*   E_copy;
 
     public:
         using Base   = ContractionSolution;
@@ -938,17 +1024,46 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            //TODO
-            // Extract A_re, A_img from A
-            // Extract B_re, B_img from B
-            // Extract E_re, E_img from E
+            //Allocate Real and Imaginary inputs
+            auto elementsA  = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides);
+            auto elementsB  = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
+            elementsE       = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
+
+            A_d_real.reset(nullptr);
+            A_d_real = std::move(allocDevice<elementType>(elementsA));
+            A_d_imag.reset(nullptr);
+            A_d_imag = std::move(allocDevice<elementType>(elementsA));
+            B_d_real.reset(nullptr);
+            B_d_real = std::move(allocDevice<elementType>(elementsB));
+            B_d_imag.reset(nullptr);
+            B_d_imag = std::move(allocDevice<elementType>(elementsB));
+            E_d_real.reset(nullptr);
+            E_d_real = std::move(allocDevice<elementType>(elementsE));
+            E_d_imag.reset(nullptr);
+            E_d_imag = std::move(allocDevice<elementType>(elementsE));
+
+            auto blockDim = dim3(1024, 1, 1);
+            auto gridDim  = dim3(ceilDiv(elementsA, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)A,
+                            (elementType*)A_d_real.get(), (elementType*)A_d_imag.get(), elementsA);
+
+            gridDim  = dim3(ceilDiv(elementsB, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)B,
+                            (elementType*)B_d_real.get(), (elementType*)B_d_imag.get(), elementsB);
+
+            gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+            hipLaunchKernelGGL(
+                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
+                            (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
 
             // Initialize the argument pointer
             mArgPtr[0]
-                = std::move(deviceOp->MakeArgumentPointer(A_re,
-                                                          B_re,
+                = std::move(deviceOp->MakeArgumentPointer(A_d_real.get(),
+                                                          B_d_real.get(),
                                                           std::array<const void*, 0>{},
-                                                          E_re,
+                                                          E_d_real.get(),
                                                           toCKVec(a_ms_ks_lengths),
                                                           toCKVec(a_ms_ks_strides),
                                                           toCKVec(b_ns_ks_lengths),
@@ -968,10 +1083,10 @@ namespace hiptensor
             mInvokerPtr[0] = std::move(deviceOp->MakeInvokerPointer());
 
             mArgPtr[1]
-                = std::move(deviceOp->MakeArgumentPointer(A_img,
-                                                          B_img,
-                                                          E_re,
-                                                          E_re,
+                = std::move(deviceOp->MakeArgumentPointer(A_d_imag.get(),
+                                                          B_d_imag.get(),
+                                                          std::array<const void*, 0>{},
+                                                          E_d_real.get(),
                                                           toCKVec(a_ms_ks_lengths),
                                                           toCKVec(a_ms_ks_strides),
                                                           toCKVec(b_ns_ks_lengths),
@@ -987,10 +1102,10 @@ namespace hiptensor
             mInvokerPtr[1] = std::move(deviceOp->MakeInvokerPointer());
 
             mArgPtr[2]
-                = std::move(deviceOp->MakeArgumentPointer(A_re,
-                                                          B_img,
+                = std::move(deviceOp->MakeArgumentPointer(A_d_real.get(),
+                                                          B_d_imag.get(),
                                                           std::array<const void*, 0>{},
-                                                          E_img,
+                                                          E_d_imag.get(),
                                                           toCKVec(a_ms_ks_lengths),
                                                           toCKVec(a_ms_ks_strides),
                                                           toCKVec(b_ns_ks_lengths),
@@ -1006,10 +1121,10 @@ namespace hiptensor
             mInvokerPtr[2] = std::move(deviceOp->MakeInvokerPointer());
 
             mArgPtr[3]
-                = std::move(deviceOp->MakeArgumentPointer(A_img,
-                                                          B_re,
-                                                          E_img,
-                                                          E_img,
+                = std::move(deviceOp->MakeArgumentPointer(A_d_imag.get(),
+                                                          B_d_real.get(),
+                                                          std::array<const void*, 0>{},
+                                                          E_d_imag.get(),
                                                           toCKVec(a_ms_ks_lengths),
                                                           toCKVec(a_ms_ks_strides),
                                                           toCKVec(b_ns_ks_lengths),
@@ -1051,13 +1166,15 @@ namespace hiptensor
                            deviceOp->IsSupportedArgument(mArgPtr[2].get()) &&
                            deviceOp->IsSupportedArgument(mArgPtr[3].get());
 
+            E_copy = E;
+
             return Base::mValid;
         }
 
 
         float operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/) override
         {
-        if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr[0] || !mInvokerPtr[1] || !mInvokerPtr[2] || !mInvokerPtr[3] || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
+            if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr[0] || !mInvokerPtr[1] || !mInvokerPtr[2] || !mInvokerPtr[3] || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
             {
     #if !NDEBUG
                 std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -1073,10 +1190,24 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            return mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig)
-                   && mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig)
-                   && mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig)
-                   && mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
+                              mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
+                              mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
+                              mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+
+            if( isValidRun )
+            {
+                // Construct E from E_d_real and E_d_imag
+                // Construct E from E_d_real and E_d_imag
+                auto blockDim = dim3(1024, 1, 1);
+                auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (pack<elementType, DataType>), gridDim, blockDim, 0, 0,
+                                (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(),
+                                (DataType*)E_copy, elementsE);
+            }
+
+            return isValidRun;
         }
 
         float operator()(void const*                     alpha,
@@ -1118,10 +1249,23 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            return mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig)
-                   && mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig)
-                   && mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig)
-                   && mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
+                         mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
+                         mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
+                         mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+
+            if( isValidRun )
+            {
+                // Construct E from E_d_real and E_d_imag
+                auto blockDim = dim3(1024, 1, 1);
+                auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (pack<elementType, DataType>), gridDim, blockDim, 0, 0,
+                                (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(),
+                                (DataType*)E, elementsE);
+            }
+
+            return isValidRun;
         }
     };
 
