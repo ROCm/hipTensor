@@ -154,7 +154,7 @@ int bilinearContractionSample()
     /*******************
    * Initialize data
    *******************/
-    int initMethod = 0; // TODO read value from commandline
+    int initMethod = 1; // TODO read value from commandline
     for(int64_t i = 0; i < elementsA; i++)
     {
         if(initMethod == 0)
@@ -287,11 +287,6 @@ int bilinearContractionSample()
     bool printElements = false;
     bool storeElements = false;
 
-    if(printElements || storeElements)
-    {
-        CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
-    }
-
     if(printElements)
     {
         if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
@@ -314,6 +309,15 @@ int bilinearContractionSample()
             hiptensorPrintArrayElements(std::cout, C, elementsC);
             std::cout << std::endl;
         }
+
+        CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
+
+        if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
+        {
+            std::cout << "Tensor D elements:\n";
+            hiptensorPrintArrayElements(std::cout, C, elementsC);
+            std::cout << std::endl;
+        }
     }
 
     if(storeElements)
@@ -326,6 +330,12 @@ int bilinearContractionSample()
         tensorB.open("tensor_B.txt");
         hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
         tensorB.close();
+
+        tensorC.open("tensor_C.txt");
+        hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
+        tensorC.close();
+
+        CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
 
         tensorC.open("tensor_C_scale_contraction_results.txt");
         hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
