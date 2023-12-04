@@ -61,7 +61,6 @@ namespace hiptensor
     {
     protected :
         // Kernel Params
-        std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
 
@@ -69,8 +68,7 @@ namespace hiptensor
         using Base   = ContractionSolution;
 
         ContractionSolutionImpl(ContractionSolutionImpl&& other)
-        : mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
+        : mArgPtr(std::move(other.mArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
         {
         }
@@ -79,16 +77,10 @@ namespace hiptensor
         {
             if(this != &other)
             {
-                mParams     = std::move(other.mParams);
                 mArgPtr     = std::move(other.mArgPtr);
                 mInvokerPtr = std::move(other.mInvokerPtr);
             }
             return *this;
-        }
-
-        std::unique_ptr<ContractionSolutionParams> const& params() const override
-        {
-            return mParams;
         }
 
         size_t workspaceSize() const override
@@ -290,8 +282,6 @@ namespace hiptensor
         : public ContractionSolution
     {
     protected :
-        // Kernel Params
-        std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
 
@@ -299,8 +289,7 @@ namespace hiptensor
         using Base   = ContractionSolution;
 
         ContractionSolutionImpl(ContractionSolutionImpl&& other)
-        : mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
+        : mArgPtr(std::move(other.mArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
         {
 
@@ -314,11 +303,6 @@ namespace hiptensor
                 mInvokerPtr = std::move(other.mInvokerPtr);
             }
             return *this;
-        }
-
-        std::unique_ptr<ContractionSolutionParams> const& params() const override
-        {
-            return mParams;
         }
 
         size_t workspaceSize() const override
@@ -516,8 +500,6 @@ namespace hiptensor
         : public ContractionSolution
     {
     protected :
-        // Kernel Params
-        std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseArgument>> mArgPtr;
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseInvoker>>  mInvokerPtr;
 
@@ -540,8 +522,7 @@ namespace hiptensor
         using Base   = ContractionSolution;
 
         ContractionSolutionImpl(ContractionSolutionImpl&& other)
-        : mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
+        : mArgPtr(std::move(other.mArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
         {
 
@@ -555,11 +536,6 @@ namespace hiptensor
                 mInvokerPtr = std::move(other.mInvokerPtr);
             }
             return *this;
-        }
-
-        std::unique_ptr<ContractionSolutionParams> const& params() const override
-        {
-            return mParams;
         }
 
         size_t workspaceSize() const override
@@ -905,8 +881,6 @@ namespace hiptensor
         : public ContractionSolution
     {
     protected :
-        // Kernel Params
-        std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseArgument>> mArgPtr;
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseInvoker>>  mInvokerPtr;
 
@@ -929,8 +903,7 @@ namespace hiptensor
         using Base   = ContractionSolution;
 
         ContractionSolutionImpl(ContractionSolutionImpl&& other)
-        : mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
+        : mArgPtr(std::move(other.mArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
         {
 
@@ -944,11 +917,6 @@ namespace hiptensor
                 mInvokerPtr = std::move(other.mInvokerPtr);
             }
             return *this;
-        }
-
-        std::unique_ptr<ContractionSolutionParams> const& params() const override
-        {
-            return mParams;
         }
 
         size_t workspaceSize() const override

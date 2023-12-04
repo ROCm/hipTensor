@@ -106,7 +106,7 @@ namespace hiptensor
         bool isValid() const;
 
         // Run-time solution parameters
-        virtual std::unique_ptr<ContractionSolutionParams> const& params() const = 0;
+        std::unique_ptr<ContractionSolutionParams> const& params() const;
 
         // Unique ID for the kernel
         size_t uid() const;
@@ -134,7 +134,7 @@ namespace hiptensor
 
         // Kernel Params
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
-
+        std::unique_ptr<ContractionSolutionParams>                  mParams;
     };
 
     template <ck::index_t NumDimM,

@@ -38,6 +38,7 @@ namespace hiptensor
         , mBytes(0)
         , mValid(false)
         , mDeviceOp(std::move(deviceOp))
+        , mParams(std::move(params))
     {
     }
 
@@ -48,6 +49,7 @@ namespace hiptensor
         , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
+        , mParams(std::move(other.mParams))
     {
     }
 
@@ -63,6 +65,7 @@ namespace hiptensor
             mValid = other.mValid;
 
             mDeviceOp   = std::move(other.mDeviceOp);
+            mParams     = std::move(other.mParams);
         }
         return *this;
     }
@@ -79,6 +82,11 @@ namespace hiptensor
         size_t             value;
         converter >> std::hex >> value;
         return value;
+    }
+
+    std::unique_ptr<ContractionSolutionParams> const& ContractionSolution::params() const
+    {
+        return mParams;
     }
 
     std::tuple<ck::index_t, ck::index_t, ck::index_t> ContractionSolution::problemDims() const
