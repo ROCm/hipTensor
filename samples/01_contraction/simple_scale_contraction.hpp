@@ -151,7 +151,7 @@ int scaleContractionSample()
     /*******************
    * Initialize data
    *******************/
-    int initMethod = 0; // TODO read the value from command line
+    int initMethod = 1; // TODO read the value from command line
     for(int64_t i = 0; i < elementsA; i++)
     {
         if(initMethod == 0)
