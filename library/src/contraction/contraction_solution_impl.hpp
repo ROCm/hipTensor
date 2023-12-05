@@ -973,7 +973,7 @@ namespace hiptensor
             using Traits = MetaTraits<DeviceOp>;
 
             // Clear previous data
-            Base::resetArgs();
+            resetArgs();
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
