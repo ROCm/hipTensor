@@ -53,7 +53,6 @@ namespace hiptensor
         typename BDataType,
         typename DsDataType,
         typename EDataType,
-        typename AccDataType,
         typename AElementwiseOperation,
         typename BElementwiseOperation,
         typename CDEElementwiseOperation,
@@ -152,7 +151,7 @@ namespace hiptensor
                 };
 
                 auto f_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
-                    auto accum = static_cast<AccDataType>(0);
+                    float accum = 0.0f;
 
                     auto K0 = arg.mA_ms_ks_lengths[2];
                     auto K1 = arg.mA_ms_ks_lengths[3];
@@ -174,8 +173,7 @@ namespace hiptensor
                             arg.mOpB(valB, ((BDataType*)arg.mB)[indexB]);
 
                             // Mult / accum
-                            accum
-                                += static_cast<AccDataType>(valA) * static_cast<AccDataType>(valB);
+                            accum += ck::type_convert<float>(valA) * ck::type_convert<float>(valB);
                         }
                     }
 
@@ -184,15 +182,17 @@ namespace hiptensor
                     if constexpr(std::is_same_v<CDEElementwiseOperation,
                                                 ck::tensor_operation::element_wise::Scale>)
                     {
-                        arg.mOpCDE(((EDataType*)arg.mE)[indexE], accum);
+                        arg.mOpCDE(((EDataType*)arg.mE)[indexE],
+                                   ck::type_convert<EDataType>(accum));
                     }
                     else // bilinear
                     {
                         // NumDTensor will be 1 due to SFINAE of this class
                         auto indexD
                             = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
-                        arg.mOpCDE(
-                            ((EDataType*)arg.mE)[indexE], accum, ((EDataType*)(arg.mD[0]))[indexD]);
+                        arg.mOpCDE(((EDataType*)arg.mE)[indexE],
+                                   ck::type_convert<EDataType>(accum),
+                                   ((EDataType*)(arg.mD[0]))[indexD]);
                     }
                 };
 
@@ -323,7 +323,6 @@ namespace hiptensor
               typename BDataType,
               typename DsDataType,
               typename EDataType,
-              typename AccumDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
               typename CDEElementwiseOperation,
@@ -335,7 +334,6 @@ namespace hiptensor
                                                     BDataType,
                                                     DsDataType,
                                                     EDataType,
-                                                    AccumDataType,
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
                                                     CDEElementwiseOperation,
@@ -374,7 +372,6 @@ namespace hiptensor
                                                           ADataType,
                                                           BDataType,
                                                           DsDataType,
-                                                          EDataType,
                                                           EDataType,
                                                           AElementwiseOperation,
                                                           BElementwiseOperation,
