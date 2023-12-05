@@ -720,7 +720,13 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
         if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
         {
-            auto time = (*cSolution)(StreamConfig{stream, true});
+            auto time = (*cSolution)(StreamConfig{
+                stream, // stream id
+                true, // time_kernel
+                0, // log_level
+                0, // cold_niters
+                1, // nrepeat
+            });
             if(time < 0)
             {
                 return HIPTENSOR_STATUS_CK_ERROR;
