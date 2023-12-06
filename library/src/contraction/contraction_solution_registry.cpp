@@ -84,7 +84,12 @@ namespace hiptensor
     ContractionSolutionRegistry::Query ContractionSolutionRegistry::Query::query(
         hipDataType typeA, hipDataType typeB, hipDataType typeC, hipDataType typeD) const
     {
-        return query(hashTypesABCD(typeA, typeB, typeC, typeD));
+        hipDataType elementTypeA = (typeA == HIP_C_32F) ? HIP_R_32F : (typeA == HIP_C_64F) ? HIP_R_64F : typeA;
+        hipDataType elementTypeB = (typeB == HIP_C_32F) ? HIP_R_32F : (typeB == HIP_C_64F) ? HIP_R_64F : typeB;
+        hipDataType elementTypeC = (typeC == HIP_C_32F) ? HIP_R_32F : (typeC == HIP_C_64F) ? HIP_R_64F : typeC;
+        hipDataType elementTypeD = (typeD == HIP_C_32F) ? HIP_R_32F : (typeD == HIP_C_64F) ? HIP_R_64F : typeD;
+
+        return query(hashTypesABCD(elementTypeA, elementTypeB, elementTypeC, elementTypeD));
     }
 
     ContractionSolutionRegistry::Query
@@ -184,7 +189,12 @@ namespace hiptensor
     ContractionSolutionRegistry::Query::HashId ContractionSolutionRegistry::Query::hashTypesABCD(
         hipDataType typeA, hipDataType typeB, hipDataType typeC, hipDataType typeD)
     {
-        return Hash{}(typeA, typeB, typeC, typeD);
+        hipDataType elementTypeA = (typeA == HIP_C_32F) ? HIP_R_32F : (typeA == HIP_C_64F) ? HIP_R_64F : typeA;
+        hipDataType elementTypeB = (typeB == HIP_C_32F) ? HIP_R_32F : (typeB == HIP_C_64F) ? HIP_R_64F : typeB;
+        hipDataType elementTypeC = (typeC == HIP_C_32F) ? HIP_R_32F : (typeC == HIP_C_64F) ? HIP_R_64F : typeC;
+        hipDataType elementTypeD = (typeD == HIP_C_32F) ? HIP_R_32F : (typeD == HIP_C_64F) ? HIP_R_64F : typeD;
+
+        return Hash{}(elementTypeA, elementTypeB, elementTypeC, elementTypeD);
     }
 
     /* static */

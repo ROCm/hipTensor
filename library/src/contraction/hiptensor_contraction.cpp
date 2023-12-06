@@ -247,10 +247,15 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         {
             // Allow only supported f32 combos
             solnQ = solnQ.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) || // Bilinear F32
+                    solnQ.query(HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F) || // Bilinear Complex F32
                     solnQ.query(HIP_R_32F,
                                 HIP_R_32F,
                                 hipDataType(hiptensor::NONE_TYPE),
-                                HIP_R_32F); // Scale F32 (no C)
+                                HIP_R_32F) || // Scale F32 (no C)
+                    solnQ.query(HIP_C_32F,
+                                HIP_C_32F,
+                                hipDataType(hiptensor::NONE_TYPE),
+                                HIP_C_32F); // Scale Complex F32 (no C)
         }
 
         // Can do more checking for scale / bilinear, etc. if we need to.

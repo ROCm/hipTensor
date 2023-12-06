@@ -63,12 +63,16 @@
 
 inline std::ostream& operator<<(std::ostream& os, const hipFloatComplex& fc)
 {
-    return os << hipCrealf(fc) << " + " << hipCimagf(fc) << "i";
+    std::string seperator = (hipCimagf(fc) > 0) ? " + " : "";
+
+    return os << hipCrealf(fc) << seperator << hipCimagf(fc) << "i";
 }
 
 inline std::ostream& operator<<(std::ostream& os, const hipDoubleComplex& dc)
 {
-    return os << hipCreal(dc) << " + " << hipCimag(dc) << "i";
+    std::string seperator = (hipCimag(dc) > 0) ? " + " : "";
+
+    return os << hipCreal(dc) << seperator << hipCimag(dc) << "i";
 }
 
 template <typename T>

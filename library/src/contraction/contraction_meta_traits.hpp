@@ -39,6 +39,33 @@
 
 namespace hiptensor
 {
+    // Map type to complex type
+    template <typename T>
+    struct complexDataType;
+
+    template <>
+    struct complexDataType<hipFloatComplex>
+    {
+        using value = hipFloatComplex;
+    };
+
+    template <>
+    struct complexDataType<hipDoubleComplex>
+    {
+        using value = hipDoubleComplex;
+    };
+
+    template <>
+    struct complexDataType<float>
+    {
+        using value = hipFloatComplex;
+    };
+
+    template <>
+    struct complexDataType<double>
+    {
+        using value = hipDoubleComplex;
+    };
 
     // Partial specialize for Bilinear contraction
     template <ck::index_t NumDimsM,
@@ -49,8 +76,10 @@ namespace hiptensor
               typename DsDataType,
               typename EDataType,
               typename AElementwiseOperation,
-              typename BElementwiseOperation>
-    struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
+              typename BElementwiseOperation,
+              bool isComplex>
+    struct MetaTraits<
+    ck::tensor_operation::device::DeviceContractionMultipleD<
         NumDimsM,
         NumDimsN,
         NumDimsK,
@@ -60,15 +89,19 @@ namespace hiptensor
         EDataType,
         AElementwiseOperation,
         BElementwiseOperation,
-        ck::tensor_operation::element_wise::Bilinear>>
+        ck::tensor_operation::element_wise::Bilinear>, isComplex>
     {
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;
         constexpr static ck::index_t DimsK = NumDimsK;
-        using ADataT                       = ADataType;
-        using BDataT                       = BDataType;
-        using DDataT                       = DsDataType;
-        using EDataT                       = EDataType;
+        using ADataT
+            = std::conditional_t<isComplex, typename complexDataType<ADataType>::value, ADataType>;
+        using BDataT
+            = std::conditional_t<isComplex, typename complexDataType<BDataType>::value, BDataType>;
+        using DDataT
+            = std::conditional_t<isComplex, typename complexDataType<DsDataType>::value, DsDataType>;
+        using EDataT
+            = std::conditional_t<isComplex, typename complexDataType<EDataType>::value, EDataType>;
         using AOp                          = AElementwiseOperation;
         using BOp                          = BElementwiseOperation;
         using CDEOp                        = ck::tensor_operation::element_wise::Bilinear;
@@ -82,8 +115,10 @@ namespace hiptensor
               typename BDataType,
               typename EDataType,
               typename AElementwiseOperation,
-              typename BElementwiseOperation>
-    struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
+              typename BElementwiseOperation,
+              bool isComplex>
+    struct MetaTraits<
+                    ck::tensor_operation::device::DeviceContractionMultipleD<
         NumDimsM,
         NumDimsN,
         NumDimsK,
@@ -93,15 +128,19 @@ namespace hiptensor
         EDataType,
         AElementwiseOperation,
         BElementwiseOperation,
-        ck::tensor_operation::element_wise::Scale>>
+        ck::tensor_operation::element_wise::Scale>,
+        isComplex>
     {
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;
         constexpr static ck::index_t DimsK = NumDimsK;
-        using ADataT                       = ADataType;
-        using BDataT                       = BDataType;
+        using ADataT
+            = std::conditional_t<isComplex, typename complexDataType<ADataType>::value, ADataType>;
+        using BDataT
+            = std::conditional_t<isComplex, typename complexDataType<BDataType>::value, BDataType>;
         using DDataT                       = NoneType;
-        using EDataT                       = EDataType;
+        using EDataT
+            = std::conditional_t<isComplex, typename complexDataType<EDataType>::value, EDataType>;
         using AOp                          = AElementwiseOperation;
         using BOp                          = BElementwiseOperation;
         using CDEOp                        = ck::tensor_operation::element_wise::Scale;

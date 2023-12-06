@@ -495,7 +495,7 @@ namespace hiptensor
         DataType,
         std::enable_if_t<(std::is_same<DataType, hipFloatComplex>{} ||
                           std::is_same<DataType, hipDoubleComplex>{}) &&
-                          std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                          std::is_same_v<typename MetaTraits<DeviceOp, true>::CDEOp,
                                         ck::tensor_operation::element_wise::Bilinear>>>
         : public ContractionSolution
     {
@@ -876,7 +876,7 @@ namespace hiptensor
         DataType,
         std::enable_if_t<(std::is_same<DataType, hipFloatComplex>{} ||
                           std::is_same<DataType, hipDoubleComplex>{}) &&
-                          std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                          std::is_same_v<typename MetaTraits<DeviceOp, true>::CDEOp,
                                         ck::tensor_operation::element_wise::Scale>>>
         : public ContractionSolution
     {
