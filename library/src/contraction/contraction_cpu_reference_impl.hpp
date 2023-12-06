@@ -173,7 +173,8 @@ namespace hiptensor
                             arg.mOpB(valB, ((BDataType*)arg.mB)[indexB]);
 
                             // Mult / accum
-                            accum += ck::type_convert<float>(valA) * ck::type_convert<float>(valB);
+                            accum += ck::type_convert<float>(ck::type_convert<ComputeDataType>(
+                                ck::type_convert<float>(valA) * ck::type_convert<float>(valB)));
                         }
                     }
 
