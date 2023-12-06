@@ -140,7 +140,7 @@ template <typename DDataType>
 std::pair<bool, double> compareEqual(DDataType const* deviceD,
                                      DDataType const* hostD,
                                      std::size_t      elementsD,
-                                     double           tolerance = 0.005)
+                                     double           tolerance = 0.001)
 {
     bool   retval             = true;
     double max_relative_error = 0.0;
@@ -214,7 +214,7 @@ template <typename DDataType>
 std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
                                                  DDataType*  hostD,
                                                  std::size_t elementsD,
-                                                 double      tolerance = 0.005)
+                                                 double      tolerance = 0.001)
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
