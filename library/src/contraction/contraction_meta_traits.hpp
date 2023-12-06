@@ -67,6 +67,14 @@ namespace hiptensor
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;
         constexpr static ck::index_t DimsK = NumDimsK;
+        /*
+         * CK does not use hip_bfloat16, instead it use ushort(ck::bhalf_t) for cuda bhalf_t type.
+         * What we want here is that we can use ck::bhalf_t with ck instances and use hip_bfloat16
+         * with hiptensor classes.
+         *
+         * When creating a solution, ck::bhalf_t was passed in to create ck instance.
+         * When registering the solution, MetaTraits will returen hip_bfloat16 to create key.
+         */
         using ADataT
             = std::conditional_t<std::is_same_v<ADataType, ck::bhalf_t>, hip_bfloat16, ADataType>;
         using BDataT
