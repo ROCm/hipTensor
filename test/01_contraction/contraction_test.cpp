@@ -491,9 +491,18 @@ namespace hiptensor
             auto CDataType = testType[2];
             auto DDataType = testType[3];
 
-            auto   computeType = convertToComputeType(testType[4]);
-            double alphaBuf    = 0.;
-            double betaBuf     = 0.;
+            auto computeType = convertToComputeType(testType[4]);
+
+            /*
+             * `alpha` and `beta` are void pointer. hiptensor uses readVal to load the value of alpha.
+             * ```
+             * alphaF = hiptensor::readVal<float>(
+             *      alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+             * ```
+             * Hence, the `alpha` and `bete` need to point to a ComputeData value
+             */
+            double alphaBuf = 0.;
+            double betaBuf  = 0.;
             writeVal(&alphaBuf, computeType, alpha);
             writeVal(&betaBuf, computeType, beta);
 

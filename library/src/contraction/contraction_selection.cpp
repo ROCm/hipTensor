@@ -71,7 +71,16 @@ namespace hiptensor
         auto sizeE = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides)
                      * hipDataTypeSize(typeE);
 
-        void * A_d, *B_d, *D_d, *E_d, *wspace;
+        void *A_d, *B_d, *D_d, *E_d, *wspace;
+
+        /*
+         * `alpha` and `beta` are void pointer. hiptensor uses readVal to load the value of alpha.
+         * ```
+         * alphaF = hiptensor::readVal<float>(
+         *      alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+         * ```
+         * Hence, the `alpha` and `bete` need to point to a ComputeData value
+         */
         double alpha = 0.0;
         double beta  = 0.0;
         writeVal(&alpha, computeType, 1.02);
