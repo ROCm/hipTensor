@@ -27,6 +27,7 @@
 #ifndef HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP
 #define HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP
 
+#include <llvm/Support/FileSystem.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/YAMLParser.h>
 #include <llvm/Support/raw_ostream.h>
@@ -99,7 +100,7 @@ namespace hiptensor
     void YamlConfigLoader<ConfigT>::storeToFile(std::string const& filePath, ConfigT const& config)
     {
         std::error_code      ec;
-        llvm::raw_fd_ostream out(filePath, ec);
+        llvm::raw_fd_ostream out(filePath, ec, llvm::sys::fs::F_None);
 
         if(ec)
         {
