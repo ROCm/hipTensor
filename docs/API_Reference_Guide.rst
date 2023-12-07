@@ -3,14 +3,15 @@
 Introduction
 ************
 
-hiptensor Data Types
+hipTensor Data Types
 ====================
+
+.. <!-- spellcheck-disable -->
 
 hiptensorStatus_t
 -----------------
 
 .. doxygenenum::  hiptensorStatus_t
-
 
 hiptensorComputeType_t
 ----------------------
@@ -160,3 +161,5 @@ hiptensorLoggerForceDisable
 ---------------------------
 
 .. doxygenfunction::  hiptensorLoggerForceDisable
+
+.. <!-- spellcheck-enable -->
