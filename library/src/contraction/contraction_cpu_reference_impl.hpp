@@ -45,19 +45,25 @@
 namespace hiptensor
 {
     // hardcoded for NumDimM == NumDimN == NumDimK == 2
+    //
+    // ck::bhalf_t is ushort, cannot perform bhalf_t * bhalf_t
+    // CK does not use ck::bhalf_t as AccDataType. But we still
+    // add this guard here
     template <
         ck::index_t NumDimM,
         ck::index_t NumDimN,
         ck::index_t NumDimK,
         typename ADataType,
         typename BDataType,
+        typename AccDataType,
         typename DsDataType,
         typename EDataType,
         typename AElementwiseOperation,
         typename BElementwiseOperation,
         typename CDEElementwiseOperation,
         typename ComputeDataType = ADataType,
-        ck::enable_if_t<NumDimM == 2 && NumDimN == 2 && NumDimK == 2 && DsDataType::Size() <= 1,
+        ck::enable_if_t<NumDimM == 2 && NumDimN == 2 && NumDimK == 2 && DsDataType::Size() <= 1
+                            && !std::is_same_v<AccDataType, ck::bhalf_t>,
                         bool>
         = false>
     struct ReferenceContraction_M2_N2_K2
@@ -151,7 +157,7 @@ namespace hiptensor
                 };
 
                 auto f_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
-                    float accum = 0.0f;
+                    AccDataType accum = 0;
 
                     auto K0 = arg.mA_ms_ks_lengths[2];
                     auto K1 = arg.mA_ms_ks_lengths[3];
@@ -165,16 +171,19 @@ namespace hiptensor
                             auto indexB
                                 = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
 
-                            ADataType valA;
-                            BDataType valB;
+                            AccDataType valA;
+                            AccDataType valB;
 
                             // Element-wise ops
-                            arg.mOpA(valA, ((ADataType*)arg.mA)[indexA]);
-                            arg.mOpB(valB, ((BDataType*)arg.mB)[indexB]);
+                            arg.mOpA(
+                                valA,
+                                ck::type_convert<ComputeDataType>(((ADataType*)arg.mA)[indexA]));
+                            arg.mOpB(
+                                valB,
+                                ck::type_convert<ComputeDataType>(((BDataType*)arg.mB)[indexB]));
 
                             // Mult / accum
-                            accum += ck::type_convert<float>(ck::type_convert<ComputeDataType>(
-                                ck::type_convert<float>(valA) * ck::type_convert<float>(valB)));
+                            accum += valA * valB;
                         }
                     }
 
@@ -322,6 +331,7 @@ namespace hiptensor
               ck::index_t NumDimsK,
               typename ADataType,
               typename BDataType,
+              typename AccDataType,
               typename DsDataType,
               typename EDataType,
               typename AElementwiseOperation,
@@ -333,6 +343,7 @@ namespace hiptensor
                                                     NumDimsK,
                                                     ADataType,
                                                     BDataType,
+                                                    AccDataType,
                                                     DsDataType,
                                                     EDataType,
                                                     AElementwiseOperation,
@@ -359,6 +370,7 @@ namespace hiptensor
               ck::index_t NumDimK,
               typename ADataType,
               typename BDataType,
+              typename AccDataType,
               typename DsDataType,
               typename EDataType,
               typename AElementwiseOperation,
@@ -372,6 +384,7 @@ namespace hiptensor
                                                           NumDimK,
                                                           ADataType,
                                                           BDataType,
+                                                          AccDataType,
                                                           DsDataType,
                                                           EDataType,
                                                           AElementwiseOperation,
