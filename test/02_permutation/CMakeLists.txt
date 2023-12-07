@@ -29,7 +29,10 @@ set(PermutationCommonSources ${HIPTENSOR_COMMON_TEST_SOURCES}
 
 #  tests
 set (PermutationTestSources ${PermutationCommonSources}
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_column_major_test.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_column_major_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_impl_test.cpp
+    )
+
 set (PermutationTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/test_params.yaml)
 add_hiptensor_test(permutation_test ${PermutationTestConfig}  ${PermutationTestSources})
 
