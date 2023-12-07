@@ -347,7 +347,8 @@ namespace hiptensor
               typename AccumDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              bool isComplex>
     struct MetaTraits<ReferenceContraction_M2_N2_K2<NumDimsM,
                                                     NumDimsN,
                                                     NumDimsK,
@@ -358,7 +359,7 @@ namespace hiptensor
                                                     AccumDataType,
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
-                                                    CDEElementwiseOperation>>
+                                                    CDEElementwiseOperation>, isComplex>
         : public MetaTraits<
               ck::tensor_operation::device::DeviceContractionMultipleD<NumDimsM,
                                                                        NumDimsN,
@@ -369,7 +370,8 @@ namespace hiptensor
                                                                        EDataType,
                                                                        AElementwiseOperation,
                                                                        BElementwiseOperation,
-                                                                       CDEElementwiseOperation>>
+                                                                       CDEElementwiseOperation>,
+                                                                       isComplex>
     {
     };
 

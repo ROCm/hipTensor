@@ -95,16 +95,6 @@ namespace hiptensor
             }
         }
 
-        void resetArgs()
-        {
-            mArgPtr.reset(nullptr);
-            mInvokerPtr.reset(nullptr);
-
-            // Clear out the previous arguments
-            Base::resetArgs();
-
-        }
-
         ContractionSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
             : ContractionSolution(std::move(deviceOp),
                                  std::make_unique<ContractionSolutionParamsImpl<DeviceOp>>())
@@ -129,9 +119,6 @@ namespace hiptensor
         {
             using Traits = MetaTraits<DeviceOp>;
 
-            // Clear previous data
-            Base::resetArgs();
-
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(mDeviceOp.get());
@@ -153,6 +140,9 @@ namespace hiptensor
             auto toCKVec = [](std::vector<std::size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
+
+            mArgPtr.reset(nullptr);
+            mInvokerPtr.reset(nullptr);
 
             // Initialize the argument pointer
             mArgPtr = std::move(deviceOp->MakeArgumentPointer(
@@ -317,15 +307,6 @@ namespace hiptensor
             }
         }
 
-        void resetArgs()
-        {
-            mArgPtr.reset(nullptr);
-            mInvokerPtr.reset(nullptr);
-
-            // Clear out the previous arguments
-            Base::resetArgs();
-        }
-
         ContractionSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
             : ContractionSolution(std::move(deviceOp),
                                   std::make_unique<ContractionSolutionParamsImpl<DeviceOp>>())
@@ -350,9 +331,6 @@ namespace hiptensor
         {
             using Traits = MetaTraits<DeviceOp>;
 
-            // Clear previous data
-            Base::resetArgs();
-
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(mDeviceOp.get());
@@ -369,6 +347,9 @@ namespace hiptensor
             auto toCKVec = [](std::vector<std::size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
+
+            mArgPtr.reset(nullptr);
+            mInvokerPtr.reset(nullptr);
 
             // Initialize the argument pointer
             mArgPtr
@@ -501,7 +482,7 @@ namespace hiptensor
     {
     protected :
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseArgument>> mArgPtr;
-        std::vector<std::unique_ptr<ck::tensor_operation::device::BaseInvoker>>  mInvokerPtr;
+        std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
 
         using elementType = typename std::conditional<std::is_same<DataType, hipFloatComplex>::value,
                                                       float, double>::type;
@@ -550,23 +531,6 @@ namespace hiptensor
             }
         }
 
-        void resetArgs()
-        {
-            mArgPtr.reserve(4);
-            mArgPtr[0].reset(nullptr);
-            mArgPtr[1].reset(nullptr);
-            mArgPtr[2].reset(nullptr);
-            mArgPtr[3].reset(nullptr);
-            mInvokerPtr.reserve(4);
-            mInvokerPtr[0].reset(nullptr);
-            mInvokerPtr[1].reset(nullptr);
-            mInvokerPtr[2].reset(nullptr);
-            mInvokerPtr[3].reset(nullptr);
-
-            // Clear out the previous arguments
-            Base::resetArgs();
-        }
-
         ContractionSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
             : ContractionSolution(std::move(deviceOp),
                                   std::make_unique<ContractionSolutionParamsImpl<DeviceOp>>())
@@ -589,10 +553,7 @@ namespace hiptensor
                       std::vector<std::size_t> const& e_ms_ns_strides,
                       void*                           workspacePtr) override
         {
-            using Traits = MetaTraits<DeviceOp>;
-
-            // Clear out the previous arguments
-            Base::resetArgs();
+            using Traits = MetaTraits<DeviceOp, true>;
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
@@ -622,46 +583,66 @@ namespace hiptensor
             auto elementsD  = elementSpaceFromLengthsAndStrides(ds_ms_ns_lengths, ds_ms_ns_strides);
             elementsE       = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
 
+            mInvokerPtr.reset(nullptr);
+
             A_d_real.reset(nullptr);
-            A_d_real = std::move(allocDevice<elementType>(elementsA));
             A_d_imag.reset(nullptr);
-            A_d_imag = std::move(allocDevice<elementType>(elementsA));
             B_d_real.reset(nullptr);
-            B_d_real = std::move(allocDevice<elementType>(elementsB));
             B_d_imag.reset(nullptr);
-            B_d_imag = std::move(allocDevice<elementType>(elementsB));
             D_d_real.reset(nullptr);
-            D_d_real = std::move(allocDevice<elementType>(elementsD));
             D_d_imag.reset(nullptr);
-            D_d_imag = std::move(allocDevice<elementType>(elementsD));
             E_d_real.reset(nullptr);
-            E_d_real = std::move(allocDevice<elementType>(elementsE));
             E_d_imag.reset(nullptr);
-            E_d_imag = std::move(allocDevice<elementType>(elementsE));
 
             auto blockDim = dim3(1024, 1, 1);
-            auto gridDim  = dim3(ceilDiv(elementsA, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
-                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)A,
-                            (elementType*)A_d_real.get(), (elementType*)A_d_imag.get(), elementsA);
 
-            gridDim  = dim3(ceilDiv(elementsB, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
+            if( A != nullptr)
+            {
+                A_d_real = std::move(allocDevice<elementType>(elementsA));
+                A_d_imag = std::move(allocDevice<elementType>(elementsA));
+
+                auto gridDim  = dim3(ceilDiv(elementsA, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)A,
+                                (elementType*)A_d_real.get(), (elementType*)A_d_imag.get(), elementsA);
+            }
+
+            if( B != nullptr)
+            {
+                B_d_real = std::move(allocDevice<elementType>(elementsB));
+                B_d_imag = std::move(allocDevice<elementType>(elementsB));
+
+                auto gridDim  = dim3(ceilDiv(elementsB, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
                             (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)B,
                             (elementType*)B_d_real.get(), (elementType*)B_d_imag.get(), elementsB);
+            }
 
-            gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
-                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)D,
-                            (elementType*)D_d_real.get(), (elementType*)D_d_imag.get(), elementsD);
+            if( D != nullptr)
+            {
+                D_d_real = std::move(allocDevice<elementType>(elementsD));
+                D_d_imag = std::move(allocDevice<elementType>(elementsD));
 
-            gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
-                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
-                            (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
+                auto gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)D,
+                                (elementType*)D_d_real.get(), (elementType*)D_d_imag.get(), elementsD);
+            }
+
+            if( E != nullptr)
+            {
+                E_d_real = std::move(allocDevice<elementType>(elementsE));
+                E_d_imag = std::move(allocDevice<elementType>(elementsE));
+
+                auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
+                                (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
+            }
 
             // Initialize the argument pointer
-            mArgPtr[0] = std::move(deviceOp->MakeArgumentPointer(
+            mArgPtr.clear();
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(
                 A_d_real.get(),
                 B_d_real.get(),
                 std::array<const void*, 1>{D_d_real.get()},
@@ -676,18 +657,18 @@ namespace hiptensor
                 toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{alphaF, betaF}));
+                typename Traits::CDEOp{alphaF, betaF})));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(mArgPtr[0].get(), workspacePtr);
 
             // Initialize the invoker
-            mInvokerPtr[0] = std::move(deviceOp->MakeInvokerPointer());
+            mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
-            mArgPtr[1] = std::move(deviceOp->MakeArgumentPointer(
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(
                 A_d_imag.get(),
                 B_d_imag.get(),
-                std::array<const void*, 1>{E_d_real.get()}, // Confirm if it can do in place fma, else create intermediate pointer result
+                std::array<const void*, 1>{E_d_real.get()},
                 E_d_real.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
@@ -699,11 +680,9 @@ namespace hiptensor
                 toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{alphaF * -1.0f, betaF}));
+                typename Traits::CDEOp{alphaF * -1.0f, betaF})));
 
-            mInvokerPtr[1] = std::move(deviceOp->MakeInvokerPointer());
-
-            mArgPtr[2] = std::move(deviceOp->MakeArgumentPointer(
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(
                 A_d_real.get(),
                 B_d_imag.get(),
                 std::array<const void*, 1>{D_d_imag.get()},
@@ -718,11 +697,9 @@ namespace hiptensor
                 toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{alphaF, betaF}));
+                typename Traits::CDEOp{alphaF, betaF})));
 
-            mInvokerPtr[2] = std::move(deviceOp->MakeInvokerPointer());
-
-            mArgPtr[3] = std::move(deviceOp->MakeArgumentPointer(
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(
                 A_d_imag.get(),
                 B_d_real.get(),
                 std::array<const void*, 1>{E_d_imag.get()},
@@ -737,9 +714,7 @@ namespace hiptensor
                 toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{alphaF, betaF}));
-
-            mInvokerPtr[3] = std::move(deviceOp->MakeInvokerPointer());
+                typename Traits::CDEOp{alphaF, betaF})));
 
             // Fill problem metrics
             Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
@@ -776,7 +751,7 @@ namespace hiptensor
 
         float operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)  override
         {
-            if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr[0] || !mInvokerPtr[1] || !mInvokerPtr[2] || !mInvokerPtr[3] || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
+            if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
             {
     #if !NDEBUG
                 std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -792,10 +767,10 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
-                              mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
-                              mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
-                              mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+            bool isValidRun = mInvokerPtr->Run(mArgPtr[0].get(), streamConfig) &&
+                              mInvokerPtr->Run(mArgPtr[1].get(), streamConfig) &&
+                              mInvokerPtr->Run(mArgPtr[2].get(), streamConfig) &&
+                              mInvokerPtr->Run(mArgPtr[3].get(), streamConfig);
 
             if( isValidRun )
             {
@@ -850,10 +825,10 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
-                              mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
-                              mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
-                              mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+            bool isValidRun = mInvokerPtr->Run(mArgPtr[0].get(), streamConfig) &&
+                              mInvokerPtr->Run(mArgPtr[1].get(), streamConfig) &&
+                              mInvokerPtr->Run(mArgPtr[2].get(), streamConfig) &&
+                              mInvokerPtr->Run(mArgPtr[3].get(), streamConfig);
 
             if( isValidRun )
             {
@@ -882,7 +857,7 @@ namespace hiptensor
     {
     protected :
         std::vector<std::unique_ptr<ck::tensor_operation::device::BaseArgument>> mArgPtr;
-        std::vector<std::unique_ptr<ck::tensor_operation::device::BaseInvoker>>  mInvokerPtr;
+        std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
 
         using elementType = typename std::conditional<std::is_same<DataType, hipFloatComplex>::value,
                                                       float, double>::type;
@@ -931,23 +906,6 @@ namespace hiptensor
             }
         }
 
-        void resetArgs()
-        {
-            mArgPtr.reserve(4);
-            mArgPtr[0].reset(nullptr);
-            mArgPtr[1].reset(nullptr);
-            mArgPtr[2].reset(nullptr);
-            mArgPtr[3].reset(nullptr);
-            mInvokerPtr.reserve(4);
-            mInvokerPtr[0].reset(nullptr);
-            mInvokerPtr[1].reset(nullptr);
-            mInvokerPtr[2].reset(nullptr);
-            mInvokerPtr[3].reset(nullptr);
-
-            // Clear previous data
-            Base::resetArgs();
-        }
-
         ContractionSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
             : ContractionSolution(std::move(deviceOp),
                                   std::make_unique<ContractionSolutionParamsImpl<DeviceOp>>())
@@ -970,10 +928,7 @@ namespace hiptensor
                       std::vector<std::size_t> const& e_ms_ns_strides,
                       void*                           workspacePtr) override
         {
-            using Traits = MetaTraits<DeviceOp>;
-
-            // Clear previous data
-            resetArgs();
+            using Traits = MetaTraits<DeviceOp, true>;
 
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
@@ -997,38 +952,55 @@ namespace hiptensor
             auto elementsB  = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
             elementsE       = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
 
+            mInvokerPtr.reset(nullptr);
+
             A_d_real.reset(nullptr);
-            A_d_real = std::move(allocDevice<elementType>(elementsA));
             A_d_imag.reset(nullptr);
-            A_d_imag = std::move(allocDevice<elementType>(elementsA));
             B_d_real.reset(nullptr);
-            B_d_real = std::move(allocDevice<elementType>(elementsB));
             B_d_imag.reset(nullptr);
-            B_d_imag = std::move(allocDevice<elementType>(elementsB));
+            D_d_real.reset(nullptr);
+            D_d_imag.reset(nullptr);
             E_d_real.reset(nullptr);
-            E_d_real = std::move(allocDevice<elementType>(elementsE));
             E_d_imag.reset(nullptr);
-            E_d_imag = std::move(allocDevice<elementType>(elementsE));
 
             auto blockDim = dim3(1024, 1, 1);
-            auto gridDim  = dim3(ceilDiv(elementsA, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
-                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)A,
-                            (elementType*)A_d_real.get(), (elementType*)A_d_imag.get(), elementsA);
 
-            gridDim  = dim3(ceilDiv(elementsB, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
+            if( A != nullptr)
+            {
+                A_d_real = std::move(allocDevice<elementType>(elementsA));
+                A_d_imag = std::move(allocDevice<elementType>(elementsA));
+
+                auto gridDim  = dim3(ceilDiv(elementsA, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)A,
+                                (elementType*)A_d_real.get(), (elementType*)A_d_imag.get(), elementsA);
+            }
+
+            if( B != nullptr)
+            {
+                B_d_real = std::move(allocDevice<elementType>(elementsB));
+                B_d_imag = std::move(allocDevice<elementType>(elementsB));
+
+                auto gridDim  = dim3(ceilDiv(elementsB, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
                             (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)B,
                             (elementType*)B_d_real.get(), (elementType*)B_d_imag.get(), elementsB);
+            }
 
-            gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
-            hipLaunchKernelGGL(
-                            (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
-                            (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
+            if( E != nullptr)
+            {
+                E_d_real = std::move(allocDevice<elementType>(elementsE));
+                E_d_imag = std::move(allocDevice<elementType>(elementsE));
+
+                auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
+                hipLaunchKernelGGL(
+                                (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
+                                (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
+            }
 
             // Initialize the argument pointer
-            mArgPtr[0]
-                = std::move(deviceOp->MakeArgumentPointer(A_d_real.get(),
+            mArgPtr.clear();
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(A_d_real.get(),
                                                           B_d_real.get(),
                                                           std::array<const void*, 0>{},
                                                           E_d_real.get(),
@@ -1042,16 +1014,15 @@ namespace hiptensor
                                                           toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{alphaF}));
+                                                          typename Traits::CDEOp{alphaF})));
 
-            // Attach the workspace pointer
+              // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(mArgPtr[0].get(), workspacePtr);
 
             // Initialize the invoker
-            mInvokerPtr[0] = std::move(deviceOp->MakeInvokerPointer());
+            mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
-            mArgPtr[1]
-                = std::move(deviceOp->MakeArgumentPointer(A_d_imag.get(),
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(A_d_imag.get(),
                                                           B_d_imag.get(),
                                                           std::array<const void*, 0>{},
                                                           E_d_real.get(),
@@ -1065,12 +1036,9 @@ namespace hiptensor
                                                           toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{alphaF * -1.0f}));
+                                                          typename Traits::CDEOp{alphaF * -1.0f})));
 
-            mInvokerPtr[1] = std::move(deviceOp->MakeInvokerPointer());
-
-            mArgPtr[2]
-                = std::move(deviceOp->MakeArgumentPointer(A_d_real.get(),
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(A_d_real.get(),
                                                           B_d_imag.get(),
                                                           std::array<const void*, 0>{},
                                                           E_d_imag.get(),
@@ -1084,12 +1052,9 @@ namespace hiptensor
                                                           toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{alphaF}));
+                                                          typename Traits::CDEOp{alphaF})));
 
-            mInvokerPtr[2] = std::move(deviceOp->MakeInvokerPointer());
-
-            mArgPtr[3]
-                = std::move(deviceOp->MakeArgumentPointer(A_d_imag.get(),
+            mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(A_d_imag.get(),
                                                           B_d_real.get(),
                                                           std::array<const void*, 0>{},
                                                           E_d_imag.get(),
@@ -1103,9 +1068,7 @@ namespace hiptensor
                                                           toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{alphaF}));
-
-            mInvokerPtr[3] = std::move(deviceOp->MakeInvokerPointer());
+                                                          typename Traits::CDEOp{alphaF})));
 
             // Fill problem metrics
             Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
@@ -1142,7 +1105,7 @@ namespace hiptensor
 
         float operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/) override
         {
-            if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr[0] || !mInvokerPtr[1] || !mInvokerPtr[2] || !mInvokerPtr[3] || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
+            if(!mArgPtr[0] || !mArgPtr[1] || !mArgPtr[2] || !mArgPtr[3] || !mInvokerPtr || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
             {
     #if !NDEBUG
                 std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -1158,10 +1121,10 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
-                              mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
-                              mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
-                              mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+            bool isValidRun =  mInvokerPtr->Run(mArgPtr[3].get(), streamConfig) &&
+                               mInvokerPtr->Run(mArgPtr[3].get(), streamConfig) &&
+                               mInvokerPtr->Run(mArgPtr[2].get(), streamConfig) &&
+                               mInvokerPtr->Run(mArgPtr[3].get(), streamConfig);
 
             if( isValidRun )
             {
@@ -1217,10 +1180,10 @@ namespace hiptensor
                 return -1.0f;
             }
 
-            bool isValidRun = mInvokerPtr[0]->Run(mArgPtr[0].get(), streamConfig) &&
-                         mInvokerPtr[1]->Run(mArgPtr[1].get(), streamConfig) &&
-                         mInvokerPtr[2]->Run(mArgPtr[2].get(), streamConfig) &&
-                         mInvokerPtr[3]->Run(mArgPtr[3].get(), streamConfig);
+            bool isValidRun = mInvokerPtr->Run(mArgPtr[0].get(), streamConfig) &&
+                         mInvokerPtr->Run(mArgPtr[1].get(), streamConfig) &&
+                         mInvokerPtr->Run(mArgPtr[2].get(), streamConfig) &&
+                         mInvokerPtr->Run(mArgPtr[3].get(), streamConfig);
 
             if( isValidRun )
             {
@@ -1251,6 +1214,14 @@ namespace hiptensor
               typename CDEElementwiseOperation>
     std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions()
     {
+        using elementType = typename std::conditional<std::is_same<ADataType, hipFloatComplex>::value,
+                                                float, typename std::conditional<std::is_same<ADataType, hipDoubleComplex>::value,
+                                                double, ADataType>::type>::type;
+
+        using elementDType = typename std::conditional<std::is_same<CDEElementwiseOperation,
+                                                        ck::tensor_operation::element_wise::Scale>::value,
+                                                ck::Tuple<>, ck::Tuple<elementType>>::type;
+
         using ContractionOp
             = ck::tensor_operation::device::DeviceContractionMultipleD<NumDimM,
                                                                        NumDimN,
@@ -1263,14 +1234,27 @@ namespace hiptensor
                                                                        BElementwiseOperation,
                                                                        CDEElementwiseOperation>;
 
+        using ContractionElementOp
+            = ck::tensor_operation::device::DeviceContractionMultipleD<NumDimM,
+                                                                       NumDimN,
+                                                                       NumDimK,
+                                                                       elementType,
+                                                                       elementType,
+                                                                       elementDType,
+                                                                       elementType,
+                                                                       AElementwiseOperation,
+                                                                       BElementwiseOperation,
+                                                                       CDEElementwiseOperation>;
+
+
         using Factory
-            = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
+            = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionElementOp>;
 
         std::vector<std::unique_ptr<ContractionSolution>> result;
         for(auto& opPtr : Factory::GetInstances())
         {
             result.push_back(
-                std::make_unique<ContractionSolutionImpl<ContractionOp, ADataType>>(std::move(opPtr)));
+                std::make_unique<ContractionSolutionImpl<ContractionElementOp, ADataType>>(std::move(opPtr)));
         }
         return result;
     }
