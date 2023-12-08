@@ -40,17 +40,19 @@ python3 -m sphinx -T -E -b html -d _build/doctrees -D language=en . _build/html
 
 ### Operations - Contraction Tensor
 
+hiptensor supports a tensor contraction of the form $D = \alpha AB + \beta C$
+
 Supported data-type combinations are:
 
-| typeA     | typeB     | typeC     | typeCompute     | notes                            |
-|-----------|-----------|-----------|-----------------|----------------------------------|
-| bf16      | bf16      | bf16      | f32             |                                  |
-| __half    | __half    | __half    | f32             |                                  |
-| f32       | f32       | f32       | bf16            |                                  |
-| f32       | f32       | f32       | __half          |                                  |
-| f32       | f32       | f32       | f32             |                                  |
-| f64       | f64       | f64       | f32             | f64 is supported only on gfx90 + |
-| f64       | f64       | f64       | f64             | f64 is supported only on gfx90 + |
+| typeA       | typeB       | typeC       | typeCompute       | notes                              |
+| ----------- | ----------- | ----------- | ----------------- | ---------------------------------- |
+| bf16        | bf16        | bf16        | f32               |                                    |
+| __half      | __half      | __half      | f32               |                                    |
+| f32         | f32         | f32         | bf16              |                                    |
+| f32         | f32         | f32         | __half            |                                    |
+| f32         | f32         | f32         | f32               |                                    |
+| f64         | f64         | f64         | f32               | f64 is supported only on gfx90a +  |
+| f64         | f64         | f64         | f64               | f64 is supported only on gfx90a +  |
 
 ### Operations - Permutation Tensor
 
@@ -119,6 +121,7 @@ After configuration, build with `cmake --build <build_dir> -- -j<nproc>`
 ### Logger tests
 
 Tests API implementation of logger verbosity and functionality.
+
 ```bash
   <build_dir>/bin/logger_test
 ```
@@ -128,6 +131,7 @@ Tests API implementation of logger verbosity and functionality.
 ### Bilinear contraction tests
 
 Tests the API implementation of bilinear contraction algorithm with validation.
+
 ```bash
   <build_dir>/bin/bilinear_contraction_test
   <build_dir>/bin/complex_bilinear_contraction_test
@@ -136,6 +140,7 @@ Tests the API implementation of bilinear contraction algorithm with validation.
 ### Scale contraction tests
 
 Tests the API implementation of scale contraction algorithm with validation.
+
 ```bash
   <build_dir>/bin/scale_contraction_test
   <build_dir>/bin/complex_scale_contraction_test
@@ -144,7 +149,9 @@ Tests the API implementation of scale contraction algorithm with validation.
 ## Running Permutation Tests
 
 ### Permutation tests
+
 Tests API implementation of permutation algorithm with validation.
+
 ```bash
   <build_dir>/bin/permutation_test
 ```
@@ -156,6 +163,7 @@ These are stand-alone use-cases of the hipTensor contraction operations.
 ### F32 Bilinear contraction
 
 Demonstrates the API implementation of bilinear contraction operation without validation.
+
 ```bash
   <build_dir>/bin/simple_bilinear_contraction_<typeA>_<typeB>_<typeC>_<typeD>_compute_<computeType>
 ```
@@ -163,6 +171,7 @@ Demonstrates the API implementation of bilinear contraction operation without va
 ### F32 Scale contraction
 
 Demonstrates the API implementation of scale contraction operation without validation.
+
 ```bash
   <build_dir>/bin/simple_scale_contraction_<typeA>_<typeB>_<typeD>_compute_<typeCompute>
 ```
@@ -170,6 +179,7 @@ Demonstrates the API implementation of scale contraction operation without valid
 ### Permutation
 
 Demonstrates the API implementation of permutation operation without validation.
+
 ```bash
   <build_dir>/bin/simple_permutation
 ```
