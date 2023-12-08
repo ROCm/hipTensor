@@ -493,7 +493,9 @@ namespace hiptensor
         std::unique_ptr<elementType, DeviceDeleter> B_d_imag;
         std::unique_ptr<elementType, DeviceDeleter> D_d_real;
         std::unique_ptr<elementType, DeviceDeleter> D_d_imag;
+        std::unique_ptr<elementType, DeviceDeleter> E_d_real_intermediate;
         std::unique_ptr<elementType, DeviceDeleter> E_d_real;
+        std::unique_ptr<elementType, DeviceDeleter> E_d_imag_intermediate;
         std::unique_ptr<elementType, DeviceDeleter> E_d_imag;
 
         size_t  elementsE;
@@ -592,7 +594,9 @@ namespace hiptensor
             D_d_real.reset(nullptr);
             D_d_imag.reset(nullptr);
             E_d_real.reset(nullptr);
+            E_d_real_intermediate.reset(nullptr);
             E_d_imag.reset(nullptr);
+            E_d_imag_intermediate.reset(nullptr);
 
             auto blockDim = dim3(1024, 1, 1);
 
@@ -632,12 +636,17 @@ namespace hiptensor
             if( E != nullptr)
             {
                 E_d_real = std::move(allocDevice<elementType>(elementsE));
+                E_d_real_intermediate = std::move(allocDevice<elementType>(elementsE));
                 E_d_imag = std::move(allocDevice<elementType>(elementsE));
+                E_d_imag_intermediate = std::move(allocDevice<elementType>(elementsE));
 
                 auto gridDim  = dim3(ceilDiv(elementsE, blockDim.x), 1, 1);
                 hipLaunchKernelGGL(
                                 (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
                                 (elementType*)E_d_real.get(), (elementType*)E_d_imag.get(), elementsE);
+                hipLaunchKernelGGL(
+                                (unpack<DataType, elementType>), gridDim, blockDim, 0, 0, (const DataType*)E,
+                                (elementType*)E_d_real_intermediate.get(), (elementType*)E_d_imag_intermediate.get(), elementsE);
             }
 
             // Initialize the argument pointer
@@ -646,7 +655,7 @@ namespace hiptensor
                 A_d_real.get(),
                 B_d_real.get(),
                 std::array<const void*, 1>{D_d_real.get()},
-                E_d_real.get(),
+                E_d_real_intermediate.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
                 toCKVec(b_ns_ks_lengths),
@@ -668,7 +677,7 @@ namespace hiptensor
             mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(
                 A_d_imag.get(),
                 B_d_imag.get(),
-                std::array<const void*, 1>{E_d_real.get()},
+                std::array<const void*, 1>{E_d_real_intermediate.get()},
                 E_d_real.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
@@ -686,7 +695,7 @@ namespace hiptensor
                 A_d_real.get(),
                 B_d_imag.get(),
                 std::array<const void*, 1>{D_d_imag.get()},
-                E_d_imag.get(),
+                E_d_imag_intermediate.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
                 toCKVec(b_ns_ks_lengths),
@@ -702,7 +711,7 @@ namespace hiptensor
             mArgPtr.push_back(std::move(deviceOp->MakeArgumentPointer(
                 A_d_imag.get(),
                 B_d_real.get(),
-                std::array<const void*, 1>{E_d_imag.get()},
+                std::array<const void*, 1>{E_d_imag_intermediate.get()},
                 E_d_imag.get(),
                 toCKVec(a_ms_ks_lengths),
                 toCKVec(a_ms_ks_strides),
