@@ -57,8 +57,8 @@ namespace hiptensor
     bool ContractionTest::checkDevice(hipDataType datatype) const
     {
         return (isF32Supported()
-                && (datatype == HIP_R_32F || datatype == HIP_R_16F || datatype == HIP_R_16BF))
-               || (isF64Supported() && datatype == HIP_R_64F);
+                && (datatype == HIP_R_32F || datatype == HIP_R_16F || datatype == HIP_R_16BF || datatype == HIP_C_32F))
+               || (isF64Supported() && (datatype == HIP_R_64F || datatype == HIP_C_64F));
     }
 
     bool ContractionTest::checkSizes() const
@@ -117,14 +117,18 @@ namespace hiptensor
         auto DDataType = testType[3];
 
         EXPECT_TRUE((ADataType == HIP_R_16F) || (ADataType == HIP_R_16BF)
-                    || (ADataType == HIP_R_32F) || (ADataType == HIP_R_64F));
+                    || (ADataType == HIP_R_32F) || (ADataType == HIP_R_64F)
+                    || (ADataType == HIP_C_32F) || (ADataType == HIP_C_64F));
         EXPECT_TRUE((BDataType == HIP_R_16F) || (BDataType == HIP_R_16BF)
-                    || (BDataType == HIP_R_32F) || (BDataType == HIP_R_64F));
+                    || (BDataType == HIP_R_32F) || (BDataType == HIP_R_64F)
+                    || (BDataType == HIP_C_32F) || (BDataType == HIP_C_64F));
         EXPECT_TRUE((CDataType == HIP_R_16F) || (CDataType == HIP_R_16BF)
                     || (CDataType == HIP_R_32F) || (CDataType == HIP_R_64F)
+                    || (CDataType == HIP_C_32F) || (CDataType == HIP_C_64F)
                     || (CDataType == NONE_TYPE));
         EXPECT_TRUE((DDataType == HIP_R_16F) || (DDataType == HIP_R_16BF)
-                    || (DDataType == HIP_R_32F) || (DDataType == HIP_R_64F));
+                    || (DDataType == HIP_R_32F) || (DDataType == HIP_R_64F)
+                    || (DDataType == HIP_C_32F) || (DDataType == HIP_C_64F));
         EXPECT_TRUE(
             (computeType == HIPTENSOR_COMPUTE_16F) || (computeType == HIPTENSOR_COMPUTE_16BF)
             || (computeType == HIPTENSOR_COMPUTE_32F) || (computeType == HIPTENSOR_COMPUTE_64F));
@@ -290,6 +294,32 @@ namespace hiptensor
                                             elementsCD,
                                             std::numeric_limits<double>::signaling_NaN());
             }
+            else if(ADataType == HIP_C_32F && BDataType == HIP_C_32F && DDataType == HIP_C_32F)
+            {
+                // Initialize matrix data on device
+                fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceA().get(), elementsA);
+                fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceB().get(), elementsB);
+                if(CDataType == HIP_C_32F)
+                {
+                    fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceC().get(), elementsCD);
+                }
+                fillValLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceD().get(),
+                                            elementsCD,
+                                            std::numeric_limits<hipFloatComplex>::signaling_NaN());
+            }
+           else if(ADataType == HIP_C_64F && BDataType == HIP_C_64F && DDataType == HIP_C_64F)
+            {
+                // Initialize matrix data on device
+                fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceA().get(), elementsA);
+                fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceB().get(), elementsB);
+                if(CDataType == HIP_C_64F)
+                {
+                    fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceC().get(), elementsCD);
+                }
+                fillValLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceD().get(),
+                                            elementsCD,
+                                            std::numeric_limits<hipDoubleComplex>::signaling_NaN());
+            }
 
             resource->copyDeviceToHostAll(elementBytes);
 
@@ -446,7 +476,7 @@ namespace hiptensor
                     hiptensorPrintArrayElements<float>(stream, (float*)D.get(), elementsCD);
                     stream << std::endl;
                 }
-                else
+                else if(DDataType == HIP_R_64F)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<double>(
@@ -465,6 +495,48 @@ namespace hiptensor
 
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<double>(stream, (double*)D.get(), elementsCD);
+                    stream << std::endl;
+                }
+                else if(DDataType == HIP_C_32F)
+                {
+                    stream << "Tensor A elements:\n";
+                    hiptensorPrintArrayElements<hipFloatComplex>(
+                        stream, (hipFloatComplex*)resource->hostA().get(), elementsA);
+                    stream << std::endl;
+
+                    stream << "Tensor B elements:\n";
+                    hiptensorPrintArrayElements<hipFloatComplex>(
+                        stream, (hipFloatComplex*)resource->hostB().get(), elementsB);
+                    stream << std::endl;
+
+                    stream << "Tensor C elements:\n";
+                    hiptensorPrintArrayElements<hipFloatComplex>(
+                        stream, (hipFloatComplex*)resource->hostC().get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor D elements:\n";
+                    hiptensorPrintArrayElements<hipFloatComplex>(stream, (hipFloatComplex*)D.get(), elementsCD);
+                    stream << std::endl;
+                }
+                else if(DDataType == HIP_C_64F)
+                {
+                    stream << "Tensor A elements:\n";
+                    hiptensorPrintArrayElements<hipDoubleComplex>(
+                        stream, (hipDoubleComplex*)resource->hostA().get(), elementsA);
+                    stream << std::endl;
+
+                    stream << "Tensor B elements:\n";
+                    hiptensorPrintArrayElements<hipDoubleComplex>(
+                        stream, (hipDoubleComplex*)resource->hostB().get(), elementsB);
+                    stream << std::endl;
+
+                    stream << "Tensor C elements:\n";
+                    hiptensorPrintArrayElements<hipDoubleComplex>(
+                        stream, (hipDoubleComplex*)resource->hostC().get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor D elements:\n";
+                    hiptensorPrintArrayElements<hipDoubleComplex>(stream, (hipDoubleComplex*)D.get(), elementsCD);
                     stream << std::endl;
                 }
             }
@@ -566,12 +638,12 @@ namespace hiptensor
                         (hip_bfloat16*)reference.get(),
                         elementsCD);
             }
-            else if(DDataType == HIP_R_32F)
+            else if(DDataType == HIP_R_32F || DDataType == HIP_C_32F)
             {
                 std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<float>(
                     (float*)resource->deviceD().get(), (float*)reference.get(), elementsCD);
             }
-            else if(DDataType == HIP_R_64F)
+            else if(DDataType ==  HIP_R_64F || DDataType == HIP_C_64F)
             {
                 std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<double>(
                     (double*)resource->deviceD().get(), (double*)reference.get(), elementsCD);

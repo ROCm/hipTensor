@@ -79,6 +79,14 @@ namespace hiptensor
         {
             return sizeof(uint64_t);
         }
+        else if(id == HIP_C_32F)
+        {
+            return sizeof(hipFloatComplex);
+        }
+        else if(id == HIP_C_64F)
+        {
+            return sizeof(hipDoubleComplex);
+        }
         else if(id == NONE_TYPE)
         {
             return 0;
@@ -102,11 +110,11 @@ namespace hiptensor
         {
             return HIPTENSOR_COMPUTE_16F;
         }
-        else if(hipType == HIP_R_32F)
+        else if(hipType == HIP_R_32F || hipType == HIP_C_32F)
         {
             return HIPTENSOR_COMPUTE_32F;
         }
-        else if(hipType == HIP_R_64F)
+        else if(hipType == HIP_R_64F || hipType == HIP_C_64F)
         {
             return HIPTENSOR_COMPUTE_64F;
         }
@@ -187,11 +195,11 @@ bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
     {
         return (computeType == HIPTENSOR_COMPUTE_16F);
     }
-    else if(hipType == HIP_R_32F)
+    else if(hipType == HIP_R_32F || hipType == HIP_C_32F)
     {
         return (computeType == HIPTENSOR_COMPUTE_32F);
     }
-    else if(hipType == HIP_R_64F)
+    else if(hipType == HIP_R_64F || hipType == HIP_C_64F)
     {
         return (computeType == HIPTENSOR_COMPUTE_64F);
     }

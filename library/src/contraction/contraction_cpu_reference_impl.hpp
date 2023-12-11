@@ -156,62 +156,127 @@ namespace hiptensor
                         indices.begin(), indices.end(), strides.begin(), std::size_t{0});
                 };
 
-                auto f_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
-                    AccDataType accum = 0;
+                if constexpr((std::is_same_v<ADataType, hipFloatComplex> &&
+                              std::is_same_v<BDataType, hipFloatComplex> &&
+                              std::is_same_v<EDataType, hipFloatComplex>) ||
+                              (std::is_same_v<ADataType, hipDoubleComplex> &&
+                               std::is_same_v<BDataType, hipDoubleComplex> &&
+                               std::is_same_v<EDataType, hipDoubleComplex>))
+                {
+                    auto f_ms_ns_complex = [&](auto m0, auto m1, auto n0, auto n1) {
+                            HIP_vector_type<AccDataType, 2> accum{0};
 
-                    auto K0 = arg.mA_ms_ks_lengths[2];
-                    auto K1 = arg.mA_ms_ks_lengths[3];
+                            auto K0 = arg.mA_ms_ks_lengths[2];
+                            auto K1 = arg.mA_ms_ks_lengths[3];
 
-                    for(size_t k0 = 0; k0 < K0; k0++)
-                    {
-                        for(size_t k1 = 0; k1 < K1; k1++)
+                            for(size_t k0 = 0; k0 < K0; k0++)
+                            {
+                                for(size_t k1 = 0; k1 < K1; k1++)
+                                {
+                                    auto indexA
+                                        = offset(std::vector<size_t>{m0, m1, k0, k1}, arg.mA_ms_ks_strides);
+                                    auto indexB
+                                        = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
+
+                                    ADataType valA = ((ADataType*)arg.mA)[indexA];
+                                    BDataType valB = ((BDataType*)arg.mB)[indexB];
+
+                                    // Mult / accum
+                                    if constexpr(std::is_same_v<AccDataType, float>)
+                                    {
+                                        accum = hipCaddf(accum, hipCmulf(valA, valB));
+                                    }
+                                    else if constexpr(std::is_same_v<AccDataType, double>)
+                                    {
+                                        accum = hipCadd(accum, hipCmul(valA, valB));
+                                    }
+                                }
+                            }
+
+                            auto indexE = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mE_ms_ns_strides);
+
+                            if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                        ck::tensor_operation::element_wise::Scale>)
+                            {
+                                ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.scale_ * (EDataType)accum;
+                            }
+                            else // bilinear
+                            {
+                                // NumDTensor will be 1 due to SFINAE of this class
+                                auto indexD
+                                    = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
+
+                                ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.alpha_ * (EDataType)accum +
+                                                               arg.mOpCDE.beta_ * ((EDataType*)(arg.mD[0]))[indexD];
+                            }
+                        };
+
+                    make_ParallelTensorFunctor(f_ms_ns_complex,
+                                               arg.mE_ms_ns_lengths[0],
+                                               arg.mE_ms_ns_lengths[1],
+                                               arg.mE_ms_ns_lengths[2],
+                                               arg.mE_ms_ns_lengths[3])(
+                        std::thread::hardware_concurrency());
+                }
+                else
+                {
+                    auto f_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
+                        AccDataType accum = 0;
+
+                        auto K0 = arg.mA_ms_ks_lengths[2];
+                        auto K1 = arg.mA_ms_ks_lengths[3];
+
+                        for(size_t k0 = 0; k0 < K0; k0++)
                         {
-                            auto indexA
-                                = offset(std::vector<size_t>{m0, m1, k0, k1}, arg.mA_ms_ks_strides);
-                            auto indexB
-                                = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
+                            for(size_t k1 = 0; k1 < K1; k1++)
+                            {
+                                auto indexA
+                                    = offset(std::vector<size_t>{m0, m1, k0, k1}, arg.mA_ms_ks_strides);
+                                auto indexB
+                                    = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
 
-                            AccDataType valA;
-                            AccDataType valB;
+                                AccDataType valA;
+                                AccDataType valB;
 
-                            // Element-wise ops
-                            arg.mOpA(
-                                valA,
-                                ck::type_convert<ComputeDataType>(((ADataType*)arg.mA)[indexA]));
-                            arg.mOpB(
-                                valB,
-                                ck::type_convert<ComputeDataType>(((BDataType*)arg.mB)[indexB]));
+                                // Element-wise ops
+                                arg.mOpA(
+                                    valA,
+                                    ck::type_convert<ComputeDataType>(((ADataType*)arg.mA)[indexA]));
+                                arg.mOpB(
+                                    valB,
+                                    ck::type_convert<ComputeDataType>(((BDataType*)arg.mB)[indexB]));
 
-                            // Mult / accum
-                            accum += valA * valB;
+                                // Mult / accum
+                                accum += valA * valB;
+                            }
                         }
-                    }
 
-                    auto indexE = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mE_ms_ns_strides);
+                        auto indexE = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mE_ms_ns_strides);
 
-                    if constexpr(std::is_same_v<CDEElementwiseOperation,
-                                                ck::tensor_operation::element_wise::Scale>)
-                    {
-                        arg.mOpCDE(((EDataType*)arg.mE)[indexE],
-                                   ck::type_convert<EDataType>(accum));
-                    }
-                    else // bilinear
-                    {
-                        // NumDTensor will be 1 due to SFINAE of this class
-                        auto indexD
-                            = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
-                        arg.mOpCDE(((EDataType*)arg.mE)[indexE],
-                                   ck::type_convert<EDataType>(accum),
-                                   ((EDataType*)(arg.mD[0]))[indexD]);
-                    }
-                };
+                        if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                    ck::tensor_operation::element_wise::Scale>)
+                        {
+                            arg.mOpCDE(((EDataType*)arg.mE)[indexE],
+                                    ck::type_convert<EDataType>(accum));
+                        }
+                        else // bilinear
+                        {
+                            // NumDTensor will be 1 due to SFINAE of this class
+                            auto indexD
+                                = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
+                            arg.mOpCDE(((EDataType*)arg.mE)[indexE],
+                                    ck::type_convert<EDataType>(accum),
+                                    ((EDataType*)(arg.mD[0]))[indexD]);
+                        }
+                    };
 
-                make_ParallelTensorFunctor(f_ms_ns,
-                                           arg.mE_ms_ns_lengths[0],
-                                           arg.mE_ms_ns_lengths[1],
-                                           arg.mE_ms_ns_lengths[2],
-                                           arg.mE_ms_ns_lengths[3])(
-                    std::thread::hardware_concurrency());
+                    make_ParallelTensorFunctor(f_ms_ns,
+                                               arg.mE_ms_ns_lengths[0],
+                                               arg.mE_ms_ns_lengths[1],
+                                               arg.mE_ms_ns_lengths[2],
+                                               arg.mE_ms_ns_lengths[3])(
+                        std::thread::hardware_concurrency());
+                }
 
                 return 0;
             }
