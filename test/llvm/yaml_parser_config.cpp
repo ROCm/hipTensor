@@ -110,6 +110,7 @@ namespace llvm
             static void enumeration(IO& io, hipDataType& value)
             {
                 io.enumCase(value, "HIP_R_16F", HIP_R_16F);
+                io.enumCase(value, "HIP_R_16BF", HIP_R_16BF);
                 io.enumCase(value, "HIP_R_32F", HIP_R_32F);
                 io.enumCase(value, "HIP_R_64F", HIP_R_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);

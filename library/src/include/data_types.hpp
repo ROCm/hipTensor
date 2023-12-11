@@ -65,6 +65,8 @@ namespace hiptensor
     template <typename T>
     T readVal(void const* value, hiptensorComputeType_t id);
 
+    void writeVal(void const* addr, hiptensorComputeType_t id, double value);
+
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);

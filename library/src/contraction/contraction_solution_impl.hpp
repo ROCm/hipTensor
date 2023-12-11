@@ -95,11 +95,13 @@ namespace hiptensor
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+                alphaF = hiptensor::readVal<float>(
+                    alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
             if(beta != nullptr)
             {
-                betaF = hiptensor::readVal<float>(beta, HipDataType_v<typename Traits::EDataT>);
+                betaF = hiptensor::readVal<float>(
+                    beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
             // CK has its own format for indices...
@@ -205,7 +207,8 @@ namespace hiptensor
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+                alphaF = hiptensor::readVal<float>(
+                    alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
             // CK has its own format for indices...
@@ -274,7 +277,8 @@ namespace hiptensor
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType = ADataType>
     std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions()
     {
         using ContractionOp
@@ -287,7 +291,8 @@ namespace hiptensor
                                                                        EDataType,
                                                                        AElementwiseOperation,
                                                                        BElementwiseOperation,
-                                                                       CDEElementwiseOperation>;
+                                                                       CDEElementwiseOperation,
+                                                                       ComputeDataType>;
 
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;
