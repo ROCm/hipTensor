@@ -28,35 +28,23 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
-#include <iostream>
 #include <iterator>
 #include <numeric>
 #include <unordered_map>
 
 #include "common.hpp"
 
-int main(int argc, char* argv[])
+template <typename ADataType,
+          typename BDataType,
+          typename CDataType,
+          typename floatTypeCompute,
+          hipDataType            typeA,
+          hipDataType            typeB,
+          hipDataType            typeC,
+          hiptensorComputeType_t typeCompute>
+int bilinearContractionSample()
 {
-    /***************************************
-   * Check device support                 *
-   **************************************/
-    if(!isF32Supported())
-    {
-        std::cout << "unsupported host device" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    typedef float ADataType;
-    typedef float BDataType;
-    typedef float CDataType;
-    typedef float floatTypeCompute;
-
-    hipDataType            typeA       = HIP_R_32F;
-    hipDataType            typeB       = HIP_R_32F;
-    hipDataType            typeC       = HIP_R_32F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
-
-    floatTypeCompute alpha = (floatTypeCompute)1.1f;
+    floatTypeCompute alpha = (floatTypeCompute)1.0f;
     floatTypeCompute beta  = (floatTypeCompute)1.0f;
 
     /**********************
@@ -74,12 +62,12 @@ int main(int argc, char* argv[])
 
     std::unordered_map<int, int64_t> extent;
 
-    extent['m'] = 5;
-    extent['n'] = 6;
-    extent['u'] = 3;
-    extent['v'] = 4;
-    extent['h'] = 3;
-    extent['k'] = 4;
+    extent['m'] = 4;
+    extent['n'] = 3;
+    extent['u'] = 4;
+    extent['v'] = 3;
+    extent['h'] = 6;
+    extent['k'] = 5;
 
     std::vector<int64_t> c_ms_ns_lengths;
     for(auto mode : modeC)
@@ -166,19 +154,41 @@ int main(int argc, char* argv[])
     /*******************
    * Initialize data
    *******************/
+    int initMethod = 1; // TODO read value from commandline
     for(int64_t i = 0; i < elementsA; i++)
     {
-        A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        if(initMethod == 0)
+        {
+            A[i] = ADataType(float(std::rand()) / float(RAND_MAX) - 0.5) * 100;
+        }
+        else
+        {
+            A[i] = (ADataType)(float(i) / 100);
+        }
     }
 
     for(int64_t i = 0; i < elementsB; i++)
     {
-        B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        if(initMethod == 0)
+        {
+            B[i] = BDataType(float(std::rand()) / float(RAND_MAX) - 0.5) * 100;
+        }
+        else
+        {
+            B[i] = (BDataType)(float(i) / 100);
+        }
     }
 
     for(int64_t i = 0; i < elementsC; i++)
     {
-        C[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        if(initMethod == 0)
+        {
+            C[i] = CDataType(float(std::rand()) / float(RAND_MAX) - 0.5) * 100;
+        }
+        else
+        {
+            C[i] = (BDataType)(float(i) / 100);
+        }
     }
 
     /********************************************
@@ -193,7 +203,6 @@ int main(int argc, char* argv[])
     /************************************************
    * Retrieve the memory alignment for each tensor
    ************************************************/
-
     uint32_t alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
         hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA));
@@ -278,11 +287,6 @@ int main(int argc, char* argv[])
     bool printElements = false;
     bool storeElements = false;
 
-    if(printElements || storeElements)
-    {
-        CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
-    }
-
     if(printElements)
     {
         if(elementsA < MAX_ELEMENTS_PRINT_COUNT)
@@ -305,6 +309,15 @@ int main(int argc, char* argv[])
             hiptensorPrintArrayElements(std::cout, C, elementsC);
             std::cout << std::endl;
         }
+
+        CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
+
+        if(elementsC < MAX_ELEMENTS_PRINT_COUNT)
+        {
+            std::cout << "Tensor D elements:\n";
+            hiptensorPrintArrayElements(std::cout, C, elementsC);
+            std::cout << std::endl;
+        }
     }
 
     if(storeElements)
@@ -317,6 +330,12 @@ int main(int argc, char* argv[])
         tensorB.open("tensor_B.txt");
         hiptensorPrintElementsToFile(tensorB, B, elementsB, ", ");
         tensorB.close();
+
+        tensorC.open("tensor_C.txt");
+        hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
+        tensorC.close();
+
+        CHECK_HIP_ERROR(hipMemcpy(C, C_d, sizeC, hipMemcpyDeviceToHost));
 
         tensorC.open("tensor_C_scale_contraction_results.txt");
         hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");

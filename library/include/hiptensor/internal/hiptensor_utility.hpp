@@ -31,6 +31,7 @@
 #include <iostream>
 
 #include "../hiptensor_types.hpp"
+#include "types_ext.hpp"
 
 #ifndef CHECK_HIP_ERROR
 #define CHECK_HIP_ERROR(expression)                      \

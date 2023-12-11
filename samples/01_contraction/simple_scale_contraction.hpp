@@ -34,29 +34,17 @@
 
 #include "common.hpp"
 
-int main(int argc, char* argv[])
+template <typename ADataType,
+          typename BDataType,
+          typename DDataType,
+          typename floatTypeCompute,
+          hipDataType            typeA,
+          hipDataType            typeB,
+          hipDataType            typeD,
+          hiptensorComputeType_t typeCompute>
+int scaleContractionSample()
 {
-    /***************************************
-   * Check device support                 *
-   **************************************/
-    if(!isF32Supported())
-    {
-        std::cout << "unsupported host device" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    typedef float ADataType;
-    typedef float BDataType;
-    typedef float DDataType;
-    typedef float floatTypeCompute;
-
-    hipDataType            typeA       = HIP_R_32F;
-    hipDataType            typeB       = HIP_R_32F;
-    hipDataType            typeD       = HIP_R_32F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
-
     floatTypeCompute alpha = (floatTypeCompute)1.0f;
-
     /**********************
    * Computing: C_{m,n,u,v} = A_{m,n,h,k} B_{h,k,u,v}
    **********************/
@@ -71,12 +59,12 @@ int main(int argc, char* argv[])
 
     std::unordered_map<int, int64_t> extent;
 
-    extent['m'] = 5;
-    extent['n'] = 6;
-    extent['u'] = 3;
-    extent['v'] = 4;
-    extent['h'] = 3;
-    extent['k'] = 4;
+    extent['m'] = 4;
+    extent['n'] = 3;
+    extent['u'] = 4;
+    extent['v'] = 3;
+    extent['h'] = 6;
+    extent['k'] = 5;
 
     std::vector<int64_t> d_ms_ns_lengths;
     for(auto mode : modeD)
@@ -163,14 +151,29 @@ int main(int argc, char* argv[])
     /*******************
    * Initialize data
    *******************/
+    int initMethod = 1; // TODO read the value from command line
     for(int64_t i = 0; i < elementsA; i++)
     {
-        A[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        if(initMethod == 0)
+        {
+            A[i] = ADataType(float(std::rand()) / float(RAND_MAX) - 0.5) * 100;
+        }
+        else
+        {
+            A[i] = (ADataType)(float(i) / 100);
+        }
     }
 
     for(int64_t i = 0; i < elementsB; i++)
     {
-        B[i] = ((float(std::rand())) / float(RAND_MAX) - 0.5) * 100;
+        if(initMethod == 0)
+        {
+            B[i] = BDataType(float(std::rand()) / float(RAND_MAX) - 0.5) * 100;
+        }
+        else
+        {
+            B[i] = (BDataType)(float(i) / 100);
+        }
     }
 
     for(int64_t i = 0; i < elementsD; i++)
@@ -269,8 +272,6 @@ int main(int argc, char* argv[])
                                                workspace,
                                                worksize,
                                                0 /* stream */));
-
-    CHECK_HIP_ERROR(hipMemcpy(D, D_d, sizeD, hipMemcpyDeviceToHost));
 
 #if !NDEBUG
     bool printElements = false;
