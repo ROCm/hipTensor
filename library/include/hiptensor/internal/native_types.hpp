@@ -33,8 +33,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "xfloat32.hpp"
-
 namespace hiptensor
 {
 
@@ -84,9 +82,6 @@ namespace hiptensor
 #if !HIPTENSOR_NO_HALF
     using hfloat16_t = __half;
 #endif // !HIPTENSOR_NO_HALF
-
-    using xfloat32_t = hiptensor_xfloat32;
-
     // clang-format off
 
 
