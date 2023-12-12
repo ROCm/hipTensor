@@ -89,8 +89,8 @@ Test code for testing the scale contraction functionality and log metrics for F6
 Infrastructure
 ^^^^^^^^^^^^^^
 
-- CMake is used to build and package hipTensor. There are :code:`CMakeLists.txt` files throughout the code.
-- `Doxygen/Breathe/Sphinx/ReadtheDocs` are used to produce documentation. Content for the documentation is from:
+- CMake is used to build and package hipTensor. There are ``CMakeLists.txt`` files throughout the code.
+- ``Doxygen/Breathe/Sphinx/ReadTheDocs`` are used to produce documentation. Content for the documentation is from:
 
   - Doxygen comments in include files in the directory :code:`library/include`
   - files in the directory :code:`docs/`
