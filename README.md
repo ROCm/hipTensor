@@ -126,9 +126,9 @@ Tests API implementation of logger verbosity and functionality.
   <build_dir>/bin/logger_test
 ```
 
-## Running Contraction Tests
+## Running contraction tests
 
-### Bilinear contraction tests
+- Bilinear contraction tests
 
 Tests the API implementation of bilinear contraction algorithm with validation.
 
@@ -137,7 +137,7 @@ Tests the API implementation of bilinear contraction algorithm with validation.
   <build_dir>/bin/complex_bilinear_contraction_test
 ```
 
-### Scale contraction tests
+- Scale contraction tests
 
 Tests the API implementation of scale contraction algorithm with validation.
 
@@ -146,11 +146,9 @@ Tests the API implementation of scale contraction algorithm with validation.
   <build_dir>/bin/complex_scale_contraction_test
 ```
 
-## Running Permutation Tests
+## Running permutation tests
 
-### Permutation tests
-
-Tests API implementation of permutation algorithm with validation.
+Test API implementation of the permutation algorithm with validation.
 
 ```bash
   <build_dir>/bin/permutation_test
@@ -160,7 +158,7 @@ Tests API implementation of permutation algorithm with validation.
 
 These are stand-alone use-cases of the hipTensor contraction operations.
 
-### F32 Bilinear contraction
+### F32 bilinear contraction
 
 Demonstrates the API implementation of bilinear contraction operation without validation.
 
@@ -168,7 +166,7 @@ Demonstrates the API implementation of bilinear contraction operation without va
   <build_dir>/bin/simple_bilinear_contraction_<typeA>_<typeB>_<typeC>_<typeD>_compute_<computeType>
 ```
 
-### F32 Scale contraction
+### F32 scale contraction
 
 Demonstrates the API implementation of scale contraction operation without validation.
 
@@ -186,8 +184,8 @@ Demonstrates the API implementation of permutation operation without validation.
 
 ### Build Samples as external client
 
-Client application links to hipTensor library, and therefore hipTensor library
-needs to be installed before building client applications.
+The client application links to hipTensor library; therefore, you must install the
+hipTensor library before building client applications.
 
 ## Build
 
