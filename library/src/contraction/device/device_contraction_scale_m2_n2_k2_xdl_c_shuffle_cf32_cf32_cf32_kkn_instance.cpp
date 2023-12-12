@@ -57,7 +57,7 @@ namespace ck
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] = E[m0, m1, n0, n1]
                 // k/k/n are the fast changing dimension for A/B/E
-                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_kkn_instance
+                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance
                     = std::tuple<
                         // clang-format off
         //#####################################| NumDimM| NumDimN| NumDimK|      AData|     BData|     AccData|         CShuffle|     DsData|     EData|              A|              B|              CDE|           GEMM| NumGemmK| Block|  MPer|  NPer|  KPer| AK1| BK1| MPer| NPer| MXdl| NXdl|  ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockLds|  BBlockTransfer| BBlockTransfer| BBlockTransfer| BlockTransfer| BBlockTransfer| BBlockTransfer| BBlockLds|    CShuffle|    CShuffle| CBlockTransferClusterLengths|  CBlockTransfer|         Compute|
@@ -80,7 +80,7 @@ namespace ck
                         // clang-format on
                         >;
 
-                void add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_kkn_instance(
+                void add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
                     std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                            2,
                                                                            2,
@@ -95,9 +95,60 @@ namespace ck
                 {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_kkn_instance{});
+                        device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance{});
                 }
 
+                // Contraction + Scale
+                template <index_t NumDimM,
+                        index_t NumDimN,
+                        index_t NumDimK,
+                        typename ADataType,
+                        typename BDataType,
+                        typename EDataType,
+                        typename ComputeDataType>
+                struct DeviceOperationInstanceFactory<ck::tensor_operation::device::DeviceContractionMultipleD<
+                    NumDimM,
+                    NumDimN,
+                    NumDimK,
+                    HIP_vector_type<ADataType, 2>,
+                    HIP_vector_type<BDataType, 2>,
+                    ck::Tuple<>,
+                    HIP_vector_type<EDataType, 2>,
+                    ck::tensor_operation::element_wise::PassThrough,
+                    ck::tensor_operation::element_wise::PassThrough,
+                    ck::tensor_operation::element_wise::Scale,
+                    ComputeDataType>>
+                {
+                    using DeviceOp = DeviceContractionMultipleD<NumDimM,
+                                                                NumDimN,
+                                                                NumDimK,
+                                                                HIP_vector_type<ADataType, 2>,
+                                                                HIP_vector_type<BDataType, 2>,
+                                                                ck::Tuple<>,
+                                                                HIP_vector_type<EDataType, 2>,
+                                                                ck::tensor_operation::element_wise::PassThrough,
+                                                                ck::tensor_operation::element_wise::PassThrough,
+                                                                ck::tensor_operation::element_wise::Scale,
+                                                                ComputeDataType>;
+
+                    static auto GetInstances()
+                    {
+                        std::vector<std::unique_ptr<DeviceOp>> op_ptrs;
+
+                        if constexpr(is_same_v<ADataType, float> && is_same_v<BDataType, float> &&
+                                    is_same_v<EDataType, float>)
+                        {
+                            if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
+                            {
+                                if constexpr(is_same_v<ComputeDataType, float>)
+                                {
+                                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
+                                        op_ptrs);
+                                }
+                            }
+                        }
+                    }
+                };
             } // namespace instance
         } // namespace device
     } // namespace tensor_operation
