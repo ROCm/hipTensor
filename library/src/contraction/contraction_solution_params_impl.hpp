@@ -35,9 +35,9 @@
 namespace std
 {
     template <>
-    struct std::hash<hiptensor::ContractionSolutionParams>
+    struct hash<hiptensor::ContractionSolutionParams>
     {
-        std::size_t operator()(hiptensor::ContractionSolutionParams const& s) const noexcept
+        size_t operator()(hiptensor::ContractionSolutionParams const& s) const noexcept
         {
             return hiptensor::Hash{}(s.dimsM(),
                                      s.dimsN(),
