@@ -128,7 +128,7 @@ Tests API implementation of logger verbosity and functionality.
 
 ## Running contraction tests
 
-- Bilinear contraction tests
+* Bilinear contraction tests
 
 Tests the API implementation of bilinear contraction algorithm with validation.
 
@@ -137,7 +137,7 @@ Tests the API implementation of bilinear contraction algorithm with validation.
   <build_dir>/bin/complex_bilinear_contraction_test
 ```
 
-- Scale contraction tests
+* Scale contraction tests
 
 Tests the API implementation of scale contraction algorithm with validation.
 
