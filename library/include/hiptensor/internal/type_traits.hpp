@@ -26,8 +26,10 @@
 
 #ifndef HIPTENSOR_TYPE_TRAITS_HPP
 #define HIPTENSOR_TYPE_TRAITS_HPP
-#include "native_types.hpp"
 #include <cfloat>
+
+#include "config.hpp"
+#include "native_types.hpp"
 
 namespace hiptensor
 {
@@ -69,9 +71,8 @@ namespace hiptensor
         {
             union
             {
-                uint32_t   i32;
-                float32_t  f32;
-                xfloat32_t xf32;
+                uint32_t  i32;
+                float32_t f32;
             };
             constexpr Fp32Bits(uint32_t initVal)
                 : i32(initVal)
@@ -79,10 +80,6 @@ namespace hiptensor
             }
             constexpr Fp32Bits(float32_t initVal)
                 : f32(initVal)
-            {
-            }
-            constexpr Fp32Bits(xfloat32_t initVal)
-                : xf32(initVal)
             {
             }
         };
@@ -273,68 +270,6 @@ namespace std
         hiptensor::detail::Fp16Bits eps(static_cast<uint16_t>(0x7FC0));
         return eps.b16;
     }
-
-    ///////////////////////////////////////////////////////////
-    ///////////  std::numeric_limits<xfloat32_t>  //////////////
-    ///////////////////////////////////////////////////////////
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::epsilon() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(FLT_EPSILON));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::infinity() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(HUGE_VALF));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::lowest() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(-FLT_MAX));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::max() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(FLT_MAX));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::min() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(FLT_MIN));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::quiet_NaN() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<uint32_t>(0x7FF80000));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::signaling_NaN() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<uint32_t>(0x7FF00000));
-        return eps.xf32;
-    }
-    // @endcond
-
 } // namespace std
 
 namespace hiptensor
@@ -376,13 +311,6 @@ namespace hiptensor
     constexpr auto maxExactInteger() -> int32_t
     {
         // b16 mantissa is 7 bits
-        return ((int32_t)1 << 8);
-    }
-
-    template <typename T, typename std::enable_if_t<std::is_same<T, xfloat32_t>::value, int> = 0>
-    constexpr auto maxExactInteger() -> int32_t
-    {
-        // xf32 mantissa is 7 bits
         return ((int32_t)1 << 8);
     }
 } // namespace hiptensor
