@@ -29,6 +29,14 @@
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_knnn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_mknn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_bf16_compute_f32_mnnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_kknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_knnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_mknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_mnnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_kknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_knnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_mknn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_mnnn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_kknn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_knnn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_f16_compute_f32_mknn_instance.cpp
@@ -45,7 +53,6 @@
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_knnn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_mknn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_f32_mnnn_instance.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_kknn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_compute_f32_kknn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_compute_f32_knnn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_f64_compute_f32_mknn_instance.cpp
@@ -58,6 +65,14 @@
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_knn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_mkn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_bf16_bf16_bf16_compute_f32_mnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_knn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_mkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_mnn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_kkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_knn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mkn_instance.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mnn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_kkn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_knn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f16_f16_f16_compute_f32_mkn_instance.cpp
@@ -74,7 +89,6 @@
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_knn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_mkn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f32_f32_f32_mnn_instance.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_compute_f32_kkn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_compute_f32_knn_instance.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/device_contraction_scale_m2_n2_k2_xdl_c_shuffle_f64_f64_f64_compute_f32_mkn_instance.cpp

@@ -33,6 +33,12 @@
 #include "common.hpp"
 #include "device_contraction_scale_complex.hpp"
 
+#include "ck/ck.hpp"
+#include "ck/library/tensor_operation_instance/add_device_operation_instance.hpp"
+#include "ck/library/tensor_operation_instance/gpu/contraction/device_contraction_instance.hpp"
+#include "ck/tensor_operation/gpu/device/device_contraction_multiple_d.hpp"
+#include "ck/tensor_operation/gpu/element/element_wise_operation.hpp"
+
 namespace ck
 {
     namespace tensor_operation
@@ -46,109 +52,38 @@ namespace ck
                 using CF32        = hipFloatComplex;
                 using Empty_Tuple = ck::Tuple<>;
 
-                template <ck::index_t... Is>
-                using S = ck::Sequence<Is...>;
-
-                using PassThrough = ck::tensor_operation::element_wise::PassThrough;
-                using Scale       = ck::tensor_operation::element_wise::Scale;
-
-                static constexpr auto GemmMNKPadding
-                    = ck::tensor_operation::device::GemmSpecialization::MNKPadding;
-
-                // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] = E[m0, m1, n0, n1]
-                // k/k/n are the fast changing dimension for A/B/E
+                // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
+                // k/k/n/n are the fast changing dimension for A/B/D/E
                 using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance
-                    = std::tuple<
-                        // clang-format off
-        //#####################################| NumDimM| NumDimN| NumDimK|      AData|     BData|     AccData|         CShuffle|     DsData|     EData|              A|              B|              CDE|           GEMM| NumGemmK| Block|  MPer|  NPer|  KPer| AK1| BK1| MPer| NPer| MXdl| NXdl|  ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockTransfer| ABlockLds|  BBlockTransfer| BBlockTransfer| BBlockTransfer| BlockTransfer| BBlockTransfer| BBlockTransfer| BBlockLds|    CShuffle|    CShuffle| CBlockTransferClusterLengths|  CBlockTransfer|         Compute|
-        //#####################################|        |        |        |       Type|      Type|        Type|         DataType|       Type|      Type|    Elementwise|    Elementwise|      Elementwise| Specialization| Prefetch|  Size| Block| Block| Block|    |    |  XDL|  XDL|  Per|  Per|   ThreadCluster|  ThreadCluster| SrcAccessOrder|   SrcVectorDim|      SrcScalar|      DstScalar| AddExtraM|   ThreadCluster|  ThreadCluster| SrcAccessOrder|  SrcVectorDim|      SrcScalar|      DstScalar| AddExtraN| MXdlPerWave| NXdlPerWave|         _MBlock_MWaveMPerXdl| ScalarPerVector|            Data|
-        //#####################################|        |        |        |           |          |            |                 |           |          |      Operation|      Operation|        Operation|               |    Stage|      |      |      |      |    |    |     |     | Wave| Wave| Lengths_K0_M_K1|   ArrangeOrder|               |               |      PerVector|   PerVector_K1|          | Lengths_K0_N_K1|   ArrangeOrder|               |              |      PerVector|   PerVector_K1|          |  PerShuffle|  PerShuffle|         _NBlock_NWaveNPerXdl|   _NWaveNPerXdl|            Type|
-        //#####################################|        |        |        |           |          |            |                 |           |          |               |               |                 |               |         |      |      |      |      |    |    |     |     |     |     |                |               |               |               |               |               |          |                |               |               |              |               |               |          |            |            |                             |                |                |
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   256,   256,   128,    16,   4,   4,   32,   32,    4,    2,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   256,   128,   256,    16,   4,   4,   32,   32,    2,    4,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   128,   128,   128,    16,   4,   4,   32,   32,    4,    2,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1,  8, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   256,   128,   128,    16,   4,   4,   32,   32,    2,    2,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   128,   128,    64,    16,   4,   4,   32,   32,    2,    2,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1,  8>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   128,    64,   128,    16,   4,   4,   32,   32,    2,    2,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1,  8, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,    64,    64,    64,    16,   4,   4,   32,   32,    2,    2,     S<4, 16, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 16, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1,  8, 1,  8>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   256,   128,    64,    16,   4,   4,   32,   32,    2,    1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   256,    64,   128,    16,   4,   4,   32,   32,    1,    2,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 64, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   128,   128,    32,    16,   4,   4,   32,   32,    2,    1,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1, 16, 1,  8>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,   128,    32,   128,    16,   4,   4,   32,   32,    1,    2,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 32, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1,  8, 1, 16>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,    64,    64,    32,    16,   4,   4,   32,   32,    2,    1,     S<4, 16, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 16, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1,  8, 1,  8>,               4, F32           >,
-        DeviceContractionMultipleD_Xdl_CShuffle<       2,       2,       2,  CF32     , CF32      , F32       , F32             , Empty_Tuple, CF32    , PassThrough   , PassThrough   , Scale           , GemmMNKPadding,        1,    64,    32,    64,    16,   4,   4,   32,   32,    1,    2,     S<4, 16, 1>,     S<1, 0, 2>,     S<1, 0, 2>,              2,              4,              4,         1,     S<4, 16, 1>,     S<1, 0, 2>,     S<1, 0, 2>,             2,              4,              4,         1,           1,           1,              S<1,  8, 1,  8>,               4, F32           >
-                        // clang-format on
-                        >;
-
-                void add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
-                    std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                           2,
-                                                                           2,
-                                                                           CF32,
-                                                                           CF32,
-                                                                           Empty_Tuple,
-                                                                           CF32,
-                                                                           PassThrough,
-                                                                           PassThrough,
-                                                                           Scale,
-                                                                           F32>>>& instances)
-                {
+                    = device_contraction_kk_instance<CF32,
+                                                     CF32,
+                                                     F32,
+                                                     F32,
+                                                     Empty_Tuple,
+                                                     CF32,
+                                                     F32,
+                                                     PassThrough,
+                                                     PassThrough,
+                                                     Scale>;
+                void
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
+                                                                               2,
+                                                                               2,
+                                                                               CF32,
+                                                                               CF32,
+                                                                               Empty_Tuple,
+                                                                               CF32,
+                                                                               PassThrough,
+                                                                               PassThrough,
+                                                                               Scale,
+                                                                               F32>>>& instances)
+                    {
                     add_device_operation_instances(
                         instances,
                         device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance{});
                 }
 
-                // Contraction + Scale
-                template <index_t NumDimM,
-                        index_t NumDimN,
-                        index_t NumDimK,
-                        typename ADataType,
-                        typename BDataType,
-                        typename EDataType,
-                        typename ComputeDataType>
-                struct DeviceOperationInstanceFactory<ck::tensor_operation::device::DeviceContractionMultipleD<
-                    NumDimM,
-                    NumDimN,
-                    NumDimK,
-                    HIP_vector_type<ADataType, 2>,
-                    HIP_vector_type<BDataType, 2>,
-                    ck::Tuple<>,
-                    HIP_vector_type<EDataType, 2>,
-                    ck::tensor_operation::element_wise::PassThrough,
-                    ck::tensor_operation::element_wise::PassThrough,
-                    ck::tensor_operation::element_wise::Scale,
-                    ComputeDataType>>
-                {
-                    using DeviceOp = DeviceContractionMultipleD<NumDimM,
-                                                                NumDimN,
-                                                                NumDimK,
-                                                                HIP_vector_type<ADataType, 2>,
-                                                                HIP_vector_type<BDataType, 2>,
-                                                                ck::Tuple<>,
-                                                                HIP_vector_type<EDataType, 2>,
-                                                                ck::tensor_operation::element_wise::PassThrough,
-                                                                ck::tensor_operation::element_wise::PassThrough,
-                                                                ck::tensor_operation::element_wise::Scale,
-                                                                ComputeDataType>;
-
-                    static auto GetInstances()
-                    {
-                        std::vector<std::unique_ptr<DeviceOp>> op_ptrs;
-
-                        if constexpr(is_same_v<ADataType, float> && is_same_v<BDataType, float> &&
-                                    is_same_v<EDataType, float>)
-                        {
-                            if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
-                            {
-                                if constexpr(is_same_v<ComputeDataType, float>)
-                                {
-                                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
-                                        op_ptrs);
-                                }
-                            }
-                        }
-                    }
-                };
             } // namespace instance
         } // namespace device
     } // namespace tensor_operation

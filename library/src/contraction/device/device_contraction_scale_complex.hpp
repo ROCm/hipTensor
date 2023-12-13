@@ -301,10 +301,10 @@ namespace ck
                     using BilinearDecompArgument = typename BilinearDecompOp::Argument;
 
                     Argument(Argument&& other)
-                        : mScaleArgs({std::move(other.mScaleArgs)})
+                        : mScaleArgs({std::move(other.mScaleArgs[0]),
+                                      std::move(other.mScaleArgs[1])})
                         , mBilinearArgs({std::move(other.mBilinearArgs[0]),
-                                         std::move(other.mBilinearArgs[1]),
-                                         std::move(other.mBilinearArgs[2])})
+                                         std::move(other.mBilinearArgs[1])})
                     {
                     }
 
@@ -312,10 +312,10 @@ namespace ck
                     {
                         if(this != &other)
                         {
-                            mScaleArgs       = std::move(other.mScaleArgs);
+                            mScaleArgs[0]       = std::move(other.mScaleArgs[0]);
+                            mScaleArgs[1]       = std::move(other.mScaleArgs[1]);
                             mBilinearArgs[0] = std::move(other.mBilinearArgs[0]);
                             mBilinearArgs[1] = std::move(other.mBilinearArgs[1]);
-                            mBilinearArgs[2] = std::move(other.mBilinearArgs[2]);
                         }
                         return *this;
                     }
@@ -350,11 +350,12 @@ namespace ck
                         mA_imag.reset(nullptr);
                         mB_real.reset(nullptr);
                         mB_imag.reset(nullptr);
-                        mD_real.reset(nullptr);
-                        mD_imag.reset(nullptr);
                         mE_real.reset(nullptr);
                         mE_imag.reset(nullptr);
+                        mE_real_buf.reset(nullptr);
+                        mE_imag_buf.reset(nullptr);
 
+                        mE_grid = p_e_grid;
                         auto blockDim = dim3(1024);
 
                         auto decompGrid = [blockDim](auto&       out_r,
@@ -380,12 +381,12 @@ namespace ck
 
                         // Decompose the incoming data from AOS->SOA
                         decompGrid(mA_real, mA_imag, (const ComplexA*)p_a_grid, elementsA);
-                        decompGrid(mB_real, mB_imag, (const ComplexA*)p_b_grid, elementsB);
-                        decompGrid(mE_real, mE_imag, (const ComplexA*)p_e_grid, elementsE);
+                        decompGrid(mB_real, mB_imag, (const ComplexB*)p_b_grid, elementsB);
+                        decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);
 
-                        // Allocate extra space bilinear op.
-                        mD_real = std::move(allocDevice<DecompDs>(elementsE));
-                        mD_imag = std::move(allocDevice<DecompDs>(elementsE));
+                        // Allocate extra space for intermediate results to bilinear op.
+                        mE_real_buf = std::move(allocDevice<DecompE>(elementsE));
+                        mE_imag_buf = std::move(allocDevice<DecompE>(elementsE));
 
                         auto allocScaleArgs = [a_ms_ks_lengths,
                                                a_ms_ks_strides,
@@ -450,44 +451,38 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        // Not sure about these...
-                        mScaleArgs = allocScaleArgs(mE_real, mA_real, mB_real, cde_element_op);
+                        mScaleArgs[0] = allocScaleArgs(mE_real_buf, mA_real, mB_real, cde_element_op);
+                        mScaleArgs[1] = allocScaleArgs(mE_imag_buf, mA_real, mB_imag, cde_element_op);
                         mBilinearArgs[0] = allocBilinearArgs(
                             mE_real,
                             mA_imag,
                             mB_imag,
-                            mE_real,
+                            mE_real_buf,
                             BilinearCDEElementwiseOperation{cde_element_op.scale_ * -1.0f, 1.0f});
                         mBilinearArgs[1] = allocBilinearArgs(
                             mE_imag,
-                            mA_real,
-                            mB_imag,
-                            mD_imag,
-                            BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});
-                        mBilinearArgs[2] = allocBilinearArgs(
-                            mE_imag,
                             mA_imag,
                             mB_real,
-                            mE_imag,
+                            mE_imag_buf,
                             BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});
                     }
 
                     void Print() const
                     {
-                        std::cout << "ScaleArgs:" << std::endl;
-                        mScaleArgs->Print();
+                        std::cout << "ScaleArgs0:" << std::endl;
+                        mScaleArgs[0]->Print();
+                        std::cout << "ScaleArgs1:" << std::endl;
+                        mScaleArgs[1]->Print();
                         std::cout << "BilinearArgs0:" << std::endl;
                         mBilinearArgs[0]->Print();
                         std::cout << "BilinearArgs1:" << std::endl;
                         mBilinearArgs[1]->Print();
-                        std::cout << "BilinearArgs2:" << std::endl;
-                        mBilinearArgs[2]->Print();
                     }
 
                     //  private:
                     // Each argument set for complex:
-                    std::unique_ptr<ScaleDecompArgument>    mScaleArgs;
-                    std::unique_ptr<BilinearDecompArgument> mBilinearArgs[3];
+                    std::unique_ptr<ScaleDecompArgument>    mScaleArgs[2];
+                    std::unique_ptr<BilinearDecompArgument> mBilinearArgs[2];
 
                     template <typename DataT>
                     using DeviceArray = std::unique_ptr<DataT, DeviceDeleter>;
@@ -497,10 +492,13 @@ namespace ck
                     DeviceArray<DecompA>  mA_imag;
                     DeviceArray<DecompB>  mB_real;
                     DeviceArray<DecompB>  mB_imag;
-                    DeviceArray<DecompDs> mD_real;
-                    DeviceArray<DecompDs> mD_imag;
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
+                    DeviceArray<DecompE>  mE_real_buf;
+                    DeviceArray<DecompE>  mE_imag_buf;
+
+                    void* mE_grid;
+                    index_t elementsE;
                 };
 
                 // Invoker
@@ -533,13 +531,20 @@ namespace ck
                     float Run(const Argument&     arg,
                               const StreamConfig& stream_config = StreamConfig{})
                     {
-                        auto r0 = mScaleInvoker->Run(arg.mScaleArgs.get(), stream_config);
-                        auto r1 = mBilinearInvoker->Run(arg.mBilinearArgs[0].get(), stream_config);
-                        auto r2 = mBilinearInvoker->Run(arg.mBilinearArgs[1].get(), stream_config);
-                        auto r3 = mBilinearInvoker->Run(arg.mBilinearArgs[2].get(), stream_config);
+                        auto r0 = mScaleInvoker->Run(arg.mScaleArgs[0].get(), stream_config);
+                        auto r1 = mScaleInvoker->Run(arg.mScaleArgs[1].get(), stream_config);
+                        auto r2 = mBilinearInvoker->Run(arg.mBilinearArgs[0].get(), stream_config);
+                        auto r3 = mBilinearInvoker->Run(arg.mBilinearArgs[1].get(), stream_config);
 
-                        // Reduce results?
-                        return r3;
+                        if(arg.mE_grid != nullptr)
+                        {
+                            auto blockDim = dim3(1024);
+                            auto gridDim = dim3(ceilDiv(arg.elementsE, blockDim.x));
+                            hiptensor::pack<<<gridDim, blockDim, 0>>>(
+                                arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
+                        }
+
+                        return r0 + r1 + r2 + r3;
                     }
 
                     // polymorphic
@@ -555,10 +560,10 @@ namespace ck
 
                 static bool IsSupportedArgument(const Argument& arg)
                 {
-                    return ScaleDecompOp::IsSupportedArgument(*(arg.mScaleArgs.get()))
+                    return ScaleDecompOp::IsSupportedArgument(*(arg.mScaleArgs[0].get()))
+                           && ScaleDecompOp::IsSupportedArgument(*(arg.mScaleArgs[1].get()))
                            && BilinearDecompOp::IsSupportedArgument(*(arg.mBilinearArgs[0].get()))
-                           && BilinearDecompOp::IsSupportedArgument(*(arg.mBilinearArgs[1].get()))
-                           && BilinearDecompOp::IsSupportedArgument(*(arg.mBilinearArgs[2].get()));
+                           && BilinearDecompOp::IsSupportedArgument(*(arg.mBilinearArgs[1].get()));
                 }
 
                 // polymorphic
@@ -576,13 +581,13 @@ namespace ck
                     // Call the base, then fwd to each arg.
                     this->BaseOperator::SetWorkSpacePointer(p_arg, p_workspace, s);
                     auto* arg = dynamic_cast<Argument*>(p_arg);
-                    this->BaseOperator::SetWorkSpacePointer(arg->mScaleArgs.get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(arg->mScaleArgs[0].get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(
+                        arg->mScaleArgs[1].get(), p_workspace, s);
                     this->BaseOperator::SetWorkSpacePointer(
                         arg->mBilinearArgs[0].get(), p_workspace, s);
                     this->BaseOperator::SetWorkSpacePointer(
                         arg->mBilinearArgs[1].get(), p_workspace, s);
-                    this->BaseOperator::SetWorkSpacePointer(
-                        arg->mBilinearArgs[2].get(), p_workspace, s);
                 }
 
                 static auto MakeArgument(

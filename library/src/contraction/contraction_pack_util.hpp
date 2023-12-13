@@ -91,7 +91,7 @@ namespace hiptensor
     auto allocDevice(int64_t numElements)
     {
         T* data;
-        CHECK_HIP_ERROR(hipMalloc(&data, numElements));
+        CHECK_HIP_ERROR(hipMalloc(&data, numElements * sizeof(T)));
         return std::unique_ptr<T, DeviceDeleter>(data, DeviceDeleter());
     }
 
