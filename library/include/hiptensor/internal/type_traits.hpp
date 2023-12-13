@@ -271,66 +271,6 @@ namespace std
         hiptensor::detail::Fp16Bits eps(static_cast<uint16_t>(0x7FC0));
         return eps.b16;
     }
-
-    ///////////////////////////////////////////////////////////
-    ///////////  std::numeric_limits<xfloat32_t>  //////////////
-    ///////////////////////////////////////////////////////////
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::epsilon() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(FLT_EPSILON));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::infinity() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(HUGE_VALF));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::lowest() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(-FLT_MAX));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::max() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(FLT_MAX));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::min() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<float>(FLT_MIN));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::quiet_NaN() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<uint32_t>(0x7FF80000));
-        return eps.xf32;
-    }
-
-    template <>
-    HIPTENSOR_HOST_DEVICE constexpr hiptensor::xfloat32_t
-        numeric_limits<hiptensor::xfloat32_t>::signaling_NaN() noexcept
-    {
-        hiptensor::detail::Fp32Bits eps(static_cast<uint32_t>(0x7FF00000));
-        return eps.xf32;
-    }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
     // @endcond
 } // namespace std
