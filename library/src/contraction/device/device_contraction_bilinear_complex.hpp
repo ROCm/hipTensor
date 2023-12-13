@@ -294,7 +294,7 @@ namespace ck
                             = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
                         auto elementsD = elementSpaceFromLengthsAndStrides(ds_ms_ns_lengths[0],
                                                                            ds_ms_ns_strides[0]);
-                        auto elementsE
+                        elementsE
                             = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
 
                         mA_real.reset(nullptr);
@@ -305,7 +305,10 @@ namespace ck
                         mD_imag.reset(nullptr);
                         mE_real.reset(nullptr);
                         mE_imag.reset(nullptr);
+                        mE_real_buf.reset(nullptr);
+                        mE_imag_buf.reset(nullptr);
 
+                        mE_grid = p_e_grid;
                         auto blockDim = dim3(1024);
 
                         auto decompGrid = [blockDim](auto&       out_r,
@@ -330,9 +333,13 @@ namespace ck
                         };
 
                         decompGrid(mA_real, mA_imag, (const ComplexA*)p_a_grid, elementsA);
-                        decompGrid(mB_real, mB_imag, (const ComplexA*)p_b_grid, elementsB);
-                        decompGrid(mD_real, mD_imag, (const ComplexA*)p_ds_grid[0], elementsD);
-                        decompGrid(mE_real, mE_imag, (const ComplexA*)p_e_grid, elementsE);
+                        decompGrid(mB_real, mB_imag, (const ComplexB*)p_b_grid, elementsB);
+                        decompGrid(mD_real, mD_imag, (const ComplexDs*)p_ds_grid[0], elementsD);
+                        decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);
+
+                        // Allocate extra space for intermediate results.
+                        mE_real_buf = std::move(allocDevice<DecompE>(elementsE));
+                        mE_imag_buf = std::move(allocDevice<DecompE>(elementsE));
 
                         auto allocArgs = [a_ms_ks_lengths,
                                           a_ms_ks_strides,
@@ -366,15 +373,16 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mArgs[0] = allocArgs(mE_real, mA_real, mB_real, mD_real, cde_element_op);
+                        mArgs[0] = allocArgs(mE_real_buf, mA_real, mB_real, mD_real, cde_element_op);
                         mArgs[1] = allocArgs(mE_real,
                                              mA_imag,
                                              mB_imag,
-                                             mE_real,
+                                             mE_real_buf,
                                              CDEElementwiseOperation{cde_element_op.alpha_ * -1.0f,
-                                                                     cde_element_op.beta_});
-                        mArgs[2] = allocArgs(mE_imag, mA_real, mB_imag, mD_imag, cde_element_op);
-                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag, cde_element_op);
+                                                                     1.0f});
+                        mArgs[2] = allocArgs(mE_imag_buf, mA_real, mB_imag, mD_imag, cde_element_op);
+                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag_buf,
+                                             CDEElementwiseOperation{cde_element_op.alpha_ , 1.0f});
                     }
 
                     void Print() const
@@ -405,6 +413,11 @@ namespace ck
                     DeviceArray<DecompDs> mD_imag;
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
+                    DeviceArray<DecompE>  mE_real_buf;
+                    DeviceArray<DecompE>  mE_imag_buf;
+
+                    void* mE_grid;
+                    index_t elementsE;
                 };
 
                 // Invoker
@@ -439,8 +452,15 @@ namespace ck
                         auto r2 = mInvoker->Run(arg.mArgs[2].get(), stream_config);
                         auto r3 = mInvoker->Run(arg.mArgs[3].get(), stream_config);
 
-                        // Reduce results?
-                        return r3;
+                        if(arg.mE_grid != nullptr)
+                        {
+                            auto blockDim = dim3(1024);
+                            auto gridDim = dim3(ceilDiv(arg.elementsE, blockDim.x));
+                            hiptensor::pack<<<gridDim, blockDim, 0>>>(
+                                arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
+                        }
+
+                        return r0 + r1 + r2 + r3;
                     }
 
                     // polymorphic

@@ -27,6 +27,10 @@
 #include "contraction_solution_instances.hpp"
 #include "contraction_solution.hpp"
 
+// Ensure access to
+#include "device/hiptensor_contraction_bilinear_instances.hpp"
+#include "device/hiptensor_contraction_scale_instances.hpp"
+
 namespace hiptensor
 {
     ContractionSolutionInstances::ContractionSolutionInstances()

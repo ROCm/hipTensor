@@ -47,41 +47,41 @@ namespace ck
         {
             namespace instance
             {
-                using F32        = float;
-                using CF32       = hipFloatComplex;
-                using CF32_Tuple = ck::Tuple<CF32>;
+                using F64        = double;
+                using CF64       = hipDoubleComplex;
+                using CF64_Tuple = ck::Tuple<CF64>;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/k/n/n are the fast changing dimension for A/B/D/E
-                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_kknn_instance
-                    = device_contraction_kk_instance<CF32,
-                                                     CF32,
-                                                     F32,
-                                                     F32,
-                                                     CF32_Tuple,
-                                                     CF32,
-                                                     F32,
-                                                     PassThrough,
-                                                     PassThrough,
-                                                     Bilinear>;
+                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_kknn_instance
+                    = device_contraction_f64_kk_instance<CF64,
+                                                         CF64,
+                                                         F64,
+                                                         F64,
+                                                         CF64_Tuple,
+                                                         CF64,
+                                                         F64,
+                                                         PassThrough,
+                                                         PassThrough,
+                                                         Bilinear>;
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_kknn_instance(
+                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_kknn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
-                                                                               CF32,
-                                                                               CF32,
-                                                                               CF32_Tuple,
-                                                                               CF32,
+                                                                               CF64,
+                                                                               CF64,
+                                                                               CF64_Tuple,
+                                                                               CF64,
                                                                                PassThrough,
                                                                                PassThrough,
                                                                                Bilinear,
-                                                                               F32>>>& instances)
+                                                                               F64>>>& instances)
                 {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_kknn_instance{});
+                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_kknn_instance{});
                 }
 
             } // namespace instance
