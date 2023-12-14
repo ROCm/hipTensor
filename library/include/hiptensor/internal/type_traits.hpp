@@ -272,7 +272,6 @@ namespace std
         return eps.b16;
     }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
-    // @endcond
 } // namespace std
 
 namespace hiptensor
