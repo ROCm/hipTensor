@@ -35,11 +35,11 @@
 namespace std
 {
     template <>
-    struct std::hash<hiptensor::ContractionSolution>
+    struct hash<hiptensor::ContractionSolution>
     {
-        std::size_t operator()(hiptensor::ContractionSolution const& s) const noexcept
+        size_t operator()(hiptensor::ContractionSolution const& s) const noexcept
         {
-            return std::hash<hiptensor::ContractionSolutionParams>{}(*s.params());
+            return hash<hiptensor::ContractionSolutionParams>{}(*s.params());
         }
     };
 }

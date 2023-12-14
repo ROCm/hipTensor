@@ -30,7 +30,7 @@ The hipTensor repository follows a workflow which dictates a /master branch wher
    the compute bound limit or memory bound limit.
 
 Style Guide
-==========
+===========
 
 This project follows the `CPP Core
 guidelines <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md>`__,

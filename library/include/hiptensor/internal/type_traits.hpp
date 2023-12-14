@@ -93,6 +93,7 @@ namespace std
     ///////////  std::numeric_limits<float16_t>  //////////////
     ///////////////////////////////////////////////////////////
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     template <>
     HIPTENSOR_HOST_DEVICE constexpr hiptensor::float16_t
         numeric_limits<hiptensor::float16_t>::epsilon() noexcept
@@ -270,6 +271,7 @@ namespace std
         hiptensor::detail::Fp16Bits eps(static_cast<uint16_t>(0x7FC0));
         return eps.b16;
     }
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 } // namespace std
 
 namespace hiptensor
