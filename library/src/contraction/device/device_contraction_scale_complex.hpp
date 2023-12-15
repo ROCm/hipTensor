@@ -343,7 +343,7 @@ namespace ck
                             = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides);
                         auto elementsB
                             = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
-                        auto elementsE
+                        elementsE
                             = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
 
                         mA_real.reset(nullptr);
@@ -352,8 +352,6 @@ namespace ck
                         mB_imag.reset(nullptr);
                         mE_real.reset(nullptr);
                         mE_imag.reset(nullptr);
-                        mE_real_buf.reset(nullptr);
-                        mE_imag_buf.reset(nullptr);
 
                         mE_grid = p_e_grid;
                         auto blockDim = dim3(1024);
@@ -383,10 +381,6 @@ namespace ck
                         decompGrid(mA_real, mA_imag, (const ComplexA*)p_a_grid, elementsA);
                         decompGrid(mB_real, mB_imag, (const ComplexB*)p_b_grid, elementsB);
                         decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);
-
-                        // Allocate extra space for intermediate results to bilinear op.
-                        mE_real_buf = std::move(allocDevice<DecompE>(elementsE));
-                        mE_imag_buf = std::move(allocDevice<DecompE>(elementsE));
 
                         auto allocScaleArgs = [a_ms_ks_lengths,
                                                a_ms_ks_strides,
@@ -451,19 +445,19 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mScaleArgs[0] = allocScaleArgs(mE_real_buf, mA_real, mB_real, cde_element_op);
-                        mScaleArgs[1] = allocScaleArgs(mE_imag_buf, mA_real, mB_imag, cde_element_op);
+                        mScaleArgs[0] = allocScaleArgs(mE_real, mA_real, mB_real, cde_element_op);
+                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, cde_element_op);
                         mBilinearArgs[0] = allocBilinearArgs(
                             mE_real,
                             mA_imag,
                             mB_imag,
-                            mE_real_buf,
+                            mE_real,
                             BilinearCDEElementwiseOperation{cde_element_op.scale_ * -1.0f, 1.0f});
                         mBilinearArgs[1] = allocBilinearArgs(
                             mE_imag,
                             mA_imag,
                             mB_real,
-                            mE_imag_buf,
+                            mE_imag,
                             BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});
                     }
 
@@ -494,8 +488,6 @@ namespace ck
                     DeviceArray<DecompB>  mB_imag;
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
-                    DeviceArray<DecompE>  mE_real_buf;
-                    DeviceArray<DecompE>  mE_imag_buf;
 
                     void* mE_grid;
                     index_t elementsE;
