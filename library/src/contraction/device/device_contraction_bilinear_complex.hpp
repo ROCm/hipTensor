@@ -305,8 +305,6 @@ namespace ck
                         mD_imag.reset(nullptr);
                         mE_real.reset(nullptr);
                         mE_imag.reset(nullptr);
-                        mE_real_buf.reset(nullptr);
-                        mE_imag_buf.reset(nullptr);
 
                         mE_grid = p_e_grid;
                         auto blockDim = dim3(1024);
@@ -336,10 +334,6 @@ namespace ck
                         decompGrid(mB_real, mB_imag, (const ComplexB*)p_b_grid, elementsB);
                         decompGrid(mD_real, mD_imag, (const ComplexDs*)p_ds_grid[0], elementsD);
                         decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);
-
-                        // Allocate extra space for intermediate results.
-                        mE_real_buf = std::move(allocDevice<DecompE>(elementsE));
-                        mE_imag_buf = std::move(allocDevice<DecompE>(elementsE));
 
                         auto allocArgs = [a_ms_ks_lengths,
                                           a_ms_ks_strides,
@@ -373,15 +367,15 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mArgs[0] = allocArgs(mE_real_buf, mA_real, mB_real, mD_real, cde_element_op);
+                        mArgs[0] = allocArgs(mE_real, mA_real, mB_real, mD_real, cde_element_op);
                         mArgs[1] = allocArgs(mE_real,
                                              mA_imag,
                                              mB_imag,
-                                             mE_real_buf,
+                                             mE_real,
                                              CDEElementwiseOperation{cde_element_op.alpha_ * -1.0f,
                                                                      1.0f});
-                        mArgs[2] = allocArgs(mE_imag_buf, mA_real, mB_imag, mD_imag, cde_element_op);
-                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag_buf,
+                        mArgs[2] = allocArgs(mE_imag, mA_real, mB_imag, mD_imag, cde_element_op);
+                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag,
                                              CDEElementwiseOperation{cde_element_op.alpha_ , 1.0f});
                     }
 
@@ -413,8 +407,6 @@ namespace ck
                     DeviceArray<DecompDs> mD_imag;
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
-                    DeviceArray<DecompE>  mE_real_buf;
-                    DeviceArray<DecompE>  mE_imag_buf;
 
                     void* mE_grid;
                     index_t elementsE;
