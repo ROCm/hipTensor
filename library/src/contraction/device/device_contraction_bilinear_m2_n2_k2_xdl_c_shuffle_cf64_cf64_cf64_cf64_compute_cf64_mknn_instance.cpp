@@ -51,21 +51,21 @@ namespace ck
                 using CF64_Tuple = ck::Tuple<CF64>;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
-                // m/n/n/n are the fast changing dimension for A/B/D/E
-                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_mnnn_instance
-                    = device_contraction_f64_mn_instance<CF64,
+                // m/k/n/n are the fast changing dimension for A/B/D/E
+                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance
+                    = device_contraction_f64_mk_instance<CF64,
                                                          CF64,
                                                          F64,
                                                          F64,
                                                          CF64_Tuple,
                                                          CF64,
-                                                         F64,
+                                                         CF64,
                                                          PassThrough,
                                                          PassThrough,
                                                          Bilinear>;
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_mnnn_instance(
+                   add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -76,11 +76,11 @@ namespace ck
                                                                                PassThrough,
                                                                                PassThrough,
                                                                                Bilinear,
-                                                                               F64>>>& instances)
+                                                                               CF64>>>& instances)
                 {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_mnnn_instance{});
+                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance{});
                 }
 
             } // namespace instance

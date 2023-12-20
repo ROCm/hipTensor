@@ -48,44 +48,44 @@ namespace ck
             namespace instance
             {
 
-                using F64         = double;
-                using CF64        = hipDoubleComplex;
+                using F32         = float;
+                using CF32        = hipFloatComplex;
                 using Empty_Tuple = ck::Tuple<>;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/k/n/n are the fast changing dimension for A/B/D/E
-                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_kkn_instance
-                    = device_contraction_f64_kk_instance<CF64,
-                                                         CF64,
-                                                         F64,
-                                                         F64,
-                                                         Empty_Tuple,
-                                                         CF64,
-                                                         F64,
-                                                         PassThrough,
-                                                         PassThrough,
-                                                         Scale>;
-
+                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance
+                    = device_contraction_kk_instance<CF32,
+                                                     CF32,
+                                                     F32,
+                                                     F32,
+                                                     Empty_Tuple,
+                                                     CF32,
+                                                     CF32,
+                                                     PassThrough,
+                                                     PassThrough,
+                                                     Scale>;
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_kkn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
-                                                                               CF64,
-                                                                               CF64,
+                                                                               CF32,
+                                                                               CF32,
                                                                                Empty_Tuple,
-                                                                               CF64,
+                                                                               CF32,
                                                                                PassThrough,
                                                                                PassThrough,
                                                                                Scale,
-                                                                               F64>>>& instances)
-                {
+                                                                               CF32>>>& instances)
+                    {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_kkn_instance{});
+                        device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance{});
                 }
 
-           } // namespace instance
+            } // namespace instance
         } // namespace device
     } // namespace tensor_operation
 } // namespace ck
+

@@ -152,7 +152,7 @@ namespace ck
                 CShuffleNXdlPerWavePerShuffle,
                 CDEBlockTransferClusterLengths_MBlock_MPerBlock_NBlock_NPerBlock,
                 CDEBlockTransferScalarPerVector_NPerBlock,
-                ComputeDataType,
+                HIP_vector_type<ComputeDataType, 2>,
                 LoopSched>
 
                 : public DeviceContractionMultipleD<NumDimM,
@@ -172,23 +172,25 @@ namespace ck
                 using CDEElementwiseOperation = Bilinear;
 
                 // Complex types given through the interface
-                using ComplexA  = HIP_vector_type<ADataType, 2>;
-                using ComplexB  = HIP_vector_type<BDataType, 2>;
-                using ComplexDs = HIP_vector_type<DsDataType, 2>;
-                using ComplexE  = HIP_vector_type<EDataType, 2>;
+                using ComplexA       = HIP_vector_type<ADataType, 2>;
+                using ComplexB       = HIP_vector_type<BDataType, 2>;
+                using ComplexDs      = HIP_vector_type<DsDataType, 2>;
+                using ComplexE       = HIP_vector_type<EDataType, 2>;
+                using ComplexCompute = HIP_vector_type<ComputeDataType, 2>;
 
                 // Internal functional types we will use to
                 // decompose the complex types and operate on.
-                using DecompA  = ADataType;
-                using DecompB  = BDataType;
-                using DecompDs = DsDataType;
-                using DecompE  = EDataType;
+                using DecompA       = ADataType;
+                using DecompB       = BDataType;
+                using DecompDs      = DsDataType;
+                using DecompE       = EDataType;
+                using DecompCompute = ComputeDataType;
 
                 // For complex types, we need to make sure that all of the types are the same
                 static_assert(std::is_same_v<DecompA, DecompB> && std::is_same_v<DecompB, DecompDs>
                                   && std::is_same_v<DecompDs, DecompE>
-                                  && std::is_same_v<DecompE, ComputeDataType>
-                                  && std::is_same_v<ComputeDataType, CShuffleDataType>,
+                                  && std::is_same_v<DecompE, DecompCompute>
+                                  && std::is_same_v<DecompCompute, CShuffleDataType>,
                               "Complex operations must have the same data type");
 
                 static_assert(std::is_same_v<DecompA, float> || std::is_same_v<DecompA, double>,
@@ -297,6 +299,8 @@ namespace ck
                         elementsE
                             = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
 
+                        element_op = cde_element_op;
+
                         mA_real.reset(nullptr);
                         mA_imag.reset(nullptr);
                         mB_real.reset(nullptr);
@@ -367,6 +371,19 @@ namespace ck
                                 cde_element_op);
                         };
 
+                        mArgs[0] = allocArgs(mE_real, mA_real, mB_real, mD_real, CDEElementwiseOperation{1.0f, 1.0f});
+                        mArgs[1] = allocArgs(mE_real,
+                                             mA_imag,
+                                             mB_imag,
+                                             mE_real,
+                                             CDEElementwiseOperation{-1.0f,
+                                                                     1.0f});
+                        mArgs[2] = allocArgs(mE_imag, mA_real, mB_imag, mD_imag, CDEElementwiseOperation{1.0f, 1.0f});
+                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag,
+                                             CDEElementwiseOperation{1.0f , 1.0f});
+
+                        // original
+                        /* TODO :Uncomment once done
                         mArgs[0] = allocArgs(mE_real, mA_real, mB_real, mD_real, cde_element_op);
                         mArgs[1] = allocArgs(mE_real,
                                              mA_imag,
@@ -376,7 +393,7 @@ namespace ck
                                                                      1.0f});
                         mArgs[2] = allocArgs(mE_imag, mA_real, mB_imag, mD_imag, cde_element_op);
                         mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag,
-                                             CDEElementwiseOperation{cde_element_op.alpha_ , 1.0f});
+                                             CDEElementwiseOperation{cde_element_op.alpha_ , 1.0f});*/
                     }
 
                     void Print() const
@@ -408,6 +425,7 @@ namespace ck
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
 
+                    CDEElementwiseOperation element_op{1.0f, 1.0f};
                     void* mE_grid;
                     index_t elementsE;
                 };
@@ -448,8 +466,12 @@ namespace ck
                         {
                             auto blockDim = dim3(1024);
                             auto gridDim = dim3(ceilDiv(arg.elementsE, blockDim.x));
-                            hiptensor::pack<<<gridDim, blockDim, 0>>>(
-                                arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
+                            hiptensor::mfma<<<gridDim, blockDim, 0>>>(
+                                arg.mE_real.get(), arg.mE_imag.get(), arg.mD_real.get(), arg.mD_imag.get(),
+                                ((ComplexE*)arg.mE_grid), arg.element_op.alpha_, arg.element_op.beta_,
+                                 arg.elementsE);
+                            //hiptensor::pack<<<gridDim, blockDim, 0>>>(
+                            //    arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
                         }
 
                         return r0 + r1 + r2 + r3;

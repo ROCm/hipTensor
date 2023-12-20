@@ -30,7 +30,7 @@
 #define CK_EXPERIMENTAL_USE_BUFFER_LOAD_OOB_CHECK_OFFSET_TRICK 1
 
 #include "common.hpp"
-#include "device_contraction_scale_complex.hpp"
+#include "device_contraction_bilinear_complex.hpp"
 
 #include "ck/ck.hpp"
 #include "ck/library/tensor_operation_instance/add_device_operation_instance.hpp"
@@ -46,41 +46,41 @@ namespace ck
         {
             namespace instance
             {
-                using F64         = double;
-                using CF64        = hipDoubleComplex;
-                using Empty_Tuple = ck::Tuple<>;
+                using F32        = float;
+                using CF32       = hipFloatComplex;
+                using CF32_Tuple = ck::Tuple<CF32>;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
-                // m/k/n/n are the fast changing dimension for A/B/D/E
-                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mkn_instance
-                    = device_contraction_f64_mk_instance<CF64,
-                                                         CF64,
-                                                         F64,
-                                                         F64,
-                                                         Empty_Tuple,
-                                                         CF64,
-                                                         F64,
-                                                         PassThrough,
-                                                         PassThrough,
-                                                         Scale>;
+                // m/n/n/n are the fast changing dimension for A/B/D/E
+                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance
+                    = device_contraction_mn_instance<CF32,
+                                                     CF32,
+                                                     F32,
+                                                     F32,
+                                                     CF32_Tuple,
+                                                     CF32,
+                                                     CF32,
+                                                     PassThrough,
+                                                     PassThrough,
+                                                     Bilinear>;
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mkn_instance(
+                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
-                                                                               CF64,
-                                                                               CF64,
-                                                                               Empty_Tuple,
-                                                                               CF64,
+                                                                               CF32,
+                                                                               CF32,
+                                                                               CF32_Tuple,
+                                                                               CF32,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F64>>>& instances)
+                                                                               Bilinear,
+                                                                               CF32>>>& instances)
                 {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mkn_instance{});
+                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance{});
                 }
 
             } // namespace instance

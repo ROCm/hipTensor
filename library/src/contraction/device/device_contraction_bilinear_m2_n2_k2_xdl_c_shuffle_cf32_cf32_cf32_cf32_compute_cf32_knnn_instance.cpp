@@ -52,20 +52,20 @@ namespace ck
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/n/n/n are the fast changing dimension for A/B/D/E
-                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_knnn_instance
+                using device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance
                     = device_contraction_kn_instance<CF32,
                                                      CF32,
                                                      F32,
                                                      F32,
                                                      CF32_Tuple,
                                                      CF32,
-                                                     F32,
+                                                     CF32,
                                                      PassThrough,
                                                      PassThrough,
                                                      Bilinear>;
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_knnn_instance(
+                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -76,11 +76,11 @@ namespace ck
                                                                                PassThrough,
                                                                                PassThrough,
                                                                                Bilinear,
-                                                                               F32>>>& instances)
+                                                                               CF32>>>& instances)
                 {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_knnn_instance{});
+                        device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance{});
                 }
 
             } // namespace instance
