@@ -43,8 +43,8 @@ namespace ck
             using hiptensor::DeviceDeleter;
             using hiptensor::elementSpaceFromLengthsAndStrides;
 
-            using Bilinear = ck::tensor_operation::element_wise::Bilinear;
-            using Scale    = ck::tensor_operation::element_wise::Scale;
+            using Bilinear          = ck::tensor_operation::element_wise::Bilinear;
+            using Scale             = ck::tensor_operation::element_wise::Scale;
 
             // The following is a specialization class for bilinear contractions of complex types.
             // For complex types, the contraction can be decomposed into 4 simple bilinear contractions of
@@ -152,7 +152,7 @@ namespace ck
                 CShuffleNXdlPerWavePerShuffle,
                 CDEBlockTransferClusterLengths_MBlock_MPerBlock_NBlock_NPerBlock,
                 CDEBlockTransferScalarPerVector_NPerBlock,
-                ComputeDataType,
+                HIP_vector_type<ComputeDataType, 2>,
                 LoopSched>
 
                 : public DeviceContractionMultipleD<NumDimM,
@@ -165,7 +165,7 @@ namespace ck
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
                                                     Scale,
-                                                    ComputeDataType>
+                                                    HIP_vector_type<ComputeDataType, 2>>
             {
                 // Complex device Op
                 using DeviceOp = DeviceContractionMultipleD_Xdl_CShuffle;
@@ -175,22 +175,24 @@ namespace ck
                 using BilinearCDEElementwiseOperation = Bilinear;
 
                 // Complex types given through the interface
-                using ComplexA  = HIP_vector_type<ADataType, 2>;
-                using ComplexB  = HIP_vector_type<BDataType, 2>;
-                using ComplexDs = HIP_vector_type<EDataType, 2>;
-                using ComplexE  = HIP_vector_type<EDataType, 2>;
+                using ComplexA       = HIP_vector_type<ADataType, 2>;
+                using ComplexB       = HIP_vector_type<BDataType, 2>;
+                using ComplexDs      = HIP_vector_type<EDataType, 2>;
+                using ComplexE       = HIP_vector_type<EDataType, 2>;
+                using ComplexCompute = HIP_vector_type<ComputeDataType, 2>;
 
                 // Internal functional types we will use to
                 // decompose the complex types and operate on.
-                using DecompA  = ADataType;
-                using DecompB  = BDataType;
-                using DecompDs = EDataType;
-                using DecompE  = EDataType;
+                using DecompA       = ADataType;
+                using DecompB       = BDataType;
+                using DecompDs      = EDataType;
+                using DecompE       = EDataType;
+                using DecompCompute = ComputeDataType;
 
                 // For complex types, we need to make sure that all of the types are the same
                 static_assert(std::is_same_v<DecompA, DecompB> && std::is_same_v<DecompB, DecompE>
-                                  && std::is_same_v<DecompE, ComputeDataType>
-                                  && std::is_same_v<ComputeDataType, CShuffleDataType>,
+                                  && std::is_same_v<DecompE, CShuffleDataType>
+                                  && std::is_same_v<DecompE, DecompCompute>,
                               "Complex operations must have the same data type");
 
                 static_assert(std::is_same_v<DecompA, float> || std::is_same_v<DecompA, double>,
@@ -243,7 +245,7 @@ namespace ck
                     CShuffleNXdlPerWavePerShuffle,
                     CDEBlockTransferClusterLengths_MBlock_MPerBlock_NBlock_NPerBlock,
                     CDEBlockTransferScalarPerVector_NPerBlock,
-                    ComputeDataType,
+                    DecompCompute,
                     LoopSched>;
 
                 // The internal operation that we will decompose the complex operations with.
@@ -291,7 +293,7 @@ namespace ck
                     CShuffleNXdlPerWavePerShuffle,
                     CDEBlockTransferClusterLengths_MBlock_MPerBlock_NBlock_NPerBlock,
                     CDEBlockTransferScalarPerVector_NPerBlock,
-                    ComputeDataType,
+                    DecompCompute,
                     LoopSched>;
 
                 // Argument
@@ -314,8 +316,8 @@ namespace ck
                         {
                             mScaleArgs[0]       = std::move(other.mScaleArgs[0]);
                             mScaleArgs[1]       = std::move(other.mScaleArgs[1]);
-                            mBilinearArgs[0] = std::move(other.mBilinearArgs[0]);
-                            mBilinearArgs[1] = std::move(other.mBilinearArgs[1]);
+                            mBilinearArgs[0]    = std::move(other.mBilinearArgs[0]);
+                            mBilinearArgs[1]    = std::move(other.mBilinearArgs[1]);
                         }
                         return *this;
                     }
@@ -345,6 +347,8 @@ namespace ck
                             = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
                         elementsE
                             = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
+
+                        element_op = cde_element_op;
 
                         mA_real.reset(nullptr);
                         mA_imag.reset(nullptr);
@@ -445,7 +449,26 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mScaleArgs[0] = allocScaleArgs(mE_real, mA_real, mB_real, cde_element_op);
+                        mScaleArgs[0]    = allocScaleArgs(mE_real, mA_real, mB_real, ScaleCDEElementwiseOperation{1.0f});
+                        mBilinearArgs[0] = allocBilinearArgs(
+                            mE_real,
+                            mA_imag,
+                            mB_imag,
+                            mE_real,
+                            BilinearCDEElementwiseOperation{-1.0f, 1.0f});
+
+                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, ScaleCDEElementwiseOperation{1.0f});
+                        mBilinearArgs[1] = allocBilinearArgs(
+                            mE_imag,
+                            mA_imag,
+                            mB_real,
+                            mE_imag,
+                            BilinearCDEElementwiseOperation{1.0f, 1.0f});
+
+
+                        // TODO UNCOMMENT WHEN DONE
+                        // original
+                        /*mScaleArgs[0] = allocScaleArgs(mE_real, mA_real, mB_real, cde_element_op);
                         mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, cde_element_op);
                         mBilinearArgs[0] = allocBilinearArgs(
                             mE_real,
@@ -458,7 +481,7 @@ namespace ck
                             mA_imag,
                             mB_real,
                             mE_imag,
-                            BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});
+                            BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});*/
                     }
 
                     void Print() const
@@ -489,6 +512,7 @@ namespace ck
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
 
+                    ScaleCDEElementwiseOperation element_op{1.0};
                     void* mE_grid;
                     index_t elementsE;
                 };
@@ -532,8 +556,11 @@ namespace ck
                         {
                             auto blockDim = dim3(1024);
                             auto gridDim = dim3(ceilDiv(arg.elementsE, blockDim.x));
-                            hiptensor::pack<<<gridDim, blockDim, 0>>>(
-                                arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
+
+                            hiptensor::multiply<<<gridDim, blockDim, 0>>>(
+                                arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.element_op.scale_, arg.elementsE);
+                            //hiptensor::pack<<<gridDim, blockDim, 0>>>(
+                            //    arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
                         }
 
                         return r0 + r1 + r2 + r3;

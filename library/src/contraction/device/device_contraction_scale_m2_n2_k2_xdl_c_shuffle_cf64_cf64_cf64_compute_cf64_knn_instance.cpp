@@ -51,21 +51,21 @@ namespace ck
                 using Empty_Tuple = ck::Tuple<>;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
-                // m/n/n/n are the fast changing dimension for A/B/D/E
-                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mnn_instance
-                    = device_contraction_f64_mn_instance<CF64,
+                // k/n/n/n are the fast changing dimension for A/B/D/E
+                using device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance
+                    = device_contraction_f64_kn_instance<CF64,
                                                          CF64,
                                                          F64,
                                                          F64,
                                                          Empty_Tuple,
                                                          CF64,
-                                                         F64,
+                                                         CF64,
                                                          PassThrough,
                                                          PassThrough,
                                                          Scale>;
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mnn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -76,12 +76,13 @@ namespace ck
                                                                                PassThrough,
                                                                                PassThrough,
                                                                                Scale,
-                                                                               F64>>>& instances)
+                                                                               CF64>>>& instances)
                 {
                     add_device_operation_instances(
                         instances,
-                        device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mnn_instance{});
+                       device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance{});
                 }
+
             } // namespace instance
         } // namespace device
     } // namespace tensor_operation

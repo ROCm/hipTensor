@@ -34,6 +34,55 @@
 namespace hiptensor
 {
     /**
+     * \brief This function performs multiply-accumulate of the form E = accum * alpha + D * beta
+     *
+     */
+    template <typename DataType>
+    __global__ void mfma(DataType* mE_real, DataType* mE_imag, DataType* mD_real, DataType* mD_imag,
+                         HIP_vector_type<DataType, 2> *mE_grid, HIP_vector_type<DataType, 2> alpha,
+                         HIP_vector_type<DataType, 2> beta, int length)
+    {
+        int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+        if(idx < length)
+        {
+            if constexpr(std::is_same_v<DataType, float>)
+            {
+                mE_grid[idx] = hipCaddf(hipCmulf(make_hipFloatComplex(mE_real[idx], mE_imag[idx]), alpha),
+                                        hipCmulf(make_hipFloatComplex(mD_real[idx], mD_imag[idx]), beta));
+            }
+            else if constexpr(std::is_same_v<DataType, double>)
+            {
+                mE_grid[idx] = hipCadd(hipCmul(make_hipDoubleComplex(mE_real[idx], mE_imag[idx]), alpha),
+                                       hipCmul(make_hipDoubleComplex(mD_real[idx], mD_imag[idx]), beta));
+           }
+        }
+    }
+
+    /**
+     * \brief This function performs multiply of the form C = accum * alpha
+     *
+     */
+    template <typename DataType>
+    __global__ void multiply(DataType* mE_real, DataType* mE_imag, HIP_vector_type<DataType, 2> *mE_grid,
+                             HIP_vector_type<DataType, 2> alpha, int length)
+    {
+        int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+        if(idx < length)
+        {
+            if constexpr(std::is_same_v<DataType, float>)
+            {
+                mE_grid[idx] = hipCmulf(make_hipFloatComplex(mE_real[idx], mE_imag[idx]), alpha);
+            }
+            else if constexpr(std::is_same_v<DataType, double>)
+            {
+                mE_grid[idx] = hipCmul(make_hipDoubleComplex(mE_real[idx], mE_imag[idx]), alpha);
+           }
+        }
+    }
+
+    /**
      * \brief This function unpacks structured data (hipFloatComplex / hipDoubleComplex)
      *        into non-structured data (float / double).
      */
@@ -98,4 +147,3 @@ namespace hiptensor
 } // namespace hiptensor
 
 #endif // HIPTENSOR_CONTRACTION_PACK_UTIL_HPP
-
