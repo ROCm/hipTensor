@@ -90,6 +90,8 @@ typedef enum
     HIPTENSOR_COMPUTE_8I   = (1U << 8U),
     HIPTENSOR_COMPUTE_32U  = (1U << 7U),
     HIPTENSOR_COMPUTE_32I  = (1U << 9U),
+    HIPTENSOR_COMPUTE_C32F = (1U << 11U),
+    HIPTENSOR_COMPUTE_C64F = (1U << 12U),
     HIPTENSOR_COMPUTE_NONE = 0
 } hiptensorComputeType_t;
 

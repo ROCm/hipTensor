@@ -44,6 +44,49 @@ namespace hiptensor
     // Used to map to empty tensors
     struct NoneType;
 
+    struct ScalarData
+    {
+        hiptensorComputeType_t type;
+        union
+        {
+            double           real;
+            hipDoubleComplex complex;
+        };
+
+        ScalarData() = default;
+        ScalarData(double value, hiptensorComputeType_t type)
+            : real(value)
+            , type(type)
+        {
+        }
+        ScalarData(hipFloatComplex value, hiptensorComputeType_t type)
+            : complex(hipComplexFloatToDouble(value))
+            , type(type)
+        {
+        }
+        ScalarData(hipDoubleComplex value, hiptensorComputeType_t type)
+            : complex(value)
+            , type(type)
+        {
+        }
+        operator float() const
+        {
+            return static_cast<float>(real);
+        }
+        operator double() const
+        {
+            return real;
+        }
+        operator hipFloatComplex() const
+        {
+            return hipComplexDoubleToFloat(complex);
+        }
+        operator hipDoubleComplex() const
+        {
+            return complex;
+        }
+    };
+
     static constexpr hipDataType NONE_TYPE = (hipDataType)31;
 
     // Map type to runtime HipDataType
@@ -67,6 +110,8 @@ namespace hiptensor
     T readVal(void const* value, hiptensorComputeType_t id);
 
     void writeVal(void const* addr, hiptensorComputeType_t id, double value);
+    void writeVal(void const* addr, hiptensorComputeType_t id, hipDoubleComplex value);
+    void writeVal(void const* addr, hiptensorComputeType_t id, hipFloatComplex value);
 
 } // namespace hiptensor
 

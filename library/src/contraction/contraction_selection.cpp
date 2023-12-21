@@ -81,10 +81,23 @@ namespace hiptensor
          * ```
          * Hence, the `alpha` and `bete` need to point to a ComputeData value
          */
-        double alpha = 0.0;
-        double beta  = 0.0;
-        writeVal(&alpha, computeType, 1.02);
-        writeVal(&beta, computeType, 1.03);
+        hipDoubleComplex alpha;
+        hipDoubleComplex beta;
+        if(computeType == HIPTENSOR_COMPUTE_C32F)
+        {
+            writeVal(&alpha, computeType, hipFloatComplex{1.02, 1.03});
+            writeVal(&beta, computeType, hipFloatComplex{1.04, 1.05});
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_C64F)
+        {
+            writeVal(&alpha, computeType, hipDoubleComplex{1.02, 1.03});
+            writeVal(&beta, computeType, hipDoubleComplex{1.04, 1.05});
+        }
+        else
+        {
+            writeVal(&alpha, computeType, 1.02);
+            writeVal(&beta, computeType, 1.03);
+        }
 
         CHECK_HIP_ALLOC(hipMalloc(&A_d, sizeA));
         CHECK_HIP_ALLOC(hipMalloc(&B_d, sizeB));

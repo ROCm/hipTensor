@@ -90,17 +90,17 @@ namespace hiptensor
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
-            auto alphaF = 0.0f;
-            auto betaF  = 0.0f;
+            ScalarData alphaF;
+            ScalarData betaF;
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(
+                alphaF = hiptensor::readVal<ScalarData>(
                     alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
             if(beta != nullptr)
             {
-                betaF = hiptensor::readVal<float>(
+                betaF = hiptensor::readVal<ScalarData>(
                     beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
@@ -125,7 +125,7 @@ namespace hiptensor
                 toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{alphaF, betaF}));
+                typename Traits::CDEOp(alphaF, betaF)));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
@@ -203,11 +203,11 @@ namespace hiptensor
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
-            auto alphaF = 0.0f;
+            ScalarData alphaF;
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(
+                alphaF = hiptensor::readVal<ScalarData>(
                     alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
@@ -232,7 +232,7 @@ namespace hiptensor
                                                           toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{alphaF}));
+                                                          typename Traits::CDEOp(alphaF)));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
