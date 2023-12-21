@@ -44,7 +44,9 @@ namespace ck
             using hiptensor::elementSpaceFromLengthsAndStrides;
 
             using Bilinear          = ck::tensor_operation::element_wise::Bilinear;
+            using BilinearComplex   = ck::tensor_operation::element_wise::BilinearComplex;
             using Scale             = ck::tensor_operation::element_wise::Scale;
+            using ScaleComplex      = ck::tensor_operation::element_wise::ScaleComplex;
 
             // The following is a specialization class for bilinear contractions of complex types.
             // For complex types, the contraction can be decomposed into 4 simple bilinear contractions of
@@ -121,7 +123,7 @@ namespace ck
                 HIP_vector_type<EDataType, 2>,
                 AElementwiseOperation,
                 BElementwiseOperation,
-                Scale,
+                ScaleComplex,
                 GemmSpec,
                 NumGemmKPrefetchStage,
                 BlockSize,
@@ -164,15 +166,17 @@ namespace ck
                                                     HIP_vector_type<EDataType, 2>,
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
-                                                    Scale,
+                                                    ScaleComplex,
                                                     HIP_vector_type<ComputeDataType, 2>>
             {
                 // Complex device Op
                 using DeviceOp = DeviceContractionMultipleD_Xdl_CShuffle;
 
                 // CDE Operations
-                using ScaleCDEElementwiseOperation    = Scale;
-                using BilinearCDEElementwiseOperation = Bilinear;
+                using ScaleCDEElementwiseOperation          = ScaleComplex;
+                using DecompScaleCDEElementwiseOperation    = Scale;
+                using BilinearCDEElementwiseOperation       = BilinearComplex;
+                using DecompBilinearCDEElementwiseOperation = Bilinear;
 
                 // Complex types given through the interface
                 using ComplexA       = HIP_vector_type<ADataType, 2>;
@@ -214,7 +218,7 @@ namespace ck
                     DecompE,
                     AElementwiseOperation,
                     BElementwiseOperation,
-                    ScaleCDEElementwiseOperation,
+                    DecompScaleCDEElementwiseOperation,
                     GemmSpec,
                     NumGemmKPrefetchStage,
                     BlockSize,
@@ -262,7 +266,7 @@ namespace ck
                     DecompE,
                     AElementwiseOperation,
                     BElementwiseOperation,
-                    BilinearCDEElementwiseOperation,
+                    DecompBilinearCDEElementwiseOperation,
                     GemmSpec,
                     NumGemmKPrefetchStage,
                     BlockSize,
@@ -336,7 +340,7 @@ namespace ck
                              const std::vector<index_t>&                         e_ms_ns_strides,
                              AElementwiseOperation                               a_element_op,
                              BElementwiseOperation                               b_element_op,
-                             ScaleCDEElementwiseOperation                        cde_element_op)
+                             ScaleCDEElementwiseOperation                        cde_element_op) : element_op(cde_element_op)
                     {
                         // Take the incoming arguments, treat them as complex.
 
@@ -347,8 +351,6 @@ namespace ck
                             = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
                         elementsE
                             = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
-
-                        element_op = cde_element_op;
 
                         mA_real.reset(nullptr);
                         mA_imag.reset(nullptr);
@@ -449,21 +451,21 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mScaleArgs[0]    = allocScaleArgs(mE_real, mA_real, mB_real, ScaleCDEElementwiseOperation{1.0f});
+                        mScaleArgs[0]    = allocScaleArgs(mE_real, mA_real, mB_real, DecompScaleCDEElementwiseOperation{1.0f});
                         mBilinearArgs[0] = allocBilinearArgs(
                             mE_real,
                             mA_imag,
                             mB_imag,
                             mE_real,
-                            BilinearCDEElementwiseOperation{-1.0f, 1.0f});
+                            DecompBilinearCDEElementwiseOperation{-1.0f, 1.0f});
 
-                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, ScaleCDEElementwiseOperation{1.0f});
+                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, DecompScaleCDEElementwiseOperation{1.0f});
                         mBilinearArgs[1] = allocBilinearArgs(
                             mE_imag,
                             mA_imag,
                             mB_real,
                             mE_imag,
-                            BilinearCDEElementwiseOperation{1.0f, 1.0f});
+                            DecompBilinearCDEElementwiseOperation{1.0f, 1.0f});
 
 
                         // TODO UNCOMMENT WHEN DONE
@@ -512,7 +514,7 @@ namespace ck
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
 
-                    ScaleCDEElementwiseOperation element_op{1.0};
+                    ScaleCDEElementwiseOperation element_op;
                     void* mE_grid;
                     index_t elementsE;
                 };

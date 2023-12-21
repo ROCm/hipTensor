@@ -32,6 +32,7 @@
 #include <contraction_scale.hpp>
 #include <element_wise_operation.hpp>
 
+#include "device/device_element_wise_operation_complex.hpp"
 #include "contraction_types.hpp"
 #include <hiptensor/hiptensor_types.hpp>
 
@@ -52,9 +53,21 @@ namespace hiptensor
     };
 
     template <>
+    struct ContractionOperatorType<ck::tensor_operation::element_wise::ScaleComplex>
+    {
+        static constexpr auto value = ContractionOpId_t::SCALE_COMPLEX;
+    };
+
+    template <>
     struct ContractionOperatorType<ck::tensor_operation::element_wise::Bilinear>
     {
         static constexpr auto value = ContractionOpId_t::BILINEAR;
+    };
+
+    template <>
+    struct ContractionOperatorType<ck::tensor_operation::element_wise::BilinearComplex>
+    {
+        static constexpr auto value = ContractionOpId_t::BILINEAR_COMPLEX;
     };
 
 } // namespace hiptensor

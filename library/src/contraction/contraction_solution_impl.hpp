@@ -52,8 +52,10 @@ namespace hiptensor
     template <typename DeviceOp>
     class ContractionSolutionImpl<
         DeviceOp,
-        std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Bilinear>>>
+        std::enable_if_t<(std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::Bilinear>)
+                          || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::BilinearComplex>)>>
         : public ContractionSolution
     {
     public:
@@ -165,8 +167,10 @@ namespace hiptensor
     template <typename DeviceOp>
     class ContractionSolutionImpl<
         DeviceOp,
-        std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Scale>>>
+        std::enable_if_t<(std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::Scale>)
+                          || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::ScaleComplex>)>>
         : public ContractionSolution
     {
     public:
