@@ -165,7 +165,7 @@ namespace ck
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
                                                     Bilinear,
-                                                    ComputeDataType>
+                                                    HIP_vector_type<ComputeDataType, 2>>
             {
                 // Complex device Op
                 using DeviceOp                = DeviceContractionMultipleD_Xdl_CShuffle;
@@ -243,7 +243,7 @@ namespace ck
                     CShuffleNXdlPerWavePerShuffle,
                     CDEBlockTransferClusterLengths_MBlock_MPerBlock_NBlock_NPerBlock,
                     CDEBlockTransferScalarPerVector_NPerBlock,
-                    ComputeDataType,
+                    DecompCompute,
                     LoopSched>;
 
                 // Argument
