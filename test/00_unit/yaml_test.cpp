@@ -54,8 +54,8 @@ namespace hiptensor
 
         using LengthsT = std::vector<std::size_t>;
         using StridesT = std::vector<std::size_t>;
-        using AlphaT   = double;
-        using BetaT    = double;
+        using AlphaT   = std::vector<double>;
+        using BetaT    = std::vector<double>;
 
         //Data types of input and output tensors
         std::vector<TestTypesT>    mDataTypes;
@@ -98,8 +98,8 @@ int main(int argc, char* argv[])
     yee.mProblemLengths
         = {{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}};
     yee.mProblemStrides = {{}};
-    yee.mAlphas         = {0, 1, 1};
-    yee.mBetas          = {2, 2, 2};
+    yee.mAlphas         = {{0}, {1}, {1}};
+    yee.mBetas          = {{2}, {2}, {2}};
 
     struct TmpFileWrapper
     {

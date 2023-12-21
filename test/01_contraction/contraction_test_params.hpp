@@ -49,8 +49,8 @@ namespace hiptensor
 
         using LengthsT = std::vector<std::size_t>;
         using StridesT = std::vector<std::size_t>;
-        using AlphaT   = double;
-        using BetaT    = double;
+        using AlphaT   = std::vector<double>;
+        using BetaT    = std::vector<double>;
 
     public:
         std::vector<TestTypesT>& dataTypes()

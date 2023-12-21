@@ -46,44 +46,41 @@ namespace hiptensor
 
     struct ScalarData
     {
-        hiptensorComputeType_t type;
+        hiptensorComputeType_t mType;
         union
         {
-            double           real;
-            hipDoubleComplex complex;
+            double           mReal;
+            hipDoubleComplex mComplex;
         };
 
         ScalarData() = default;
-        ScalarData(double value, hiptensorComputeType_t type)
-            : real(value)
-            , type(type)
+        ScalarData(hiptensorComputeType_t type, double real, double imag = 0)
         {
-        }
-        ScalarData(hipFloatComplex value, hiptensorComputeType_t type)
-            : complex(hipComplexFloatToDouble(value))
-            , type(type)
-        {
-        }
-        ScalarData(hipDoubleComplex value, hiptensorComputeType_t type)
-            : complex(value)
-            , type(type)
-        {
+            mType = type;
+            if(type == HIPTENSOR_COMPUTE_C32F || type == HIPTENSOR_COMPUTE_C64F)
+            {
+                mComplex = make_hipDoubleComplex(real, imag);
+            }
+            else
+            {
+                mReal = real;
+            }
         }
         operator float() const
         {
-            return static_cast<float>(real);
+            return static_cast<float>(mReal);
         }
         operator double() const
         {
-            return real;
+            return mReal;
         }
         operator hipFloatComplex() const
         {
-            return hipComplexDoubleToFloat(complex);
+            return hipComplexDoubleToFloat(mComplex);
         }
         operator hipDoubleComplex() const
         {
-            return complex;
+            return mComplex;
         }
     };
 
@@ -109,10 +106,7 @@ namespace hiptensor
     template <typename T>
     T readVal(void const* value, hiptensorComputeType_t id);
 
-    void writeVal(void const* addr, hiptensorComputeType_t id, double value);
-    void writeVal(void const* addr, hiptensorComputeType_t id, hipDoubleComplex value);
-    void writeVal(void const* addr, hiptensorComputeType_t id, hipFloatComplex value);
-
+    void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value);
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);
