@@ -44,22 +44,10 @@ namespace ck
                 using F64  = double;
                 using CF64 = hipDoubleComplex;
 
-                void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
-                                                                               CF32,
-                                                                               CF32,
-                                                                               Empty_Tuple,
-                                                                               CF32,
-                                                                               PassThrough,
-                                                                               PassThrough,
-                                                                               Scale,
-                                                                               F32>>>& instances);
+                using ScaleComplex = element_wise::ScaleComplex;
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_knn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -69,11 +57,11 @@ namespace ck
                                                                                CF32,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F32>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_mkn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -83,11 +71,11 @@ namespace ck
                                                                                CF32,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F32>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_mnn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mkn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -97,11 +85,25 @@ namespace ck
                                                                                CF32,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F32>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_kkn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
+                                                                               2,
+                                                                               2,
+                                                                               CF32,
+                                                                               CF32,
+                                                                               Empty_Tuple,
+                                                                               CF32,
+                                                                               PassThrough,
+                                                                               PassThrough,
+                                                                               ScaleComplex,
+                                                                               CF32>>>& instances);
+
+                void
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_kkn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -111,11 +113,11 @@ namespace ck
                                                                                CF64,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F64>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF64>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_knn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -125,11 +127,11 @@ namespace ck
                                                                                CF64,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F64>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF64>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mkn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mkn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -139,11 +141,11 @@ namespace ck
                                                                                CF64,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F64>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF64>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mnn_instance(
+                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
                                                                                2,
                                                                                2,
@@ -153,8 +155,8 @@ namespace ck
                                                                                CF64,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
-                                                                               F64>>>& instances);
+                                                                               ScaleComplex,
+                                                                               CF64>>>& instances);
  
                 // Contraction + Scale
                 template <index_t NumDimM,
@@ -175,8 +177,8 @@ namespace ck
                         HIP_vector_type<EDataType, 2>,
                         ck::tensor_operation::element_wise::PassThrough,
                         ck::tensor_operation::element_wise::PassThrough,
-                        ck::tensor_operation::element_wise::Scale,
-                        ComputeDataType>>
+                        ck::tensor_operation::element_wise::ScaleComplex,
+                        HIP_vector_type<ComputeDataType, 2>>>
                 {
                     using DeviceOp = DeviceContractionMultipleD<
                         NumDimM,
@@ -188,8 +190,8 @@ namespace ck
                         HIP_vector_type<EDataType, 2>,
                         ck::tensor_operation::element_wise::PassThrough,
                         ck::tensor_operation::element_wise::PassThrough,
-                        ck::tensor_operation::element_wise::Scale,
-                        ComputeDataType>;
+                        ck::tensor_operation::element_wise::ScaleComplex,
+                        HIP_vector_type<ComputeDataType, 2>>;
 
                     static auto GetInstances()
                     {
@@ -200,13 +202,13 @@ namespace ck
                         {
                             if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
                             {
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_kkn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_knn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_mkn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_mnn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mnn_instance(
                                     op_ptrs);
                             }
                         }
@@ -216,13 +218,13 @@ namespace ck
                         {
                             if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
                             {
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_kkn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_kkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_knn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mkn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_mnn_instance(
+                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
                                     op_ptrs);
                             }
                         }

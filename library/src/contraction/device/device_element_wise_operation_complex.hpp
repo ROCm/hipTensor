@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_ELEMENT_WISE_COMPLEX_HPP
-#define HIPTENSOR_ELEMENT_WISE_COMPLEX_HPP
+#ifndef HIPTENSOR_ELEMENT_WISE_OPERATION_COMPLEX_HPP
+#define HIPTENSOR_ELEMENT_WISE_OPERATION_COMPLEX_HPP
 
 #include <unary_element_wise_operation.hpp>
 #include <binary_element_wise_operation.hpp>
@@ -37,11 +37,6 @@ namespace element_wise {
 
 struct ScaleComplex : public Scale
 {
-    __host__ __device__ ScaleComplex(hipFloatComplex scale) : Scale(hipCrealf(scale))
-    {
-        scale_ = hipComplexFloatToDouble(scale);
-    }
-
     __host__ __device__ ScaleComplex(hipDoubleComplex scale) : Scale(hipCreal(scale))
     {
         scale_ = scale;
@@ -68,12 +63,6 @@ struct ScaleComplex : public Scale
 
 struct BilinearComplex : public Bilinear
 {
-    BilinearComplex(hipFloatComplex alpha, hipFloatComplex beta) : Bilinear(hipCrealf(alpha), hipCrealf(beta))
-    {
-        alpha_ = hipComplexFloatToDouble(alpha);
-        beta_  = hipComplexFloatToDouble(beta);
-    }
-
     BilinearComplex(hipDoubleComplex alpha, hipDoubleComplex beta) : Bilinear(hipCreal(alpha), hipCreal(beta))
     {
         alpha_  = alpha;
@@ -105,4 +94,4 @@ struct BilinearComplex : public Bilinear
 } // namespace tensor_operation
 } // namespace ck
 
-#endif // HIPTENSOR_ELEMENT_WISE_COMPLEX_HPP
+#endif // HIPTENSOR_ELEMENT_WISE_OPERATION_COMPLEX_HPP

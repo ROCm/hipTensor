@@ -46,9 +46,10 @@ namespace ck
         {
             namespace instance
             {
-                using F64         = double;
-                using CF64        = hipDoubleComplex;
-                using Empty_Tuple = ck::Tuple<>;
+                using F64           = double;
+                using CF64          = hipDoubleComplex;
+                using Empty_Tuple   = ck::Tuple<>;
+                using ScaleComplex  = element_wise::ScaleComplex;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // m/n/n/n are the fast changing dimension for A/B/D/E
@@ -62,7 +63,7 @@ namespace ck
                                                          CF64,
                                                          PassThrough,
                                                          PassThrough,
-                                                         Scale>;
+                                                         ScaleComplex>;
 
                 void
                     add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
@@ -75,7 +76,7 @@ namespace ck
                                                                                CF64,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
+                                                                               ScaleComplex,
                                                                                CF64>>>& instances)
                 {
                     add_device_operation_instances(

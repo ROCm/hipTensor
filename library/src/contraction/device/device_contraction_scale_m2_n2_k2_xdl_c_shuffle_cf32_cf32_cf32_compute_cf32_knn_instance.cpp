@@ -46,9 +46,10 @@ namespace ck
         {
             namespace instance
             {
-                using F32         = float;
-                using CF32        = hipFloatComplex;
-                using Empty_Tuple = ck::Tuple<>;
+                using F32           = float;
+                using CF32          = hipFloatComplex;
+                using Empty_Tuple   = ck::Tuple<>;
+                using ScaleComplex  = element_wise::ScaleComplex;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/n/n/n are the fast changing dimension for A/B/D/E
@@ -62,7 +63,7 @@ namespace ck
                                                      CF32,
                                                      PassThrough,
                                                      PassThrough,
-                                                     Scale>;
+                                                     ScaleComplex>;
 
                 void
                     add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
@@ -75,7 +76,7 @@ namespace ck
                                                                                CF32,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Scale,
+                                                                               ScaleComplex,
                                                                                CF32>>>& instances)
                 {
                     add_device_operation_instances(

@@ -40,6 +40,8 @@ namespace hiptensor
     {
         SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
         BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
+        SCALE_COMPLEX = 2,
+        BILINEAR_COMPLEX = 3,
         UNKNOWN,
     };
 

@@ -47,9 +47,10 @@ namespace ck
         {
             namespace instance
             {
-                using F64        = double;
-                using CF64       = hipDoubleComplex;
-                using CF64_Tuple = ck::Tuple<CF64>;
+                using F64             = double;
+                using CF64            = hipDoubleComplex;
+                using CF64_Tuple      = ck::Tuple<CF64>;
+                using BilinearComplex = element_wise::BilinearComplex;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/k/n/n are the fast changing dimension for A/B/D/E
@@ -63,7 +64,7 @@ namespace ck
                                                          CF64,
                                                          PassThrough,
                                                          PassThrough,
-                                                         Bilinear>;
+                                                         BilinearComplex>;
 
                 void
                     add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_kknn_instance(
@@ -76,7 +77,7 @@ namespace ck
                                                                                CF64,
                                                                                PassThrough,
                                                                                PassThrough,
-                                                                               Bilinear,
+                                                                               BilinearComplex,
                                                                                CF64>>>& instances)
                 {
                     add_device_operation_instances(

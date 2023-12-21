@@ -200,7 +200,20 @@ namespace hiptensor
                             {
                                 ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.scale_ * (EDataType)accum;
                             }
-                            else // bilinear
+                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                             ck::tensor_operation::element_wise::ScaleComplex>)
+                            {
+                                if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCmulf(hipComplexDoubleToFloat(arg.mOpCDE.scale_), (EDataType)accum);
+                                }
+                                else
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCmul(arg.mOpCDE.scale_, (EDataType)accum);
+                                }
+                            }
+                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                             ck::tensor_operation::element_wise::Bilinear>)
                             {
                                 // NumDTensor will be 1 due to SFINAE of this class
                                 auto indexD
@@ -208,6 +221,29 @@ namespace hiptensor
 
                                 ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.alpha_ * (EDataType)accum +
                                                                arg.mOpCDE.beta_ * ((EDataType*)(arg.mD[0]))[indexD];
+                            }
+                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                             ck::tensor_operation::element_wise::BilinearComplex>)
+                            {
+                                // NumDTensor will be 1 due to SFINAE of this class
+                                auto indexD
+                                    = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
+
+                                if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCaddf(
+                                                                            hipCmulf(
+                                                                                    hipComplexDoubleToFloat(arg.mOpCDE.alpha_),
+                                                                                    (EDataType)accum),
+                                                                            hipCmulf(
+                                                                                    hipComplexDoubleToFloat(arg.mOpCDE.beta_),
+                                                                                    ((EDataType*)(arg.mD[0]))[indexD]));
+                                }
+                                else
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCadd(hipCmul(arg.mOpCDE.alpha_, (EDataType)accum),
+                                                                           hipCmul(arg.mOpCDE.beta_, ((EDataType*)(arg.mD[0]))[indexD]));
+                                }
                             }
                         };
 

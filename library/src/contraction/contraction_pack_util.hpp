@@ -39,8 +39,8 @@ namespace hiptensor
      */
     template <typename DataType>
     __global__ void mfma(DataType* mE_real, DataType* mE_imag, DataType* mD_real, DataType* mD_imag,
-                         HIP_vector_type<DataType, 2> *mE_grid, HIP_vector_type<DataType, 2> alpha,
-                         HIP_vector_type<DataType, 2> beta, int length)
+                         HIP_vector_type<DataType, 2> *mE_grid, HIP_vector_type<double, 2> alpha,
+                         HIP_vector_type<double, 2> beta, int length)
     {
         int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -48,13 +48,22 @@ namespace hiptensor
         {
             if constexpr(std::is_same_v<DataType, float>)
             {
-                mE_grid[idx] = hipCaddf(hipCmulf(make_hipFloatComplex(mE_real[idx], mE_imag[idx]), alpha),
-                                        hipCmulf(make_hipFloatComplex(mD_real[idx], mD_imag[idx]), beta));
+                mE_grid[idx] = hipCaddf(
+                                        hipCmulf(
+                                                make_hipFloatComplex(mE_real[idx], mE_imag[idx]),
+                                                hipComplexDoubleToFloat(alpha)),
+                                        hipCmulf(
+                                                make_hipFloatComplex(mD_real[idx], mD_imag[idx]),
+                                                hipComplexDoubleToFloat(beta)));
             }
             else if constexpr(std::is_same_v<DataType, double>)
             {
-                mE_grid[idx] = hipCadd(hipCmul(make_hipDoubleComplex(mE_real[idx], mE_imag[idx]), alpha),
-                                       hipCmul(make_hipDoubleComplex(mD_real[idx], mD_imag[idx]), beta));
+                mE_grid[idx] = hipCadd(hipCmul(
+                                              make_hipDoubleComplex(mE_real[idx], mE_imag[idx]),
+                                              alpha),
+                                       hipCmul(
+                                              make_hipDoubleComplex(mD_real[idx], mD_imag[idx]),
+                                              beta));
            }
         }
     }
@@ -65,7 +74,7 @@ namespace hiptensor
      */
     template <typename DataType>
     __global__ void multiply(DataType* mE_real, DataType* mE_imag, HIP_vector_type<DataType, 2> *mE_grid,
-                             HIP_vector_type<DataType, 2> alpha, int length)
+                             HIP_vector_type<double, 2> alpha, int length)
     {
         int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -73,11 +82,15 @@ namespace hiptensor
         {
             if constexpr(std::is_same_v<DataType, float>)
             {
-                mE_grid[idx] = hipCmulf(make_hipFloatComplex(mE_real[idx], mE_imag[idx]), alpha);
+                mE_grid[idx] = hipCmulf(
+                                      make_hipFloatComplex(mE_real[idx], mE_imag[idx]),
+                                      hipComplexDoubleToFloat(alpha));
             }
             else if constexpr(std::is_same_v<DataType, double>)
             {
-                mE_grid[idx] = hipCmul(make_hipDoubleComplex(mE_real[idx], mE_imag[idx]), alpha);
+                mE_grid[idx] = hipCmul(
+                                    make_hipDoubleComplex(mE_real[idx], mE_imag[idx]),
+                                    alpha);
            }
         }
     }
