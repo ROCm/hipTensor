@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#include "simple_bilinear_contraction.hpp"
+#include "simple_scale_contraction.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -38,20 +38,20 @@ int main(int argc, char* argv[])
 
     typedef hipFloatComplex ADataType;
     typedef hipFloatComplex BDataType;
-    typedef hipFloatComplex CDataType;
-    typedef float floatTypeCompute;
+    typedef hipFloatComplex DDataType;
+    typedef hipFloatComplex ComputeDataType;
 
     constexpr hipDataType            typeA       = HIP_C_32F;
     constexpr hipDataType            typeB       = HIP_C_32F;
-    constexpr hipDataType            typeC       = HIP_C_32F;
-    constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+    constexpr hipDataType            typeD       = HIP_C_32F;
+    constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_C32F;
 
-    return bilinearContractionSample<ADataType,
-                                     BDataType,
-                                     CDataType,
-                                     floatTypeCompute,
-                                     typeA,
-                                     typeB,
-                                     typeC,
-                                     typeCompute>();
+    return scaleContractionSample<ADataType,
+                                  BDataType,
+                                  DDataType,
+                                  ComputeDataType,
+                                  typeA,
+                                  typeB,
+                                  typeD,
+                                  typeCompute>();
 }

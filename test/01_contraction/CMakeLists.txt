@@ -45,4 +45,8 @@ set (ScaleContractionTestSources ${ContractionCommonSources}
 set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params.yaml)
 add_hiptensor_test(scale_contraction_test ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
-
+# Complex Scale tests
+set (ComplexScaleContractionTestSources ${ContractionCommonSources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/complex_scale_contraction_test.cpp)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params.yaml)
+add_hiptensor_test(complex_scale_contraction_test ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})

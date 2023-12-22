@@ -37,15 +37,24 @@
 template <typename ADataType,
           typename BDataType,
           typename CDataType,
-          typename floatTypeCompute,
+          typename computeDataType,
           hipDataType            typeA,
           hipDataType            typeB,
           hipDataType            typeC,
           hiptensorComputeType_t typeCompute>
 int bilinearContractionSample()
 {
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
-    floatTypeCompute beta  = (floatTypeCompute)1.0f;
+    computeDataType alpha, beta;
+    if constexpr(std::is_same_v<computeDataType, hipFloatComplex> || std::is_same_v<computeDataType, hipDoubleComplex>)
+    {
+        alpha = computeDataType(1.0, 1.0);
+        beta = computeDataType(1.0, 1.0);
+    }
+    else
+    {
+        alpha = (computeDataType)1.0f;
+        beta = (computeDataType)1.0f;
+    }
 
     /**********************
    * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta *
