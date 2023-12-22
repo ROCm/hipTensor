@@ -582,9 +582,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
         else
         {
-            auto alphaValue
-                = hiptensor::readVal<double>(alpha, plan->mContractionDesc.mComputeType);
-            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%.6lf", alphaValue);
+            auto alphaValue = hiptensor::readVal<hiptensor::ScalarData>(
+                alpha, plan->mContractionDesc.mComputeType);
+            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%s", std::to_string(alphaValue).c_str());
         }
 
         if(beta == nullptr)
@@ -593,8 +593,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
         else
         {
-            auto betaValue = hiptensor::readVal<double>(beta, plan->mContractionDesc.mComputeType);
-            snprintf(betaMsg, sizeof(betaMsg), "beta=%.6lf", betaValue);
+            auto betaValue = hiptensor::readVal<hiptensor::ScalarData>(
+                beta, plan->mContractionDesc.mComputeType);
+            snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
         }
     }
     else

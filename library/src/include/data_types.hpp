@@ -115,6 +115,11 @@ bool operator==(hiptensorComputeType_t computeType, hipDataType hipType);
 bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType);
 bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType);
 
+namespace std
+{
+    std::string to_string(const hiptensor::ScalarData& value);
+}
+
 #include "data_types_impl.hpp"
 
 #endif // HIPTENSOR_LIBRARY_DATA_TYPES_HPP

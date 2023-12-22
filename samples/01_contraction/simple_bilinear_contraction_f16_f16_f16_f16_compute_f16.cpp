@@ -46,12 +46,13 @@ int main(int argc, char* argv[])
     constexpr hipDataType            typeC       = HIP_R_16F;
     constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
+    floatTypeCompute alpha{1.0f};
+    floatTypeCompute beta{1.0f};
     return bilinearContractionSample<ADataType,
                                      BDataType,
                                      CDataType,
-                                     floatTypeCompute,
                                      typeA,
                                      typeB,
                                      typeC,
-                                     typeCompute>();
+                                     typeCompute>(&alpha, &beta);
 }

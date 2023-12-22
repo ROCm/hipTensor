@@ -39,19 +39,19 @@ int main(int argc, char* argv[])
     typedef hipFloatComplex ADataType;
     typedef hipFloatComplex BDataType;
     typedef hipFloatComplex DDataType;
-    typedef hipFloatComplex ComputeDataType;
+    typedef hipFloatComplex floatTypeCompute;
 
     constexpr hipDataType            typeA       = HIP_C_32F;
     constexpr hipDataType            typeB       = HIP_C_32F;
     constexpr hipDataType            typeD       = HIP_C_32F;
     constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_C32F;
 
+    floatTypeCompute alpha(1, 1);
     return scaleContractionSample<ADataType,
                                   BDataType,
                                   DDataType,
-                                  ComputeDataType,
                                   typeA,
                                   typeB,
                                   typeD,
-                                  typeCompute>();
+                                  typeCompute>(&alpha);
 }
