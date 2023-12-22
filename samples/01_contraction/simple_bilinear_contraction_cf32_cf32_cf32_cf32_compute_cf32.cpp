@@ -39,19 +39,20 @@ int main(int argc, char* argv[])
     typedef hipFloatComplex ADataType;
     typedef hipFloatComplex BDataType;
     typedef hipFloatComplex CDataType;
-    typedef hipFloatComplex ComputeDataType;
+    typedef hipFloatComplex floatTypeCompute;
 
     constexpr hipDataType            typeA       = HIP_C_32F;
     constexpr hipDataType            typeB       = HIP_C_32F;
     constexpr hipDataType            typeC       = HIP_C_32F;
     constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_C32F;
 
+    floatTypeCompute alpha{1.0f, 1.0f};
+    floatTypeCompute beta{1.0f, 1.0f};
     return bilinearContractionSample<ADataType,
                                      BDataType,
                                      CDataType,
-                                     ComputeDataType,
                                      typeA,
                                      typeB,
                                      typeC,
-                                     typeCompute>();
+                                     typeCompute>(&alpha, &beta);
 }

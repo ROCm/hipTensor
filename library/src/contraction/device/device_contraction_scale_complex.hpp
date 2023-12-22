@@ -43,10 +43,10 @@ namespace ck
             using hiptensor::DeviceDeleter;
             using hiptensor::elementSpaceFromLengthsAndStrides;
 
-            using Bilinear          = ck::tensor_operation::element_wise::Bilinear;
-            using BilinearComplex   = ck::tensor_operation::element_wise::BilinearComplex;
-            using Scale             = ck::tensor_operation::element_wise::Scale;
-            using ScaleComplex      = ck::tensor_operation::element_wise::ScaleComplex;
+            using Bilinear        = ck::tensor_operation::element_wise::Bilinear;
+            using BilinearComplex = ck::tensor_operation::element_wise::BilinearComplex;
+            using Scale           = ck::tensor_operation::element_wise::Scale;
+            using ScaleComplex    = ck::tensor_operation::element_wise::ScaleComplex;
 
             // The following is a specialization class for bilinear contractions of complex types.
             // For complex types, the contraction can be decomposed into 4 simple bilinear contractions of
@@ -307,8 +307,8 @@ namespace ck
                     using BilinearDecompArgument = typename BilinearDecompOp::Argument;
 
                     Argument(Argument&& other)
-                        : mScaleArgs({std::move(other.mScaleArgs[0]),
-                                      std::move(other.mScaleArgs[1])})
+                        : mScaleArgs(
+                            {std::move(other.mScaleArgs[0]), std::move(other.mScaleArgs[1])})
                         , mBilinearArgs({std::move(other.mBilinearArgs[0]),
                                          std::move(other.mBilinearArgs[1])})
                     {
@@ -318,10 +318,10 @@ namespace ck
                     {
                         if(this != &other)
                         {
-                            mScaleArgs[0]       = std::move(other.mScaleArgs[0]);
-                            mScaleArgs[1]       = std::move(other.mScaleArgs[1]);
-                            mBilinearArgs[0]    = std::move(other.mBilinearArgs[0]);
-                            mBilinearArgs[1]    = std::move(other.mBilinearArgs[1]);
+                            mScaleArgs[0]    = std::move(other.mScaleArgs[0]);
+                            mScaleArgs[1]    = std::move(other.mScaleArgs[1]);
+                            mBilinearArgs[0] = std::move(other.mBilinearArgs[0]);
+                            mBilinearArgs[1] = std::move(other.mBilinearArgs[1]);
                         }
                         return *this;
                     }
@@ -340,7 +340,8 @@ namespace ck
                              const std::vector<index_t>&                         e_ms_ns_strides,
                              AElementwiseOperation                               a_element_op,
                              BElementwiseOperation                               b_element_op,
-                             ScaleCDEElementwiseOperation                        cde_element_op) : element_op(cde_element_op)
+                             ScaleCDEElementwiseOperation                        cde_element_op)
+                        : element_op(cde_element_op)
                     {
                         // Take the incoming arguments, treat them as complex.
 
@@ -359,7 +360,7 @@ namespace ck
                         mE_real.reset(nullptr);
                         mE_imag.reset(nullptr);
 
-                        mE_grid = p_e_grid;
+                        mE_grid       = p_e_grid;
                         auto blockDim = dim3(1024);
 
                         auto decompGrid = [blockDim](auto&       out_r,
@@ -392,8 +393,6 @@ namespace ck
                                                a_ms_ks_strides,
                                                b_ns_ks_lengths,
                                                b_ns_ks_strides,
-                                               ds_ms_ns_lengths,
-                                               ds_ms_ns_strides,
                                                e_ms_ns_lengths,
                                                e_ms_ns_strides,
                                                a_element_op,
@@ -410,8 +409,8 @@ namespace ck
                                 a_ms_ks_strides,
                                 b_ns_ks_lengths,
                                 b_ns_ks_strides,
-                                ds_ms_ns_lengths,
-                                ds_ms_ns_strides,
+                                std::array<std::vector<index_t>, 0>{},
+                                std::array<std::vector<index_t>, 0>{},
                                 e_ms_ns_lengths,
                                 e_ms_ns_strides,
                                 a_element_op,
@@ -423,8 +422,6 @@ namespace ck
                                                   a_ms_ks_strides,
                                                   b_ns_ks_lengths,
                                                   b_ns_ks_strides,
-                                                  ds_ms_ns_lengths,
-                                                  ds_ms_ns_strides,
                                                   e_ms_ns_lengths,
                                                   e_ms_ns_strides,
                                                   a_element_op,
@@ -451,22 +448,23 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mScaleArgs[0]    = allocScaleArgs(mE_real, mA_real, mB_real, DecompScaleCDEElementwiseOperation{1.0f});
-                        mBilinearArgs[0] = allocBilinearArgs(
-                            mE_real,
-                            mA_imag,
-                            mB_imag,
-                            mE_real,
-                            DecompBilinearCDEElementwiseOperation{-1.0f, 1.0f});
+                        mScaleArgs[0] = allocScaleArgs(
+                            mE_real, mA_real, mB_real, DecompScaleCDEElementwiseOperation{1.0f});
+                        mBilinearArgs[0]
+                            = allocBilinearArgs(mE_real,
+                                                mA_imag,
+                                                mB_imag,
+                                                mE_real,
+                                                DecompBilinearCDEElementwiseOperation{-1.0f, 1.0f});
 
-                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, DecompScaleCDEElementwiseOperation{1.0f});
-                        mBilinearArgs[1] = allocBilinearArgs(
-                            mE_imag,
-                            mA_imag,
-                            mB_real,
-                            mE_imag,
-                            DecompBilinearCDEElementwiseOperation{1.0f, 1.0f});
-
+                        mScaleArgs[1] = allocScaleArgs(
+                            mE_imag, mA_real, mB_imag, DecompScaleCDEElementwiseOperation{1.0f});
+                        mBilinearArgs[1]
+                            = allocBilinearArgs(mE_imag,
+                                                mA_imag,
+                                                mB_real,
+                                                mE_imag,
+                                                DecompBilinearCDEElementwiseOperation{1.0f, 1.0f});
 
                         // TODO UNCOMMENT WHEN DONE
                         // original
@@ -507,16 +505,16 @@ namespace ck
                     using DeviceArray = std::unique_ptr<DataT, DeviceDeleter>;
 
                     // Manage extra memory for AOS->SOA
-                    DeviceArray<DecompA>  mA_real;
-                    DeviceArray<DecompA>  mA_imag;
-                    DeviceArray<DecompB>  mB_real;
-                    DeviceArray<DecompB>  mB_imag;
-                    DeviceArray<DecompE>  mE_real;
-                    DeviceArray<DecompE>  mE_imag;
+                    DeviceArray<DecompA> mA_real;
+                    DeviceArray<DecompA> mA_imag;
+                    DeviceArray<DecompB> mB_real;
+                    DeviceArray<DecompB> mB_imag;
+                    DeviceArray<DecompE> mE_real;
+                    DeviceArray<DecompE> mE_imag;
 
                     ScaleCDEElementwiseOperation element_op;
-                    void* mE_grid;
-                    index_t elementsE;
+                    void*                        mE_grid;
+                    index_t                      elementsE;
                 };
 
                 // Invoker
@@ -557,10 +555,13 @@ namespace ck
                         if(arg.mE_grid != nullptr)
                         {
                             auto blockDim = dim3(1024);
-                            auto gridDim = dim3(ceilDiv(arg.elementsE, blockDim.x));
+                            auto gridDim  = dim3(ceilDiv(arg.elementsE, blockDim.x));
 
-                            hiptensor::multiply<<<gridDim, blockDim, 0>>>(
-                                arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.element_op.scale_, arg.elementsE);
+                            hiptensor::multiply<<<gridDim, blockDim, 0>>>(arg.mE_real.get(),
+                                                                          arg.mE_imag.get(),
+                                                                          ((ComplexE*)arg.mE_grid),
+                                                                          arg.element_op.scale_,
+                                                                          arg.elementsE);
                             //hiptensor::pack<<<gridDim, blockDim, 0>>>(
                             //    arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
                         }
@@ -602,7 +603,8 @@ namespace ck
                     // Call the base, then fwd to each arg.
                     this->BaseOperator::SetWorkSpacePointer(p_arg, p_workspace, s);
                     auto* arg = dynamic_cast<Argument*>(p_arg);
-                    this->BaseOperator::SetWorkSpacePointer(arg->mScaleArgs[0].get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(
+                        arg->mScaleArgs[0].get(), p_workspace, s);
                     this->BaseOperator::SetWorkSpacePointer(
                         arg->mScaleArgs[1].get(), p_workspace, s);
                     this->BaseOperator::SetWorkSpacePointer(
@@ -722,4 +724,3 @@ namespace ck
 } // namespace ck
 
 #endif // HIPTENSOR_CONTRACTION_SCALE_COMPLEX_HPP
-

@@ -43,8 +43,10 @@ namespace ck
             using hiptensor::DeviceDeleter;
             using hiptensor::elementSpaceFromLengthsAndStrides;
 
-            using BilinearComplex = ck::tensor_operation::element_wise::BilinearComplex;
             using Bilinear        = ck::tensor_operation::element_wise::Bilinear;
+            using BilinearComplex = ck::tensor_operation::element_wise::BilinearComplex;
+            using Scale           = ck::tensor_operation::element_wise::Scale;
+            using ScaleComplex    = ck::tensor_operation::element_wise::ScaleComplex;
 
             // The following is a specialization class for bilinear contractions of complex types.
             // For complex types, the contraction can be decomposed into 4 simple bilinear contractions of
@@ -169,9 +171,13 @@ namespace ck
                                                     HIP_vector_type<ComputeDataType, 2>>
             {
                 // Complex device Op
-                using DeviceOp                      = DeviceContractionMultipleD_Xdl_CShuffle;
-                using CDEElementwiseOperation       = BilinearComplex;
-                using DecompCDEElementwiseOperation = Bilinear;
+                using DeviceOp = DeviceContractionMultipleD_Xdl_CShuffle;
+
+                // CDE Operations
+                using ScaleCDEElementwiseOperation          = ScaleComplex;
+                using DecompScaleCDEElementwiseOperation    = Scale;
+                using BilinearCDEElementwiseOperation       = BilinearComplex;
+                using DecompBilinearCDEElementwiseOperation = Bilinear;
 
                 // Complex types given through the interface
                 using ComplexA       = HIP_vector_type<ADataType, 2>;
@@ -202,7 +208,55 @@ namespace ck
 
                 // The internal operation that we will decompose the complex operations with.
                 // For complex will be either float or double
-                using DecompOp = DeviceContractionMultipleD_Xdl_CShuffle<
+                using ScaleDecompOp = DeviceContractionMultipleD_Xdl_CShuffle<
+                    NumDimM,
+                    NumDimN,
+                    NumDimK,
+                    DecompA,
+                    DecompB,
+                    AccDataType,
+                    CShuffleDataType,
+                    ck::Tuple<>,
+                    DecompE,
+                    AElementwiseOperation,
+                    BElementwiseOperation,
+                    DecompScaleCDEElementwiseOperation,
+                    GemmSpec,
+                    NumGemmKPrefetchStage,
+                    BlockSize,
+                    MPerBlock,
+                    NPerBlock,
+                    KPerBlock,
+                    AK1,
+                    BK1,
+                    MPerXDL,
+                    NPerXDL,
+                    MXdlPerWave,
+                    NXdlPerWave,
+                    ABlockTransferThreadClusterLengths_AK0_M_AK1,
+                    ABlockTransferThreadClusterArrangeOrder,
+                    ABlockTransferSrcAccessOrder,
+                    ABlockTransferSrcVectorDim,
+                    ABlockTransferSrcScalarPerVector,
+                    ABlockTransferDstScalarPerVector_AK1,
+                    ABlockLdsExtraM,
+                    BBlockTransferThreadClusterLengths_BK0_N_BK1,
+                    BBlockTransferThreadClusterArrangeOrder,
+                    BBlockTransferSrcAccessOrder,
+                    BBlockTransferSrcVectorDim,
+                    BBlockTransferSrcScalarPerVector,
+                    BBlockTransferDstScalarPerVector_BK1,
+                    BBlockLdsExtraN,
+                    CShuffleMXdlPerWavePerShuffle,
+                    CShuffleNXdlPerWavePerShuffle,
+                    CDEBlockTransferClusterLengths_MBlock_MPerBlock_NBlock_NPerBlock,
+                    CDEBlockTransferScalarPerVector_NPerBlock,
+                    DecompCompute,
+                    LoopSched>;
+
+                // The internal operation that we will decompose the complex operations with.
+                // For complex will be either float or double
+                using BilinearDecompOp = DeviceContractionMultipleD_Xdl_CShuffle<
                     NumDimM,
                     NumDimN,
                     NumDimK,
@@ -214,7 +268,7 @@ namespace ck
                     DecompE,
                     AElementwiseOperation,
                     BElementwiseOperation,
-                    DecompCDEElementwiseOperation,
+                    DecompBilinearCDEElementwiseOperation,
                     GemmSpec,
                     NumGemmKPrefetchStage,
                     BlockSize,
@@ -251,13 +305,14 @@ namespace ck
                 // Argument
                 struct Argument : public BaseArgument
                 {
-                    using DecompArg = typename DecompOp::Argument;
+                    using ScaleDecompArgument    = typename ScaleDecompOp::Argument;
+                    using BilinearDecompArgument = typename BilinearDecompOp::Argument;
 
                     Argument(Argument&& other)
-                        : mArgs({std::move(other.mArgs[0]),
-                                 std::move(other.mArgs[1]),
-                                 std::move(other.mArgs[2]),
-                                 std::move(other.mArgs[3])})
+                        : mScaleArgs(
+                            {std::move(other.mScaleArgs[0]), std::move(other.mScaleArgs[1])})
+                        , mBilinearArgs({std::move(other.mBilinearArgs[0]),
+                                         std::move(other.mBilinearArgs[1])})
                     {
                     }
 
@@ -265,10 +320,10 @@ namespace ck
                     {
                         if(this != &other)
                         {
-                            mArgs[0] = std::move(other.mArgs[0]);
-                            mArgs[1] = std::move(other.mArgs[1]);
-                            mArgs[2] = std::move(other.mArgs[2]);
-                            mArgs[3] = std::move(other.mArgs[3]);
+                            mScaleArgs[0]    = std::move(other.mScaleArgs[0]);
+                            mScaleArgs[1]    = std::move(other.mScaleArgs[1]);
+                            mBilinearArgs[0] = std::move(other.mBilinearArgs[0]);
+                            mBilinearArgs[1] = std::move(other.mBilinearArgs[1]);
                         }
                         return *this;
                     }
@@ -287,7 +342,8 @@ namespace ck
                              const std::vector<index_t>&                         e_ms_ns_strides,
                              AElementwiseOperation                               a_element_op,
                              BElementwiseOperation                               b_element_op,
-                             CDEElementwiseOperation                             cde_element_op) : element_op(cde_element_op)
+                             BilinearCDEElementwiseOperation                     cde_element_op)
+                        : element_op(cde_element_op)
                     {
                         // Take the incoming arguments, treat them as complex.
 
@@ -310,7 +366,7 @@ namespace ck
                         mE_real.reset(nullptr);
                         mE_imag.reset(nullptr);
 
-                        mE_grid = p_e_grid;
+                        mE_grid       = p_e_grid;
                         auto blockDim = dim3(1024);
 
                         auto decompGrid = [blockDim](auto&       out_r,
@@ -334,26 +390,54 @@ namespace ck
                             }
                         };
 
+                        // Decompose the incoming data from AOS->SOA
                         decompGrid(mA_real, mA_imag, (const ComplexA*)p_a_grid, elementsA);
                         decompGrid(mB_real, mB_imag, (const ComplexB*)p_b_grid, elementsB);
                         decompGrid(mD_real, mD_imag, (const ComplexDs*)p_ds_grid[0], elementsD);
                         decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);
 
-                        auto allocArgs = [a_ms_ks_lengths,
-                                          a_ms_ks_strides,
-                                          b_ns_ks_lengths,
-                                          b_ns_ks_strides,
-                                          ds_ms_ns_lengths,
-                                          ds_ms_ns_strides,
-                                          e_ms_ns_lengths,
-                                          e_ms_ns_strides,
-                                          a_element_op,
-                                          b_element_op](auto&       out_e,
-                                                        auto const& in_a,
-                                                        auto const& in_b,
-                                                        auto const& in_d,
-                                                        auto const& cde_element_op) {
-                            return std::make_unique<typename DecompOp::Argument>(
+                        auto allocScaleArgs = [a_ms_ks_lengths,
+                                               a_ms_ks_strides,
+                                               b_ns_ks_lengths,
+                                               b_ns_ks_strides,
+                                               e_ms_ns_lengths,
+                                               e_ms_ns_strides,
+                                               a_element_op,
+                                               b_element_op](auto&       out_e,
+                                                             auto const& in_a,
+                                                             auto const& in_b,
+                                                             auto const& cde_element_op) {
+                            return std::make_unique<ScaleDecompArgument>(
+                                in_a.get(),
+                                in_b.get(),
+                                std::array<void const*, 0>{},
+                                out_e.get(),
+                                a_ms_ks_lengths,
+                                a_ms_ks_strides,
+                                b_ns_ks_lengths,
+                                b_ns_ks_strides,
+                                std::array<std::vector<index_t>, 0>{},
+                                std::array<std::vector<index_t>, 0>{},
+                                e_ms_ns_lengths,
+                                e_ms_ns_strides,
+                                a_element_op,
+                                b_element_op,
+                                cde_element_op);
+                        };
+
+                        auto allocBilinearArgs = [a_ms_ks_lengths,
+                                                  a_ms_ks_strides,
+                                                  b_ns_ks_lengths,
+                                                  b_ns_ks_strides,
+                                                  e_ms_ns_lengths,
+                                                  e_ms_ns_strides,
+                                                  a_element_op,
+                                                  b_element_op](auto&       out_e,
+                                                                auto const& in_a,
+                                                                auto const& in_b,
+                                                                auto const& in_d,
+                                                                auto const& cde_element_op) {
+                            return std::make_unique<BilinearDecompArgument>(
                                 in_a.get(),
                                 in_b.get(),
                                 std::array<void const*, 1>{in_d.get()},
@@ -362,8 +446,8 @@ namespace ck
                                 a_ms_ks_strides,
                                 b_ns_ks_lengths,
                                 b_ns_ks_strides,
-                                ds_ms_ns_lengths,
-                                ds_ms_ns_strides,
+                                std::array<std::vector<index_t>, 1>{e_ms_ns_lengths},
+                                std::array<std::vector<index_t>, 1>{e_ms_ns_strides},
                                 e_ms_ns_lengths,
                                 e_ms_ns_strides,
                                 a_element_op,
@@ -371,46 +455,58 @@ namespace ck
                                 cde_element_op);
                         };
 
-                        mArgs[0] = allocArgs(mE_real, mA_real, mB_real, mD_real, DecompCDEElementwiseOperation{1.0f, 1.0f});
-                        mArgs[1] = allocArgs(mE_real,
-                                             mA_imag,
-                                             mB_imag,
-                                             mE_real,
-                                             DecompCDEElementwiseOperation{-1.0f,
-                                                                     1.0f});
-                        mArgs[2] = allocArgs(mE_imag, mA_real, mB_imag, mD_imag, DecompCDEElementwiseOperation{1.0f, 1.0f});
-                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag,
-                                             DecompCDEElementwiseOperation{1.0f , 1.0f});
+                        mScaleArgs[0] = allocScaleArgs(
+                            mE_real, mA_real, mB_real, DecompScaleCDEElementwiseOperation{1.0f});
+                        mBilinearArgs[0]
+                            = allocBilinearArgs(mE_real,
+                                                mA_imag,
+                                                mB_imag,
+                                                mE_real,
+                                                DecompBilinearCDEElementwiseOperation{-1.0f, 1.0f});
 
+                        mScaleArgs[1] = allocScaleArgs(
+                            mE_imag, mA_real, mB_imag, DecompScaleCDEElementwiseOperation{1.0f});
+                        mBilinearArgs[1]
+                            = allocBilinearArgs(mE_imag,
+                                                mA_imag,
+                                                mB_real,
+                                                mE_imag,
+                                                DecompBilinearCDEElementwiseOperation{1.0f, 1.0f});
+
+                        // TODO UNCOMMENT WHEN DONE
                         // original
-                        /* TODO :Uncomment once done
-                        mArgs[0] = allocArgs(mE_real, mA_real, mB_real, mD_real, cde_element_op);
-                        mArgs[1] = allocArgs(mE_real,
-                                             mA_imag,
-                                             mB_imag,
-                                             mE_real,
-                                             CDEElementwiseOperation{cde_element_op.alpha_ * -1.0f,
-                                                                     1.0f});
-                        mArgs[2] = allocArgs(mE_imag, mA_real, mB_imag, mD_imag, cde_element_op);
-                        mArgs[3] = allocArgs(mE_imag, mA_imag, mB_real, mE_imag,
-                                             CDEElementwiseOperation{cde_element_op.alpha_ , 1.0f});*/
+                        /*mScaleArgs[0] = allocScaleArgs(mE_real, mA_real, mB_real, cde_element_op);
+                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, cde_element_op);
+                        mBilinearArgs[0] = allocBilinearArgs(
+                            mE_real,
+                            mA_imag,
+                            mB_imag,
+                            mE_real,
+                            BilinearCDEElementwiseOperation{cde_element_op.scale_ * -1.0f, 1.0f});
+                        mBilinearArgs[1] = allocBilinearArgs(
+                            mE_imag,
+                            mA_imag,
+                            mB_real,
+                            mE_imag,
+                            BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});*/
                     }
 
                     void Print() const
                     {
-                        std::cout << "Args0:" << std::endl;
-                        mArgs[0]->Print();
-                        std::cout << "Args1:" << std::endl;
-                        mArgs[1]->Print();
-                        std::cout << "Args2:" << std::endl;
-                        mArgs[2]->Print();
-                        std::cout << "Args3:" << std::endl;
-                        mArgs[3]->Print();
+                        std::cout << "ScaleArgs0:" << std::endl;
+                        mScaleArgs[0]->Print();
+                        std::cout << "ScaleArgs1:" << std::endl;
+                        mScaleArgs[1]->Print();
+                        std::cout << "BilinearArgs0:" << std::endl;
+                        mBilinearArgs[0]->Print();
+                        std::cout << "BilinearArgs1:" << std::endl;
+                        mBilinearArgs[1]->Print();
                     }
 
                     //  private:
                     // Each argument set for complex:
-                    std::unique_ptr<typename DecompOp::Argument> mArgs[4];
+                    std::unique_ptr<ScaleDecompArgument>    mScaleArgs[2];
+                    std::unique_ptr<BilinearDecompArgument> mBilinearArgs[2];
 
                     template <typename DataT>
                     using DeviceArray = std::unique_ptr<DataT, DeviceDeleter>;
@@ -425,9 +521,9 @@ namespace ck
                     DeviceArray<DecompE>  mE_real;
                     DeviceArray<DecompE>  mE_imag;
 
-                    CDEElementwiseOperation element_op;
-                    void* mE_grid;
-                    index_t elementsE;
+                    BilinearCDEElementwiseOperation element_op;
+                    void*                           mE_grid;
+                    index_t                         elementsE;
                 };
 
                 // Invoker
@@ -436,12 +532,14 @@ namespace ck
                     using Argument = typename DeviceOp::Argument;
 
                     Invoker()
-                        : mInvoker(std::make_unique<typename DecompOp::Invoker>())
+                        : mScaleInvoker(std::make_unique<typename ScaleDecompOp::Invoker>())
+                        , mBilinearInvoker(std::make_unique<typename BilinearDecompOp::Invoker>())
                     {
                     }
 
                     Invoker(Invoker&& other)
-                        : mInvoker(std::move(other.mInvoker))
+                        : mScaleInvoker(std::move(other.mScaleInvoker))
+                        , mBilinearInvoker(std::move(other.mBilinearInvoker))
                     {
                     }
 
@@ -449,7 +547,8 @@ namespace ck
                     {
                         if(this != &other)
                         {
-                            mInvoker = std::move(other.mInvoker);
+                            mScaleInvoker    = std::move(other.mScaleInvoker);
+                            mBilinearInvoker = std::move(other.mBilinearInvoker);
                         }
                         return *this;
                     }
@@ -457,19 +556,23 @@ namespace ck
                     float Run(const Argument&     arg,
                               const StreamConfig& stream_config = StreamConfig{})
                     {
-                        auto r0 = mInvoker->Run(arg.mArgs[0].get(), stream_config);
-                        auto r1 = mInvoker->Run(arg.mArgs[1].get(), stream_config);
-                        auto r2 = mInvoker->Run(arg.mArgs[2].get(), stream_config);
-                        auto r3 = mInvoker->Run(arg.mArgs[3].get(), stream_config);
+                        auto r0 = mScaleInvoker->Run(arg.mScaleArgs[0].get(), stream_config);
+                        auto r1 = mScaleInvoker->Run(arg.mScaleArgs[1].get(), stream_config);
+                        auto r2 = mBilinearInvoker->Run(arg.mBilinearArgs[0].get(), stream_config);
+                        auto r3 = mBilinearInvoker->Run(arg.mBilinearArgs[1].get(), stream_config);
 
                         if(arg.mE_grid != nullptr)
                         {
                             auto blockDim = dim3(1024);
-                            auto gridDim = dim3(ceilDiv(arg.elementsE, blockDim.x));
-                            hiptensor::mfma<<<gridDim, blockDim, 0>>>(
-                                arg.mE_real.get(), arg.mE_imag.get(), arg.mD_real.get(), arg.mD_imag.get(),
-                                ((ComplexE*)arg.mE_grid), arg.element_op.alpha_, arg.element_op.beta_,
-                                arg.elementsE);
+                            auto gridDim  = dim3(ceilDiv(arg.elementsE, blockDim.x));
+                            hiptensor::mfma<<<gridDim, blockDim, 0>>>(arg.mE_real.get(),
+                                                                      arg.mE_imag.get(),
+                                                                      arg.mD_real.get(),
+                                                                      arg.mD_imag.get(),
+                                                                      ((ComplexE*)arg.mE_grid),
+                                                                      arg.element_op.alpha_,
+                                                                      arg.element_op.beta_,
+                                                                      arg.elementsE);
                             //hiptensor::pack<<<gridDim, blockDim, 0>>>(
                             //    arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
                         }
@@ -484,15 +587,16 @@ namespace ck
                         return Run(*dynamic_cast<const Argument*>(p_arg), stream_config);
                     }
 
-                    std::unique_ptr<typename DecompOp::Invoker> mInvoker;
+                    std::unique_ptr<typename ScaleDecompOp::Invoker>    mScaleInvoker;
+                    std::unique_ptr<typename BilinearDecompOp::Invoker> mBilinearInvoker;
                 };
 
                 static bool IsSupportedArgument(const Argument& arg)
                 {
-                    return DecompOp::IsSupportedArgument(*(arg.mArgs[0].get()))
-                           && DecompOp::IsSupportedArgument(*(arg.mArgs[1].get()))
-                           && DecompOp::IsSupportedArgument(*(arg.mArgs[2].get()))
-                           && DecompOp::IsSupportedArgument(*(arg.mArgs[3].get()));
+                    return ScaleDecompOp::IsSupportedArgument(*(arg.mScaleArgs[0].get()))
+                           && ScaleDecompOp::IsSupportedArgument(*(arg.mScaleArgs[1].get()))
+                           && BilinearDecompOp::IsSupportedArgument(*(arg.mBilinearArgs[0].get()))
+                           && BilinearDecompOp::IsSupportedArgument(*(arg.mBilinearArgs[1].get()));
                 }
 
                 // polymorphic
@@ -510,10 +614,14 @@ namespace ck
                     // Call the base, then fwd to each arg.
                     this->BaseOperator::SetWorkSpacePointer(p_arg, p_workspace, s);
                     auto* arg = dynamic_cast<Argument*>(p_arg);
-                    this->BaseOperator::SetWorkSpacePointer(arg->mArgs[0].get(), p_workspace, s);
-                    this->BaseOperator::SetWorkSpacePointer(arg->mArgs[1].get(), p_workspace, s);
-                    this->BaseOperator::SetWorkSpacePointer(arg->mArgs[2].get(), p_workspace, s);
-                    this->BaseOperator::SetWorkSpacePointer(arg->mArgs[3].get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(
+                        arg->mScaleArgs[0].get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(
+                        arg->mScaleArgs[1].get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(
+                        arg->mBilinearArgs[0].get(), p_workspace, s);
+                    this->BaseOperator::SetWorkSpacePointer(
+                        arg->mBilinearArgs[1].get(), p_workspace, s);
                 }
 
                 static auto MakeArgument(
@@ -531,7 +639,7 @@ namespace ck
                     const std::vector<index_t>&                         e_ms_ns_strides,
                     AElementwiseOperation                               a_element_op,
                     BElementwiseOperation                               b_element_op,
-                    CDEElementwiseOperation                             cde_element_op)
+                    BilinearCDEElementwiseOperation                     cde_element_op)
                 {
                     return Argument{p_a,
                                     p_b,
@@ -571,7 +679,7 @@ namespace ck
                     const std::vector<index_t>&                         e_ms_ns_strides,
                     AElementwiseOperation                               a_element_op,
                     BElementwiseOperation                               b_element_op,
-                    CDEElementwiseOperation                             cde_element_op) override
+                    BilinearCDEElementwiseOperation                     cde_element_op) override
                 {
                     return std::make_unique<Argument>(p_a,
                                                       p_b,

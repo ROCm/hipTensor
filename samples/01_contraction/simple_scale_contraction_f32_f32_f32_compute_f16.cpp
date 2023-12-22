@@ -47,12 +47,12 @@ int main(int argc, char* argv[])
     constexpr hipDataType            typeD       = HIP_R_32F;
     constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_16F;
 
+    floatTypeCompute alpha = 1;
     return scaleContractionSample<ADataType,
                                   BDataType,
                                   DDataType,
-                                  floatTypeCompute,
                                   typeA,
                                   typeB,
                                   typeD,
-                                  typeCompute>();
+                                  typeCompute>(&alpha);
 }

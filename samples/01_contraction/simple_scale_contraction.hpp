@@ -37,23 +37,12 @@
 template <typename ADataType,
           typename BDataType,
           typename DDataType,
-          typename computeDataType,
           hipDataType            typeA,
           hipDataType            typeB,
           hipDataType            typeD,
           hiptensorComputeType_t typeCompute>
-int scaleContractionSample()
+int scaleContractionSample(void* alpha)
 {
-    computeDataType alpha;
-    if constexpr(std::is_same_v<computeDataType, hipFloatComplex> || std::is_same_v<computeDataType, hipDoubleComplex>)
-    {
-        alpha = computeDataType(1.0, 1.0);
-    }
-    else
-    {
-        alpha = (computeDataType)1.0f;
-    }
-
     /**********************
    * Computing: C_{m,n,u,v} = A_{m,n,h,k} B_{h,k,u,v}
    **********************/
@@ -272,7 +261,7 @@ int scaleContractionSample()
 
     CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
                                                &plan,
-                                               (void*)&alpha,
+                                               alpha,
                                                A_d,
                                                B_d,
                                                nullptr,

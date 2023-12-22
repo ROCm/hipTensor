@@ -327,3 +327,19 @@ bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType)
 {
     return !(computeType == hipType);
 }
+
+namespace std
+{
+    std::string to_string(const hiptensor::ScalarData& value)
+    {
+        if(value.mType == HIPTENSOR_COMPUTE_C32F || value.mType == HIPTENSOR_COMPUTE_C64F)
+        {
+            return string() + "[" + to_string(value.mComplex.x) + ", " + to_string(value.mComplex.y)
+                   + "]";
+        }
+        else
+        {
+            return to_string(value.mReal);
+        }
+    }
+}
