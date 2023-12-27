@@ -119,28 +119,6 @@ namespace hiptensor
         }
     }
 
-    /**
-     * \brief This function packs non-structured data (float / double)
-     *        into structured data (hipFloatComplex / hipDoubleComplex).
-     */
-    template<typename InputType, typename OutputType>
-    __global__ void pack(const InputType* in_real, InputType* in_img, OutputType *out, int length)
-    {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-        if(idx < length)
-        {
-            if constexpr(std::is_same_v<OutputType, hipFloatComplex>)
-            {
-                out[idx] = make_hipFloatComplex((float)in_real[idx], (float)in_img[idx]);
-            }
-            else if constexpr(std::is_same_v<OutputType, hipDoubleComplex>)
-            {
-                out[idx] = make_hipDoubleComplex((double)in_real[idx], (double)in_img[idx]);
-            }
-        }
-    }
- 
     struct DeviceDeleter
     {
         void operator()(void* ptr)

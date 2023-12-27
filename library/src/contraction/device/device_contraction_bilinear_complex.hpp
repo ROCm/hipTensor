@@ -472,23 +472,6 @@ namespace ck
                                                 mB_real,
                                                 mE_imag,
                                                 DecompBilinearCDEElementwiseOperation{1.0f, 1.0f});
-
-                        // TODO UNCOMMENT WHEN DONE
-                        // original
-                        /*mScaleArgs[0] = allocScaleArgs(mE_real, mA_real, mB_real, cde_element_op);
-                        mScaleArgs[1] = allocScaleArgs(mE_imag, mA_real, mB_imag, cde_element_op);
-                        mBilinearArgs[0] = allocBilinearArgs(
-                            mE_real,
-                            mA_imag,
-                            mB_imag,
-                            mE_real,
-                            BilinearCDEElementwiseOperation{cde_element_op.scale_ * -1.0f, 1.0f});
-                        mBilinearArgs[1] = allocBilinearArgs(
-                            mE_imag,
-                            mA_imag,
-                            mB_real,
-                            mE_imag,
-                            BilinearCDEElementwiseOperation{cde_element_op.scale_, 1.0f});*/
                     }
 
                     void Print() const
@@ -573,8 +556,6 @@ namespace ck
                                                                       arg.element_op.alpha_,
                                                                       arg.element_op.beta_,
                                                                       arg.elementsE);
-                            //hiptensor::pack<<<gridDim, blockDim, 0>>>(
-                            //    arg.mE_real.get(), arg.mE_imag.get(), ((ComplexE*)arg.mE_grid), arg.elementsE);
                         }
 
                         return r0 + r1 + r2 + r3;
