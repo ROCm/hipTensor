@@ -628,8 +628,8 @@ namespace hiptensor
                                                                 DDataType,
                                                                 workspace));
 
-            size_t elementsCD = std::accumulate(c_ms_ns.mLengths.begin(),
-                                                c_ms_ns.mLengths.end(),
+            size_t elementsCD = std::accumulate(d_ms_ns.mLengths.begin(),
+                                                d_ms_ns.mLengths.end(),
                                                 size_t{1},
                                                 std::multiplies<size_t>());
 
@@ -639,8 +639,11 @@ namespace hiptensor
 
             if(DDataType == HIP_R_16F)
             {
-                std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
-                    (_Float16*)resource->deviceD().get(), (_Float16*)reference.get(), elementsCD);
+                std::tie(mValidationResult, mMaxRelativeError)
+                    = compareEqualLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
+                                                         (_Float16*)reference.get(),
+                                                         elementsCD,
+                                                         computeType);
             }
             else if(DDataType == HIP_R_16BF)
             {
@@ -648,17 +651,24 @@ namespace hiptensor
                     = compareEqualLaunchKernel<hip_bfloat16>(
                         (hip_bfloat16*)resource->deviceD().get(),
                         (hip_bfloat16*)reference.get(),
-                        elementsCD);
+                        elementsCD,
+                        computeType);
             }
             else if(DDataType == HIP_R_32F || DDataType == HIP_C_32F)
             {
-                std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<float>(
-                    (float*)resource->deviceD().get(), (float*)reference.get(), elementsCD);
+                std::tie(mValidationResult, mMaxRelativeError)
+                    = compareEqualLaunchKernel<float>((float*)resource->deviceD().get(),
+                                                      (float*)reference.get(),
+                                                      elementsCD,
+                                                      computeType);
             }
             else if(DDataType == HIP_R_64F || DDataType == HIP_C_64F)
             {
-                std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<double>(
-                    (double*)resource->deviceD().get(), (double*)reference.get(), elementsCD);
+                std::tie(mValidationResult, mMaxRelativeError)
+                    = compareEqualLaunchKernel<double>((double*)resource->deviceD().get(),
+                                                       (double*)reference.get(),
+                                                       elementsCD,
+                                                       computeType);
             }
 
             EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;

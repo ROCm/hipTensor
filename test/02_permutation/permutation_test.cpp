@@ -257,7 +257,8 @@ namespace hiptensor
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
                                                       (float*)resource->deviceReference().get(),
-                                                      resource->getCurrentMatrixElement());
+                                                      resource->getCurrentMatrixElement(),
+                                                      convertToComputeType(computeDataType));
             }
             else if(abDataType == HIP_R_16F)
             {
@@ -273,7 +274,8 @@ namespace hiptensor
                 std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceB().get(),
                     (_Float16*)resource->deviceReference().get(),
-                    resource->getCurrentMatrixElement());
+                    resource->getCurrentMatrixElement(),
+                    convertToComputeType(computeDataType));
             }
         }
 
