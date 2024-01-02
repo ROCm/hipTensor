@@ -31,7 +31,7 @@ Run the steps below to build documentation locally.
 ```shell
 cd docs
 
-pip3 install -r .sphinx/requirements.txt
+pip3 install -r sphinx/requirements.txt
 
 python3 -m sphinx -T -E -b html -d _build/doctrees -D language=en . _build/html
 ```
@@ -98,21 +98,24 @@ After configuration, build with `cmake --build <build_dir> -- -j<nproc>`
 ### Logger tests
 
 Tests API implementation of logger verbosity and functionality.
-o <build_dir>/bin/logger_test
+
+* `<build_dir>/bin/logger_test`
 
 ## Running Contraction Tests
 
 ### Bilinear contraction tests
 
 Tests the API implementation of bilinear contraction algorithm with validation.
-o <build_dir>/bin/bilinear_contraction_f32_test
-o <build_dir>/bin/bilinear_contraction_f64_test
+
+* `<build_dir>/bin/bilinear_contraction_f32_test`
+* `<build_dir>/bin/bilinear_contraction_f64_test`
 
 ### Scale contraction tests
 
 Tests the API implementation of scale contraction algorithm with validation.
-o <build_dir>/bin/scale_contraction_f32_test
-o <build_dir>/bin/scale_contraction_f64_test
+
+* `<build_dir>/bin/scale_contraction_f32_test`
+* `<build_dir>/bin/scale_contraction_f64_test`
 
 ### Samples
 
@@ -121,12 +124,14 @@ These are stand-alone use-cases of the hipTensor contraction operations.
 ## F32 Bilinear contraction
 
 Demonstrates the API implementation of bilinear contraction operation without validation.
-o <build_dir>/bin/simple_contraction_bilinear_f32
+
+* `<build_dir>/bin/simple_contraction_bilinear_f32`
 
 ## F32 Scale contraction
 
 Demonstrates the API implementation of scale contraction operation without validation.
-o <build_dir>/bin/simple_contraction_scale_f32
+
+* `<build_dir>/bin/simple_contraction_scale_f32`
 
 ### Build Samples as external client
 

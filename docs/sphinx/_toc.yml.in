@@ -8,3 +8,6 @@ subtrees:
     - file: API_Reference_Guide
     - file: Programmers_Guide
     - file: Contributors_Guide
+  - caption: About
+    entries:
+    - file: license
