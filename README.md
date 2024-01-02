@@ -39,7 +39,7 @@ python3 -m sphinx -T -E -b html -d _build/doctrees -D language=en . _build/html
 
 ## Currently supported
 
-### Operations - Contraction Tensor
+### Operation: Contraction tensor
 
 hiptensor supports a tensor contraction of the form $D = \alpha AB + \beta C$
 
@@ -55,7 +55,7 @@ Supported data-type combinations are:
 | f64         | f64         | f64         | f32               | f64 is supported only on gfx90a +  |
 | f64         | f64         | f64         | f64               | f64 is supported only on gfx90a +  |
 
-### Operations - Permutation Tensor
+### Operation: Permutation tensor
 
 Supported data-type combinations are:
 
@@ -110,7 +110,7 @@ Here are some of the examples for the configuration:
 | Debug build                      | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`       |
 | Build without tests (default on) | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF`    |
 
-After configuration, build with `cmake --build <build_dir> -- -j<nproc>`
+After configuration, build with `cmake --build <build_dir> -- -j<nproc>`.
 
 ### Tips to reduce tests compile time
 
@@ -183,9 +183,9 @@ Demonstrates the API implementation of permutation operation without validation.
   <build_dir>/bin/simple_permutation
 ```
 
-### Build Samples as external client
+### Build samples as external client
 
-The client application links to hipTensor library; therefore, you must install the
+The client application links to the hipTensor library; therefore, you must install the
 hipTensor library before building client applications.
 
 ## Build
