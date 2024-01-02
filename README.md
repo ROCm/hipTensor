@@ -46,7 +46,7 @@ hiptensor supports a tensor contraction of the form $D = \alpha AB + \beta C$
 Supported data-type combinations are:
 
 | typeA       | typeB       | typeC       | typeCompute       | notes                              |
-| ----------- | ----------- | ----------- | ----------------- | ---------------------------------- |
+|-------------|-------------|-------------|-------------------|------------------------------------|
 | bf16        | bf16        | bf16        | f32               |                                    |
 | __half      | __half      | __half      | f32               |                                    |
 | f32         | f32         | f32         | bf16              |                                    |
@@ -54,6 +54,8 @@ Supported data-type combinations are:
 | f32         | f32         | f32         | f32               |                                    |
 | f64         | f64         | f64         | f32               | f64 is supported only on gfx90a +  |
 | f64         | f64         | f64         | f64               | f64 is supported only on gfx90a +  |
+| cf32        | cf32        | cf32        | cf32              | cf32 is supported only on gfx90a + |
+| cf64        | cf64        | cf64        | cf64              | cf64 is supported only on gfx90a + |
 
 ### Operation: Permutation tensor
 
