@@ -9,8 +9,9 @@ through general purpose kernel languages, like HIP C++.
 * AMD CDNA class GPU featuring matrix core support:
 gfx908, gfx90a, gfx940, gfx941, gfx942 as 'gfx9'
 
-> Note: Double precision FP64 datatype support requires
-> gfx90a, gfx940, gfx941 or gfx942
+:::{note}
+Double precision FP64 datatype support requires gfx90a, gfx940, gfx941 or gfx942
+:::
 
 ## Minimum Software Requirements
 
