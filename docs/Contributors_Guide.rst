@@ -104,19 +104,19 @@ will result in different results.
 
 To format a file, use:
 
-.. code-block::
+.. code-block:: bash
 
    /opt/rocm/llvm/bin/clang-format -style=file -i <path-to-source-file>
 
 To format all files, run the following script in hipTensor directory:
 
-.. code-block::
+.. code-block:: bash
 
    #!/bin/bash
    git ls-files -z *.cc *.cpp *.h *.hpp *.cl *.h.in *.hpp.in *.cpp.in | xargs -0 /opt/rocm/llvm/bin/clang-format -style=file -i
 
 Also, githooks can be installed to format the code per-commit:
 
-.. code-block::
+.. code-block:: bash
 
    ./.githooks/install
