@@ -106,6 +106,18 @@ namespace hiptensor
     };
 
     template <>
+    struct HipDataType<hipFloatComplex>
+    {
+        static constexpr auto value = HIP_C_32F;
+    };
+
+    template <>
+    struct HipDataType<hipDoubleComplex>
+    {
+        static constexpr auto value = HIP_C_64F;
+    };
+
+    template <>
     struct HipDataType<NoneType>
     {
         static constexpr auto value = NONE_TYPE;
@@ -162,6 +174,14 @@ namespace hiptensor
         {
             return static_cast<T>(*(uint64_t*)value);
         }
+        else if constexpr(std::is_same_v<T, hipFloatComplex> && id == HIP_C_32F)
+        {
+            return static_cast<T>(*(hipFloatComplex*)value);
+        }
+        else if constexpr(std::is_same_v<T, hipDoubleComplex> && id == HIP_C_64F)
+        {
+            return static_cast<T>(*(hipDoubleComplex*)value);
+        }
         else
         {
 #if !NDEBUG
@@ -215,6 +235,8 @@ namespace hiptensor
         }
     }
 
+    template <>
+    ScalarData readVal(void const* value, hiptensorComputeType_t id);
 } // namespace hiptensor
 
 #endif // HIPTENSOR_LIBRARY_DATA_TYPES_IMPL_HPP

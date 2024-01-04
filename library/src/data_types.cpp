@@ -79,6 +79,14 @@ namespace hiptensor
         {
             return sizeof(uint64_t);
         }
+        else if(id == HIP_C_32F)
+        {
+            return sizeof(hipFloatComplex);
+        }
+        else if(id == HIP_C_64F)
+        {
+            return sizeof(hipDoubleComplex);
+        }
         else if(id == NONE_TYPE)
         {
             return 0;
@@ -126,45 +134,115 @@ namespace hiptensor
         {
             return HIPTENSOR_COMPUTE_32U;
         }
+        else if(hipType == HIP_C_32F)
+        {
+            return HIPTENSOR_COMPUTE_C32F;
+        }
+        else if(hipType == HIP_C_64F)
+        {
+            return HIPTENSOR_COMPUTE_C64F;
+        }
         else
         {
             return HIPTENSOR_COMPUTE_NONE;
         }
     }
 
-    void writeVal(void const* addr, hiptensorComputeType_t id, double value)
+    template <>
+    ScalarData readVal(void const* value, hiptensorComputeType_t id)
     {
         if(id == HIPTENSOR_COMPUTE_16F)
         {
-            *(_Float16*)addr = value;
+            return ScalarData(id, *(_Float16*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_16BF)
         {
-            *(hip_bfloat16*)addr = value;
+            return ScalarData(id, *(hip_bfloat16*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_32F)
         {
-            *(float*)addr = value;
+            return ScalarData(id, *(float*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_64F)
         {
-            *(double*)addr = value;
+            return ScalarData(id, *(double*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_8U)
         {
-            *(uint8_t*)addr = value;
+            return ScalarData(id, *(uint8_t*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_8I)
         {
-            *(int8_t*)addr = value;
+            return ScalarData(id, *(int8_t*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_32U)
         {
-            *(uint32_t*)addr = value;
+            return ScalarData(id, *(uint32_t*)value);
         }
         else if(id == HIPTENSOR_COMPUTE_32I)
         {
-            *(int32_t*)addr = value;
+            return ScalarData(id, *(int32_t*)value);
+        }
+        else if(id == HIPTENSOR_COMPUTE_C32F)
+        {
+            auto complex = *(hipFloatComplex*)value;
+            return {id, complex.x, complex.y};
+        }
+        else if(id == HIPTENSOR_COMPUTE_C64F)
+        {
+            auto complex = *(hipDoubleComplex*)value;
+            return {id, complex.x, complex.y};
+        }
+        else
+        {
+#if !NDEBUG
+            std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+#endif // !NDEBUG
+            return {HIPTENSOR_COMPUTE_NONE, 0, 0};
+        }
+    }
+
+    void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value)
+    {
+        if(id == HIPTENSOR_COMPUTE_16F)
+        {
+            *(_Float16*)addr = value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_16BF)
+        {
+            *(hip_bfloat16*)addr = value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_32F)
+        {
+            *(float*)addr = value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_64F)
+        {
+            *(double*)addr = value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_8U)
+        {
+            *(uint8_t*)addr = (uint8_t)value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_8I)
+        {
+            *(int8_t*)addr = (int8_t)value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_32U)
+        {
+            *(uint32_t*)addr = (uint32_t)value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_32I)
+        {
+            *(int32_t*)addr = (int32_t)value.mReal;
+        }
+        else if(id == HIPTENSOR_COMPUTE_C32F)
+        {
+            *(hipFloatComplex*)addr = hipComplexDoubleToFloat(value.mComplex);
+        }
+        else if(id == HIPTENSOR_COMPUTE_C64F)
+        {
+            *(hipDoubleComplex*)addr = value.mComplex;
         }
         else
         {
@@ -174,7 +252,6 @@ namespace hiptensor
             return;
         }
     }
-
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
@@ -187,11 +264,11 @@ bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
     {
         return (computeType == HIPTENSOR_COMPUTE_16F);
     }
-    else if(hipType == HIP_R_32F)
+    else if(hipType == HIP_R_32F || hipType == HIP_C_32F)
     {
         return (computeType == HIPTENSOR_COMPUTE_32F);
     }
-    else if(hipType == HIP_R_64F)
+    else if(hipType == HIP_R_64F || hipType == HIP_C_64F)
     {
         return (computeType == HIPTENSOR_COMPUTE_64F);
     }
@@ -249,4 +326,20 @@ bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType)
 bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType)
 {
     return !(computeType == hipType);
+}
+
+namespace std
+{
+    std::string to_string(const hiptensor::ScalarData& value)
+    {
+        if(value.mType == HIPTENSOR_COMPUTE_C32F || value.mType == HIPTENSOR_COMPUTE_C64F)
+        {
+            return string() + "[" + to_string(value.mComplex.x) + ", " + to_string(value.mComplex.y)
+                   + "]";
+        }
+        else
+        {
+            return to_string(value.mReal);
+        }
+    }
 }

@@ -37,16 +37,12 @@
 template <typename ADataType,
           typename BDataType,
           typename CDataType,
-          typename floatTypeCompute,
           hipDataType            typeA,
           hipDataType            typeB,
           hipDataType            typeC,
           hiptensorComputeType_t typeCompute>
-int bilinearContractionSample()
+int bilinearContractionSample(void* alpha, void* beta)
 {
-    floatTypeCompute alpha = (floatTypeCompute)1.0f;
-    floatTypeCompute beta  = (floatTypeCompute)1.0f;
-
     /**********************
    * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta *
    *C_{m,n,u,v}
@@ -271,17 +267,8 @@ int bilinearContractionSample()
 
     std::cout << "Launching contraction kernel..." << std::endl;
 
-    CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
-                                               &plan,
-                                               (void*)&alpha,
-                                               A_d,
-                                               B_d,
-                                               (void*)&beta,
-                                               C_d,
-                                               C_d,
-                                               workspace,
-                                               worksize,
-                                               0 /* stream */));
+    CHECK_HIPTENSOR_ERROR(hiptensorContraction(
+        handle, &plan, alpha, A_d, B_d, beta, C_d, C_d, workspace, worksize, 0 /* stream */));
 
 #if !NDEBUG
     bool printElements = false;

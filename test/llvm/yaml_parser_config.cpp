@@ -92,6 +92,7 @@ LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::size_t>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<double>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(AlphaT)
 LLVM_YAML_IS_SEQUENCE_VECTOR(BetaT)
 
@@ -113,6 +114,8 @@ namespace llvm
                 io.enumCase(value, "HIP_R_16BF", HIP_R_16BF);
                 io.enumCase(value, "HIP_R_32F", HIP_R_32F);
                 io.enumCase(value, "HIP_R_64F", HIP_R_64F);
+                io.enumCase(value, "HIP_C_32F", HIP_C_32F);
+                io.enumCase(value, "HIP_C_64F", HIP_C_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
             }
         };
@@ -227,10 +230,10 @@ namespace llvm
                 io.mapRequired("Algorithm Types", doc.algorithms());
                 io.mapRequired("Operators", doc.operators());
                 io.mapRequired("Worksize Prefs", doc.workSizePrefrences());
-                io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
+                io.mapOptional("Alphas", (std::vector<std::vector<double>>&)(doc.alphas()));
                 io.mapOptional("Betas",
-                               (std::vector<BetaT>&)(doc.betas()),
-                               std::vector<BetaT>(doc.alphas().size(), BetaT(0)));
+                               (std::vector<std::vector<double>>&)(doc.betas()),
+                               std::vector<std::vector<double>>(doc.alphas().size()));
                 io.mapRequired("Lengths", doc.problemLengths());
 
                 // Default values for optional values
@@ -255,6 +258,13 @@ namespace llvm
                 if(doc.alphas().size() == 0)
                 {
                     return "Error: Empty Alphas";
+                }
+
+                if(std::any_of(doc.alphas().cbegin(), doc.alphas().cend(), [](auto&& alpha) {
+                       return alpha.size() > 2 || alpha.size() <= 0;
+                   }))
+                {
+                    return "Error: invalid Alpha";
                 }
 
                 if(doc.betas().size() > 0 && doc.betas().size() != doc.alphas().size())

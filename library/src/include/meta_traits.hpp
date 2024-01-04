@@ -32,7 +32,7 @@ namespace hiptensor
 
     // Placeholder for building traits on any type T
     // Use partial or full specialization for any class.
-    template <typename T>
+    template <typename T, typename Enabler = void>
     struct MetaTraits;
 
 } // namespace hiptensor
