@@ -72,8 +72,21 @@ __global__ void fillKernel(DataType* data, uint32_t elementSize, uint32_t seed)
 
     if(index < elementSize)
     {
-        auto value  = (DataType(index / double(RAND_MAX) - 0.5) * 100) / elementSize;
-        data[index] = static_cast<DataType>(value);
+        if constexpr(std::is_same_v<DataType, hipFloatComplex>)
+        {
+            auto value  = (float(index / float(RAND_MAX) - 0.5) * 100) / elementSize;
+            data[index] = make_hipFloatComplex(value, value);
+        }
+        else if constexpr(std::is_same_v<DataType, hipDoubleComplex>)
+        {
+            auto value  = (double(index / double(RAND_MAX) - 0.5) * 100) / elementSize;
+            data[index] = make_hipDoubleComplex(value, value);
+        }
+        else
+        {
+            auto value  = (DataType(index / double(RAND_MAX) - 0.5) * 100) / elementSize;
+            data[index] = static_cast<DataType>(value);
+        }
     }
 }
 

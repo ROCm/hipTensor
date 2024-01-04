@@ -92,7 +92,7 @@ namespace hiptensor
                 auto bOffset
                     = std::inner_product(bIndices.rbegin(), bIndices.rend(), bStrides.rbegin(), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                B[bOffset] = static_cast<DataType>(A[elementIndex] * alphaValue);
+                B[bOffset] = static_cast<DataType>(A[elementIndex] * (DataType)alphaValue);
             }
 
             return HIPTENSOR_STATUS_SUCCESS;

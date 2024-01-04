@@ -147,7 +147,11 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         // Use a scale contraction due to
         // tensor C-descriptor is empty
 
-        *desc = {(int32_t)hiptensor::ContractionOpId_t::SCALE,
+        auto contractionOp
+            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
+                  ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
+                  : hiptensor::ContractionOpId_t::SCALE;
+        *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA,
                   *descB,
@@ -161,7 +165,11 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     {
         // Use a bilinear contraction due to
         // tensor C-descriptor is not empty
-        *desc = {(int32_t)hiptensor::ContractionOpId_t::BILINEAR,
+        auto contractionOp
+            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
+                  ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
+                  : hiptensor::ContractionOpId_t::BILINEAR;
+        *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA, *descB, *descC, *descD},
                  {alignmentRequirementA,
@@ -574,9 +582,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
         else
         {
-            auto alphaValue
-                = hiptensor::readVal<double>(alpha, plan->mContractionDesc.mComputeType);
-            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%.6lf", alphaValue);
+            auto alphaValue = hiptensor::readVal<hiptensor::ScalarData>(
+                alpha, plan->mContractionDesc.mComputeType);
+            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%s", std::to_string(alphaValue).c_str());
         }
 
         if(beta == nullptr)
@@ -585,8 +593,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
         else
         {
-            auto betaValue = hiptensor::readVal<double>(beta, plan->mContractionDesc.mComputeType);
-            snprintf(betaMsg, sizeof(betaMsg), "beta=%.6lf", betaValue);
+            auto betaValue = hiptensor::readVal<hiptensor::ScalarData>(
+                beta, plan->mContractionDesc.mComputeType);
+            snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
         }
     }
     else

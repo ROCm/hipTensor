@@ -54,8 +54,8 @@ namespace hiptensor
 
         using LengthsT = std::vector<std::size_t>;
         using StridesT = std::vector<std::size_t>;
-        using AlphaT   = double;
-        using BetaT    = double;
+        using AlphaT   = std::vector<double>;
+        using BetaT    = std::vector<double>;
 
         //Data types of input and output tensors
         std::vector<TestTypesT>    mDataTypes;
@@ -79,9 +79,13 @@ int main(int argc, char* argv[])
     yee.mDataTypes    = {
         // clang-format off
                 {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F, HIP_R_32F}, // scale F32
+                {HIP_C_32F, HIP_C_32F, hiptensor::NONE_TYPE, HIP_C_32F, HIP_C_32F}, // scale F32 Complex
                 {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32
+                {HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F}, // bilinear F32 Complex
                 {HIP_R_64F, HIP_R_64F, hiptensor::NONE_TYPE, HIP_R_64F, HIP_R_64F}, // scale F64
+                {HIP_C_64F, HIP_C_64F, hiptensor::NONE_TYPE, HIP_C_64F, HIP_C_64F}, // scale F64 Complex
                 {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}, // bilinear F64
+                {HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F}, // bilinear F64 Complex
         // clang-format on
     };
     yee.mAlgorithms
@@ -94,8 +98,8 @@ int main(int argc, char* argv[])
     yee.mProblemLengths
         = {{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}};
     yee.mProblemStrides = {{}};
-    yee.mAlphas         = {0, 1, 1};
-    yee.mBetas          = {2, 2, 2};
+    yee.mAlphas         = {{0}, {1}, {1}};
+    yee.mBetas          = {{2}, {2}, {2}};
 
     struct TmpFileWrapper
     {

@@ -27,6 +27,10 @@
 #include "contraction_solution_instances.hpp"
 #include "contraction_solution.hpp"
 
+// Ensure access to
+#include "device/hiptensor_contraction_bilinear_instances.hpp"
+#include "device/hiptensor_contraction_scale_instances.hpp"
+
 namespace hiptensor
 {
     ContractionSolutionInstances::ContractionSolutionInstances()
@@ -101,6 +105,20 @@ namespace hiptensor
                                           ck::tensor_operation::element_wise::Bilinear,
                                           ck::bhalf_t>());
 
+        // Bilinear complex f32
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          hipFloatComplex,
+                                          hipFloatComplex,
+                                          ck::Tuple<hipFloatComplex>,
+                                          hipFloatComplex,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::BilinearComplex,
+                                          hipFloatComplex>());
+
         // Bilinear f64
         registerSolutions(
             enumerateContractionSolutions<2,
@@ -126,6 +144,20 @@ namespace hiptensor
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::Bilinear,
                                           double>());
+
+        // Bilinear complex f64
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          hipDoubleComplex,
+                                          hipDoubleComplex,
+                                          ck::Tuple<hipDoubleComplex>,
+                                          hipDoubleComplex,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::BilinearComplex,
+                                          hipDoubleComplex>());
 
         // Scale bf16
         registerSolutions(
@@ -194,6 +226,21 @@ namespace hiptensor
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::Scale,
                                           ck::bhalf_t>());
+
+        // scale complex f32
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          hipFloatComplex,
+                                          hipFloatComplex,
+                                          ck::Tuple<>,
+                                          hipFloatComplex,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::ScaleComplex,
+                                          hipFloatComplex>());
+
         // Scale f64
         registerSolutions(
             enumerateContractionSolutions<2,
@@ -220,5 +267,19 @@ namespace hiptensor
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::Scale,
                                           double>());
+        // scale complex f64
+        registerSolutions(
+            enumerateContractionSolutions<2,
+                                          2,
+                                          2,
+                                          hipDoubleComplex,
+                                          hipDoubleComplex,
+                                          ck::Tuple<>,
+                                          hipDoubleComplex,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::ScaleComplex,
+                                          hipDoubleComplex>());
+
     }
 } // namespace hiptensor
