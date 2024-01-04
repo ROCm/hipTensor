@@ -106,7 +106,9 @@ By default, the project is configured as Release mode.
 
 To build only library, run the following command :
 
-    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=OFF`
+.. code-block:: bash
+    
+    `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=OFF`
 
 Here are some other example project configurations:
 
@@ -125,21 +127,26 @@ Here are some other example project configurations:
 
 After configuration, build with
 
-    :code:`cmake --build <build_dir> -- -j`
+.. code-block:: bash
 
+    cmake --build <build_dir> -- -j
 
 Build library + samples
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 To build library and samples, run the following command:
 
-    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=ON`
+.. code-block:: bash
+
+    CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=ON
 
 After configuration, build with
 
-    :code:`cmake --build <build_dir> -- -j`
+.. code-block:: bash
 
-The samples folder in :code:`<build_dir>` contains executables in the table below.
+    cmake --build <build_dir> -- -j
+
+The samples folder in ``<build_dir>`` contains executables in the table below.
 
 =================================== ===================================================================================
 executable name                     description
@@ -154,13 +161,17 @@ Build library + tests
 
 To build library and tests, run the following command :
 
-    :code:`CC=hipcc CXX=hipcc cmake -B<build_dir> .`
+.. code-block:: bash
+
+    CC=hipcc CXX=hipcc cmake -B<build_dir> .
 
 After configuration, build with
 
-    :code:`cmake --build <build_dir> -- -j`
+.. code-block:: bash
 
-The tests in `<build_dir>` contains executables in the table below.
+    cmake --build <build_dir> -- -j
+
+The tests in ``<build_dir>`` contains executables in the table below.
 
 ====================================== ===================================================================================
 executable name                        description
@@ -177,7 +188,8 @@ Build library + Documentation
 
 Run the steps below to build documentation locally.
 
-.. code-block::
+.. code-block:: bash
+
     cd docs
 
     sudo apt-get update
@@ -192,4 +204,4 @@ Run the steps below to build documentation locally.
 
     pdflatex hiptensor.tex
 
-Generates :code:`hiptensor.pdf` here
+Generates ``hiptensor.pdf`` here
