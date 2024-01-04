@@ -31,6 +31,7 @@
 // Include order needs to be preserved
 #include <hip/library_types.h>
 #include <hip/hip_bfloat16.h>
+#include <hip/hip_complex.h>
 #include <hip/hip_fp16.h>
 #include <iostream>
 
@@ -42,6 +43,46 @@ namespace hiptensor
 {
     // Used to map to empty tensors
     struct NoneType;
+
+    struct ScalarData
+    {
+        hiptensorComputeType_t mType;
+        union
+        {
+            double           mReal;
+            hipDoubleComplex mComplex;
+        };
+
+        ScalarData() = default;
+        ScalarData(hiptensorComputeType_t type, double real, double imag = 0)
+        {
+            mType = type;
+            if(type == HIPTENSOR_COMPUTE_C32F || type == HIPTENSOR_COMPUTE_C64F)
+            {
+                mComplex = make_hipDoubleComplex(real, imag);
+            }
+            else
+            {
+                mReal = real;
+            }
+        }
+        operator float() const
+        {
+            return static_cast<float>(mReal);
+        }
+        operator double() const
+        {
+            return mReal;
+        }
+        operator hipFloatComplex() const
+        {
+            return hipComplexDoubleToFloat(mComplex);
+        }
+        operator hipDoubleComplex() const
+        {
+            return mComplex;
+        }
+    };
 
     static constexpr hipDataType NONE_TYPE = (hipDataType)31;
 
@@ -65,6 +106,7 @@ namespace hiptensor
     template <typename T>
     T readVal(void const* value, hiptensorComputeType_t id);
 
+    void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value);
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);
@@ -72,6 +114,11 @@ bool operator==(hiptensorComputeType_t computeType, hipDataType hipType);
 
 bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType);
 bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType);
+
+namespace std
+{
+    std::string to_string(const hiptensor::ScalarData& value);
+}
 
 #include "data_types_impl.hpp"
 

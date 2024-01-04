@@ -35,13 +35,14 @@
 namespace std
 {
     template <>
-    struct std::hash<hiptensor::ContractionSolutionParams>
+    struct hash<hiptensor::ContractionSolutionParams>
     {
-        std::size_t operator()(hiptensor::ContractionSolutionParams const& s) const noexcept
+        size_t operator()(hiptensor::ContractionSolutionParams const& s) const noexcept
         {
             return hiptensor::Hash{}(s.dimsM(),
                                      s.dimsN(),
                                      s.dimsK(),
+                                     s.typeCompute(),
                                      s.typeA(),
                                      s.typeB(),
                                      s.typeC(),
@@ -100,6 +101,11 @@ namespace hiptensor
         hipDataType typeD() const override
         {
             return HipDataType_v<typename MetaTraitsT::EDataT>;
+        }
+
+        hiptensorComputeType_t typeCompute() const override
+        {
+            return convertToComputeType(HipDataType_v<typename MetaTraitsT::ComputeDataT>);
         }
 
         hiptensorOperator_t opA() const override

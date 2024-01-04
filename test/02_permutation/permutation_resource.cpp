@@ -72,7 +72,7 @@ namespace hiptensor
             mCurrentAllocByte = requiredMemorySize;
             needFillData      = true;
         }
-        else if(mCurrentDataType != dataType)
+        if(mCurrentDataType != dataType || mCurrentMatrixElement < requiredElementCount)
         {
             needFillData = true;
         }

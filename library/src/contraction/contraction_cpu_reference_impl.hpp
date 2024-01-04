@@ -45,19 +45,25 @@
 namespace hiptensor
 {
     // hardcoded for NumDimM == NumDimN == NumDimK == 2
+    //
+    // ck::bhalf_t is ushort, cannot perform bhalf_t * bhalf_t
+    // CK does not use ck::bhalf_t as AccDataType. But we still
+    // add this guard here
     template <
         ck::index_t NumDimM,
         ck::index_t NumDimN,
         ck::index_t NumDimK,
         typename ADataType,
         typename BDataType,
+        typename AccDataType,
         typename DsDataType,
         typename EDataType,
-        typename AccDataType,
         typename AElementwiseOperation,
         typename BElementwiseOperation,
         typename CDEElementwiseOperation,
-        ck::enable_if_t<NumDimM == 2 && NumDimN == 2 && NumDimK == 2 && DsDataType::Size() <= 1,
+        typename ComputeDataType = ADataType,
+        ck::enable_if_t<NumDimM == 2 && NumDimN == 2 && NumDimK == 2 && DsDataType::Size() <= 1
+                            && !std::is_same_v<AccDataType, ck::bhalf_t>,
                         bool>
         = false>
     struct ReferenceContraction_M2_N2_K2
@@ -70,7 +76,8 @@ namespace hiptensor
                                                                           EDataType,
                                                                           AElementwiseOperation,
                                                                           BElementwiseOperation,
-                                                                          CDEElementwiseOperation>
+                                                                          CDEElementwiseOperation,
+                                                                          ComputeDataType>
     {
         using BaseArgument = ck::tensor_operation::device::BaseArgument;
         using BaseInvoker  = ck::tensor_operation::device::BaseInvoker;
@@ -149,57 +156,163 @@ namespace hiptensor
                         indices.begin(), indices.end(), strides.begin(), std::size_t{0});
                 };
 
-                auto f_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
-                    auto accum = static_cast<AccDataType>(0);
+                if constexpr((std::is_same_v<ADataType, hipFloatComplex> &&
+                              std::is_same_v<BDataType, hipFloatComplex> &&
+                              std::is_same_v<EDataType, hipFloatComplex>) ||
+                              (std::is_same_v<ADataType, hipDoubleComplex> &&
+                               std::is_same_v<BDataType, hipDoubleComplex> &&
+                               std::is_same_v<EDataType, hipDoubleComplex>))
+                {
+                    auto f_ms_ns_complex = [&](auto m0, auto m1, auto n0, auto n1) {
+                            HIP_vector_type<AccDataType, 2> accum{0};
 
-                    auto K0 = arg.mA_ms_ks_lengths[2];
-                    auto K1 = arg.mA_ms_ks_lengths[3];
+                            auto K0 = arg.mA_ms_ks_lengths[2];
+                            auto K1 = arg.mA_ms_ks_lengths[3];
 
-                    for(size_t k0 = 0; k0 < K0; k0++)
-                    {
-                        for(size_t k1 = 0; k1 < K1; k1++)
+                            for(size_t k0 = 0; k0 < K0; k0++)
+                            {
+                                for(size_t k1 = 0; k1 < K1; k1++)
+                                {
+                                    auto indexA
+                                        = offset(std::vector<size_t>{m0, m1, k0, k1}, arg.mA_ms_ks_strides);
+                                    auto indexB
+                                        = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
+
+                                    ADataType valA = ((ADataType*)arg.mA)[indexA];
+                                    BDataType valB = ((BDataType*)arg.mB)[indexB];
+
+                                    // Mult / accum
+                                    if constexpr(std::is_same_v<AccDataType, float>)
+                                    {
+                                        accum = hipCaddf(accum, hipCmulf(valA, valB));
+                                    }
+                                    else if constexpr(std::is_same_v<AccDataType, double>)
+                                    {
+                                        accum = hipCadd(accum, hipCmul(valA, valB));
+                                    }
+                                }
+                            }
+
+                            auto indexE = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mE_ms_ns_strides);
+
+                            if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                        ck::tensor_operation::element_wise::Scale>)
+                            {
+                                ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.scale_ * (EDataType)accum;
+                            }
+                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                             ck::tensor_operation::element_wise::ScaleComplex>)
+                            {
+                                if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCmulf(hipComplexDoubleToFloat(arg.mOpCDE.scale_), (EDataType)accum);
+                                }
+                                else
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCmul(arg.mOpCDE.scale_, (EDataType)accum);
+                                }
+                            }
+                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                             ck::tensor_operation::element_wise::Bilinear>)
+                            {
+                                // NumDTensor will be 1 due to SFINAE of this class
+                                auto indexD
+                                    = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
+
+                                ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.alpha_ * (EDataType)accum +
+                                                               arg.mOpCDE.beta_ * ((EDataType*)(arg.mD[0]))[indexD];
+                            }
+                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                             ck::tensor_operation::element_wise::BilinearComplex>)
+                            {
+                                // NumDTensor will be 1 due to SFINAE of this class
+                                auto indexD
+                                    = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
+
+                                if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCaddf(
+                                                                            hipCmulf(
+                                                                                    hipComplexDoubleToFloat(arg.mOpCDE.alpha_),
+                                                                                    (EDataType)accum),
+                                                                            hipCmulf(
+                                                                                    hipComplexDoubleToFloat(arg.mOpCDE.beta_),
+                                                                                    ((EDataType*)(arg.mD[0]))[indexD]));
+                                }
+                                else
+                                {
+                                    ((EDataType*)arg.mE)[indexE] = hipCadd(hipCmul(arg.mOpCDE.alpha_, (EDataType)accum),
+                                                                           hipCmul(arg.mOpCDE.beta_, ((EDataType*)(arg.mD[0]))[indexD]));
+                                }
+                            }
+                        };
+
+                    make_ParallelTensorFunctor(f_ms_ns_complex,
+                                               arg.mE_ms_ns_lengths[0],
+                                               arg.mE_ms_ns_lengths[1],
+                                               arg.mE_ms_ns_lengths[2],
+                                               arg.mE_ms_ns_lengths[3])(
+                        std::thread::hardware_concurrency());
+                }
+                else
+                {
+                    auto f_ms_ns = [&](auto m0, auto m1, auto n0, auto n1) {
+                        AccDataType accum = 0;
+
+                        auto K0 = arg.mA_ms_ks_lengths[2];
+                        auto K1 = arg.mA_ms_ks_lengths[3];
+
+                        for(size_t k0 = 0; k0 < K0; k0++)
                         {
-                            auto indexA
-                                = offset(std::vector<size_t>{m0, m1, k0, k1}, arg.mA_ms_ks_strides);
-                            auto indexB
-                                = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
+                            for(size_t k1 = 0; k1 < K1; k1++)
+                            {
+                                auto indexA
+                                    = offset(std::vector<size_t>{m0, m1, k0, k1}, arg.mA_ms_ks_strides);
+                                auto indexB
+                                    = offset(std::vector<size_t>{n0, n1, k0, k1}, arg.mB_ns_ks_strides);
 
-                            ADataType valA;
-                            BDataType valB;
+                                AccDataType valA;
+                                AccDataType valB;
 
-                            // Element-wise ops
-                            arg.mOpA(valA, ((ADataType*)arg.mA)[indexA]);
-                            arg.mOpB(valB, ((BDataType*)arg.mB)[indexB]);
+                                // Element-wise ops
+                                arg.mOpA(
+                                    valA,
+                                    ck::type_convert<ComputeDataType>(((ADataType*)arg.mA)[indexA]));
+                                arg.mOpB(
+                                    valB,
+                                    ck::type_convert<ComputeDataType>(((BDataType*)arg.mB)[indexB]));
 
-                            // Mult / accum
-                            accum
-                                += static_cast<AccDataType>(valA) * static_cast<AccDataType>(valB);
+                                // Mult / accum
+                                accum += valA * valB;
+                            }
                         }
-                    }
 
-                    auto indexE = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mE_ms_ns_strides);
+                        auto indexE = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mE_ms_ns_strides);
 
-                    if constexpr(std::is_same_v<CDEElementwiseOperation,
-                                                ck::tensor_operation::element_wise::Scale>)
-                    {
-                        arg.mOpCDE(((EDataType*)arg.mE)[indexE], accum);
-                    }
-                    else // bilinear
-                    {
-                        // NumDTensor will be 1 due to SFINAE of this class
-                        auto indexD
-                            = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
-                        arg.mOpCDE(
-                            ((EDataType*)arg.mE)[indexE], accum, ((EDataType*)(arg.mD[0]))[indexD]);
-                    }
-                };
+                        if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                    ck::tensor_operation::element_wise::Scale>)
+                        {
+                            arg.mOpCDE(((EDataType*)arg.mE)[indexE],
+                                    ck::type_convert<EDataType>(accum));
+                        }
+                        else // bilinear
+                        {
+                            // NumDTensor will be 1 due to SFINAE of this class
+                            auto indexD
+                                = offset(std::vector<size_t>{m0, m1, n0, n1}, arg.mD_ms_ns_strides[0]);
+                            arg.mOpCDE(((EDataType*)arg.mE)[indexE],
+                                    ck::type_convert<EDataType>(accum),
+                                    ((EDataType*)(arg.mD[0]))[indexD]);
+                        }
+                    };
 
-                make_ParallelTensorFunctor(f_ms_ns,
-                                           arg.mE_ms_ns_lengths[0],
-                                           arg.mE_ms_ns_lengths[1],
-                                           arg.mE_ms_ns_lengths[2],
-                                           arg.mE_ms_ns_lengths[3])(
-                    std::thread::hardware_concurrency());
+                    make_ParallelTensorFunctor(f_ms_ns,
+                                               arg.mE_ms_ns_lengths[0],
+                                               arg.mE_ms_ns_lengths[1],
+                                               arg.mE_ms_ns_lengths[2],
+                                               arg.mE_ms_ns_lengths[3])(
+                        std::thread::hardware_concurrency());
+                }
 
                 return 0;
             }
@@ -319,23 +432,25 @@ namespace hiptensor
               ck::index_t NumDimsK,
               typename ADataType,
               typename BDataType,
+              typename AccDataType,
               typename DsDataType,
               typename EDataType,
-              typename AccumDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType>
     struct MetaTraits<ReferenceContraction_M2_N2_K2<NumDimsM,
                                                     NumDimsN,
                                                     NumDimsK,
                                                     ADataType,
                                                     BDataType,
+                                                    AccDataType,
                                                     DsDataType,
                                                     EDataType,
-                                                    AccumDataType,
                                                     AElementwiseOperation,
                                                     BElementwiseOperation,
-                                                    CDEElementwiseOperation>>
+                                                    CDEElementwiseOperation,
+                                                    ComputeDataType>>
         : public MetaTraits<
               ck::tensor_operation::device::DeviceContractionMultipleD<NumDimsM,
                                                                        NumDimsN,
@@ -346,7 +461,8 @@ namespace hiptensor
                                                                        EDataType,
                                                                        AElementwiseOperation,
                                                                        BElementwiseOperation,
-                                                                       CDEElementwiseOperation>>
+                                                                       CDEElementwiseOperation,
+                                                                       ComputeDataType>>
     {
     };
 
@@ -355,11 +471,13 @@ namespace hiptensor
               ck::index_t NumDimK,
               typename ADataType,
               typename BDataType,
+              typename AccDataType,
               typename DsDataType,
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType = ADataType>
     auto enumerateReferenceSolutions()
     {
         using ReferenceOp = ReferenceContraction_M2_N2_K2<NumDimM,
@@ -367,12 +485,13 @@ namespace hiptensor
                                                           NumDimK,
                                                           ADataType,
                                                           BDataType,
+                                                          AccDataType,
                                                           DsDataType,
-                                                          EDataType,
                                                           EDataType,
                                                           AElementwiseOperation,
                                                           BElementwiseOperation,
-                                                          CDEElementwiseOperation>;
+                                                          CDEElementwiseOperation,
+                                                          ComputeDataType>;
 
         auto solution = std::make_unique<ContractionSolutionImpl<ReferenceOp>>(
             std::make_unique<ReferenceOp>());

@@ -33,10 +33,20 @@ set (BilinearContractionTestSources ${ContractionCommonSources}
 set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params.yaml)
 add_hiptensor_test(bilinear_contraction_test ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
+# Complex Bilinear tests
+set (ComplexBilinearContractionTestSources ${ContractionCommonSources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/complex_bilinear_contraction_test.cpp)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params.yaml)
+add_hiptensor_test(complex_bilinear_contraction_test ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
+
 # Scale tests
 set (ScaleContractionTestSources ${ContractionCommonSources}
                                     ${CMAKE_CURRENT_SOURCE_DIR}/scale_contraction_test.cpp)
 set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params.yaml)
 add_hiptensor_test(scale_contraction_test ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
-
+# Complex Scale tests
+set (ComplexScaleContractionTestSources ${ContractionCommonSources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/complex_scale_contraction_test.cpp)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params.yaml)
+add_hiptensor_test(complex_scale_contraction_test ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})

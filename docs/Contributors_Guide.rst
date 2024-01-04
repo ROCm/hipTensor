@@ -15,8 +15,7 @@ License Agreement
 Pull-request guidelines
 =======================
 
-
-Our code contriubtion guidelines closely follows the model of `GitHub
+Our code contribution guidelines closely follows the model of `GitHub
 pull-requests <https://help.github.com/articles/using-pull-requests/>`__.
 The hipTensor repository follows a workflow which dictates a /master branch where releases are cut, and a
 /develop branch which serves as an integration branch for new code. Pull requests should:
@@ -30,8 +29,8 @@ The hipTensor repository follows a workflow which dictates a /master branch wher
 -  code must also have benchmark tests, and performance must approach
    the compute bound limit or memory bound limit.
 
-StyleGuide
-==========
+Style Guide
+===========
 
 This project follows the `CPP Core
 guidelines <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md>`__,
@@ -44,7 +43,7 @@ Interface
 ---------
 
 -  Library code should use C++17
--  Avoid CamelCase
+-  Avoid Camel case
 -  This rule applies specifically to publicly visible APIs, but is also
    encouraged (not mandated) for internal code
 
@@ -52,8 +51,8 @@ Philosophy
 ----------
 
 -  `P.2 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rp-Cplusplus>`__:
-   Write in ISO Standard C++14 (especially to support windows, linux and
-   macos plaforms )
+   Write in ISO Standard C++14 (especially to support Windows, Linux and
+   macOS platforms )
 -  `P.5 <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rp-compile-time>`__:
    Prefer compile-time checking to run-time checking
 
@@ -105,19 +104,19 @@ will result in different results.
 
 To format a file, use:
 
-::
+.. code-block::
 
-    /opt/rocm/llvm/bin/clang-format -style=file -i <path-to-source-file>
+   /opt/rocm/llvm/bin/clang-format -style=file -i <path-to-source-file>
 
 To format all files, run the following script in hipTensor directory:
 
-::
+.. code-block::
 
-    #!/bin/bash
-    git ls-files -z *.cc *.cpp *.h *.hpp *.cl *.h.in *.hpp.in *.cpp.in | xargs -0 /opt/rocm/llvm/bin/clang-format -style=file -i
+   #!/bin/bash
+   git ls-files -z *.cc *.cpp *.h *.hpp *.cl *.h.in *.hpp.in *.cpp.in | xargs -0 /opt/rocm/llvm/bin/clang-format -style=file -i
 
 Also, githooks can be installed to format the code per-commit:
 
-::
+.. code-block::
 
-    ./.githooks/install
+   ./.githooks/install

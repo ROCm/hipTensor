@@ -49,10 +49,11 @@ namespace hiptensor
         virtual int32_t dimsK() const = 0;
 
         // Map to hipDataType
-        virtual hipDataType typeA() const = 0;
-        virtual hipDataType typeB() const = 0;
-        virtual hipDataType typeC() const = 0;
-        virtual hipDataType typeD() const = 0;
+        virtual hipDataType            typeA() const       = 0;
+        virtual hipDataType            typeB() const       = 0;
+        virtual hipDataType            typeC() const       = 0;
+        virtual hipDataType            typeD() const       = 0;
+        virtual hiptensorComputeType_t typeCompute() const = 0;
 
         // Map to operators
         virtual hiptensorOperator_t opA() const   = 0;

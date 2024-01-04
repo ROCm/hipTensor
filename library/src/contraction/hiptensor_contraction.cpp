@@ -147,7 +147,11 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         // Use a scale contraction due to
         // tensor C-descriptor is empty
 
-        *desc = {(int32_t)hiptensor::ContractionOpId_t::SCALE,
+        auto contractionOp
+            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
+                  ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
+                  : hiptensor::ContractionOpId_t::SCALE;
+        *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA,
                   *descB,
@@ -161,7 +165,11 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     {
         // Use a bilinear contraction due to
         // tensor C-descriptor is not empty
-        *desc = {(int32_t)hiptensor::ContractionOpId_t::BILINEAR,
+        auto contractionOp
+            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
+                  ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
+                  : hiptensor::ContractionOpId_t::BILINEAR;
+        *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA, *descB, *descC, *descD},
                  {alignmentRequirementA,
@@ -241,17 +249,6 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
         // Using the hipDevice, determine if the device supports F64
         auto& instances = hiptensor::ContractionSolutionInstances::instance();
         auto  solnQ     = instances->allSolutions();
-
-        // Check if the current device supports F64
-        if(!currentDevice.supportsF64())
-        {
-            // Allow only supported f32 combos
-            solnQ = solnQ.query(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F) || // Bilinear F32
-                    solnQ.query(HIP_R_32F,
-                                HIP_R_32F,
-                                hipDataType(hiptensor::NONE_TYPE),
-                                HIP_R_32F); // Scale F32 (no C)
-        }
 
         // Can do more checking for scale / bilinear, etc. if we need to.
 
@@ -461,15 +458,16 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     // Convert to concrete contraction solutions
     auto candidates = toContractionSolutionVec(find->mCandidates);
 
-    auto ADataType = desc->mTensorDesc[0].mType;
-    auto BDataType = desc->mTensorDesc[1].mType;
-    auto DDataType = desc->mTensorDesc[2].mType;
-    auto EDataType = desc->mTensorDesc[3].mType;
+    auto computeType = desc->mComputeType;
+    auto ADataType   = desc->mTensorDesc[0].mType;
+    auto BDataType   = desc->mTensorDesc[1].mType;
+    auto DDataType   = desc->mTensorDesc[2].mType;
+    auto EDataType   = desc->mTensorDesc[3].mType;
 
     // Query contraction solutions for the correct contraction operation and type
     auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}
                          .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
-                         .query(ADataType, BDataType, DDataType, EDataType);
+                         .query(ADataType, BDataType, DDataType, EDataType, computeType);
 
     candidates = toContractionSolutionVec(solutionQ.solutions());
 
@@ -500,6 +498,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                             EDataType,
                                             desc->mTensorDesc[3].mLengths,
                                             desc->mTensorDesc[3].mStrides,
+                                            desc->mComputeType,
                                             workspaceSize);
     }
     else if(find->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
@@ -518,6 +517,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                              EDataType,
                                              desc->mTensorDesc[3].mLengths,
                                              desc->mTensorDesc[3].mStrides,
+                                             desc->mComputeType,
                                              workspaceSize);
     }
 
@@ -582,18 +582,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
         else
         {
-            if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
-            {
-                snprintf(
-                    alphaMsg, sizeof(alphaMsg), "alpha=%.6f", *(static_cast<const float*>(alpha)));
-            }
-            else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
-            {
-                snprintf(alphaMsg,
-                         sizeof(alphaMsg),
-                         "alpha=%.6lf",
-                         *(static_cast<const double*>(alpha)));
-            }
+            auto alphaValue = hiptensor::readVal<hiptensor::ScalarData>(
+                alpha, plan->mContractionDesc.mComputeType);
+            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%s", std::to_string(alphaValue).c_str());
         }
 
         if(beta == nullptr)
@@ -602,15 +593,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         }
         else
         {
-            if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_32F)
-            {
-                snprintf(betaMsg, sizeof(betaMsg), "beta=%.6f", *(static_cast<const float*>(beta)));
-            }
-            else if(plan->mContractionDesc.mComputeType == HIPTENSOR_COMPUTE_64F)
-            {
-                snprintf(
-                    betaMsg, sizeof(betaMsg), "beta=%.6lf", *(static_cast<const double*>(beta)));
-            }
+            auto betaValue = hiptensor::readVal<hiptensor::ScalarData>(
+                beta, plan->mContractionDesc.mComputeType);
+            snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
         }
     }
     else
@@ -708,17 +693,6 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         return errorCode;
     }
 
-    if(plan->mContractionDesc.mComputeType != plan->mContractionDesc.mTensorDesc[3].mType)
-    {
-        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Internal Error : compute type != D type (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorContraction", msg);
-        return errorCode;
-    }
-
     auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
 
     auto canRun = cSolution->initArgs(alpha,
@@ -755,7 +729,17 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
         if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
         {
-            auto time = (*cSolution)(StreamConfig{stream, true});
+            auto time = (*cSolution)(StreamConfig{
+                stream, // stream id
+                true, // time_kernel
+                0, // log_level
+                0, // cold_niters
+                1, // nrepeat
+            });
+            if(time < 0)
+            {
+                return HIPTENSOR_STATUS_CK_ERROR;
+            }
 
             int32_t m, n, k;
             std::tie(m, n, k) = cSolution->problemDims();
@@ -784,7 +768,10 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         // Perform contraction without timing
         else
         {
-            (*cSolution)(StreamConfig{stream, false});
+            if((*cSolution)(StreamConfig{stream, false}) < 0)
+            {
+                return HIPTENSOR_STATUS_CK_ERROR;
+            }
         }
 
         return HIPTENSOR_STATUS_SUCCESS;

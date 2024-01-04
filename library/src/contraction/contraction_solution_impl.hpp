@@ -35,11 +35,11 @@
 namespace std
 {
     template <>
-    struct std::hash<hiptensor::ContractionSolution>
+    struct hash<hiptensor::ContractionSolution>
     {
-        std::size_t operator()(hiptensor::ContractionSolution const& s) const noexcept
+        size_t operator()(hiptensor::ContractionSolution const& s) const noexcept
         {
-            return std::hash<hiptensor::ContractionSolutionParams>{}(*s.params());
+            return hash<hiptensor::ContractionSolutionParams>{}(*s.params());
         }
     };
 }
@@ -52,8 +52,10 @@ namespace hiptensor
     template <typename DeviceOp>
     class ContractionSolutionImpl<
         DeviceOp,
-        std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Bilinear>>>
+        std::enable_if_t<(std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::Bilinear>)
+                          || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::BilinearComplex>)>>
         : public ContractionSolution
     {
     public:
@@ -90,16 +92,18 @@ namespace hiptensor
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
-            auto alphaF = 0.0f;
-            auto betaF  = 0.0f;
+            ScalarData alphaF;
+            ScalarData betaF;
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+                alphaF = hiptensor::readVal<ScalarData>(
+                    alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
             if(beta != nullptr)
             {
-                betaF = hiptensor::readVal<float>(beta, HipDataType_v<typename Traits::EDataT>);
+                betaF = hiptensor::readVal<ScalarData>(
+                    beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
             // CK has its own format for indices...
@@ -123,7 +127,7 @@ namespace hiptensor
                 toCKVec(e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
-                typename Traits::CDEOp{alphaF, betaF}));
+                typename Traits::CDEOp(alphaF, betaF)));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
@@ -163,8 +167,10 @@ namespace hiptensor
     template <typename DeviceOp>
     class ContractionSolutionImpl<
         DeviceOp,
-        std::enable_if_t<std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Scale>>>
+        std::enable_if_t<(std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::Scale>)
+                          || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                        ck::tensor_operation::element_wise::ScaleComplex>)>>
         : public ContractionSolution
     {
     public:
@@ -201,11 +207,12 @@ namespace hiptensor
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD
-            auto alphaF = 0.0f;
+            ScalarData alphaF;
 
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<float>(alpha, HipDataType_v<typename Traits::EDataT>);
+                alphaF = hiptensor::readVal<ScalarData>(
+                    alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
             // CK has its own format for indices...
@@ -229,7 +236,7 @@ namespace hiptensor
                                                           toCKVec(e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
-                                                          typename Traits::CDEOp{alphaF}));
+                                                          typename Traits::CDEOp(alphaF)));
 
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
@@ -274,7 +281,8 @@ namespace hiptensor
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType = ADataType>
     std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions()
     {
         using ContractionOp
@@ -287,7 +295,8 @@ namespace hiptensor
                                                                        EDataType,
                                                                        AElementwiseOperation,
                                                                        BElementwiseOperation,
-                                                                       CDEElementwiseOperation>;
+                                                                       CDEElementwiseOperation,
+                                                                       ComputeDataType>;
 
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<ContractionOp>;

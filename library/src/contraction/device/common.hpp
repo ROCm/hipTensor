@@ -39,4 +39,6 @@
 #include <element_wise_operation.hpp>
 #include <gemm_specialization.hpp>
 
+#include "device_element_wise_operation_complex.hpp"
+
 #endif // CONTRACTION_DEVICE_COMMON_HPP

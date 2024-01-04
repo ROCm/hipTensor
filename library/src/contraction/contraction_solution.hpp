@@ -38,6 +38,8 @@
 #include <device_contraction_multiple_d.hpp>
 #include <element_wise_operation.hpp>
 
+#include "device/device_element_wise_operation_complex.hpp"
+
 #include "contraction_meta_traits.hpp"
 #include "contraction_solution_params.hpp"
 #include "performance.hpp"
@@ -147,7 +149,8 @@ namespace hiptensor
               typename EDataType,
               typename AElementwiseOperation,
               typename BElementwiseOperation,
-              typename CDEElementwiseOperation>
+              typename CDEElementwiseOperation,
+              typename ComputeDataType>
     std::vector<std::unique_ptr<hiptensor::ContractionSolution>> enumerateContractionSolutions();
 
 } // namespace hiptensor

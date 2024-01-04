@@ -41,9 +41,9 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+#include <hiptensor/internal/types.hpp>
 
 #include "device/common.hpp"
-#include "types.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
     if(ptr != nullptr)                 \
@@ -56,6 +56,59 @@
     {                                      \
         CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
+
+inline double getEpsilon(hiptensorComputeType_t id)
+{
+    auto toDouble = [](auto const& val) { return static_cast<double>(static_cast<float>(val)); };
+
+    if(id == HIPTENSOR_COMPUTE_16F)
+    {
+        return toDouble(std::numeric_limits<_Float16>::epsilon());
+    }
+    else if(id == HIPTENSOR_COMPUTE_16BF)
+    {
+        return toDouble(std::numeric_limits<hip_bfloat16>::epsilon());
+    }
+    else if(id == HIPTENSOR_COMPUTE_32F)
+    {
+        return toDouble(std::numeric_limits<float>::epsilon());
+    }
+    else if(id == HIPTENSOR_COMPUTE_64F)
+    {
+        return toDouble(std::numeric_limits<double>::epsilon());
+    }
+    else if(id == HIPTENSOR_COMPUTE_8U)
+    {
+        return 0;
+    }
+    else if(id == HIPTENSOR_COMPUTE_8I)
+    {
+        return 0;
+    }
+    else if(id == HIPTENSOR_COMPUTE_32U)
+    {
+        return 0;
+    }
+    else if(id == HIPTENSOR_COMPUTE_32I)
+    {
+        return 0;
+    }
+    else if(id == HIPTENSOR_COMPUTE_C32F)
+    {
+        return toDouble(std::numeric_limits<float>::epsilon());
+    }
+    else if(id == HIPTENSOR_COMPUTE_C64F)
+    {
+        return toDouble(std::numeric_limits<double>::epsilon());
+    }
+    else
+    {
+#if !NDEBUG
+        std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+#endif // !NDEBUG
+        return 0;
+    }
+}
 
 inline bool isF32Supported()
 {
@@ -137,10 +190,11 @@ __host__ static inline void
 }
 
 template <typename DDataType>
-std::pair<bool, double> compareEqual(DDataType const* deviceD,
-                                     DDataType const* hostD,
-                                     std::size_t      elementsD,
-                                     double           tolerance = 100.0)
+std::pair<bool, double> compareEqual(DDataType const*       deviceD,
+                                     DDataType const*       hostD,
+                                     std::size_t            elementsD,
+                                     hiptensorComputeType_t computeType,
+                                     double                 tolerance = 100.0)
 {
     bool   retval             = true;
     double max_relative_error = 0.0;
@@ -191,7 +245,7 @@ std::pair<bool, double> compareEqual(DDataType const* deviceD,
         }
     }
 
-    auto eps = toDouble(std::numeric_limits<DDataType>::epsilon());
+    auto eps = getEpsilon(computeType);
     if(isInf)
     {
         retval             = false;
@@ -211,10 +265,11 @@ std::pair<bool, double> compareEqual(DDataType const* deviceD,
 }
 
 template <typename DDataType>
-std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
-                                                 DDataType*  hostD,
-                                                 std::size_t elementsD,
-                                                 double      tolerance = 100.0)
+std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
+                                                 DDataType*             hostD,
+                                                 std::size_t            elementsD,
+                                                 hiptensorComputeType_t computeType,
+                                                 double                 tolerance = 100.0)
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
@@ -276,7 +331,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*  deviceD,
     auto toDouble
         = [](DDataType const& val) { return static_cast<double>(static_cast<float>(val)); };
 
-    auto eps = toDouble(std::numeric_limits<DDataType>::epsilon());
+    auto eps = getEpsilon(computeType);
     if(isNaN)
     {
         retval           = false;
