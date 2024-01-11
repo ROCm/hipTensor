@@ -13,7 +13,7 @@ gfx908, gfx90a, gfx940, gfx941, gfx942 as 'gfx9'
 Double precision FP64 datatype support requires gfx90a, gfx940, gfx941 or gfx942
 :::
 
-## Minimum Software Requirements
+## Minimum software requirements
 
 * ROCm stack minimum version 5.7
 * ROCm-cmake minimum version 0.8.0 for ROCm 5.7
