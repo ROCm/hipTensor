@@ -52,10 +52,10 @@ Supported data-type combinations are:
 | f32         | f32         | f32         | bf16              |                                    |
 | f32         | f32         | f32         | __half            |                                    |
 | f32         | f32         | f32         | f32               |                                    |
-| f64         | f64         | f64         | f32               | f64 is supported only on gfx90a +  |
-| f64         | f64         | f64         | f64               | f64 is supported only on gfx90a +  |
-| cf32        | cf32        | cf32        | cf32              | cf32 is supported only on gfx90a + |
-| cf64        | cf64        | cf64        | cf64              | cf64 is supported only on gfx90a + |
+| f64         | f64         | f64         | f32               | f64 is only supported on gfx90a +  |
+| f64         | f64         | f64         | f64               | f64 is only supported on gfx90a +  |
+| cf32        | cf32        | cf32        | cf32              | cf32 is only supported on gfx90a + |
+| cf64        | cf64        | cf64        | cf64              | cf64 is only supported on gfx90a + |
 
 ### Operation: Permutation tensor
 
