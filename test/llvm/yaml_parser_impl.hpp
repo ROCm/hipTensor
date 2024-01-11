@@ -100,7 +100,7 @@ namespace hiptensor
     void YamlConfigLoader<ConfigT>::storeToFile(std::string const& filePath, ConfigT const& config)
     {
         std::error_code      ec;
-        llvm::raw_fd_ostream out(filePath, ec, llvm::sys::fs::F_None);
+        llvm::raw_fd_ostream out(filePath, ec, llvm::sys::fs::OF_None);
 
         if(ec)
         {
