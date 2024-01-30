@@ -24,7 +24,7 @@ The hipTensor repository follows a workflow which dictates a /master branch wher
 -  ensure code builds successfully.
 -  do not break existing test cases
 -  new functionality will only be merged with new unit tests
--  new unit tests should integrate within the existing googletest framework.
+-  new unit tests should integrate within the existing GoogleTest framework.
 -  tests must have good code coverage
 -  code must also have benchmark tests, and performance must approach
    the compute bound limit or memory bound limit.
