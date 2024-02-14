@@ -1,7 +1,7 @@
 * @cgmillette @bragadeesh @mkarunan @dlangbe @congma13 @afanfa
 # Documentation files
-docs/* @saadrahim @LisaDelaney
-*.md  @saadrahim @LisaDelaney
-*.rst  @saadrahim @LisaDelaney
+docs/* @ROCm/rocm-documentation
+*.md @ROCm/rocm-documentation
+*.rst @ROCm/rocm-documentation
 # Header directory
-library/include/*  @saadrahim @LisaDelaney
+library/include/* @ROCm/rocm-documentation @cgmillette @bragadeesh @mkarunan @dlangbe @congma13 @afanfa
