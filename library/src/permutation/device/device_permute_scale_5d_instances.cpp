@@ -44,7 +44,7 @@ namespace ck
                         DeviceElementwise<ck::Tuple<F16>, ck::Tuple<F16>, PassThrough, UnaryOp, Scale, 5>>>& instances)
                 {
                     add_device_operation_instances(instances,
-                                                   device_permute_scale_f16_instances<1>{});
+                                                   device_permute_scale_f16_instances<5>{});
                 }
 
                 void add_device_permute_scale_5d_f32_instances(
@@ -52,7 +52,7 @@ namespace ck
                         DeviceElementwise<ck::Tuple<F32>, ck::Tuple<F32>, PassThrough, UnaryOp, Scale, 5>>>& instances)
                 {
                     add_device_operation_instances(instances,
-                                                   device_permute_scale_f32_instances<1>{});
+                                                   device_permute_scale_f32_instances<5>{});
                 }
 
             } // namespace instance
