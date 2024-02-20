@@ -147,17 +147,6 @@ namespace hiptensor
                                                                Scale,
                                                                NumDim>;
 
-        using PermutationImplOp
-             = ck::tensor_operation::device::DeviceElementwiseImpl<InDataTypeTuple,
-                                                                   OutDataTypeTuple,
-                                                                   ElementwiseOperation,
-                                                                   UnaryOperation,
-                                                                   Scale,
-                                                                   NumDim,
-                                                                   1,
-                                                                   ck::Sequence<1>,
-                                                                   ck::Sequence<1>>;
-
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<PermutationOp>;
 
@@ -165,7 +154,7 @@ namespace hiptensor
         for(auto& opPtr : Factory::GetInstances())
         {
             result.push_back(
-                std::make_unique<PermutationSolutionImpl<PermutationImplOp>>(std::move(opPtr)));
+                std::make_unique<PermutationSolutionImpl<PermutationOp>>(std::move(opPtr)));
         }
         return result;
     }
