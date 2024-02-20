@@ -29,9 +29,13 @@
 get_target_property(composable_kernel_INCLUDES composable_kernel::device_other_operations INTERFACE_INCLUDE_DIRECTORIES)
 
 set(HIPTENSOR_PERMUTATION_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation.cpp
-    )
+   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_registry.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution.cpp
+)
 
 add_hiptensor_component(hiptensor_permutation ${HIPTENSOR_PERMUTATION_SOURCES})
 target_include_directories(hiptensor_permutation PRIVATE ${composable_kernel_INCLUDES})
 
+add_subdirectory(device)

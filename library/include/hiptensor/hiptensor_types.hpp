@@ -100,7 +100,8 @@ typedef enum
  */
 typedef enum
 {
-    HIPTENSOR_OP_IDENTITY = 1, /*!< Identity operator  */
+    HIPTENSOR_OP_IDENTITY = 1,   /*!< Identity operator  */
+    HIPTENSOR_OP_SQRT = 2,       /*!< Square operator  */
     HIPTENSOR_OP_UNKNOWN  = 126, /*!< reserved */
 } hiptensorOperator_t;
 
@@ -158,6 +159,7 @@ struct hiptensorTensorDescriptor_t
     hipDataType              mType; /*!< Data type of the tensors enum selection */
     std::vector<std::size_t> mLengths; /*!< Lengths of the tensor */
     std::vector<std::size_t> mStrides; /*!< Strides of the tensor */
+    hiptensorOperator_t      mUnaryOp; /*!< Unary operator applied to the tensor */
 };
 
 /**
