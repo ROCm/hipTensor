@@ -176,11 +176,14 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     int  nDims              = descA->mLengths.size();
     auto ADataType          = descA->mType;
     auto BDataType          = descB->mType;
+    auto AOp                = descA->mUnaryOp;
+    auto BOp                = descB->mUnaryOp;
 
     // Query permutation solutions for the correct permutation operation and type
     auto solutionQ = hiptensor::PermutationSolutionRegistry::Query{candidates}
                          .query(nDims)
-                         .query(ADataType, BDataType);
+                         .query(ADataType, BDataType)
+                         .query(AOp, BOp);
 
     if(solutionQ.solutionCount() == 0)
     {

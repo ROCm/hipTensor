@@ -231,28 +231,31 @@ namespace hiptensor
             {
                 *(reinterpret_cast<float*>(&alphaValue)) = static_cast<float>(alpha);
             }
-            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
-                                                       &alphaValue,
-                                                       resource->deviceA().get(),
-                                                       &descA,
-                                                       modeA.data(),
-                                                       resource->deviceB().get(),
-                                                       &descB,
-                                                       modeB.data(),
-                                                       computeDataType,
-                                                       0 /* stream */));
+            // CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
+            //                                            &alphaValue,
+            //                                            resource->deviceA().get(),
+            //                                            &descA,
+            //                                            modeA.data(),
+            //                                            resource->deviceB().get(),
+            //                                            &descB,
+            //                                            modeB.data(),
+            //                                            computeDataType,
+            //                                            0 /* stream */));
             resource->copyBToHost();
 
             if(abDataType == HIP_R_32F)
-            {
-                hiptensor::detail::permuteByCpu(&alphaValue,
-                                                (const float*)resource->hostA().get(),
-                                                &descA,
-                                                modeA.data(),
-                                                (float*)resource->hostReference().get(),
-                                                &descB,
-                                                modeB.data(),
-                                                computeDataType);
+                {
+            CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
+                                                                &alphaValue,
+                                                                (const float*)resource->hostA().get(),
+                                                                &descA,
+                                                                modeA.data(),
+                                                                (float*)resource->hostReference().get(),
+                                                                &descB,
+                                                                modeB.data(),
+                                                                computeDataType,
+                                                                0 /* stream */));
+                                                                
                 resource->copyReferenceToDevice();
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
@@ -262,14 +265,17 @@ namespace hiptensor
             }
             else if(abDataType == HIP_R_16F)
             {
-                hiptensor::detail::permuteByCpu(&alphaValue,
-                                                (const _Float16*)resource->hostA().get(),
-                                                &descA,
-                                                modeA.data(),
-                                                (_Float16*)resource->hostReference().get(),
-                                                &descB,
-                                                modeB.data(),
-                                                computeDataType);
+            CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
+                                                                &alphaValue,
+                                                                (const _Float16*)resource->hostA().get(),
+                                                                &descA,
+                                                                modeA.data(),
+                                                                (_Float16*)resource->hostReference().get(),
+                                                                &descB,
+                                                                modeB.data(),
+                                                                computeDataType,
+                                                                0 /* stream */));
+
                 resource->copyReferenceToDevice();
                 std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceB().get(),

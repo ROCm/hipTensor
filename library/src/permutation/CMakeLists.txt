@@ -30,8 +30,10 @@ get_target_property(composable_kernel_INCLUDES composable_kernel::device_other_o
 
 set(HIPTENSOR_PERMUTATION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_registry.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution.cpp
 )
 

@@ -24,37 +24,36 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP
-#define HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP
+#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_INSTANCES_HPP
+#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_INSTANCES_HPP
 
-// CK includes
-#include <element_wise_operation.hpp>
+#include <memory>
 
-#include "permutation_types.hpp"
-#include <hiptensor/hiptensor_types.hpp>
+#include "permutation_solution_registry.hpp"
+#include "singleton.hpp"
 
 namespace hiptensor
 {
-    // Specialize overrides for runtime ElementWiseOperatorType
-    template <>
-    struct ElementWiseOperatorType<ck::tensor_operation::element_wise::PassThrough>
+    class PermutationCpuReferenceInstances : public PermutationSolutionRegistry,
+                                             public LazySingleton<PermutationCpuReferenceInstances>
     {
-        static constexpr auto value = hiptensorOperator_t::HIPTENSOR_OP_IDENTITY;
-    };
+    public:
+        // For static initialization
+        friend std::unique_ptr<PermutationCpuReferenceInstances>
+            std::make_unique<PermutationCpuReferenceInstances>();
 
-    template <>
-    struct ElementWiseOperatorType<ck::tensor_operation::element_wise::UnarySquare>
-    {
-        static constexpr auto value = hiptensorOperator_t::HIPTENSOR_OP_SQRT;
-    };
+        ~PermutationCpuReferenceInstances() = default;
 
-    // Specialize overrides for runtime PermutationOperatorType
-    template <>
-    struct PermutationOperatorType<ck::tensor_operation::element_wise::Scale>
-    {
-        static constexpr auto value = PermutationOpId_t::SCALE;
+    private:
+        // Singleton: only one instance
+        PermutationCpuReferenceInstances();
+        PermutationCpuReferenceInstances(PermutationCpuReferenceInstances const&) = delete;
+        PermutationCpuReferenceInstances(PermutationCpuReferenceInstances&&)      = delete;
+        PermutationCpuReferenceInstances& operator=(PermutationCpuReferenceInstances const&)
+            = delete;
+        PermutationCpuReferenceInstances& operator=(PermutationCpuReferenceInstances&&) = delete;
     };
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP
+#endif // HIPTENSOR_PERMUTATION_SOLUTION_INSTANCES_HPP

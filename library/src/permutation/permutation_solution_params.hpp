@@ -27,10 +27,13 @@
 #ifndef HIPTENSOR_PERMUTATION_SOLUTION_PARAMS_HPP
 #define HIPTENSOR_PERMUTATION_SOLUTION_PARAMS_HPP
 
-#include <hiptensor/hiptensor_types.hpp>
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 #include "permutation_types.hpp"
 #include "data_types.hpp"
+#include "singleton.hpp"
 
 namespace hiptensor
 {

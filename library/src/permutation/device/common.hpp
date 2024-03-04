@@ -34,7 +34,6 @@
 
 // CK includes
 #include <add_device_operation_instance.hpp>
-#include <device_operation_instance_factory.hpp>
 #include <ck.hpp>
 #include <device_elementwise_scale_impl.hpp>
 #include <element_wise_operation.hpp>

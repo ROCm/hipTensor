@@ -27,10 +27,14 @@
 #ifndef HIPTENSOR_PERMUTATION_META_TRAITS_HPP
 #define HIPTENSOR_PERMUTATION_META_TRAITS_HPP
 
+// CK includes
+#include <device_elementwise_scale_impl.hpp>
+#include <element_wise_operation.hpp>
+#include <device_operation_instance_factory.hpp>
+
 // hiptensor includes
 #include "data_types.hpp"
 #include "meta_traits.hpp"
-#include "device/hiptensor_permutation_scale_instances.hpp"
 
 namespace hiptensor
 {

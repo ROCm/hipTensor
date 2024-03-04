@@ -28,11 +28,10 @@
 #define HIPTENSOR_PERMUTATION_SOLUTION_IMPL_HPP
 
 #include <numeric>
+#include <map>
 
 #include "permutation_solution.hpp"
 #include "hash.hpp"
-
-#include "device/hiptensor_permutation_scale_instances.hpp"
 
 namespace std
 {
@@ -99,19 +98,32 @@ namespace hiptensor
             // Re-construct strides from lengths, assuming packed.
             std::array<ck::index_t, Traits::NDim> aStrides, bStrides, bStridesCk, abLengths;
 
+            std::map<char, ck::index_t> toModeA;
+            for(int i = 0; i < Traits::NDim; i++)
+            {
+                toModeA[modeB[i]] = i;
+            }
+
             toCKArr(hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), aStrides);
             toCKArr(hiptensor::stridesFromLengths(b_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), bStrides);
-            // toCKArr(std::vector<size_t>{bStrides[modeA[0]], bStrides[modeA[1]], bStrides[modeA[2]], bStrides[modeA[3]]}, bStridesCk);
+            for(int i = 0; i < Traits::NDim; i++)
+                bStridesCk[toModeA[modeA[i]]] = bStrides[i];
+
             toCKArr(a_lengths, abLengths);
+            
+            for(int i = 0; i < Traits::NDim; i++)
+                std::cout << " modeA " <<  (char)modeA[i] << " modeB " << (char)modeB[i] << std::endl;
 
             // Initialize the argument pointer
             Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 abLengths,
                 {aStrides},
-                {bStrides},
+                {bStridesCk},
                 {A},
                 {B},
-                typename Traits::ElementOp{}));
+                typename Traits::ElementOp{},
+                typename Traits::UnaryOp{},
+                typename Traits::ScaleOp{alphaF}));
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());

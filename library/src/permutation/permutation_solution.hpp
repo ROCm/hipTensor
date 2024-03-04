@@ -32,6 +32,10 @@
 #include <tuple>
 #include <vector>
 
+// CK includes
+#include <device_elementwise_scale_impl.hpp>
+#include <element_wise_operation.hpp>
+
 #include "permutation_meta_traits.hpp"
 #include "permutation_solution_params.hpp"
 #include "performance.hpp"

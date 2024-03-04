@@ -29,7 +29,13 @@
 // FIXME: make the behavior of buffer load a configurable (template) parameter of each device op
 #define CK_EXPERIMENTAL_USE_BUFFER_LOAD_OOB_CHECK_OFFSET_TRICK 1
 
-#include "hiptensor_permutation_scale_instances.hpp"
+#include <cstdlib>
+
+#include "ck/ck.hpp"
+#include "ck/library/tensor_operation_instance/add_device_operation_instance.hpp"
+#include "ck/library/tensor_operation_instance/gpu/permute_scale/device_permute_scale_instances.hpp"
+#include "ck/tensor_operation/gpu/device/device_elementwise_scale.hpp"
+#include "ck/tensor_operation/gpu/element/element_wise_operation.hpp"
 
 namespace ck
 {

@@ -194,7 +194,8 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         // Construct with both given lengths and strides
         *desc = {dataType,
                  std::vector<std::size_t>(lens, lens + numModes),
-                 std::vector<std::size_t>(strides, strides + numModes)};
+                 std::vector<std::size_t>(strides, strides + numModes),
+                 unaryOp};
     }
     else
     {
@@ -202,7 +203,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         std::vector<std::size_t> l(lens, lens + numModes);
         std::vector<std::size_t> s = hiptensor::stridesFromLengths(l);
 
-        *desc = {dataType, l, s};
+        *desc = {dataType, l, s, unaryOp};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;

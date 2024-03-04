@@ -90,8 +90,8 @@ namespace hiptensor
     }
 
     float PermutationSolution::operator()(void const*                     alpha,
-                                          void const*                 A,
-                                          void*                       B,
+                                          void const*                     A,
+                                          void*                           B,
                                           std::vector<std::size_t> const& a_lengths,
                                           std::vector<std::size_t> const& a_strides,
                                           const int32_t                   modeA[],
@@ -177,5 +177,6 @@ namespace hiptensor
 
         mValid = false;
     }
+
 
 } // namespace hiptensor
