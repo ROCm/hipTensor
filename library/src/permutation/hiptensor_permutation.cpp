@@ -180,9 +180,9 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 
     // Query permutation solutions for the correct permutation operation and type
     auto solutionQ = hiptensor::PermutationSolutionRegistry::Query{candidates}
-                         .query(nDims)
-                         .query(ADataType, BDataType)
-                         .query(AOp, BOp);
+                                                            .query(nDims)
+                                                            .query(ADataType, BDataType)
+                                                            .query(AOp, BOp);
 
     if(solutionQ.solutionCount() == 0)
     {
@@ -197,7 +197,6 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     }
 
     candidates = toPermutationSolutionVec(solutionQ.solutions());
-
     hiptensor::PermutationSolution *pSolution = candidates[0];
 
     auto canRun = pSolution->initArgs(alpha,

@@ -39,21 +39,18 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
                                                 const hipDataType                  typeScalar,
                                                 const hipStream_t                  stream)
 {
-    const int32_t dim    = descA->mLengths.size();
-    std::cout << " dim " << dim << " descA->mType " << descA->mType << " descB->mType " << descB->mType << " descA->mUnaryOp " << descA->mUnaryOp << " descB->mUnaryOp " << descB->mUnaryOp << std::endl;
-    auto& instances   = hiptensor::PermutationCpuReferenceInstances::instance();
-    std::cout << " sol count " << instances->allSolutions().solutionCount() << std::endl;
-    auto  candidates  = instances->allSolutions().query(dim,
-                                                        descA->mType,
-                                                        descB->mType,
-                                                        descA->mUnaryOp,
-                                                        descB->mUnaryOp,
-                                                        hiptensor::PermutationOpId_t::SCALE);
+    const int32_t dim   = descA->mLengths.size();
+    auto& instances     = hiptensor::PermutationCpuReferenceInstances::instance();
+    auto  candidates    = instances->allSolutions().query(dim,
+                                                          descA->mType,
+                                                          descB->mType,
+                                                          descA->mUnaryOp,
+                                                          descB->mUnaryOp,
+                                                          hiptensor::PermutationOpId_t::SCALE);
 
     auto toCKVec
         = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
 
-    std::cout << candidates.solutionCount() << std::endl;
     if(candidates.solutionCount() != 1)
     {
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
@@ -61,7 +58,6 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
     else
     {
         auto refCandidate = candidates.solutions().begin()->second;
-        std::cout << " init args " << std::endl;
         if(refCandidate->initArgs(alpha,
                                   A,
                                   B,
@@ -73,7 +69,6 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
                                   modeB,
                                   typeScalar))
         {
-            std::cout << " Run candidate " << std::endl;
             (*refCandidate)();
         }
         return HIPTENSOR_STATUS_SUCCESS;

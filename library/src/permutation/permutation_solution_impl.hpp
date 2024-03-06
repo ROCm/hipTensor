@@ -61,16 +61,16 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                 alpha,
-                      void const*                 A,
-                      void*                       B,
-                      std::vector<std::size_t> const& a_lengths,
-                      std::vector<std::size_t> const& a_strides,
-                      const int32_t                   modeA[],
-                      std::vector<std::size_t> const& b_lengths,
-                      std::vector<std::size_t> const& b_strides,
-                      const int32_t                   modeB[],
-                      const hipDataType               typeScalar) override
+        bool initArgs(void const*                       alpha,
+                      void const*                       A,
+                      void*                             B,
+                      std::vector<std::size_t> const&   a_lengths,
+                      std::vector<std::size_t> const&   a_strides,
+                      const int32_t                     modeA[],
+                      std::vector<std::size_t> const&   b_lengths,
+                      std::vector<std::size_t> const&   b_strides,
+                      const int32_t                     modeB[],
+                      const hipDataType                 typeScalar) override
         {
             using Base   = PermutationSolution;
             using Traits = MetaTraits<DeviceOp>;
