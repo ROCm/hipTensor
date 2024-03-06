@@ -98,16 +98,16 @@ namespace hiptensor
             // Re-construct strides from lengths, assuming packed.
             std::array<ck::index_t, Traits::NDim> aStrides, bStrides, bStridesCk, abLengths;
 
-            std::map<char, ck::index_t> toModeA;
+            std::map<char, ck::index_t> modeAToIndex;
             for(int i = 0; i < Traits::NDim; i++)
             {
-                toModeA[modeB[i]] = i;
+                modeAToIndex[modeA[i]] = i;
             }
 
             toCKArr(hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), aStrides);
             toCKArr(hiptensor::stridesFromLengths(b_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), bStrides);
             for(int i = 0; i < Traits::NDim; i++)
-                bStridesCk[toModeA[modeA[i]]] = bStrides[i];
+                bStridesCk[modeAToIndex[modeB[i]]] = bStrides[i];
 
             toCKArr(a_lengths, abLengths);
 
