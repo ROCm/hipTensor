@@ -115,7 +115,7 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
 
     hiptensorTensorDescriptor_t descB;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, HIPTENSOR_OP_IDENTITY));
+        handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, HIPTENSOR_OP_SQRT));
 
     hiptensorPermutationReference(handle,
                                   &alphaValue,
@@ -147,7 +147,7 @@ TEST(PermutationCpuImplTest, CompareF32ResultWithReference)
 
     auto [result, maxRelativeError]
         = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, typeCompute);
-    //EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
+    EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
 
 TEST(PermutationCpuImplTest, CompareF16ResultWithReference)
@@ -162,5 +162,5 @@ TEST(PermutationCpuImplTest, CompareF16ResultWithReference)
 
     auto [result, maxRelativeError]
         = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, typeCompute);
-    //EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
+    EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }

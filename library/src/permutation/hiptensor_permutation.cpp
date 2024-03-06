@@ -153,7 +153,6 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return errorCode;
     }
 
-    // ADDED
     // For now, enumerate all known permutation kernels.
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
     auto  solnQ     = instances->allSolutions();

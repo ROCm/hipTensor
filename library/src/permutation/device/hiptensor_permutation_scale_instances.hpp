@@ -40,7 +40,7 @@ namespace ck
                 using F16 = ck::half_t;
                 using F32 = float;
 
-                using PassThrough   = ck::tensor_operation::element_wise::PassThrough;
+                using PassOp        = ck::tensor_operation::element_wise::PassThrough;
                 using UnaryOp       = ck::tensor_operation::element_wise::UnarySquare;
                 using Scale         = ck::tensor_operation::element_wise::Scale;
                 
@@ -48,25 +48,25 @@ namespace ck
                 template <index_t NDims>
                 using device_permute_scale_f16_instances =
                     std::tuple <
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassThrough, UnaryOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassThrough, UnaryOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassThrough, UnaryOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassThrough, UnaryOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
                     >;
 
                 template <index_t NDims>
                 using device_permute_scale_f32_instances = std::tuple<
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassThrough, UnaryOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassThrough, UnaryOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassThrough, UnaryOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassThrough, UnaryOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
                     >;
                 // clang-format on
 
                 void add_device_permute_scale_1d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   1>>>&);
@@ -74,7 +74,7 @@ namespace ck
                 void add_device_permute_scale_1d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   1>>>&);
@@ -82,7 +82,7 @@ namespace ck
                 void add_device_permute_scale_2d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   2>>>&);
@@ -90,7 +90,7 @@ namespace ck
                 void add_device_permute_scale_2d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   2>>>&);
@@ -98,7 +98,7 @@ namespace ck
                 void add_device_permute_scale_3d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   3>>>&);
@@ -106,7 +106,7 @@ namespace ck
                 void add_device_permute_scale_3d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   3>>>&);
@@ -114,7 +114,7 @@ namespace ck
                 void add_device_permute_scale_4d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   4>>>&);
@@ -122,7 +122,7 @@ namespace ck
                 void add_device_permute_scale_4d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   4>>>&);
@@ -130,7 +130,7 @@ namespace ck
                 void add_device_permute_scale_5d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   5>>>&);
@@ -138,7 +138,7 @@ namespace ck
                 void add_device_permute_scale_5d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   5>>>&);
@@ -146,7 +146,7 @@ namespace ck
                 void add_device_permute_scale_6d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   6>>>&);
@@ -154,7 +154,7 @@ namespace ck
                 void add_device_permute_scale_6d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassThrough,
+                                                                  PassOp,
                                                                   UnaryOp,
                                                                   Scale,
                                                                   6>>>&);

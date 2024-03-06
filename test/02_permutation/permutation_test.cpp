@@ -92,9 +92,8 @@ namespace hiptensor
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
 
-        // 4D tensors only at the moment.
-        EXPECT_EQ(lengths.size(), 4); // Format {'n', 'c', 'w', 'h'}
-        EXPECT_EQ(permutedDims.size(), 4); // permutation of {0, 1, 2, 3}
+        EXPECT_TRUE((lengths.size() > 1) && (lengths.size() <= 6));
+        EXPECT_TRUE((permutedDims.size() > 1) && (permutedDims.size() <= 6));
 
         EXPECT_EQ(testType.size(), 2); // HIP_R_16F or HIP_R_32F
         auto abDataType = testType[0];
@@ -177,7 +176,10 @@ namespace hiptensor
               B_{w, h, c, n} = 1.0 *  \textsl{IDENTITY}(A_{c, n, h, w})
              **********************/
 
-            std::vector<int> modeA{'n', 'c', 'w', 'h'};
+            int nDim = lengths.size();
+            int arrDim[] = {'n', 'c', 'w', 'h','d','m'};
+
+            std::vector<int> modeA(arrDim, arrDim + nDim);
             std::vector<int> modeB;
             for(auto dim : permutedDims)
             {
@@ -220,7 +222,7 @@ namespace hiptensor
                                                                 extentB.data(),
                                                                 NULL /* stride */,
                                                                 abDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+                                                                HIPTENSOR_OP_SQRT));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -231,30 +233,30 @@ namespace hiptensor
             {
                 *(reinterpret_cast<float*>(&alphaValue)) = static_cast<float>(alpha);
             }
-            // CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
-            //                                            &alphaValue,
-            //                                            resource->deviceA().get(),
-            //                                            &descA,
-            //                                            modeA.data(),
-            //                                            resource->deviceB().get(),
-            //                                            &descB,
-            //                                            modeB.data(),
-            //                                            computeDataType,
-            //                                            0 /* stream */));
+            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
+                                                       &alphaValue,
+                                                       resource->deviceA().get(),
+                                                       &descA,
+                                                       modeA.data(),
+                                                       resource->deviceB().get(),
+                                                       &descB,
+                                                       modeB.data(),
+                                                       computeDataType,
+                                                       0 /* stream */));
             resource->copyBToHost();
 
             if(abDataType == HIP_R_32F)
-                {
-            CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
-                                                                &alphaValue,
-                                                                (const float*)resource->hostA().get(),
-                                                                &descA,
-                                                                modeA.data(),
-                                                                (float*)resource->hostReference().get(),
-                                                                &descB,
-                                                                modeB.data(),
-                                                                computeDataType,
-                                                                0 /* stream */));
+            {
+                CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
+                                                                    &alphaValue,
+                                                                    (const float*)resource->hostA().get(),
+                                                                    &descA,
+                                                                    modeA.data(),
+                                                                    (float*)resource->hostReference().get(),
+                                                                    &descB,
+                                                                    modeB.data(),
+                                                                    computeDataType,
+                                                                    0 /* stream */));
                                                                 
                 resource->copyReferenceToDevice();
                 std::tie(mValidationResult, mMaxRelativeError)
@@ -265,16 +267,16 @@ namespace hiptensor
             }
             else if(abDataType == HIP_R_16F)
             {
-            CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
-                                                                &alphaValue,
-                                                                (const _Float16*)resource->hostA().get(),
-                                                                &descA,
-                                                                modeA.data(),
-                                                                (_Float16*)resource->hostReference().get(),
-                                                                &descB,
-                                                                modeB.data(),
-                                                                computeDataType,
-                                                                0 /* stream */));
+                CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
+                                                                    &alphaValue,
+                                                                    (const _Float16*)resource->hostA().get(),
+                                                                    &descA,
+                                                                    modeA.data(),
+                                                                    (_Float16*)resource->hostReference().get(),
+                                                                    &descB,
+                                                                    modeB.data(),
+                                                                    computeDataType,
+                                                                    0 /* stream */));
 
                 resource->copyReferenceToDevice();
                 std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(

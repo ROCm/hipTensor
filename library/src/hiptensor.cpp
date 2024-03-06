@@ -155,7 +155,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
        || ((dataType != HIP_R_16F) && (dataType != HIP_R_16BF) && (dataType != HIP_R_32F)
            && (dataType != HIP_R_64F) && (dataType != HIP_C_32F)
            && (dataType != HIP_C_64F))
-       || unaryOp != HIPTENSOR_OP_IDENTITY)
+       || ((unaryOp != HIPTENSOR_OP_IDENTITY) && (unaryOp != HIPTENSOR_OP_SQRT)))
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
         if(lens == nullptr)
@@ -165,11 +165,11 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                      "Tensor Initialization Error : lens = nullptr (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        else if(unaryOp != HIPTENSOR_OP_IDENTITY)
+        else if((unaryOp != HIPTENSOR_OP_IDENTITY) && (unaryOp != HIPTENSOR_OP_SQRT))
         {
             snprintf(msg,
                      sizeof(msg),
-                     "Tensor Initialization Error : op != identity (%s)",
+                     "Tensor Initialization Error : op != identity / op != unarysquare (%s) ",
                      hiptensorGetErrorString(errorCode));
         }
         else

@@ -110,9 +110,6 @@ namespace hiptensor
                 bStridesCk[toModeA[modeA[i]]] = bStrides[i];
 
             toCKArr(a_lengths, abLengths);
-            
-            for(int i = 0; i < Traits::NDim; i++)
-                std::cout << " modeA " <<  (char)modeA[i] << " modeB " << (char)modeB[i] << std::endl;
 
             // Initialize the argument pointer
             Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
@@ -131,10 +128,9 @@ namespace hiptensor
             // Fill problem metrics
             Base::mDim = Traits::NDim;
 
-            //TODO:
-            // // Byte count
-            // Base::mBytes = sizeof(typename Traits::InDataT) * Base::mDim
-            //                + sizeof(typename Traits::OutDataT) * Base::mDim;
+            // Byte count
+            Base::mBytes = sizeof(typename Traits::InDataT) * Base::mDim
+                           + sizeof(typename Traits::OutDataT) * Base::mDim;
 
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());

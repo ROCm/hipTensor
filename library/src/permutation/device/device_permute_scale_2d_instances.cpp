@@ -45,9 +45,13 @@ namespace ck
         {
             namespace instance
             {
+                using PassOp        = ck::tensor_operation::element_wise::PassThrough;
+                using UnaryOp       = ck::tensor_operation::element_wise::UnarySquare;
+                using Scale         = ck::tensor_operation::element_wise::Scale;
+
                 void add_device_permute_scale_2d_f16_instances(
                     std::vector<std::unique_ptr<
-                        DeviceElementwise<ck::Tuple<F16>, ck::Tuple<F16>, PassThrough, UnaryOp, Scale, 2>>>& instances)
+                        DeviceElementwise<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, 2>>>& instances)
                 {
                     add_device_operation_instances(instances,
                                                    device_permute_scale_f16_instances<2>{});
@@ -55,7 +59,7 @@ namespace ck
 
                 void add_device_permute_scale_2d_f32_instances(
                     std::vector<std::unique_ptr<
-                        DeviceElementwise<ck::Tuple<F32>, ck::Tuple<F32>, PassThrough, UnaryOp, Scale, 2>>>& instances)
+                        DeviceElementwise<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, 2>>>& instances)
                 {
                     add_device_operation_instances(instances,
                                                    device_permute_scale_f32_instances<2>{});
