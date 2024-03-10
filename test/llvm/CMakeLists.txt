@@ -35,8 +35,13 @@ find_library(LLVMSupport_LIBRARY NAMES LLVMSupport PATHS ${LLVM_LIBRARY_DIR})
 
 message(STATUS "adding hiptensor component: hiptensor_llvm")
 message(STATUS "LLVM_LIBRARY_DIR: ${LLVM_LIBRARY_DIR}")
+message(STATUS "LLVM_VERSION_MAJOR: ${LLVM_VERSION_MAJOR}")
 message(STATUS "LLVMObjectYAML_LIBRARY: ${LLVMObjectYAML_LIBRARY}")
 message(STATUS "LLVMSupport_LIBRARY: ${LLVMSupport_LIBRARY}")
+
+if(LLVM_VERSION_MAJOR VERSION_LESS "7")
+    message(FATAL_ERROR "LLVM_VERSION_MAJOR is ${LLVM_VERSION_MAJOR}. However, hipTensor only support LLVM 7.0 and above" )
+endif()
 
 if(NOT LLVMObjectYAML_LIBRARY)
     message(ERROR "Could not find library: LLVMObjectYAML" )
