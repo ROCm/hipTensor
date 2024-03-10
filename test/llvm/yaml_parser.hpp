@@ -27,6 +27,7 @@
 #ifndef HIPTENSOR_TEST_YAML_PARSER_HPP
 #define HIPTENSOR_TEST_YAML_PARSER_HPP
 
+#include <optional>
 #include <string>
 
 // Load / store interface for YAML test config files
@@ -35,9 +36,9 @@ namespace hiptensor
     template <typename ConfigT>
     struct YamlConfigLoader
     {
-        static ConfigT loadFromFile(std::string const& filePath);
-        static ConfigT loadFromString(std::string const& yaml = "");
-        static void    storeToFile(std::string const& filePath, ConfigT const& config);
+        static std::optional<ConfigT> loadFromFile(std::string const& filePath);
+        static std::optional<ConfigT> loadFromString(std::string const& yaml = "");
+        static void storeToFile(std::string const& filePath, ConfigT const& config);
     };
 }
 
