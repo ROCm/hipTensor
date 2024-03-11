@@ -127,6 +127,10 @@ int main(int argc, char* argv[])
     hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile(tmpFile, yee);
     auto yee1
         = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(tmpFile);
+    if(!yee1)
+    {
+        return -1;
+    }
 
     return 0;
 }
