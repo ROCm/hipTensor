@@ -41,36 +41,46 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
 {
     const int32_t dim   = descA->mLengths.size();
     auto& instances     = hiptensor::PermutationCpuReferenceInstances::instance();
-    auto  candidates    = instances->allSolutions().query(dim,
-                                                          descA->mType,
-                                                          descB->mType,
-                                                          descA->mUnaryOp,
-                                                          descB->mUnaryOp,
-                                                          hiptensor::PermutationOpId_t::SCALE);
+    auto  candidates    = instances->allSolutions().query(dim)
+                                                   .query(descA->mType,
+                                                          descB->mType)
+                                                   .query(descA->mUnaryOp,
+                                                          descB->mUnaryOp);
 
-    auto toCKVec
-        = [](auto& inputVec) { return std::vector<ck::index_t>(inputVec.begin(), inputVec.end()); };
+    auto toPermutationSolutionVec = [](std::unordered_map<std::size_t,
+                                                          hiptensor::PermutationSolution*> const& map)
+    {
+        auto result = std::vector<hiptensor::PermutationSolution*>(map.size());
+        transform(map.begin(), map.end(), result.begin(), [](auto p) { return p.second; });
+        return result;
+    };
 
-    if(candidates.solutionCount() != 1)
+    if(candidates.solutionCount() > 4)
     {
         return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
     else
     {
-        auto refCandidate = candidates.solutions().begin()->second;
-        if(refCandidate->initArgs(alpha,
-                                  A,
-                                  B,
-                                  descA->mLengths,
-                                  descA->mStrides,
-                                  modeA,
-                                  descB->mLengths,
-                                  descB->mStrides,
-                                  modeB,
-                                  typeScalar))
+        auto candidateSol = toPermutationSolutionVec(candidates.solutions());
+
+        for(int i = 0; i < candidateSol.size(); i++)
         {
-            (*refCandidate)();
+            auto refCandidate = candidateSol[i];
+            if(refCandidate->initArgs(alpha,
+                                      A,
+                                      B,
+                                      descA->mLengths,
+                                      descA->mStrides,
+                                      modeA,
+                                      descB->mLengths,
+                                      descB->mStrides,
+                                      modeB,
+                                      typeScalar))
+            {
+                (*refCandidate)();
+                return HIPTENSOR_STATUS_SUCCESS;
+            }
         }
-        return HIPTENSOR_STATUS_SUCCESS;
+        return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
 }

@@ -106,8 +106,6 @@ namespace hiptensor
             ElementwiseOperation mElementOp;
             UnaryOperation       mUnaryOp;
             Scale                mScaleOp;
-
-            float                mAlpha;
         };
 
         // Invoker
@@ -121,18 +119,38 @@ namespace hiptensor
                 auto    elementCount    = hiptensor::elementsFromLengths(std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
 
                 std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
+
+                std::unordered_map<int32_t, int32_t> bLength, bLengthToIndex;
+                int prevLength = 1, i;
+#if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                 std::sort (outStrides.begin(), outStrides.end());
-                assert(outStrides.back() == 1);
-
-                std::unordered_map<int32_t, int32_t> bLengthToIndex;
-                int prevLength = 1;
-                for(int i = modeSize - 1, j = 1; i > 0; i--, j++)
+                assert(outStrides.front() == 1);
+                for(i = 1; i < modeSize ; i++)
                 {
-                    bLengthToIndex[outStrides[j] / prevLength] = i;
-                    prevLength = outStrides[j];
+                    bLength[i - 1] = outStrides[i] / prevLength;
+                    prevLength = outStrides[i];
                 }
-                bLengthToIndex[elementCount / prevLength] = 0;
+                bLength[i - 1] = elementCount / prevLength;
 
+                for(i = 0; i < modeSize; i++)
+                {
+                    bLengthToIndex[bLength[i]] = i;
+                }
+#else
+                std::sort (outStrides.rbegin(), outStrides.rend());
+                assert(outStrides.back() == 1);
+                for(i = modeSize - 2; i >= 0; i--)
+                {
+                    bLength[i + 1] = outStrides[i] / prevLength;
+                    prevLength = outStrides[i];
+                }
+                bLength[i + 1] = elementCount / prevLength;
+
+                for(i = 0; i < modeSize; i++)
+                {
+                    bLengthToIndex[bLength[i]] = i;
+                }
+#endif
                 auto    bIndices        = std::vector<int32_t>(modeSize, 0);
 
                 for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
@@ -145,7 +163,7 @@ namespace hiptensor
                         index /= arg.mLengths[modeIndex];
                     }
                     auto bOffset
-                        = std::inner_product(bIndices.begin(), bIndices.end(), std::begin(arg.mOutStrides[0]), 0);
+                        = std::inner_product(bIndices.begin(), bIndices.end(), std::begin(outStrides), 0);
 #else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                     for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
                     {
@@ -153,10 +171,13 @@ namespace hiptensor
                         index /= arg.mLengths[modeIndex];
                     }
                     auto bOffset
-                        = std::inner_product(bIndices.rbegin(), bIndices.rend(), std::rbegin(arg.mOutStrides[0]), 0);
+                        = std::inner_product(bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                    arg.mOutput[bOffset]       = static_cast<mOutDataType>(arg.mInput[elementIndex] * (mOutDataType)arg.mAlpha);
-                }
+                    mInDataType input;
+                    arg.mUnaryOp(input, arg.mInput[elementIndex]);
+                    mOutDataType output = static_cast<mOutDataType>(input) * static_cast<mOutDataType>(arg.mScaleOp.scale_);
+                    arg.mElementOp(arg.mOutput[bOffset], output);
+                  }
                 return 0;
             }
 
@@ -233,8 +254,9 @@ namespace hiptensor
             auto str = std::stringstream();
 
             // clang-format off
-            str << "ReferencePermutation"
-                << std::endl;
+            str << "ReferencePermutation<";
+            str << NumDim << ", ";
+            str << 1 << ">";
             // clang-format on
 
             return str.str();

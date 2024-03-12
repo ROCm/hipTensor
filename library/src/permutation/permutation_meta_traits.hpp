@@ -33,6 +33,7 @@
 #include <device_operation_instance_factory.hpp>
 
 // hiptensor includes
+#include "device/hiptensor_permutation_scale_instances.hpp"
 #include "data_types.hpp"
 #include "meta_traits.hpp"
 

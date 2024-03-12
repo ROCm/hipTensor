@@ -25,12 +25,7 @@
  ###############################################################################
 
  set(CK_PERMUTATION_INSTANCE_SOURCES
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_permute_scale_1d_instances.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_permute_scale_2d_instances.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_permute_scale_3d_instances.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_permute_scale_4d_instances.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_permute_scale_5d_instances.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/device_permute_scale_6d_instances.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation_scale_instances.hpp
      )
 
 add_hiptensor_component(hiptensor_permutation_instances ${CK_PERMUTATION_INSTANCE_SOURCES})

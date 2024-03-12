@@ -40,124 +40,247 @@ namespace ck
                 using F16 = ck::half_t;
                 using F32 = float;
 
-                using PassOp        = ck::tensor_operation::element_wise::PassThrough;
-                using UnaryOp       = ck::tensor_operation::element_wise::UnarySquare;
-                using Scale         = ck::tensor_operation::element_wise::Scale;
-                
                 // clang-format off
-                template <index_t NDims>
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale,
+                          index_t NDims>
                 using device_permute_scale_f16_instances =
                     std::tuple <
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, PassOp, UnaryOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
                     >;
 
-                template <index_t NDims>
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale,
+                          index_t NDims>
                 using device_permute_scale_f32_instances = std::tuple<
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, PassOp, UnaryOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
                     >;
                 // clang-format on
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_1d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  1>>>&);
+                                                                  1>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f16_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      1>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_1d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  1>>>&);
+                                                                  1>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      1>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_2d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  2>>>&);
+                                                                  2>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f16_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      2>{});
 
+                }
+
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_2d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  2>>>&);
+                                                                  2>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      2>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_3d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  3>>>&);
+                                                                  3>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f16_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      3>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_3d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  3>>>&);
+                                                                  3>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      3>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_4d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  4>>>&);
+                                                                  4>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f16_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      4>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_4d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  4>>>&);
+                                                                  4>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      4>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_5d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  5>>>&);
+                                                                  5>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f16_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      5>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_5d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  5>>>&);
+                                                                  5>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      5>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_6d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  6>>>&);
+                                                                  6>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f16_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      6>{});
+                }
 
+                template <typename ElementwiseOperation,
+                          typename UnaryOperation,
+                          typename Scale>
                 void add_device_permute_scale_6d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  PassOp,
-                                                                  UnaryOp,
+                                                                  ElementwiseOperation,
+                                                                  UnaryOperation,
                                                                   Scale,
-                                                                  6>>>&);
+                                                                  6>>>& instances)
+                {
+                    add_device_operation_instances(instances,
+                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                                                      UnaryOperation,
+                                                                                      Scale,
+                                                                                      6>{});
+                }
 
                 template <typename InDataTypeTuple,
                           typename OutDataTypeTuple,

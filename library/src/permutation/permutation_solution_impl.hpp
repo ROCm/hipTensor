@@ -40,7 +40,7 @@ namespace std
     {
         size_t operator()(hiptensor::PermutationSolution const& s) const noexcept
         {
-            return hash<hiptensor::PermutationSolutionParams>{}(*s.params());
+            return hash<hiptensor::PermutationSolutionParams>{}(*s.params(), s.threadDim());
         }
     };
 }
@@ -82,12 +82,26 @@ namespace hiptensor
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
-            // Note: CK ALWAYS uses float for alpha in permutation
-            ScalarData alphaF;
+            auto findThreadDim = [](std::string argValues)  -> uint32_t  {
+                if(!argValues.empty())
+                {
+                    std::string kernelName = argValues.substr(0, argValues.find('<'));
+                    if(kernelName == "DeviceElementwiseNormalizationImpl" ||
+                       kernelName == "ReferencePermutation")
+                    {
+                        int beg = argValues.find(',');
+                        int end = argValues.find('>');
+                        return stoi(argValues.substr(beg + 1, end - beg));
+                    }
+                }
+                return 1;
+            };
 
+            // Note: CK ALWAYS uses float for alpha in permutation
+            float alphaF;
             if(alpha != nullptr)
             {
-                alphaF = hiptensor::readVal<ScalarData>(alpha, convertToComputeType(typeScalar));
+                alphaF = hiptensor::readVal<float>(alpha, convertToComputeType(typeScalar));
             }
 
             // CK has its own format for indices...
@@ -134,6 +148,8 @@ namespace hiptensor
 
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());
+
+            Base::mThreadDim = findThreadDim(deviceOp->GetTypeString());
 
             return mValid;
         }

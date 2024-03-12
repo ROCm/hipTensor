@@ -91,18 +91,32 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
+        auto operators    = std::get<5>(param);
 
         EXPECT_TRUE((lengths.size() > 1) && (lengths.size() <= 6));
         EXPECT_TRUE((permutedDims.size() > 1) && (permutedDims.size() <= 6));
+
+        EXPECT_EQ(operators.size(), 2); // HIPTENSOR_OP_IDENTITY or HIPTENSOR_OP_SQRT
+        auto op = operators[0];
+        EXPECT_TRUE((op == HIPTENSOR_OP_IDENTITY) || (op == HIPTENSOR_OP_SQRT));
 
         EXPECT_EQ(testType.size(), 2); // HIP_R_16F or HIP_R_32F
         auto abDataType = testType[0];
         EXPECT_TRUE((abDataType == HIP_R_16F) || (abDataType == HIP_R_32F));
 
-        getResource()->setupStorage(lengths, abDataType);
+        mRunFlag &= checkDevice(abDataType);
 
-        // set mPrintElements to true to print element
-        mPrintElements = false;
+        if(!mRunFlag)
+        {
+            GTEST_SKIP();
+        }
+        else
+        {
+            getResource()->setupStorage(lengths, abDataType);
+
+            // set mPrintElements to true to print element
+            mPrintElements = false;
+        }
     }
 
     void PermutationTest::reportResults(std::ostream& stream,
@@ -160,9 +174,13 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
+        auto operators    = std::get<5>(param);
 
         auto abDataType      = testType[0];
         auto computeDataType = testType[1];
+
+        auto Aop             = operators[0];
+        auto Bop             = operators[1];
 
         if(!mRunFlag)
         {
@@ -213,7 +231,7 @@ namespace hiptensor
                                                                 extentA.data(),
                                                                 NULL /* stride */,
                                                                 abDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+                                                                Aop));
 
             hiptensorTensorDescriptor_t descB;
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
@@ -222,7 +240,7 @@ namespace hiptensor
                                                                 extentB.data(),
                                                                 NULL /* stride */,
                                                                 abDataType,
-                                                                HIPTENSOR_OP_SQRT));
+                                                                Bop));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -257,8 +275,8 @@ namespace hiptensor
                                                                     modeB.data(),
                                                                     computeDataType,
                                                                     0 /* stream */));
-                                                                
-                resource->copyReferenceToDevice();
+
+               resource->copyReferenceToDevice();
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
                                                       (float*)resource->deviceReference().get(),
@@ -278,12 +296,12 @@ namespace hiptensor
                                                                     computeDataType,
                                                                     0 /* stream */));
 
-                resource->copyReferenceToDevice();
+               resource->copyReferenceToDevice();
                 std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceB().get(),
                     (_Float16*)resource->deviceReference().get(),
-                    resource->getCurrentMatrixElement(),
-                    convertToComputeType(computeDataType));
+                     resource->getCurrentMatrixElement(),
+                     convertToComputeType(computeDataType));
             }
         }
 

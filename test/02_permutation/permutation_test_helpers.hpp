@@ -62,7 +62,8 @@ auto inline load_config_helper()
                               ::testing::Values(testParams.logLevelMask()),
                               ::testing::ValuesIn(testParams.problemLengths()),
                               ::testing::ValuesIn(testParams.permutedDims()),
-                              ::testing::ValuesIn(testParams.alphas()));
+                              ::testing::ValuesIn(testParams.alphas()),
+                              ::testing::ValuesIn(testParams.operators()));
 }
 
 #endif // HIPTENSOR_PERMUTATION_TEST_HELPERS_HPP

@@ -64,7 +64,8 @@ namespace hiptensor
                         hipDataType            typeOut,
                         hiptensorOperator_t    opElement,
                         hiptensorOperator_t    opUnary,
-                        PermutationOpId_t      opScale) const;
+                        PermutationOpId_t      opScale,
+                        uint32_t                threadDim) const;
 
             // By dimension
             Query query(int32_t dim) const;
@@ -79,6 +80,9 @@ namespace hiptensor
 
             // By permutation operation
             Query query(PermutationOpId_t  opScale) const;
+
+            // By thread dimension
+            Query query(uint32_t threadDim) const;
 
             // union
             Query operator||(Query const& other) const;
@@ -104,7 +108,8 @@ namespace hiptensor
                                        hipDataType            typeOut,
                                        hiptensorOperator_t    opElement,
                                        hiptensorOperator_t    opUnary,
-                                       PermutationOpId_t      opScale);
+                                       PermutationOpId_t      opScale,
+                                       uint32_t                threadDim);
 
             static HashId hashDim(int32_t dim);
 
@@ -115,6 +120,8 @@ namespace hiptensor
                                          hiptensorOperator_t    opUnary);
 
             static HashId hashScaleOp(PermutationOpId_t  opScale);
+
+            static HashId hashThreadDim(uint32_t threadDim);
 
             // Adding solutions to the query
             void addSolution(PermutationSolution* solution);

@@ -99,6 +99,9 @@ namespace hiptensor
         // Unique ID for the kernel
         size_t uid() const;
 
+        // Get Number of threads across dimension
+        uint32_t threadDim() const;
+
         // Problem dimension
         ck::index_t problemDim() const;
 
@@ -119,6 +122,7 @@ namespace hiptensor
         ck::index_t mDim;
         ck::index_t mBytes;
         bool        mValid;
+        uint32_t    mThreadDim;
 
         // Kernel Params
         std::unique_ptr<PermutationSolutionParams>                  mParams;

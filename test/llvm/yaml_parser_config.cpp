@@ -138,6 +138,7 @@ namespace llvm
             static void enumeration(IO& io, hiptensorOperator_t& value)
             {
                 io.enumCase(value, "HIPTENSOR_OP_IDENTITY", HIPTENSOR_OP_IDENTITY);
+                io.enumCase(value, "HIPTENSOR_OP_SQRT", HIPTENSOR_OP_SQRT);
                 io.enumCase(value, "HIPTENSOR_OP_UNKNOWN", HIPTENSOR_OP_UNKNOWN);
             }
         };
@@ -298,6 +299,7 @@ namespace llvm
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Lengths", doc.problemLengths());
                 io.mapRequired("Permuted Dims", doc.permutedDims());
+                io.mapOptional("Operators", (std::vector<hiptensorOperator_t>&)(doc.operators()));
             }
 
             // Additional validation for input / output of the config
@@ -316,6 +318,11 @@ namespace llvm
                 if(doc.permutedDims().size() == 0)
                 {
                     return "Error: Empty Permuted Dims";
+                }
+
+                if(doc.operators().size() == 0)
+                {
+                    return "Error: Empty Operators";
                 }
 
                 return std::string{};

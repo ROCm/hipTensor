@@ -197,103 +197,80 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     }
 
     candidates = toPermutationSolutionVec(solutionQ.solutions());
-    hiptensor::PermutationSolution *pSolution = candidates[0];
 
-    auto canRun = pSolution->initArgs(alpha,
-                                      A,
-                                      B,
-                                      descA->mLengths,
-                                      descA->mStrides,
-                                      modeA,
-                                      descB->mLengths,
-                                      descB->mStrides,
-                                      modeB,
-                                      typeScalar);
-
-    if(canRun)
+    bool canRun = false;
+    for(int i = 0; i < candidates.size(); i++)
     {
-        // Perform permutation with timing if LOG_LEVEL_PERF_TRACE
-        if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+        hiptensor::PermutationSolution *pSolution = candidates[i];
+        canRun = pSolution->initArgs(alpha,
+                                     A,
+                                     B,
+                                     descA->mLengths,
+                                     descA->mStrides,
+                                     modeA,
+                                     descB->mLengths,
+                                     descB->mStrides,
+                                     modeB,
+                                     typeScalar);
+
+        if(canRun)
         {
-            auto time = (*pSolution)(StreamConfig{
-                stream, // stream id
-                true, // time_kernel
-                0, // log_level
-                0, // cold_niters
-                1, // nrepeat
-            });
-            if(time < 0)
+            // Perform permutation with timing if LOG_LEVEL_PERF_TRACE
+            if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
             {
-                return HIPTENSOR_STATUS_CK_ERROR;
+                auto time = (*pSolution)(StreamConfig{
+                    stream, // stream id
+                    true, // time_kernel
+                    0, // log_level
+                    0, // cold_niters
+                    1, // nrepeat
+                });
+                if(time < 0)
+                {
+                    return HIPTENSOR_STATUS_CK_ERROR;
+                }
+
+                int n             = pSolution->problemDim();
+                auto flops        = std::size_t(2) * n;
+                auto bytes        = pSolution->problemBytes();
+
+                hiptensor::PerfMetrics metrics = {
+                    pSolution->uid(), // id
+                    pSolution->kernelName(), // name
+                    time, // avg time
+                    static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
+                    static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
+                };
+
+                // log perf metrics (not name/id)
+                snprintf(msg,
+                        sizeof(msg),
+                        "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+                        metrics.mKernelUid,
+                        metrics.mKernelName.c_str(),
+                        metrics.mAvgTimeMs,
+                        metrics.mTflops,
+                        metrics.mBandwidth);
+                logger->logPerformanceTrace("hiptensorPermutation", msg);
+            }
+            // Perform permutation without timing
+            else
+            {
+                if((*pSolution)(StreamConfig{stream, false}) < 0)
+                {
+                    return HIPTENSOR_STATUS_CK_ERROR;
+                }
             }
 
-            int n             = pSolution->problemDim();
-            auto flops        = std::size_t(2) * n;
-            auto bytes        = pSolution->problemBytes();
-
-            hiptensor::PerfMetrics metrics = {
-                pSolution->uid(), // id
-                pSolution->kernelName(), // name
-                time, // avg time
-                static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
-                static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
-            };
-
-            // log perf metrics (not name/id)
-            snprintf(msg,
-                     sizeof(msg),
-                     "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
-                     metrics.mKernelUid,
-                     metrics.mKernelName.c_str(),
-                     metrics.mAvgTimeMs,
-                     metrics.mTflops,
-                     metrics.mBandwidth);
-            logger->logPerformanceTrace("hiptensorPermutation", msg);
+            return HIPTENSOR_STATUS_SUCCESS;
         }
-        // Perform permutation without timing
-        else
-        {
-            if((*pSolution)(StreamConfig{stream, false}) < 0)
-            {
-                return HIPTENSOR_STATUS_CK_ERROR;
-            }
-        }
-
-        return HIPTENSOR_STATUS_SUCCESS;
-    }
-    else
-    {
-        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Selected kernel is unable to solve the problem (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
-        return errorCode;
     }
 
-            // if(descA->mType == HIP_R_16F)
-            // {
-            //     return hiptensor::detail::permuteByCk(alpha,
-            //                                         static_cast<const _Float16*>(A),
-            //                                         descA,
-            //                                         modeA,
-            //                                         static_cast<_Float16*>(B),
-            //                                         descB,
-            //                                         modeB,
-            //                                         typeScalar,
-            //                                         stream);
-            // }
-            // else if(descA->mType == HIP_R_32F)
-            // {
-            //     return hiptensor::detail::permuteByCk(alpha,
-            //                                         static_cast<const float*>(A),
-            //                                         descA,
-            //                                         modeA,
-            //                                         static_cast<float*>(B),
-            //                                         descB,
-            //                                         modeB,
-            //                                         typeScalar,
-            //                                         stream);
-            // }
+    auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+    snprintf(msg,
+                sizeof(msg),
+                "Selected kernel is unable to solve the problem (%s)",
+                hiptensorGetErrorString(errorCode));
+    logger->logError("hiptensorPermutation", msg);
+    return errorCode;
 }

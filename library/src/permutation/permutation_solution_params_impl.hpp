@@ -37,14 +37,15 @@ namespace std
     template <>
     struct hash<hiptensor::PermutationSolutionParams>
     {
-        size_t operator()(hiptensor::PermutationSolutionParams const& s) const noexcept
+        size_t operator()(hiptensor::PermutationSolutionParams const& s, size_t mPerThread) const noexcept
         {
             return hiptensor::Hash{}(s.dim(),
                                      s.typeIn(),
                                      s.typeOut(),
                                      s.opElement(),
                                      s.opUnary(),
-                                     s.opScale());
+                                     s.opScale(),
+                                     mPerThread);
         }
     };
 }

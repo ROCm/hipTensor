@@ -140,6 +140,11 @@ namespace hiptensor
         return value;
     }
 
+    uint32_t PermutationSolution::threadDim() const
+    {
+        return mThreadDim;
+    }
+
     ck::index_t PermutationSolution::problemDim() const
     {
         return mDim;
