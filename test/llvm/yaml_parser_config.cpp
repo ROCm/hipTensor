@@ -89,6 +89,7 @@ LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::size_t>)
@@ -299,7 +300,7 @@ namespace llvm
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Lengths", doc.problemLengths());
                 io.mapRequired("Permuted Dims", doc.permutedDims());
-                io.mapOptional("Operators", (std::vector<hiptensorOperator_t>&)(doc.operators()));
+                io.mapRequired("Operators", (doc.operators()));
             }
 
             // Additional validation for input / output of the config
