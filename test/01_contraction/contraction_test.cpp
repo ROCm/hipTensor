@@ -101,6 +101,8 @@ namespace hiptensor
         auto alpha        = std::get<7>(param);
         auto beta         = std::get<8>(param);
 
+        EXPECT_TRUE(operatorType == HIPTENSOR_OP_IDENTITY);
+
         // 4D tensors only at the moment.
         EXPECT_EQ(testType.size(), 5);
         EXPECT_EQ(lengths.size(), 6); // Format {'m', 'n', 'u', 'v', 'h', 'k'}
