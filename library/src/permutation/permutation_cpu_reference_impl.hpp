@@ -116,44 +116,43 @@ namespace hiptensor
 
             float Run(const Argument& arg)
             {
-                int     modeSize        = arg.mLengths.size();
-                auto    elementCount    = hiptensor::elementsFromLengths(std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
+                int  modeSize     = arg.mLengths.size();
+                auto elementCount = hiptensor::elementsFromLengths(std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
 
-                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
-
-                std::unordered_map<int32_t, int32_t> bLength;
-                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
-                int prevLength = 1, i;
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+                // Sort the output strides to calculate output tensor lengths
+                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
                 std::sort (outStrides.begin(), outStrides.end());
                 assert(outStrides.front() == 1);
+
+                // Map the lengths in output to its indices( using list to cover redundant lengths )
+                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
+                int prevLength = 1, i;
                 for(i = 1; i < modeSize ; i++)
                 {
-                    bLength[i - 1] = outStrides[i] / prevLength;
+                    bLengthToIndex[outStrides[i] / prevLength].push_back(i - 1);
                     prevLength = outStrides[i];
                 }
-                bLength[i - 1] = elementCount / prevLength;
-
-                for(i = 0; i < modeSize; i++)
-                {
-                    bLengthToIndex[bLength[i]].push_back(i);
-                }
+                bLengthToIndex[elementCount / prevLength].push_back(i - 1);
 #else
+                // Sort the output strides to calculate output tensor lengths
+                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
                 std::sort (outStrides.rbegin(), outStrides.rend());
                 assert(outStrides.back() == 1);
+
+                // Map the lengths in output to its indices( using list to cover redundant lengths )
+                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
+                int prevLength = 1, i;
                 for(i = modeSize - 2; i >= 0; i--)
                 {
-                    bLength[i + 1] = outStrides[i] / prevLength;
+                    bLengthToIndex[outStrides[i] / prevLength].push_back(i + 1);
                     prevLength = outStrides[i];
                 }
-                bLength[i + 1] = elementCount / prevLength;
-
-                for(i = 0; i < modeSize; i++)
-                {
-                    bLengthToIndex[bLength[i]].push_back(i);
-                }
+                bLengthToIndex[elementCount / prevLength].push_back(i + 1);
 #endif
-                auto    bIndices        = std::vector<int32_t>(modeSize, 0);
+
+                // From computed output lengths and argument's input lengths,
+                // create a mode map between input and output
                 std::map<int, int> modeATomodeBmap;
                 for (int i = 0; i < modeSize; i++)
                 {
@@ -161,6 +160,8 @@ namespace hiptensor
                     bLengthToIndex[arg.mLengths[i]].pop_front();
                 }
 
+                // Find the write offset and index in output for every input element
+                auto    bIndices  = std::vector<int32_t>(modeSize, 0);
                 for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
                 {
                     auto index = elementIndex;
@@ -183,8 +184,11 @@ namespace hiptensor
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
 
                     mInDataType input;
+                    // Perform elementwise tensor operation of input
                     arg.mUnaryOp(input, arg.mInput[elementIndex]);
+                    // Perform permute scale
                     mOutDataType output = static_cast<mOutDataType>(input) * static_cast<mOutDataType>(arg.mScaleOp.scale_);
+                    // Perform elementwise tensor operation of output
                     arg.mElementOp(arg.mOutput[bOffset], output);
                 }
                 return 0;
