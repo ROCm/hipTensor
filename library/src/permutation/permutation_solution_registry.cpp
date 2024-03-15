@@ -238,6 +238,8 @@ namespace hiptensor
 
             auto scaleOpHash = hashScaleOp(params->opScale());
 
+            auto threadDimHash = hashThreadDim(solution->threadDim());
+
             // Hash permutation solutions into categories and then register
             // into master list.
             mAllSolutions[solutionUid] = solution;
@@ -246,6 +248,7 @@ namespace hiptensor
             mSolutionHash[typesInOutHash].push_back(solution);
             mSolutionHash[elementOpsHash].push_back(solution);
             mSolutionHash[scaleOpHash].push_back(solution);
+            mSolutionHash[threadDimHash].push_back(solution);
         }
         else
         {

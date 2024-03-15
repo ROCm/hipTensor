@@ -31,6 +31,7 @@
 #include <array>
 #include <numeric>
 #include <vector>
+#include <list>
 
 // CK includes
 #include <device_elementwise_scale_impl.hpp>
@@ -120,7 +121,8 @@ namespace hiptensor
 
                 std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
 
-                std::unordered_map<int32_t, int32_t> bLength, bLengthToIndex;
+                std::unordered_map<int32_t, int32_t> bLength;
+                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
                 int prevLength = 1, i;
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                 std::sort (outStrides.begin(), outStrides.end());
@@ -134,7 +136,7 @@ namespace hiptensor
 
                 for(i = 0; i < modeSize; i++)
                 {
-                    bLengthToIndex[bLength[i]] = i;
+                    bLengthToIndex[bLength[i]].push_back(i);
                 }
 #else
                 std::sort (outStrides.rbegin(), outStrides.rend());
@@ -148,10 +150,16 @@ namespace hiptensor
 
                 for(i = 0; i < modeSize; i++)
                 {
-                    bLengthToIndex[bLength[i]] = i;
+                    bLengthToIndex[bLength[i]].push_back(i);
                 }
 #endif
                 auto    bIndices        = std::vector<int32_t>(modeSize, 0);
+                std::map<int, int> modeATomodeBmap;
+                for (int i = 0; i < modeSize; i++)
+                {
+                    modeATomodeBmap[i] = bLengthToIndex[arg.mLengths[i]].front();
+                    bLengthToIndex[arg.mLengths[i]].pop_front();
+                }
 
                 for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
                 {
@@ -159,7 +167,7 @@ namespace hiptensor
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                     for(int modeIndex = 0; modeIndex < modeSize; modeIndex++)
                     {
-                        bIndices[bLengthToIndex[arg.mLengths[modeIndex]]] = index % arg.mLengths[modeIndex];
+                        bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
                         index /= arg.mLengths[modeIndex];
                     }
                     auto bOffset
@@ -167,17 +175,18 @@ namespace hiptensor
 #else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                     for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
                     {
-                        bIndices[bLengthToIndex[arg.mLengths[modeIndex]]] = index % arg.mLengths[modeIndex];
+                        bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
                         index /= arg.mLengths[modeIndex];
                     }
                     auto bOffset
                         = std::inner_product(bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+
                     mInDataType input;
                     arg.mUnaryOp(input, arg.mInput[elementIndex]);
                     mOutDataType output = static_cast<mOutDataType>(input) * static_cast<mOutDataType>(arg.mScaleOp.scale_);
                     arg.mElementOp(arg.mOutput[bOffset], output);
-                  }
+                }
                 return 0;
             }
 

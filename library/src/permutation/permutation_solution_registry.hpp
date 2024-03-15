@@ -65,7 +65,7 @@ namespace hiptensor
                         hiptensorOperator_t    opElement,
                         hiptensorOperator_t    opUnary,
                         PermutationOpId_t      opScale,
-                        uint32_t                threadDim) const;
+                        uint32_t               threadDim) const;
 
             // By dimension
             Query query(int32_t dim) const;

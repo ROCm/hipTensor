@@ -56,8 +56,7 @@ namespace hiptensor
     // False = skip test
     bool PermutationTest::checkDevice(hipDataType datatype) const
     {
-        return (isF32Supported() && datatype == HIP_R_32F)
-               || (isF64Supported() && datatype == HIP_R_64F);
+        return isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F));
     }
 
     bool PermutationTest::checkSizes() const
@@ -277,7 +276,7 @@ namespace hiptensor
                                                                     0 /* stream */));
 
                resource->copyReferenceToDevice();
-                std::tie(mValidationResult, mMaxRelativeError)
+               std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
                                                       (float*)resource->deviceReference().get(),
                                                       resource->getCurrentMatrixElement(),
@@ -297,7 +296,8 @@ namespace hiptensor
                                                                     0 /* stream */));
 
                resource->copyReferenceToDevice();
-                std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
+
+               std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceB().get(),
                     (_Float16*)resource->deviceReference().get(),
                      resource->getCurrentMatrixElement(),

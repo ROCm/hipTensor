@@ -101,7 +101,7 @@ typedef enum
 typedef enum
 {
     HIPTENSOR_OP_IDENTITY = 1,   /*!< Identity operator  */
-    HIPTENSOR_OP_SQRT = 2,       /*!< Square operator  */
+    HIPTENSOR_OP_SQRT = 3,       /*!< Square operator  */
     HIPTENSOR_OP_UNKNOWN  = 126, /*!< reserved */
 } hiptensorOperator_t;
 
