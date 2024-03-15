@@ -72,6 +72,7 @@ __global__ void fillKernel(DataType* data, uint32_t elementSize, uint32_t seed)
 
     if(index < elementSize)
     {
+        // Input values scaled by 10, Doing UnarySquare Operation for tensors(16F) may cause overflow.
         if constexpr(std::is_same_v<DataType, hipFloatComplex>)
         {
             auto value  = (float(index / float(RAND_MAX) - 0.5) * 10) / elementSize;

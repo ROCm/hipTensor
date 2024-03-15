@@ -91,7 +91,7 @@ namespace hiptensor
                     {
                         int beg = argValues.find(',');
                         int end = argValues.find('>');
-                        return stoi(argValues.substr(beg + 1, end - beg));
+                        return std::stoi(argValues.substr(beg + 1, end - beg));
                     }
                 }
                 return 1;
@@ -121,7 +121,9 @@ namespace hiptensor
             toCKArr(hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), aStrides);
             toCKArr(hiptensor::stridesFromLengths(b_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), bStrides);
             for(int i = 0; i < Traits::NDim; i++)
+            {
                 bStridesCk[modeAToIndex[modeB[i]]] = bStrides[i];
+            }
 
             toCKArr(a_lengths, abLengths);
 

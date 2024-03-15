@@ -41,11 +41,12 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
 {
     const int32_t dim   = descA->mLengths.size();
     auto& instances     = hiptensor::PermutationCpuReferenceInstances::instance();
-    auto  candidates    = instances->allSolutions().query(dim)
-                                                   .query(descA->mType,
-                                                          descB->mType)
-                                                   .query(descA->mUnaryOp,
-                                                          descB->mUnaryOp);
+    auto  candidates    = instances->allSolutions().query(dim,
+                                                          descA->mType,
+                                                          descB->mType,
+                                                          descA->mUnaryOp,
+                                                          descB->mUnaryOp,
+                                                          hiptensor::PermutationOpId_t::SCALE);
 
     auto toPermutationSolutionVec = [](std::unordered_map<std::size_t,
                                                           hiptensor::PermutationSolution*> const& map)

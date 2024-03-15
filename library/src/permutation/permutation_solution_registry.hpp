@@ -58,6 +58,14 @@ namespace hiptensor
             /// Subsequent queries that may be performed on the current query object.
             /// E.g. in this context, query further parameters.
 
+            // By solution type
+            Query query(int32_t                dim,
+                        hipDataType            typeIn,
+                        hipDataType            typeOut,
+                        hiptensorOperator_t    opElement,
+                        hiptensorOperator_t    opUnary,
+                        PermutationOpId_t      opScale) const;
+
             // By full solution type
             Query query(int32_t                dim,
                         hipDataType            typeIn,
@@ -108,8 +116,15 @@ namespace hiptensor
                                        hipDataType            typeOut,
                                        hiptensorOperator_t    opElement,
                                        hiptensorOperator_t    opUnary,
+                                       PermutationOpId_t      opScale);
+
+            static HashId hashSolution(int32_t                dim,
+                                       hipDataType            typeIn,
+                                       hipDataType            typeOut,
+                                       hiptensorOperator_t    opElement,
+                                       hiptensorOperator_t    opUnary,
                                        PermutationOpId_t      opScale,
-                                       uint32_t                threadDim);
+                                       uint32_t               threadDim);
 
             static HashId hashDim(int32_t dim);
 

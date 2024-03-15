@@ -58,8 +58,27 @@ namespace hiptensor
                                                   hipDataType            typeOut,
                                                   hiptensorOperator_t    opElement,
                                                   hiptensorOperator_t    opUnary,
+                                                  PermutationOpId_t      opScale) const
+    {
+        auto solutionHash = hashSolution(
+            dim, typeIn, typeOut, opElement, opUnary, opScale);
+
+        if(auto solutions = mSolutionHash.find(solutionHash); solutions != mSolutionHash.end())
+        {
+            return Query(mSolutionHash.at(solutionHash));
+        }
+
+        return Query();
+    }
+
+    PermutationSolutionRegistry::Query
+        PermutationSolutionRegistry::Query::query(int32_t                dim,
+                                                  hipDataType            typeIn,
+                                                  hipDataType            typeOut,
+                                                  hiptensorOperator_t    opElement,
+                                                  hiptensorOperator_t    opUnary,
                                                   PermutationOpId_t      opScale,
-                                                  uint32_t                threadDim) const
+                                                  uint32_t               threadDim) const
     {
         auto solutionHash = hashSolution(
             dim, typeIn, typeOut, opElement, opUnary, opScale, threadDim);
@@ -168,6 +187,18 @@ namespace hiptensor
                                                          hipDataType            typeOut,
                                                          hiptensorOperator_t    opElement,
                                                          hiptensorOperator_t    opUnary,
+                                                         PermutationOpId_t      opScale)
+    {
+        return Hash{}(dim, typeIn, typeOut, opElement, opUnary, opScale);
+    }
+
+    /* static */
+    PermutationSolutionRegistry::Query::HashId
+        PermutationSolutionRegistry::Query::hashSolution(int32_t                dim,
+                                                         hipDataType            typeIn,
+                                                         hipDataType            typeOut,
+                                                         hiptensorOperator_t    opElement,
+                                                         hiptensorOperator_t    opUnary,
                                                          PermutationOpId_t      opScale,
                                                          uint32_t                threadDim)
     {
@@ -225,8 +256,15 @@ namespace hiptensor
                                              params->typeOut(),
                                              params->opElement(),
                                              params->opUnary(),
-                                             params->opScale(),
-                                             solution->threadDim());
+                                             params->opScale());
+
+            auto fullSolutionHash = hashSolution(params->dim(),
+                                                 params->typeIn(),
+                                                 params->typeOut(),
+                                                 params->opElement(),
+                                                 params->opUnary(),
+                                                 params->opScale(),
+                                                 solution->threadDim());
 
             auto dimHash = hashDim(params->dim());
 
@@ -244,6 +282,7 @@ namespace hiptensor
             // into master list.
             mAllSolutions[solutionUid] = solution;
             mSolutionHash[solutionHash].push_back(solution);
+            mSolutionHash[fullSolutionHash].push_back(solution);
             mSolutionHash[dimHash].push_back(solution);
             mSolutionHash[typesInOutHash].push_back(solution);
             mSolutionHash[elementOpsHash].push_back(solution);
