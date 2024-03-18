@@ -25,7 +25,7 @@
  ###############################################################################
 
 # Find / configure LLVM
-find_package(LLVM REQUIRED CONFIG)
+find_package(LLVM ${HIPTENSOR_LLVM_VERSION} REQUIRED CONFIG)
 
 # Required:
 # LLVMObjectYAML for YAML parsing
