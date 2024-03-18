@@ -63,6 +63,8 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -DNDEBUG") # clang++ failed to build the pro
 
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
+  # The minimum version of LLVM hipTensor tests link to is 7.0. If the default LLVM found by CMake is less than 7.0, please specify a higher installed version
+  option( HIPTENSOR_LLVM_VERSION "Version of LLVM hipTensor test will use. It should greater than 6.0." "")
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
   option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON)
