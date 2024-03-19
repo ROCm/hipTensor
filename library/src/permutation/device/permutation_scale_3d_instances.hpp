@@ -62,13 +62,13 @@ namespace ck
                 void add_device_permute_scale_3d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
-                                                                  ElementwiseOperation,
+                                                                  AOp,
                                                                   BOp,
                                                                   Scale,
                                                                   3>>>& instances)
                 {
                     add_device_operation_instances(instances,
-                                                   device_permute_scale_f32_instances<ElementwiseOperation,
+                                                   device_permute_scale_f32_instances<AOp,
                                                                                       BOp,
                                                                                       Scale,
                                                                                       3>{});
