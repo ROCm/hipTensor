@@ -81,6 +81,10 @@ namespace hiptensor
             // Promote to derived class for necessary functions such as
             // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
+            if(deviceOp == nullptr)
+            {
+                return 0;
+            }
 
             auto findThreadDim = [](std::string argValues)  -> uint32_t  {
                 if(!argValues.empty())
