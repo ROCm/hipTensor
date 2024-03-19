@@ -1,9 +1,14 @@
+.. meta::
+   :description: A high-performance HIP library for tensor primitives
+   :keywords: hipTensor, ROCm, library, API, tool
 
-************
-Introduction
-************
+.. _api-reference:
 
-hipTensor Data Types
+********************
+API reference guide
+********************
+
+hipTensor data types
 ====================
 
 .. <!-- spellcheck-disable -->
@@ -68,7 +73,7 @@ hiptensorContractionPlan_t
 .. doxygenstruct::  hiptensorContractionPlan_t
    :members:
 
-Helper Functions
+Helper functions
 ================
 
 hiptensorGetVersion
@@ -101,7 +106,7 @@ hiptensorGetErrorString
 
 .. doxygenfunction::  hiptensorGetErrorString
 
-Contraction Operations
+Contraction operations
 ======================
 
 hiptensorInitContractionDescriptor
@@ -129,7 +134,7 @@ hiptensorContractionGetWorkspaceSize
 
 .. doxygenfunction::  hiptensorContractionGetWorkspaceSize
 
-Logging Functions
+Logging functions
 =================
 
 hiptensorLoggerSetCallback

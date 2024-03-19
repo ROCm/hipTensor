@@ -2,12 +2,22 @@
 # These comments will also be removed.
 root: index
 subtrees:
-  - numbered: False
+  - entries:
+    - file: what-is-hiptensor
+  - caption:  Tutorial
     entries:
-    - file: Linux_Install_Guide
-    - file: API_Reference_Guide
-    - file: Programmers_Guide
-    - file: Contributors_Guide
+    - file: installation
+  - caption:  Conceptual
+    entries:
+    - file: programmers_guide
+  - caption:  API reference
+    entries:
+    - file: api-reference
+    - file: doxygen/html/index
+      title:  API library
+  - caption:  Contribution
+    entries:
+    - file: contributors-guide    
   - caption: About
     entries:
     - file: license
