@@ -26,6 +26,11 @@
 
  set(CK_PERMUTATION_INSTANCE_SOURCES
      ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation_scale_instances.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_2d_instances.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_3d_instances.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_4d_instances.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_5d_instances.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_6d_instances.hpp
      )
 
 add_hiptensor_component(hiptensor_permutation_instances ${CK_PERMUTATION_INSTANCE_SOURCES})
