@@ -56,32 +56,29 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
         return result;
     };
 
-    if(candidates.solutionCount() > 4)
-    {
-        return HIPTENSOR_STATUS_INTERNAL_ERROR;
-    }
-    else
-    {
-        auto candidateSol = toPermutationSolutionVec(candidates.solutions());
+#if !NDEBUG
+    std::cout << "hiptensorPermutationReference: " << candidates.solutionCount() << " Kernels Found!!"<< std::endl;
+#endif
 
-        for(int i = 0; i < candidateSol.size(); i++)
+    auto candidateSol = toPermutationSolutionVec(candidates.solutions());
+    for(int i = 0; i < candidateSol.size(); i++)
+    {
+        auto refCandidate = candidateSol[i];
+        if(refCandidate->initArgs(alpha,
+                                    A,
+                                    B,
+                                    descA->mLengths,
+                                    descA->mStrides,
+                                    modeA,
+                                    descB->mLengths,
+                                    descB->mStrides,
+                                    modeB,
+                                    typeScalar))
         {
-            auto refCandidate = candidateSol[i];
-            if(refCandidate->initArgs(alpha,
-                                      A,
-                                      B,
-                                      descA->mLengths,
-                                      descA->mStrides,
-                                      modeA,
-                                      descB->mLengths,
-                                      descB->mStrides,
-                                      modeB,
-                                      typeScalar))
-            {
-                (*refCandidate)();
-                return HIPTENSOR_STATUS_SUCCESS;
-            }
+            (*refCandidate)();
+            return HIPTENSOR_STATUS_SUCCESS;
         }
-        return HIPTENSOR_STATUS_INTERNAL_ERROR;
     }
+
+    return HIPTENSOR_STATUS_INTERNAL_ERROR;
 }
