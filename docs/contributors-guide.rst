@@ -42,12 +42,12 @@ Style guide
 
 This project follows the `CPP Core
 guidelines <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md>`__,
-with few modifications or additions as given below. We encourage you to follow the below-mentioned guidelines while creating the pull requests.
+with few modifications and additions as given below. We encourage you to follow the below-mentioned guidelines while creating the pull requests.
 
 Interface
 ---------
 
--  use C++17 for the library code
+-  Use C++17 for the library code
 -  Avoid camel case
 -  The above-given rules apply specifically to publicly visible APIs, but is also
    encouraged (not mandated) for internal code
@@ -64,7 +64,7 @@ Implementation
 
 -  Use a ``.cpp`` suffix for code files and an ``.hpp`` suffix for interface files if your project doesn't already follow another
    convention
--  A ``.cpp`` file must include the ``.hpp`` file(s) that defines its interface
+-  Ensure that a ``.cpp`` file mandatorily includes the ``.hpp`` file(s) that defines its interface
 -  Don't put a global ``using`` -directive in a header file
 -  Use ``#include`` guards for all ``.hpp`` files
 -  Don't use an unnamed (anonymous) ``namespace`` in a header
@@ -84,7 +84,7 @@ Format
 
 C++ code is formatted using ``clang-format``. To run clang-format,
 use the version in the ``/opt/rocm/llvm/bin`` directory. Don't use your
-system's built-in ``clang-format``, as this may be an older version leading to different results.
+system's built-in ``clang-format``, which could be an older version leading to different results.
 
 To format a file, use:
 

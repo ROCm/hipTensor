@@ -8,7 +8,7 @@
 Installation
 ===============================
 
-This section contains instructions for installing and configuring hipTensor library on Linux.
+This document provides instructions for installing and configuring hipTensor library on Linux.
 The quickest way to install is to build from source.
 
 -------------
@@ -33,7 +33,7 @@ GPU support
 AMD CDNA class GPU featuring matrix core support: `gfx908`, `gfx90a`, `gfx940`, `gfx941`, `gfx942` and `gfx9`.
 
 .. note:: 
-    Double precision FP64 datatype support requires gfx90a, gfx940, gfx941 or gfx942`
+    Double precision FP64 datatype support requires `gfx90a`, `gfx940`, `gfx941` or `gfx942`.
 
 Download hipTensor
 ^^^^^^^^^^^^^^^^^^
@@ -52,14 +52,14 @@ For Centos use
     yum info rocm-libs
 
 The ROCm version has major, minor, and patch fields, possibly followed by a build specific identifier. For example, a ROCm version 4.0.0.40000-23 corresponds to major = 4, minor = 0, patch = 0, and build identifier 40000-23.
-There are GitHub branches at the hipTensor site with names `rocm-major.minor.x` where major and minor are the same as in the ROCm version. To download hipTensor on ROCm version 4.0.0.40000-23, use:
+There are GitHub branches at the hipTensor site with names ``rocm-major.minor.x`` where major and minor are the same as in the ROCm version. To download hipTensor on ROCm version 4.0.0.40000-23, use:
 
 ::
 
    git clone -b release/rocm-rel-x.y https://github.com/ROCmSoftwarePlatform/hipTensor.git
    cd hipTensor
 
-Replace x.y in the above command with the version of ROCm installed on your machine. For example, if you have ROCm 5.0 installed, then replace release/rocm-rel-x.y with release/rocm-rel-5.0
+Replace ``x.y`` in the above command with the version of ROCm installed on your machine. For example, if you have ROCm 5.0 installed, then replace release/rocm-rel-x.y with release/rocm-rel-5.0
 
 The user can build any of the following:
 
@@ -74,14 +74,14 @@ The client contains the tests and sample codes.
 
 Below are the project options available to build hipTensor library with or without clients.
 
-.. list-table:: Project options
+.. list-table::
 
-    *   -   Option
-        -   Description
-        -   Default Value
+    *   -   **Option**
+        -   **Description**
+        -   **Default Value**
     *   -   AMDGPU_TARGETS
         -   Build code for specific GPU target(s)
-        -   gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+;gfx940;gfx941;gfx942
+        -   ``gfx908:xnack-``; ``gfx90a:xnack-``; ``gfx90a:xnack+``; ``gfx940;gfx941;gfx942``
     *   -   HIPTENSOR_BUILD_TESTS
         -   Build Tests
         -   ON
@@ -106,7 +106,7 @@ To build the library alone, run:
 
 Here are some other example project configurations:
 
-.. tabularcolumns:: Project configuration
+.. tabularcolumns::
    |\X{1}{4}|\X{3}{4}|
 
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
@@ -168,7 +168,7 @@ After configuration, build using:
 The tests in ``<build_dir>`` contain executables as given in the table below.
 
 ====================================== ===================================================================================
-executable name                        description
+Executable name                        Description
 ====================================== ===================================================================================
 logger_test                            Unit test to validate hipTensor Logger APIs
 scale_contraction_f32_test             Scale contraction using hipTensor API for single-precision floating point types
@@ -198,4 +198,4 @@ To build documentation locally, run:
 
     pdflatex hiptensor.tex
 
-Generates ``hiptensor.pdf`` here
+Running the above commands generates ``hiptensor.pdf``.

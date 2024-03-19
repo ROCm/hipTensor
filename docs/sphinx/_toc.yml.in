@@ -9,7 +9,7 @@ subtrees:
     - file: installation
   - caption:  Conceptual
     entries:
-    - file: programmers_guide
+    - file: programmers-guide
   - caption:  API reference
     entries:
     - file: api-reference    
