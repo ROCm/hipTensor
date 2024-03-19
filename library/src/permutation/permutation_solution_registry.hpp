@@ -62,16 +62,16 @@ namespace hiptensor
             Query query(int32_t                dim,
                         hipDataType            typeIn,
                         hipDataType            typeOut,
-                        hiptensorOperator_t    opElement,
-                        hiptensorOperator_t    opUnary,
+                        hiptensorOperator_t    opA,
+                        hiptensorOperator_t    opB,
                         PermutationOpId_t      opScale) const;
 
             // By full solution type
             Query query(int32_t                dim,
                         hipDataType            typeIn,
                         hipDataType            typeOut,
-                        hiptensorOperator_t    opElement,
-                        hiptensorOperator_t    opUnary,
+                        hiptensorOperator_t    opA,
+                        hiptensorOperator_t    opB,
                         PermutationOpId_t      opScale,
                         uint32_t               threadDim) const;
 
@@ -83,8 +83,8 @@ namespace hiptensor
                         hipDataType            typeOut) const;
 
             // By element-wise operations
-            Query query(hiptensorOperator_t opElement,
-                        hiptensorOperator_t opUnary) const;
+            Query query(hiptensorOperator_t opA,
+                        hiptensorOperator_t opB) const;
 
             // By permutation operation
             Query query(PermutationOpId_t  opScale) const;
@@ -114,15 +114,15 @@ namespace hiptensor
             static HashId hashSolution(int32_t                dim,
                                        hipDataType            typeIn,
                                        hipDataType            typeOut,
-                                       hiptensorOperator_t    opElement,
-                                       hiptensorOperator_t    opUnary,
+                                       hiptensorOperator_t    opA,
+                                       hiptensorOperator_t    opB,
                                        PermutationOpId_t      opScale);
 
             static HashId hashSolution(int32_t                dim,
                                        hipDataType            typeIn,
                                        hipDataType            typeOut,
-                                       hiptensorOperator_t    opElement,
-                                       hiptensorOperator_t    opUnary,
+                                       hiptensorOperator_t    opA,
+                                       hiptensorOperator_t    opB,
                                        PermutationOpId_t      opScale,
                                        uint32_t               threadDim);
 
@@ -131,8 +131,8 @@ namespace hiptensor
             static HashId hashTypesInOut(hipDataType            typeIn,
                                          hipDataType            typeOut);
 
-            static HashId hashElementOps(hiptensorOperator_t    opElement,
-                                         hiptensorOperator_t    opUnary);
+            static HashId hashElementOps(hiptensorOperator_t    opA,
+                                         hiptensorOperator_t    opB);
 
             static HashId hashScaleOp(PermutationOpId_t  opScale);
 

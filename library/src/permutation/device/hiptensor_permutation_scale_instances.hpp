@@ -45,48 +45,48 @@ namespace ck
                 using F32 = float;
 
                 // clang-format off
-                template <typename ElementwiseOperation,
-                          typename UnaryOperation,
+                template <typename AOp,
+                          typename BOp,
                           typename Scale,
                           index_t NDims>
                 using device_permute_scale_f16_instances =
                     std::tuple <
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOperation, UnaryOperation, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
                     >;
 
-                template <typename ElementwiseOperation,
-                          typename UnaryOperation,
+                template <typename AOp,
+                          typename BOp,
                           typename Scale,
                           index_t NDims>
                 using device_permute_scale_f32_instances = std::tuple<
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOperation, UnaryOperation, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
                     >;
                 // clang-format on
 
                 template <typename InDataTypeTuple,
                           typename OutDataTypeTuple,
-                          typename ElementwiseOperation,
-                          typename UnaryOperation,
+                          typename AOp,
+                          typename BOp,
                           typename Scale,
                           index_t NumDim>
                 struct DeviceOperationInstanceFactory<
                     ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
                                                                     OutDataTypeTuple,
-                                                                    ElementwiseOperation,
-                                                                    UnaryOperation,
+                                                                    AOp,
+                                                                    BOp,
                                                                     Scale,
                                                                     NumDim>>
                 {
                     using DeviceOp = DeviceElementwise<InDataTypeTuple,
                                                        OutDataTypeTuple,
-                                                       ElementwiseOperation,
-                                                       UnaryOperation,
+                                                       AOp,
+                                                       BOp,
                                                        Scale,
                                                        NumDim>;
 

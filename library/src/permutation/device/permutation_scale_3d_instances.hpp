@@ -38,38 +38,38 @@ namespace ck
         {
             namespace instance
             {
-                template <typename ElementwiseOperation,
-                          typename UnaryOperation,
+                template <typename AOp,
+                          typename BOp,
                           typename Scale>
                 void add_device_permute_scale_3d_f16_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
                                                                   ck::Tuple<F16>,
-                                                                  ElementwiseOperation,
-                                                                  UnaryOperation,
+                                                                  AOp,
+                                                                  BOp,
                                                                   Scale,
                                                                   3>>>& instances)
                 {
                     add_device_operation_instances(instances,
-                                                   device_permute_scale_f16_instances<ElementwiseOperation,
-                                                                                      UnaryOperation,
+                                                   device_permute_scale_f16_instances<AOp,
+                                                                                      BOp,
                                                                                       Scale,
                                                                                       3>{});
                 }
 
-                template <typename ElementwiseOperation,
-                          typename UnaryOperation,
+                template <typename AOp,
+                          typename BOp,
                           typename Scale>
                 void add_device_permute_scale_3d_f32_instances(
                     std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
                                                                   ck::Tuple<F32>,
                                                                   ElementwiseOperation,
-                                                                  UnaryOperation,
+                                                                  BOp,
                                                                   Scale,
                                                                   3>>>& instances)
                 {
                     add_device_operation_instances(instances,
                                                    device_permute_scale_f32_instances<ElementwiseOperation,
-                                                                                      UnaryOperation,
+                                                                                      BOp,
                                                                                       Scale,
                                                                                       3>{});
                 }

@@ -45,15 +45,15 @@ namespace hiptensor
 {
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
-              typename UnaryOperation,
+              typename Aop,
+              typename Bop,
               typename Scale,
               ck::index_t NumDim>
     struct ReferencePermutation
         : public ck::tensor_operation::device::DeviceElementwiseImpl<InDataTypeTuple,
                                                                      OutDataTypeTuple,
-                                                                     ElementwiseOperation,
-                                                                     UnaryOperation,
+                                                                     Aop,
+                                                                     Bop,
                                                                      Scale,
                                                                      NumDim,
                                                                      1,
@@ -78,15 +78,15 @@ namespace hiptensor
                       const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
                       const void* in_dev_buffers,
                       void* out_dev_buffers,
-                      ElementwiseOperation elementwise_op,
-                      UnaryOperation unary_op,
+                      Aop a_op,
+                      Bop b_op,
                       Scale scale_op)
                     : BaseArgument()
                     , mLengths(lengths)
                     , mInStrides(inStridesArray)
                     , mOutStrides(outStridesArray)
-                    , mElementOp(elementwise_op)
-                    , mUnaryOp(unary_op)
+                    , mElementOp(a_op)
+                    , mUnaryOp(b_op)
                     , mScaleOp(scale_op)
             {
                 mInput  = (mInDataType*)in_dev_buffers;
@@ -104,8 +104,8 @@ namespace hiptensor
             std::array<std::array<index_t, NumDim>, NumInput>   mInStrides;
             std::array<std::array<index_t, NumDim>, NumOutput>  mOutStrides;
 
-            ElementwiseOperation mElementOp;
-            UnaryOperation       mUnaryOp;
+            Aop mElementOp;
+            Bop       mUnaryOp;
             Scale                mScaleOp;
         };
 
@@ -218,8 +218,8 @@ namespace hiptensor
                          const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
                          const void* in_dev_buffers,
                          void* out_dev_buffers,
-                         ElementwiseOperation elementwise_op,
-                         UnaryOperation unary_op,
+                         Aop a_op,
+                         Bop b_op,
                          Scale scale_op)
         {
             return Argument{lengths,
@@ -227,8 +227,8 @@ namespace hiptensor
                             outStridesArray,
                             in_dev_buffers,
                             out_dev_buffers,
-                            elementwise_op,
-                            unary_op,
+                            a_op,
+                            b_op,
                             scale_op};
         }
 
@@ -238,8 +238,8 @@ namespace hiptensor
             const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
             const void* in_dev_buffers,
             void* out_dev_buffers,
-            ElementwiseOperation elementwise_op,
-            UnaryOperation unary_op,
+            Aop a_op,
+            Bop b_op,
             Scale scale_op)
         {
             return std::make_unique<Argument>(Argument{lengths,
@@ -247,8 +247,8 @@ namespace hiptensor
                                                        outStridesArray,
                                                        in_dev_buffers,
                                                        out_dev_buffers,
-                                                       elementwise_op,
-                                                       unary_op,
+                                                       a_op,
+                                                       b_op,
                                                        scale_op});
         }
 
@@ -279,21 +279,21 @@ namespace hiptensor
     // Partial specialize for reference permutation
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
-              typename UnaryOperation,
+              typename Aop,
+              typename Bop,
               typename Scale,
               ck::index_t NumDim>
     struct MetaTraits<ReferencePermutation<InDataTypeTuple,
                                            OutDataTypeTuple,
-                                           ElementwiseOperation,
-                                           UnaryOperation,
+                                           Aop,
+                                           Bop,
                                            Scale,
                                            NumDim>>
         : public MetaTraits<
               ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
                                                               OutDataTypeTuple,
-                                                              ElementwiseOperation,
-                                                              UnaryOperation,
+                                                              Aop,
+                                                              Bop,
                                                               Scale,
                                                               NumDim>>
     {
@@ -302,16 +302,16 @@ namespace hiptensor
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
-              typename UnaryOperation,
+              typename Aop,
+              typename Bop,
               typename Scale,
               ck::index_t NumDim>
     auto enumerateReferenceSolutions()
     {
         using ReferenceOp = ReferencePermutation<InDataTypeTuple,
                                                  OutDataTypeTuple,
-                                                 ElementwiseOperation,
-                                                 UnaryOperation,
+                                                 Aop,
+                                                 Bop,
                                                  Scale,
                                                  NumDim>;
 

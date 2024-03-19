@@ -56,12 +56,12 @@ namespace hiptensor
         PermutationSolutionRegistry::Query::query(int32_t                dim,
                                                   hipDataType            typeIn,
                                                   hipDataType            typeOut,
-                                                  hiptensorOperator_t    opElement,
-                                                  hiptensorOperator_t    opUnary,
+                                                  hiptensorOperator_t    opA,
+                                                  hiptensorOperator_t    opB,
                                                   PermutationOpId_t      opScale) const
     {
         auto solutionHash = hashSolution(
-            dim, typeIn, typeOut, opElement, opUnary, opScale);
+            dim, typeIn, typeOut, opA, opB, opScale);
 
         if(auto solutions = mSolutionHash.find(solutionHash); solutions != mSolutionHash.end())
         {
@@ -75,13 +75,13 @@ namespace hiptensor
         PermutationSolutionRegistry::Query::query(int32_t                dim,
                                                   hipDataType            typeIn,
                                                   hipDataType            typeOut,
-                                                  hiptensorOperator_t    opElement,
-                                                  hiptensorOperator_t    opUnary,
+                                                  hiptensorOperator_t    opA,
+                                                  hiptensorOperator_t    opB,
                                                   PermutationOpId_t      opScale,
                                                   uint32_t               threadDim) const
     {
         auto solutionHash = hashSolution(
-            dim, typeIn, typeOut, opElement, opUnary, opScale, threadDim);
+            dim, typeIn, typeOut, opA, opB, opScale, threadDim);
 
         if(auto solutions = mSolutionHash.find(solutionHash); solutions != mSolutionHash.end())
         {
@@ -105,10 +105,10 @@ namespace hiptensor
     }
 
     PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(hiptensorOperator_t opElement,
-                                                  hiptensorOperator_t opUnary) const
+        PermutationSolutionRegistry::Query::query(hiptensorOperator_t opA,
+                                                  hiptensorOperator_t opB) const
     {
-        return query(hashElementOps(opElement, opUnary));
+        return query(hashElementOps(opA, opB));
     }
 
     PermutationSolutionRegistry::Query
@@ -185,11 +185,11 @@ namespace hiptensor
         PermutationSolutionRegistry::Query::hashSolution(int32_t                dim,
                                                          hipDataType            typeIn,
                                                          hipDataType            typeOut,
-                                                         hiptensorOperator_t    opElement,
-                                                         hiptensorOperator_t    opUnary,
+                                                         hiptensorOperator_t    opA,
+                                                         hiptensorOperator_t    opB,
                                                          PermutationOpId_t      opScale)
     {
-        return Hash{}(dim, typeIn, typeOut, opElement, opUnary, opScale);
+        return Hash{}(dim, typeIn, typeOut, opA, opB, opScale);
     }
 
     /* static */
@@ -197,12 +197,12 @@ namespace hiptensor
         PermutationSolutionRegistry::Query::hashSolution(int32_t                dim,
                                                          hipDataType            typeIn,
                                                          hipDataType            typeOut,
-                                                         hiptensorOperator_t    opElement,
-                                                         hiptensorOperator_t    opUnary,
+                                                         hiptensorOperator_t    opA,
+                                                         hiptensorOperator_t    opB,
                                                          PermutationOpId_t      opScale,
                                                          uint32_t                threadDim)
     {
-        return Hash{}(dim, typeIn, typeOut, opElement, opUnary, opScale, threadDim);
+        return Hash{}(dim, typeIn, typeOut, opA, opB, opScale, threadDim);
     }
 
     /* static */
@@ -222,10 +222,10 @@ namespace hiptensor
 
     /* static */
     PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashElementOps(hiptensorOperator_t opElement,
-                                                           hiptensorOperator_t opUnary)
+        PermutationSolutionRegistry::Query::hashElementOps(hiptensorOperator_t opA,
+                                                           hiptensorOperator_t opB)
     {
-        return Hash{}(opElement, opUnary);
+        return Hash{}(opA, opB);
     }
 
     /* static */
@@ -254,15 +254,15 @@ namespace hiptensor
             auto solutionHash = hashSolution(params->dim(),
                                              params->typeIn(),
                                              params->typeOut(),
-                                             params->opElement(),
-                                             params->opUnary(),
+                                             params->opA(),
+                                             params->opB(),
                                              params->opScale());
 
             auto fullSolutionHash = hashSolution(params->dim(),
                                                  params->typeIn(),
                                                  params->typeOut(),
-                                                 params->opElement(),
-                                                 params->opUnary(),
+                                                 params->opA(),
+                                                 params->opB(),
                                                  params->opScale(),
                                                  solution->threadDim());
 
@@ -271,8 +271,8 @@ namespace hiptensor
             auto typesInOutHash = hashTypesInOut(params->typeIn(),
                                                  params->typeOut());
 
-            auto elementOpsHash = hashElementOps(params->opElement(),
-                                                 params->opUnary());
+            auto elementOpsHash = hashElementOps(params->opA(),
+                                                 params->opB());
 
             auto scaleOpHash = hashScaleOp(params->opScale());
 

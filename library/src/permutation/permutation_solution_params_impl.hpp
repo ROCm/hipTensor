@@ -42,8 +42,8 @@ namespace std
             return hiptensor::Hash{}(s.dim(),
                                      s.typeIn(),
                                      s.typeOut(),
-                                     s.opElement(),
-                                     s.opUnary(),
+                                     s.opA(),
+                                     s.opB(),
                                      s.opScale(),
                                      mPerThread);
         }
@@ -79,14 +79,14 @@ namespace hiptensor
             return HipDataType_v<typename ck::tuple_element_t<0, typename MetaTraitsT::OutDataT>>;
         }
 
-        hiptensorOperator_t opElement() const override
+        hiptensorOperator_t opA() const override
         {
-            return ElementWiseOperatorType_v<typename MetaTraitsT::ElementOp>;
+            return ElementWiseOperatorType_v<typename MetaTraitsT::AOp>;
         }
 
-        hiptensorOperator_t opUnary() const override
+        hiptensorOperator_t opB() const override
         {
-            return ElementWiseOperatorType_v<typename MetaTraitsT::UnaryOp>;
+            return ElementWiseOperatorType_v<typename MetaTraitsT::BOp>;
         }
 
         PermutationOpId_t   opScale() const override

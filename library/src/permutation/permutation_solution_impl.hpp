@@ -134,8 +134,8 @@ namespace hiptensor
                 {bStridesCk},
                 {A},
                 {B},
-                typename Traits::ElementOp{},
-                typename Traits::UnaryOp{},
+                typename Traits::AOp{},
+                typename Traits::BOp{},
                 typename Traits::ScaleOp{alphaF}));
 
             // Initialize the invoker
@@ -159,8 +159,8 @@ namespace hiptensor
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
-              typename UnaryOperation,
+              typename Aop,
+              typename Bop,
               typename Scale,
               ck::index_t NumDim>
     std::vector<std::unique_ptr<hiptensor::PermutationSolution>> enumeratePermutationSolutions()
@@ -168,8 +168,8 @@ namespace hiptensor
         using PermutationOp
              = ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
                                                                OutDataTypeTuple,
-                                                               ElementwiseOperation,
-                                                               UnaryOperation,
+                                                               Aop,
+                                                               Bop,
                                                                Scale,
                                                                NumDim>;
 

@@ -42,15 +42,15 @@ namespace hiptensor
     // Meta traits for Scalar permutation
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
-              typename UnaryOperation,
+              typename Aop,
+              typename Bop,
               typename Scale,
               ck::index_t NumDim>
     struct MetaTraits<ck::tensor_operation::device::DeviceElementwise<
                                                                     InDataTypeTuple,
                                                                     OutDataTypeTuple,
-                                                                    ElementwiseOperation,
-                                                                    UnaryOperation,
+                                                                    Aop,
+                                                                    Bop,
                                                                     Scale,
                                                                     NumDim>>
     {
@@ -59,8 +59,8 @@ namespace hiptensor
         using InDataT   = InDataTypeTuple;
         using OutDataT  = OutDataTypeTuple;
         
-        using ElementOp = ElementwiseOperation;
-        using UnaryOp   = UnaryOperation;
+        using AOp = Aop;
+        using BOp   = Bop;
         using ScaleOp   = Scale;
     };
 } // namespace hiptensor

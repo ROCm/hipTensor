@@ -54,8 +54,8 @@ namespace hiptensor
         virtual hipDataType            typeOut() const      = 0;
 
         // Map to operators
-        virtual hiptensorOperator_t   opElement() const   = 0;
-        virtual hiptensorOperator_t   opUnary()   const   = 0;
+        virtual hiptensorOperator_t   opA() const   = 0;
+        virtual hiptensorOperator_t   opB()   const   = 0;
         virtual PermutationOpId_t     opScale()   const   = 0;
     };
 

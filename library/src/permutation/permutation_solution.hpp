@@ -133,8 +133,8 @@ namespace hiptensor
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
-              typename UnaryOperation,
+              typename Aop,
+              typename Bop,
               typename Scale,
               ck::index_t NumDim>
     std::vector<std::unique_ptr<hiptensor::PermutationSolution>> enumeratePermutationSolutions();
