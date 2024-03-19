@@ -44,6 +44,12 @@ function(add_hiptensor_component COMPONENT_NAME COMPONENT_SOURCES)
     add_library(${COMPONENT_NAME} OBJECT ${COMPONENT_SOURCES})
     set_target_properties(${COMPONENT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(${COMPONENT_NAME} PRIVATE hip::device)
+    if(HIPTENSOR_BUILD_COMPRESSED_DBG)
+        target_compile_options(${COMPONENT_NAME} PRIVATE
+            "$<$<CONFIG:Debug>:-gz>"
+            "$<$<CONFIG:RelWithDebInfo>:-gz>"
+            )
+    endif()
 
 endfunction()
 
@@ -80,6 +86,12 @@ add_library(hiptensor SHARED
 add_library(hiptensor::hiptensor ALIAS hiptensor)
 
 target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
+if(HIPTENSOR_BUILD_COMPRESSED_DBG)
+    target_compile_options(hiptensor PRIVATE
+        "$<$<CONFIG:Debug>:-gz>"
+        "$<$<CONFIG:RelWithDebInfo>:-gz>"
+        )
+endif()
 
 set ( hiptensor_SOVERSION 0.1 )
 # nvcc can not recognize shared libraray file name with suffix other than *.so when linking.

@@ -60,6 +60,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
+  option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON)
   option( HIPTENSOR_DATA_LAYOUT_COL_MAJOR "Set hiptensor data layout to column major" ON )
 endif()
 
