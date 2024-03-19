@@ -189,7 +189,7 @@ namespace hiptensor
                                                          hiptensorOperator_t    opB,
                                                          PermutationOpId_t      opScale)
     {
-        return Hash{}(dim, typeIn, typeOut, opA, opB, opScale);
+        return Hash{}(dim, typeIn, typeOut, opA, opB, opScale, -1);
     }
 
     /* static */
@@ -200,7 +200,7 @@ namespace hiptensor
                                                          hiptensorOperator_t    opA,
                                                          hiptensorOperator_t    opB,
                                                          PermutationOpId_t      opScale,
-                                                         uint32_t                threadDim)
+                                                         uint32_t               threadDim)
     {
         return Hash{}(dim, typeIn, typeOut, opA, opB, opScale, threadDim);
     }
@@ -209,7 +209,7 @@ namespace hiptensor
     PermutationSolutionRegistry::Query::HashId
         PermutationSolutionRegistry::Query::hashDim(int32_t dim)
     {
-        return Hash{}(dim);
+        return Hash{}(dim, -1, -1, -1, -1, -1, -1);
     }
 
     /* static */
@@ -217,7 +217,7 @@ namespace hiptensor
         PermutationSolutionRegistry::Query::hashTypesInOut(hipDataType            typeIn,
                                                            hipDataType            typeOut)
     {
-        return Hash{}(typeIn, typeOut);
+        return Hash{}(-1, typeIn, typeOut, -1, -1, -1, -1);
     }
 
     /* static */
@@ -225,21 +225,21 @@ namespace hiptensor
         PermutationSolutionRegistry::Query::hashElementOps(hiptensorOperator_t opA,
                                                            hiptensorOperator_t opB)
     {
-        return Hash{}(opA, opB);
+        return Hash{}(-1, -1, -1, opA, opB, -1, -1);
     }
 
     /* static */
     PermutationSolutionRegistry::Query::HashId
         PermutationSolutionRegistry::Query::hashScaleOp(PermutationOpId_t      opScale)
     {
-        return Hash{}(opScale);
+        return Hash{}(-1, -1, -1, -1, -1, opScale, -1);
     }
 
     /* static */
     PermutationSolutionRegistry::Query::HashId
         PermutationSolutionRegistry::Query::hashThreadDim(uint32_t threadDim)
     {
-        return Hash{}(threadDim);
+        return Hash{}(-1, -1, -1, -1, -1, -1, threadDim);
     }
 
     void PermutationSolutionRegistry::Query::addSolution(PermutationSolution* solution)
