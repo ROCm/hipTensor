@@ -12,9 +12,7 @@ subtrees:
     - file: programmers_guide
   - caption:  API reference
     entries:
-    - file: api-reference
-    - file: doxygen/html/index
-      title:  API library
+    - file: api-reference    
   - caption:  Contribution
     entries:
     - file: contributors-guide    

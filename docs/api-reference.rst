@@ -8,6 +8,8 @@
 API reference guide
 ********************
 
+This section provides a category-wise list of the hipTensor APIs and data types.
+
 hipTensor data types
 ====================
 
@@ -75,11 +77,6 @@ hiptensorContractionPlan_t
 
 Helper functions
 ================
-
-hiptensorGetVersion
--------------------
-
-.. doxygenfunction::  hiptensorGetVersion
 
 hiptensorCreate
 ---------------

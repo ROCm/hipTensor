@@ -26,8 +26,7 @@ Our documentation is structured as follows:
   .. grid-item-card:: API reference
 
     * :ref:`api-reference` 
-    * :doc:`API library <../doxygen/html/index>`   
-
+    
   .. grid-item-card:: Contribution
 
     * :ref:`contributors-guide`
