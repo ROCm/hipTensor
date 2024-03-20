@@ -15,7 +15,7 @@ The quickest way to install is to build from source.
 Prerequisites
 -------------
 
--  A ROCm enabled platform, more information `here <https://rocm.github.io/>`_.
+-  A ROCm enabled platform, more information `here <https://github.com/ROCm/ROCm>`_.
 -  ROCm-cmake, more information `here <https://github.com/RadeonOpenCompute/rocm-cmake/>`_.
 
 ---------------------------------
