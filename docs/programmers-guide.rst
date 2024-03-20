@@ -26,79 +26,42 @@ The ``library`` directory
 
 The ``library`` directory contains the following include and source files:
 
--  C++ include files for the hipTensor API. These files also contain Doxygen
-comments that document the API.
+- ``library/include/hiptensor/``: C++ include files for the hipTensor API. These files also contain Doxygen comments that document the API.
 
-  ``library/include/hiptensor/``
-  ''''''''''''''''''''''''''''''
+- ``library/include/hiptensor/internal``: Internal includes files for utility code and generate tensor utility
 
-- Internal includes files for utility code and generate tensor utility:
+- ``library/src/``: Source files for Logger, device, and performance functions
 
-  ``library/include/hiptensor/internal``
-  ''''''''''''''''''''''''''''''''''''''
+- ``library/src/contraction/``: Source files for core composable kernel header functions and contraction initialization functions
 
-- Source files for Logger, device, and performance functions
-
-  ``library/src/``
-  ''''''''''''''''
-
-- Source files for core composable kernel header functions and contraction initialization functions
-
-  ``library/src/contraction/``
-  ''''''''''''''''''''''''''''
-
-- Source files for hipTensor bilinear and scale instance functions
-
-  ``library/src/contraction/device``
-  ''''''''''''''''''''''''''''''''''
+- ``library/src/contraction/device``: Source files for hipTensor bilinear and scale instance functions
 
 The ``samples`` directory
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``samples`` directory contains the sample codes for the following use cases:
 
-- Calling bilinear contraction for ``fp32`` input, output and compute types:
+- ``01_contraction/simple_bilinear_contraction_f32.cpp``: For calling bilinear contraction for ``fp32`` input, output and compute types
 
-  ``01_contraction/simple_bilinear_contraction_f32.cpp``
-  ''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-- Calling scale contraction for ``fp32`` input, output and compute types:
-
-  ``01_contraction/simple_scale_contraction_f32.cpp``
-  '''''''''''''''''''''''''''''''''''''''''''''''''''
+- ``01_contraction/simple_scale_contraction_f32.cpp``: For calling scale contraction for ``fp32`` input, output and compute types
 
 The ``test`` directory
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``test`` directory contains the test codes for testing the following functionalities:
 
-- Logger API Functions of hipTensor:
+- ``00_unit/logger``: Logger API functions of hipTensor
 
-  ``00_unit/logger``
-  ''''''''''''''''''
+- ``01_contraction/bilinear_contraction_f32``: Bilinear contraction functionality and log metrics for F32 types
 
-- Bilinear contraction functionality and log metrics for F32 types:
+- ``01_contraction/bilinear_contraction_f64``: Bilinear contraction functionality and log metrics for F64 types
+ 
+- ``01_contraction/scale_contraction_f32``: Scale contraction functionality and log metrics for F32 types
 
-  ``01_contraction/bilinear_contraction_f32``
-  '''''''''''''''''''''''''''''''''''''''''''
-
-- Bilinear contraction functionality and log metrics for F64 types:
-
-  ``01_contraction/bilinear_contraction_f64``
-  '''''''''''''''''''''''''''''''''''''''''''
-
-- Scale contraction functionality and log metrics for F32 types:
-
-  ``01_contraction/scale_contraction_f32``
-  ''''''''''''''''''''''''''''''''''''''''
-
-- Scale contraction functionality and log metrics for F64 types:
-
-  ``01_contraction/scale_contraction_f64``
-  ''''''''''''''''''''''''''''''''''''''''
+- ``01_contraction/scale_contraction_f64``: Scale contraction functionality and log metrics for F64 types
 
 Infrastructure
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 - CMake is used to build and package hipTensor. There are ``CMakeLists.txt`` files throughout the code.
 
