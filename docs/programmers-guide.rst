@@ -16,27 +16,27 @@ Library source code organization
 
 The hipTensor code is split into four major parts:
 
-- The ``library`` directory contains all source code for the library.
+- The ``library`` directory contains the library source code.
 - The ``samples`` directory contains real-world use-cases of the hipTensor API.
-- The ``test`` directory contains all validation tests of hipTensor API.
+- The ``test`` directory contains validation tests for hipTensor API.
 - Infrastructure
 
-The ``library`` directory
+``library`` directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``library`` directory contains the following include and source files:
 
 - ``library/include/hiptensor/``: C++ include files for the hipTensor API. These files also contain Doxygen comments that document the API.
 
-- ``library/include/hiptensor/internal``: Internal includes files for utility code and generate tensor utility
+- ``library/include/hiptensor/internal``: Include files for utility code and generate tensor utility.
 
-- ``library/src/``: Source files for Logger, device, and performance functions
+- ``library/src/``: Source files for Logger, device, and performance functions.
 
-- ``library/src/contraction/``: Source files for core composable kernel header functions and contraction initialization functions
+- ``library/src/contraction/``: Source files for core composable kernel header functions and contraction initialization functions.
 
-- ``library/src/contraction/device``: Source files for hipTensor bilinear and scale instance functions
+- ``library/src/contraction/device``: Source files for hipTensor bilinear and scale instance functions.
 
-The ``samples`` directory
+``samples`` directory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``samples`` directory contains the sample codes for the following use cases:
@@ -45,7 +45,7 @@ The ``samples`` directory contains the sample codes for the following use cases:
 
 - ``01_contraction/simple_scale_contraction_f32.cpp``: For calling scale contraction for ``fp32`` input, output and compute types
 
-The ``test`` directory
+``test`` directory
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``test`` directory contains the test codes for testing the following functionalities:
