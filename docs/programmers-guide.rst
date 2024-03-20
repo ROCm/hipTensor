@@ -8,7 +8,7 @@
 Programmer's guide
 ===================
 
-This document provides an insight into the library source code organization and infrastructure.
+This document provides insight into the library source code organization, design implementation details, helpful information for new development, and testing and benchmarking details.
 
 --------------------------------
 Library source code organization

@@ -8,7 +8,7 @@
 Contributor's guide
 ===================
 
-This section provides the guidelines to be followed while contributing to the hipTensor APIs.
+This document provides the coding guidelines to be followed while contributing to the hipTensor APIs.
 
 License agreement
 =================

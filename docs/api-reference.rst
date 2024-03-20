@@ -8,7 +8,7 @@
 API reference guide
 ********************
 
-This document provides a category-wise list of the hipTensor APIs and data types.
+This document provides a category-wise list of the hipTensor APIs, data types, and other programming constructs.
 
 hipTensor data types
 ====================
