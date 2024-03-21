@@ -59,9 +59,9 @@ There are GitHub branches at the hipTensor site with names ``rocm-major.minor.x`
    git clone -b release/rocm-rel-x.y https://github.com/ROCmSoftwarePlatform/hipTensor.git
    cd hipTensor
 
-Replace ``x.y`` in the above command with the version of ROCm installed on your machine. For example, if you have ROCm 5.0 installed, then replace release/rocm-rel-x.y with release/rocm-rel-5.0
+Replace ``x.y`` in the above command with the version of ROCm installed on your machine. For example, if you have ROCm 5.0 installed, then replace release/rocm-rel-x.y with release/rocm-rel-5.0.
 
-The user can build any of the following:
+You can choose to build any of the following:
 
 * library
 
