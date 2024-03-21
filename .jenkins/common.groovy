@@ -20,6 +20,9 @@ def runCompileCommand(platform, project, jobName, boolean debug=false)
     String amdgpuTargets = env.BRANCH_NAME.startsWith('PR-') ? '-DAMDGPU_TARGETS="$gfx_arch"' : '-DAMDGPU_TARGETS="gfx908:xnack-;gfx90a:xnack-;gfx90a:xnack+"'
     String compilerLauncher = project.defaults.ccache ? '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache' : ''
     String cmakeArgs = "-DCMAKE_C_COMPILER=/opt/rocm/bin/hipcc -DCMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc ${compilerLauncher} ${buildTypeArg} ${amdgpuTargets}"
+    // Set number of compile threads to lesser of nproc or 12
+    int nproc = Runtime.runtime.availableProcessors()
+    int numThreads = Math.min(nproc, 12)
 
     def command = """#!/usr/bin/env bash
                 set -x
@@ -28,7 +31,7 @@ def runCompileCommand(platform, project, jobName, boolean debug=false)
                 mkdir -p build/${buildTypeDir} && cd build/${buildTypeDir}
                 ${auxiliary.gfxTargetParser()}
                 ${cmake} ${cmakeArgs} -D HIPTENSOR_BUILD_BENCHMARK_TESTS=OFF ../..
-                make -j\$(nproc)
+                make -j ${numThreads}
                 """
 
     platform.runCommand(this, command)
@@ -59,4 +62,3 @@ def runPackageCommand(platform, project)
 }
 
 return this
-
