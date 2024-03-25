@@ -38,6 +38,10 @@
 #include "data_types.hpp"
 #include "meta_traits.hpp"
 
+#define MaxNumDimsM 6
+#define MaxNumDimsN 6
+#define MaxNumDimsK 6
+
 namespace hiptensor
 {
     // Partial specialize for Bilinear contraction

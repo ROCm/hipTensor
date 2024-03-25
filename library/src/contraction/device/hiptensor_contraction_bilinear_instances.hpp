@@ -48,10 +48,10 @@ namespace ck
                 using BilinearComplex = element_wise::BilinearComplex;
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_kknn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_kknn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                CF32_Tuple,
@@ -62,10 +62,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                CF32_Tuple,
@@ -76,10 +76,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mknn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mknn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                CF32_Tuple,
@@ -90,10 +90,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                CF32_Tuple,
@@ -105,10 +105,10 @@ namespace ck
 
                 // double
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_kknn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_kknn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                CF64_Tuple,
@@ -119,10 +119,10 @@ namespace ck
                                                                                CF64>>>& instances);
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_knnn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_knnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                CF64_Tuple,
@@ -133,10 +133,10 @@ namespace ck
                                                                                CF64>>>& instances);
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                CF64_Tuple,
@@ -147,10 +147,10 @@ namespace ck
                                                                                CF64>>>& instances);
 
                 void
-                    add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mnnn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mnnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                CF64_Tuple,
@@ -203,15 +203,15 @@ namespace ck
                         if constexpr(is_same_v<ADataType, float> && is_same_v<BDataType, float>
                                      && is_same_v<DsDataType, float> && is_same_v<EDataType, float>)
                         {
-                            if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
+                            if constexpr(NumDimM == 6 && NumDimN == 6 && NumDimK == 6)
                             {
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_kknn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_kknn_instance(
                                     op_ptrs);
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_knnn_instance(
                                     op_ptrs);
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mknn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mknn_instance(
                                     op_ptrs);
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_mnnn_instance(
                                     op_ptrs);
                             }
                         }
@@ -220,15 +220,15 @@ namespace ck
                                      && is_same_v<DsDataType, double>
                                      && is_same_v<EDataType, double>)
                         {
-                            if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
+                            if constexpr(NumDimM == 6 && NumDimN == 6 && NumDimK == 6)
                             {
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_kknn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_kknn_instance(
                                     op_ptrs);
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_knnn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_knnn_instance(
                                     op_ptrs);
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mknn_instance(
                                     op_ptrs);
-                                add_device_contraction_bilinear_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mnnn_instance(
+                                add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_mnnn_instance(
                                     op_ptrs);
                             }
                         }
