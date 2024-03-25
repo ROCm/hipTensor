@@ -103,10 +103,10 @@ namespace hiptensor
 
         // 4D tensors only at the moment.
         EXPECT_EQ(testType.size(), 5);
-        EXPECT_EQ(lengths.size(), 6); // Format {'m', 'n', 'u', 'v', 'h', 'k'}
+        EXPECT_TRUE(lengths.size() <= MaxNumDimsM + MaxNumDimsN);
         if(!strides.empty())
         {
-            EXPECT_EQ(strides.size(), 6);
+            EXPECT_TRUE(strides.size() <= MaxNumDimsM + MaxNumDimsN);
         }
 
         // Separate compute type from test types

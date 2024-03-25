@@ -39,9 +39,9 @@ namespace hiptensor
 
         // Bilinear bf16
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           ck::bhalf_t,
                                           ck::bhalf_t,
                                           ck::Tuple<ck::bhalf_t>,
@@ -53,9 +53,9 @@ namespace hiptensor
 
         // Bilinear f16
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           ck::half_t,
                                           ck::half_t,
                                           ck::Tuple<ck::half_t>,
@@ -67,9 +67,9 @@ namespace hiptensor
 
         // Bilinear f32
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           float,
                                           float,
                                           ck::Tuple<float>,
@@ -80,9 +80,9 @@ namespace hiptensor
                                           float>());
 
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           float,
                                           float,
                                           ck::Tuple<float>,
@@ -93,9 +93,9 @@ namespace hiptensor
                                           ck::half_t>());
 
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           float,
                                           float,
                                           ck::Tuple<float>,
@@ -107,9 +107,9 @@ namespace hiptensor
 
         // Bilinear complex f32
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           hipFloatComplex,
                                           hipFloatComplex,
                                           ck::Tuple<hipFloatComplex>,
@@ -121,9 +121,9 @@ namespace hiptensor
 
         // Bilinear f64
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           double,
                                           double,
                                           ck::Tuple<double>,
@@ -133,9 +133,9 @@ namespace hiptensor
                                           ck::tensor_operation::element_wise::Bilinear,
                                           float>());
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           double,
                                           double,
                                           ck::Tuple<double>,
@@ -147,9 +147,9 @@ namespace hiptensor
 
         // Bilinear complex f64
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           hipDoubleComplex,
                                           hipDoubleComplex,
                                           ck::Tuple<hipDoubleComplex>,
@@ -161,9 +161,9 @@ namespace hiptensor
 
         // Scale bf16
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           ck::bhalf_t,
                                           ck::bhalf_t,
                                           ck::Tuple<>,
@@ -175,9 +175,9 @@ namespace hiptensor
 
         // Scale f16
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           ck::half_t,
                                           ck::half_t,
                                           ck::Tuple<>,
@@ -189,9 +189,9 @@ namespace hiptensor
 
         // Scale f32
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           float,
                                           float,
                                           ck::Tuple<>,
@@ -202,9 +202,9 @@ namespace hiptensor
                                           float>());
 
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           float,
                                           float,
                                           ck::Tuple<>,
@@ -215,9 +215,9 @@ namespace hiptensor
                                           ck::half_t>());
 
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           float,
                                           float,
                                           ck::Tuple<>,
@@ -229,9 +229,9 @@ namespace hiptensor
 
         // scale complex f32
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           hipFloatComplex,
                                           hipFloatComplex,
                                           ck::Tuple<>,
@@ -243,9 +243,9 @@ namespace hiptensor
 
         // Scale f64
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           double,
                                           double,
                                           ck::Tuple<>,
@@ -256,9 +256,9 @@ namespace hiptensor
                                           float>());
 
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           double,
                                           double,
                                           ck::Tuple<>,
@@ -269,9 +269,9 @@ namespace hiptensor
                                           double>());
         // scale complex f64
         registerSolutions(
-            enumerateContractionSolutions<2,
-                                          2,
-                                          2,
+            enumerateContractionSolutions<6,
+                                          6,
+                                          6,
                                           hipDoubleComplex,
                                           hipDoubleComplex,
                                           ck::Tuple<>,

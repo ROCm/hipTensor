@@ -36,6 +36,9 @@
 
 #include <gtest/gtest.h>
 
+#define MaxNumDimsM 6
+#define MaxNumDimsN 6
+
 namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
