@@ -2,7 +2,23 @@
 
 Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-## (Unreleased) hipTensor 1.1.0 for ROCm 6.0.0
+## (Unreleased) hipTensor 1.2.0 for ROCm 6.1.0
+
+### Additions
+
+* API support
+  * Permutation of rank 4 tensors
+* Data type support
+  * Contraction - new supported data types f16, bf16, complex f32, complex f64
+* Samples
+  * Added scale and bilinear contraction samples and tests for new supported data types.
+  * Added permutation samples and tests for f16, f32 types
+
+### Fixes
+
+* Fixed bug in contraction calculation with data type f32
+
+## hipTensor 1.1.0 for ROCm 6.0.0
 
 ### Additions
 
