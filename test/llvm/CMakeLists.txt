@@ -25,7 +25,12 @@
  ###############################################################################
 
 # Find / configure LLVM
-find_package(LLVM ${HIPTENSOR_LLVM_VERSION} REQUIRED CONFIG)
+find_package(LLVM CONFIG HINTS ${ROCM_DIR}/../../..)
+
+if (NOT LLVM_DIR)
+    message(FATAL_ERROR "HipTensor requires LLVM version 7.0 or higher,"
+        " which cannot be found. Please install rocm-llvm-dev package first." )
+endif()
 
 # Required:
 # LLVMObjectYAML for YAML parsing
@@ -40,7 +45,12 @@ message(STATUS "LLVMObjectYAML_LIBRARY: ${LLVMObjectYAML_LIBRARY}")
 message(STATUS "LLVMSupport_LIBRARY: ${LLVMSupport_LIBRARY}")
 
 if(LLVM_VERSION_MAJOR VERSION_LESS "7")
-    message(FATAL_ERROR "LLVM_VERSION_MAJOR is ${LLVM_VERSION_MAJOR}. However, hipTensor only support LLVM 7.0 and above" )
+    message(FATAL_ERROR "The found LLVM version doesn't meet the minimum requirement.  Please "
+    "install version 7.0 or above.  It is recommend to install rocm-llvm-dev "
+    "(for ROCm versions higher than 6.0).  If you have installed multiple "
+    "versions of LLVM, you can specify which version to use by setting "
+    "LLVM_ROOT.  For example:\n"
+    "        -DLLVM_ROOT=/opt/rocm/llvm-7/lib")
 endif()
 
 if(NOT LLVMObjectYAML_LIBRARY)
