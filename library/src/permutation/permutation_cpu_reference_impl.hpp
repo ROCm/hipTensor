@@ -23,80 +23,307 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
+
 #ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_IMPL_HPP
 #define HIPTENSOR_PERMUTATION_CPU_REFERENCE_IMPL_HPP
-#include <hiptensor/hiptensor.hpp>
-#include <unordered_map>
-#include <vector>
 
-#include "data_types.hpp"
-#include "permutation_cpu_reference.hpp"
-#include "util.hpp"
+// Std includes
+#include <array>
+#include <numeric>
+#include <vector>
+#include <list>
+
+// CK includes
+#include <device_elementwise_scale_impl.hpp>
+#include <element_wise_operation.hpp>
+#include <host_tensor.hpp>
+
+#include "permutation_meta_traits.hpp"
+#include "permutation_solution.hpp"
 
 namespace hiptensor
 {
-    namespace detail
+    template <typename InDataTypeTuple,
+              typename OutDataTypeTuple,
+              typename Aop,
+              typename Bop,
+              typename Scale,
+              ck::index_t NumDim>
+    struct ReferencePermutation
+        : public ck::tensor_operation::device::DeviceElementwiseImpl<InDataTypeTuple,
+                                                                     OutDataTypeTuple,
+                                                                     Aop,
+                                                                     Bop,
+                                                                     Scale,
+                                                                     NumDim,
+                                                                     1,
+                                                                     ck::Sequence<1>,
+                                                                     ck::Sequence<1>>
     {
-        template <typename DataType>
-        hiptensorStatus_t permuteByCpu(const void*                        alpha,
-                                       const DataType*                    A,
-                                       const hiptensorTensorDescriptor_t* descA,
-                                       const int32_t                      modeA[],
-                                       DataType*                          B,
-                                       const hiptensorTensorDescriptor_t* descB,
-                                       const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar)
+        using BaseArgument = ck::tensor_operation::device::BaseArgument;
+        using BaseInvoker  = ck::tensor_operation::device::BaseInvoker;
+        using index_t      = ck::index_t;
+
+        using mInDataType  = ck::tuple_element_t<0, InDataTypeTuple>;
+        using mOutDataType = ck::tuple_element_t<0, OutDataTypeTuple>;
+
+        static constexpr int NumInput  = InDataTypeTuple::Size();
+        static constexpr int NumOutput = OutDataTypeTuple::Size();
+
+        // Argument
+        struct Argument : public BaseArgument
         {
-            const auto modeSize = descA->mLengths.size();
-            assert(modeSize <= 4);
-
-            std::unordered_map<int32_t, int32_t> bModeToIndex;
-            for(int32_t index = 0; index < modeSize; index++)
+             Argument(const std::array<index_t, NumDim> lengths,
+                      const std::array<std::array<index_t, NumDim>, NumInput> inStridesArray,
+                      const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
+                      const void* in_dev_buffers,
+                      void* out_dev_buffers,
+                      Aop a_op,
+                      Bop b_op,
+                      Scale scale_op)
+                    : BaseArgument()
+                    , mLengths(lengths)
+                    , mInStrides(inStridesArray)
+                    , mOutStrides(outStridesArray)
+                    , mElementOp(a_op)
+                    , mUnaryOp(b_op)
+                    , mScaleOp(scale_op)
             {
-                bModeToIndex[modeB[index]] = index;
+                mInput  = (mInDataType*)in_dev_buffers;
+                mOutput = (mOutDataType*)out_dev_buffers;
             }
 
-            auto& aLens    = descA->mLengths;
-            auto  bStrides = std::vector<int32_t>(modeSize, 1);
+            Argument(Argument const&)            = default;
+            Argument& operator=(Argument const&) = default;
+            ~Argument()                          = default;
+
+            const mInDataType *mInput;
+            mOutDataType      *mOutput;
+
+            std::array<index_t, NumDim>                         mLengths;
+            std::array<std::array<index_t, NumDim>, NumInput>   mInStrides;
+            std::array<std::array<index_t, NumDim>, NumOutput>  mOutStrides;
+
+            Aop mElementOp;
+            Bop       mUnaryOp;
+            Scale                mScaleOp;
+        };
+
+        // Invoker
+        struct Invoker : public BaseInvoker
+        {
+            using Argument = ReferencePermutation::Argument;
+
+            float Run(const Argument& arg)
+            {
+                int  modeSize     = arg.mLengths.size();
+                auto elementCount = hiptensor::elementsFromLengths(std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
+
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-            for(int i = 1; i < modeSize; i++)
-            {
-                bStrides[i] = descB->mLengths[i - 1] * bStrides[i - 1];
-            }
-#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-            for(int i = modeSize - 2; i >= 0; i--)
-            {
-                bStrides[i] = descB->mLengths[i + 1] * bStrides[i + 1];
-            }
-#endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-            auto  bIndices     = std::vector<int32_t>(modeSize, 0);
-            auto  elementCount = hiptensor::elementsFromLengths(aLens);
-            float alphaValue   = readVal<float>(alpha, typeScalar);
-            for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
-            {
-                auto index = elementIndex;
+                // Sort the output strides to calculate output tensor lengths
+                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
+                std::sort (outStrides.begin(), outStrides.end());
+                assert(outStrides.front() == 1);
+
+                // Map the lengths in output to its indices( using list to cover redundant lengths )
+                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
+                int prevLength = 1, i;
+                for(i = 1; i < modeSize ; i++)
+                {
+                    bLengthToIndex[outStrides[i] / prevLength].push_back(i - 1);
+                    prevLength = outStrides[i];
+                }
+                bLengthToIndex[elementCount / prevLength].push_back(i - 1);
+#else
+                // Sort the output strides to calculate output tensor lengths
+                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
+                std::sort (outStrides.rbegin(), outStrides.rend());
+                assert(outStrides.back() == 1);
+
+                // Map the lengths in output to its indices( using list to cover redundant lengths )
+                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
+                int prevLength = 1, i;
+                for(i = modeSize - 2; i >= 0; i--)
+                {
+                    bLengthToIndex[outStrides[i] / prevLength].push_back(i + 1);
+                    prevLength = outStrides[i];
+                }
+                bLengthToIndex[elementCount / prevLength].push_back(i + 1);
+#endif
+
+                // From computed output lengths and argument's input lengths,
+                // create a mode map between input and output
+                std::map<int, int> modeATomodeBmap;
+                for (int i = 0; i < modeSize; i++)
+                {
+                    modeATomodeBmap[i] = bLengthToIndex[arg.mLengths[i]].front();
+                    bLengthToIndex[arg.mLengths[i]].pop_front();
+                }
+
+                // Find the write offset and index in output for every input element
+                auto    bIndices  = std::vector<int32_t>(modeSize, 0);
+                for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
+                {
+                    auto index = elementIndex;
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                for(int modeIndex = 0; modeIndex < modeSize; modeIndex++)
-                {
-                    bIndices[bModeToIndex[modeA[modeIndex]]] = index % aLens[modeIndex];
-                    index /= aLens[modeIndex];
-                }
-                auto bOffset
-                    = std::inner_product(bIndices.begin(), bIndices.end(), bStrides.begin(), 0);
+                    for(int modeIndex = 0; modeIndex < modeSize; modeIndex++)
+                    {
+                        bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
+                        index /= arg.mLengths[modeIndex];
+                    }
+                    auto bOffset
+                        = std::inner_product(bIndices.begin(), bIndices.end(), std::begin(outStrides), 0);
 #else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
-                {
-                    bIndices[bModeToIndex[modeA[modeIndex]]] = index % aLens[modeIndex];
-                    index /= aLens[modeIndex];
-                }
-                auto bOffset
-                    = std::inner_product(bIndices.rbegin(), bIndices.rend(), bStrides.rbegin(), 0);
+                    for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
+                    {
+                        bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
+                        index /= arg.mLengths[modeIndex];
+                    }
+                    auto bOffset
+                        = std::inner_product(bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                B[bOffset] = static_cast<DataType>(A[elementIndex] * (DataType)alphaValue);
+
+                    mInDataType input;
+                    // Perform elementwise tensor operation of input
+                    arg.mUnaryOp(input, arg.mInput[elementIndex]);
+                    // Perform permute scale
+                    mOutDataType output = static_cast<mOutDataType>(input) * static_cast<mOutDataType>(arg.mScaleOp.scale_);
+                    // Perform elementwise tensor operation of output
+                    arg.mElementOp(arg.mOutput[bOffset], output);
+                }
+                return 0;
             }
 
-            return HIPTENSOR_STATUS_SUCCESS;
+            float Run(const BaseArgument* p_arg,
+                      const StreamConfig& /* stream_config */ = StreamConfig{}) override
+            {
+                return Run(*dynamic_cast<const Argument*>(p_arg));
+            }
+        };
+
+        static constexpr bool IsValidCompilationParameter()
+        {
+            // TODO: properly implement this check
+            return true;
         }
+
+        bool IsSupportedArgument(const BaseArgument*) override
+        {
+            return true;
+        }
+
+        static auto
+            MakeArgument(const std::array<index_t, NumDim> lengths,
+                         const std::array<std::array<index_t, NumDim>, NumInput> inStridesArray,
+                         const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
+                         const void* in_dev_buffers,
+                         void* out_dev_buffers,
+                         Aop a_op,
+                         Bop b_op,
+                         Scale scale_op)
+        {
+            return Argument{lengths,
+                            inStridesArray,
+                            outStridesArray,
+                            in_dev_buffers,
+                            out_dev_buffers,
+                            a_op,
+                            b_op,
+                            scale_op};
+        }
+
+        std::unique_ptr<BaseArgument> MakeArgumentPointer(
+            const std::array<index_t, NumDim> lengths,
+            const std::array<std::array<index_t, NumDim>, NumInput> inStridesArray,
+            const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
+            const void* in_dev_buffers,
+            void* out_dev_buffers,
+            Aop a_op,
+            Bop b_op,
+            Scale scale_op)
+        {
+            return std::make_unique<Argument>(Argument{lengths,
+                                                       inStridesArray,
+                                                       outStridesArray,
+                                                       in_dev_buffers,
+                                                       out_dev_buffers,
+                                                       a_op,
+                                                       b_op,
+                                                       scale_op});
+        }
+
+        static auto MakeInvoker()
+        {
+            return Invoker{};
+        }
+
+        std::unique_ptr<BaseInvoker> MakeInvokerPointer() override
+        {
+            return std::make_unique<Invoker>(Invoker{});
+        }
+
+        std::string GetTypeString() const override
+        {
+            auto str = std::stringstream();
+
+            // clang-format off
+            str << "ReferencePermutation<";
+            str << NumDim << ", ";
+            str << 1 << ">";
+            // clang-format on
+
+            return str.str();
+        }
+    };
+
+    // Partial specialize for reference permutation
+    template <typename InDataTypeTuple,
+              typename OutDataTypeTuple,
+              typename Aop,
+              typename Bop,
+              typename Scale,
+              ck::index_t NumDim>
+    struct MetaTraits<ReferencePermutation<InDataTypeTuple,
+                                           OutDataTypeTuple,
+                                           Aop,
+                                           Bop,
+                                           Scale,
+                                           NumDim>>
+        : public MetaTraits<
+              ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
+                                                              OutDataTypeTuple,
+                                                              Aop,
+                                                              Bop,
+                                                              Scale,
+                                                              NumDim>>
+    {
+    };
+
+
+    template <typename InDataTypeTuple,
+              typename OutDataTypeTuple,
+              typename Aop,
+              typename Bop,
+              typename Scale,
+              ck::index_t NumDim>
+    auto enumerateReferenceSolutions()
+    {
+        using ReferenceOp = ReferencePermutation<InDataTypeTuple,
+                                                 OutDataTypeTuple,
+                                                 Aop,
+                                                 Bop,
+                                                 Scale,
+                                                 NumDim>;
+
+        auto solution = std::make_unique<PermutationSolutionImpl<ReferenceOp>>(
+                                                    std::make_unique<ReferenceOp>());
+
+        auto result = std::vector<std::unique_ptr<PermutationSolution>>();
+        result.push_back(std::move(solution));
+
+        return result;
     }
-}
-#endif //HIPTENSOR_PERMUTATION_CPU_REFERENCE_IMPL_HPP
+
+} // namespace hiptensor
+
+#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_IMPL_HPP

@@ -24,13 +24,9 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-
-#include <hip/library_types.h>
-#include <vector>
-
-#include <hiptensor/hiptensor.hpp>
+#include "permutation_cpu_reference.hpp"
+#include "permutation_cpu_reference_impl.hpp"
+#include "permutation_cpu_reference_instances.hpp"
 
 hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*           handle,
                                                 const void*                        alpha,
@@ -41,6 +37,48 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
                                                 const hiptensorTensorDescriptor_t* descB,
                                                 const int32_t                      modeB[],
                                                 const hipDataType                  typeScalar,
-                                                const hipStream_t                  stream);
+                                                const hipStream_t                  stream)
+{
+    const int32_t dim   = descA->mLengths.size();
+    auto& instances     = hiptensor::PermutationCpuReferenceInstances::instance();
+    auto  candidates    = instances->allSolutions().query(dim,
+                                                          descA->mType,
+                                                          descB->mType,
+                                                          descA->mUnaryOp,
+                                                          descB->mUnaryOp,
+                                                          hiptensor::PermutationOpId_t::SCALE);
 
-#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+    auto toPermutationSolutionVec = [](std::unordered_map<std::size_t,
+                                                          hiptensor::PermutationSolution*> const& map)
+    {
+        auto result = std::vector<hiptensor::PermutationSolution*>(map.size());
+        transform(map.begin(), map.end(), result.begin(), [](auto p) { return p.second; });
+        return result;
+    };
+
+#if !NDEBUG
+    std::cout << "hiptensorPermutationReference: " << candidates.solutionCount() << " Kernels Found!!"<< std::endl;
+#endif
+
+    auto candidateSol = toPermutationSolutionVec(candidates.solutions());
+    for(int i = 0; i < candidateSol.size(); i++)
+    {
+        auto refCandidate = candidateSol[i];
+        if(refCandidate->initArgs(alpha,
+                                    A,
+                                    B,
+                                    descA->mLengths,
+                                    descA->mStrides,
+                                    modeA,
+                                    descB->mLengths,
+                                    descB->mStrides,
+                                    modeB,
+                                    typeScalar))
+        {
+            (*refCandidate)();
+            return HIPTENSOR_STATUS_SUCCESS;
+        }
+    }
+
+    return HIPTENSOR_STATUS_INTERNAL_ERROR;
+}

@@ -1,8 +1,9 @@
+
 /*******************************************************************************
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,30 +20,30 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HIPTENSOR_PERMUTATION_CK_COL_HPP
-#define HIPTENSOR_PERMUTATION_CK_COL_HPP
+
 #include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor_types.hpp>
 
-namespace hiptensor
+#include "permutation_test.hpp"
+#include "permutation_test_helpers.hpp"
+
+class Rank2PermutationTest : public hiptensor::PermutationTest
 {
-    namespace detail
-    {
-        template <typename DataType>
-        hiptensorStatus_t permuteByCk(const void*                        alpha,
-                                      const DataType*                    A,
-                                      const hiptensorTensorDescriptor_t* descA,
-                                      const int32_t                      modeA[],
-                                      DataType*                          B,
-                                      const hiptensorTensorDescriptor_t* descB,
-                                      const int32_t                      modeB[],
-                                      const hipDataType                  typeScalar);
+};
 
+TEST_P(Rank2PermutationTest, RunKernel)
+{
+    static bool ranWarmup = false;
+    if(!ranWarmup)
+    {
+        this->Warmup();
+        ranWarmup = true;
     }
+    this->RunKernel();
 }
 
-#include "permutation_ck_impl.hpp"
-#endif // HIPTENSOR_PERMUTATION_CK_COL_HPP
+INSTANTIATE_TEST_SUITE_P(PermutationTests, Rank2PermutationTest, load_config_helper());

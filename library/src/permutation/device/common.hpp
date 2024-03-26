@@ -24,23 +24,18 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#ifndef PERMUTATION_DEVICE_COMMON_HPP
+#define PERMUTATION_DEVICE_COMMON_HPP
 
-#include <hip/library_types.h>
+// Stdlib includes
+#include <cstdlib>
+#include <memory>
 #include <vector>
 
-#include <hiptensor/hiptensor.hpp>
+// CK includes
+#include <add_device_operation_instance.hpp>
+#include <ck.hpp>
+#include <device_elementwise_scale_impl.hpp>
+#include <element_wise_operation.hpp>
 
-hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*           handle,
-                                                const void*                        alpha,
-                                                const void*                        A,
-                                                const hiptensorTensorDescriptor_t* descA,
-                                                const int32_t                      modeA[],
-                                                void*                              B,
-                                                const hiptensorTensorDescriptor_t* descB,
-                                                const int32_t                      modeB[],
-                                                const hipDataType                  typeScalar,
-                                                const hipStream_t                  stream);
-
-#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#endif // PERMUTATION_DEVICE_COMMON_HPP

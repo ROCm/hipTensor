@@ -81,6 +81,7 @@ add_library(hiptensor SHARED
     $<TARGET_OBJECTS:hiptensor_contraction>
     $<TARGET_OBJECTS:hiptensor_contraction_instances>
     $<TARGET_OBJECTS:hiptensor_permutation>
+    $<TARGET_OBJECTS:hiptensor_permutation_instances>
     )
 
 add_library(hiptensor::hiptensor ALIAS hiptensor)
