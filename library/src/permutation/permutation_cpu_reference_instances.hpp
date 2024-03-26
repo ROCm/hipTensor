@@ -45,6 +45,11 @@ namespace hiptensor
         ~PermutationCpuReferenceInstances() = default;
 
     private:
+        void PermutationCpuReference2DInstances();
+        void PermutationCpuReference3DInstances();
+        void PermutationCpuReference4DInstances();
+        void PermutationCpuReference5DInstances();
+        void PermutationCpuReference6DInstances();
         // Singleton: only one instance
         PermutationCpuReferenceInstances();
         PermutationCpuReferenceInstances(PermutationCpuReferenceInstances const&) = delete;

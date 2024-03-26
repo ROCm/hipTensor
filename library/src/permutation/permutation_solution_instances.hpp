@@ -45,6 +45,11 @@ namespace hiptensor
         ~PermutationSolutionInstances() = default;
 
     private:
+        void PermutationSolution2DInstances();
+        void PermutationSolution3DInstances();
+        void PermutationSolution4DInstances();
+        void PermutationSolution5DInstances();
+        void PermutationSolution6DInstances();
         // Singleton: only one instance
         PermutationSolutionInstances();
         PermutationSolutionInstances(PermutationSolutionInstances const&)            = delete;

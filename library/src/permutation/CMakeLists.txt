@@ -32,8 +32,18 @@ set(HIPTENSOR_PERMUTATION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank2_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank3_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank4_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank5_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank6_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_registry.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank2_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank3_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank4_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank5_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank6_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution.cpp
 )
 
