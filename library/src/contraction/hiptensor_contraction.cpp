@@ -147,6 +147,14 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         // Use a scale contraction due to
         // tensor C-descriptor is empty
 
+        // Store modes information in desc
+        int nModeA = descA->mLengths.size();
+        std::vector<int32_t> modeAV(modeA, modeA + nModeA);
+        int nModeB = descB->mLengths.size();
+        std::vector<int32_t> modeBV(modeB, modeB + nModeB);
+        int nModeD = descD->mLengths.size();
+        std::vector<int32_t> modeDV(modeD, modeD + nModeD);
+
         auto contractionOp
             = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
                   ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
@@ -159,12 +167,24 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                    std::vector<std::size_t>(descD->mLengths.size(), 0),
                    std::vector<std::size_t>(descD->mStrides.size(), 0)},
                   *descD},
-                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
+                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD},
+                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
     }
     else
     {
         // Use a bilinear contraction due to
         // tensor C-descriptor is not empty
+
+        // Store modes information in desc
+        int nModeA = descA->mLengths.size();
+        std::vector<int32_t> modeAV(modeA, modeA + nModeA);
+        int nModeB = descB->mLengths.size();
+        std::vector<int32_t> modeBV(modeB, modeB + nModeB);
+        int nModeC = descC->mLengths.size();
+        std::vector<int32_t> modeCV(modeC, modeC + nModeC);
+        int nModeD = descD->mLengths.size();
+        std::vector<int32_t> modeDV(modeD, modeD + nModeD);
+
         auto contractionOp
             = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
                   ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
@@ -175,7 +195,8 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                  {alignmentRequirementA,
                   alignmentRequirementB,
                   alignmentRequirementC,
-                  alignmentRequirementD}};
+                  alignmentRequirementD},
+                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
