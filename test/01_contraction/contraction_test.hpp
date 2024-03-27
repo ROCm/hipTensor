@@ -51,6 +51,7 @@ namespace hiptensor
                                                      typename ContractionTestParams::LogLevelT,
                                                      typename ContractionTestParams::LengthsT,
                                                      typename ContractionTestParams::StridesT,
+                                                     typename ContractionTestParams::ModesT,
                                                      typename ContractionTestParams::AlphaT,
                                                      typename ContractionTestParams::BetaT>>
     {
@@ -63,6 +64,7 @@ namespace hiptensor
                                                   typename ContractionTestParams::LogLevelT,
                                                   typename ContractionTestParams::LengthsT,
                                                   typename ContractionTestParams::StridesT,
+                                                  typename ContractionTestParams::ModesT,
                                                   typename ContractionTestParams::AlphaT,
                                                   typename ContractionTestParams::BetaT>>;
 

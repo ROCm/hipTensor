@@ -73,12 +73,16 @@ namespace hiptensor
                               void*                           E,
                               std::vector<std::size_t>        a_ms_ns_lengths,
                               std::vector<std::size_t>        a_ms_ks_strides,
+                              std::vector<int32_t>            a_ms_ks_modes,
                               std::vector<std::size_t>        b_ns_ks_lengths,
                               std::vector<std::size_t>        b_ns_ks_strides,
+                              std::vector<int32_t>            b_ns_ks_modes,
                               std::vector<std::size_t>        ds_ms_ns_lengths,
                               std::vector<std::size_t>        ds_ms_ns_strides,
+                              std::vector<int32_t>            ds_ms_ns_modes,
                               std::vector<std::size_t>        e_ms_ns_lengths,
                               std::vector<std::size_t>        e_ms_ns_strides,
+                              std::vector<int32_t>            e_ms_ns_modes,
                               void*                           workspacePtr)
             = 0;
 
@@ -92,12 +96,16 @@ namespace hiptensor
                          void*                           E,
                          std::vector<std::size_t>        a_ms_ns_lengths,
                          std::vector<std::size_t>        a_ms_ks_strides,
+                         std::vector<int32_t>            a_ms_ks_modes,
                          std::vector<std::size_t>        b_ns_ks_lengths,
                          std::vector<std::size_t>        b_ns_ks_strides,
+                         std::vector<int32_t>            b_ns_ks_modes,
                          std::vector<std::size_t>        ds_ms_ns_lengths,
                          std::vector<std::size_t>        ds_ms_ns_strides,
+                         std::vector<int32_t>            ds_ms_ns_modes,
                          std::vector<std::size_t>        e_ms_ns_lengths,
                          std::vector<std::size_t>        e_ms_ns_strides,
+                         std::vector<int32_t>            e_ms_ns_modes,
                          void*                           workspacePtr,
                          StreamConfig const&             streamConfig = StreamConfig{});
 
