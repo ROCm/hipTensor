@@ -47,10 +47,10 @@ namespace ck
                 using ScaleComplex = element_wise::ScaleComplex;
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                Empty_Tuple,
@@ -61,10 +61,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                Empty_Tuple,
@@ -75,10 +75,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mkn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mkn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                Empty_Tuple,
@@ -89,10 +89,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mnn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF32,
                                                                                CF32,
                                                                                Empty_Tuple,
@@ -103,10 +103,10 @@ namespace ck
                                                                                CF32>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_kkn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_kkn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                Empty_Tuple,
@@ -117,10 +117,10 @@ namespace ck
                                                                                CF64>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                Empty_Tuple,
@@ -131,10 +131,10 @@ namespace ck
                                                                                CF64>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mkn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mkn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                Empty_Tuple,
@@ -145,10 +145,10 @@ namespace ck
                                                                                CF64>>>& instances);
 
                 void
-                    add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
-                        std::vector<std::unique_ptr<DeviceContractionMultipleD<2,
-                                                                               2,
-                                                                               2,
+                    add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
+                        std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
+                                                                               6,
+                                                                               6,
                                                                                CF64,
                                                                                CF64,
                                                                                Empty_Tuple,
@@ -200,15 +200,15 @@ namespace ck
                         if constexpr(is_same_v<ADataType, float> && is_same_v<BDataType, float>
                                      && is_same_v<EDataType, float>)
                         {
-                            if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
+                            if constexpr(NumDimM == 6 && NumDimN == 6 && NumDimK == 6)
                             {
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_knn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mkn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mnn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_mnn_instance(
                                     op_ptrs);
                             }
                         }
@@ -216,15 +216,15 @@ namespace ck
                         if constexpr(is_same_v<ADataType, double> && is_same_v<BDataType, double>
                                      && is_same_v<EDataType, double>)
                         {
-                            if constexpr(NumDimM == 2 && NumDimN == 2 && NumDimK == 2)
+                            if constexpr(NumDimM == 6 && NumDimN == 6 && NumDimK == 6)
                             {
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_kkn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_kkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_knn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mkn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mkn_instance(
                                     op_ptrs);
-                                add_device_contraction_scale_m2_n2_k2_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
+                                add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_compute_cf64_mnn_instance(
                                     op_ptrs);
                             }
                         }

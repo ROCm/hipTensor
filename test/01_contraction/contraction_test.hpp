@@ -36,6 +36,9 @@
 
 #include <gtest/gtest.h>
 
+#define MaxNumDimsM 6
+#define MaxNumDimsN 6
+
 namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
@@ -48,6 +51,7 @@ namespace hiptensor
                                                      typename ContractionTestParams::LogLevelT,
                                                      typename ContractionTestParams::LengthsT,
                                                      typename ContractionTestParams::StridesT,
+                                                     typename ContractionTestParams::ModesT,
                                                      typename ContractionTestParams::AlphaT,
                                                      typename ContractionTestParams::BetaT>>
     {
@@ -60,6 +64,7 @@ namespace hiptensor
                                                   typename ContractionTestParams::LogLevelT,
                                                   typename ContractionTestParams::LengthsT,
                                                   typename ContractionTestParams::StridesT,
+                                                  typename ContractionTestParams::ModesT,
                                                   typename ContractionTestParams::AlphaT,
                                                   typename ContractionTestParams::BetaT>>;
 
