@@ -103,12 +103,16 @@ namespace hiptensor
                                           void*                           E,
                                           std::vector<std::size_t>        a_ms_ns_lengths,
                                           std::vector<std::size_t>        a_ms_ks_strides,
+                                          std::vector<int32_t>            a_ms_ks_modes,
                                           std::vector<std::size_t>        b_ns_ks_lengths,
                                           std::vector<std::size_t>        b_ns_ks_strides,
+                                          std::vector<int32_t>            b_ns_ks_modes,
                                           std::vector<std::size_t>        ds_ms_ns_lengths,
                                           std::vector<std::size_t>        ds_ms_ns_strides,
+                                          std::vector<int32_t>            ds_ms_ns_modes,
                                           std::vector<std::size_t>        e_ms_ns_lengths,
                                           std::vector<std::size_t>        e_ms_ns_strides,
+                                          std::vector<int32_t>            e_ms_ns_modes,
                                           void*                           workspacePtr,
                                           StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
@@ -120,12 +124,16 @@ namespace hiptensor
                      E,
                      a_ms_ns_lengths,
                      a_ms_ks_strides,
+                     a_ms_ks_modes,
                      b_ns_ks_lengths,
                      b_ns_ks_strides,
+                     b_ns_ks_modes,
                      ds_ms_ns_lengths,
                      ds_ms_ns_strides,
+                     ds_ms_ns_modes,
                      e_ms_ns_lengths,
                      e_ms_ns_strides,
+                     e_ms_ns_modes,
                      workspacePtr))
         {
 #if !NDEBUG

@@ -369,12 +369,16 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
                               nullptr,
                               desc->mTensorDesc[0].mLengths,
                               desc->mTensorDesc[0].mStrides,
+                              desc->mTensorMode[0],
                               desc->mTensorDesc[1].mLengths,
                               desc->mTensorDesc[1].mStrides,
+                              desc->mTensorMode[1],
                               desc->mTensorDesc[2].mLengths,
                               desc->mTensorDesc[2].mStrides,
+                              desc->mTensorMode[2],
                               desc->mTensorDesc[3].mLengths,
                               desc->mTensorDesc[3].mStrides,
+                              desc->mTensorMode[2],
                               nullptr))
         {
             if(*workspaceSize == 0)
@@ -510,15 +514,19 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                             ADataType,
                                             desc->mTensorDesc[0].mLengths,
                                             desc->mTensorDesc[0].mStrides,
+                                            desc->mTensorMode[0],
                                             BDataType,
                                             desc->mTensorDesc[1].mLengths,
                                             desc->mTensorDesc[1].mStrides,
+                                            desc->mTensorMode[1],
                                             DDataType,
                                             desc->mTensorDesc[2].mLengths,
                                             desc->mTensorDesc[2].mStrides,
+                                            desc->mTensorMode[2],
                                             EDataType,
                                             desc->mTensorDesc[3].mLengths,
                                             desc->mTensorDesc[3].mStrides,
+                                            desc->mTensorMode[2],
                                             desc->mComputeType,
                                             workspaceSize);
     }
@@ -724,12 +732,16 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                       D,
                                       plan->mContractionDesc.mTensorDesc[0].mLengths,
                                       plan->mContractionDesc.mTensorDesc[0].mStrides,
+                                      plan->mContractionDesc.mTensorMode[0],
                                       plan->mContractionDesc.mTensorDesc[1].mLengths,
                                       plan->mContractionDesc.mTensorDesc[1].mStrides,
+                                      plan->mContractionDesc.mTensorMode[1],
                                       plan->mContractionDesc.mTensorDesc[2].mLengths,
                                       plan->mContractionDesc.mTensorDesc[2].mStrides,
+                                      plan->mContractionDesc.mTensorMode[2],
                                       plan->mContractionDesc.mTensorDesc[3].mLengths,
                                       plan->mContractionDesc.mTensorDesc[3].mStrides,
+                                      plan->mContractionDesc.mTensorMode[2],
                                       workspace);
 
     if(canRun)
