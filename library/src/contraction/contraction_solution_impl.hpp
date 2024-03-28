@@ -115,33 +115,39 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            int a_ms_ks_length = a_ms_ks_lengths.size();
-            int b_ns_ks_length = b_ns_ks_lengths.size();
-            int ds_ms_ns_length = ds_ms_ns_lengths.size();
-            int e_ms_ns_length = e_ms_ns_lengths.size();
+            auto isM = [&](size_t i)
+            {
+                for(int j = 0; j < a_ms_ks_modes.size(); j++)
+                {
+                    if(i == a_ms_ks_modes[j])
+                        return true;
+                }
+                return false;
+            };
 
-            for(int i = a_ms_ks_length/2; i < MaxNumDimsM; i++)
+            auto it = std::partition_point(ds_ms_ns_modes.begin(), ds_ms_ns_modes.end(), isM);
+
+            std::vector<int32_t> ms_modes, ns_modes;
+            ms_modes.assign(ds_ms_ns_modes.begin(), it);
+            ns_modes.assign(it, ds_ms_ns_modes.end());
+
+            int mDim = ms_modes.size();
+            int nDim = ns_modes.size();
+
+            for(int i = mDim; i < MaxNumDimsM; i++)
             {
                 a_ms_ks_lengths.insert(a_ms_ks_lengths.begin() + i, 1);
                 a_ms_ks_strides.insert(a_ms_ks_strides.begin() + i, 1);
+                ds_ms_ns_lengths.insert(ds_ms_ns_lengths.begin() + i, 1);
+                ds_ms_ns_strides.insert(ds_ms_ns_strides.begin() + i, 1);
+                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
+                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
             }
 
-            for(int i = b_ns_ks_length/2; i < MaxNumDimsN; i++)
+            for(int i = nDim; i < MaxNumDimsN; i++)
             {
                 b_ns_ks_lengths.insert(b_ns_ks_lengths.begin() + i, 1);
                 b_ns_ks_strides.insert(b_ns_ks_strides.begin() + i, 1);
-            }
-
-            for(int i = ds_ms_ns_length/2; i < MaxNumDimsM; i++)
-            {
-                ds_ms_ns_lengths.insert(ds_ms_ns_lengths.begin() + i, 1);
-                ds_ms_ns_strides.insert(ds_ms_ns_strides.begin() + i, 1);
-            }
-
-            for(int i = e_ms_ns_length/2; i < MaxNumDimsM; i++)
-            {
-                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
-                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
             }
 
             a_ms_ks_lengths.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
@@ -266,26 +272,37 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            int a_ms_ks_length = a_ms_ks_lengths.size();
-            int b_ns_ks_length = b_ns_ks_lengths.size();
-            int e_ms_ns_length = e_ms_ns_lengths.size();
+            auto isM = [&](size_t i)
+            {
+                for(int j = 0; j < a_ms_ks_modes.size(); j++)
+                {
+                    if(i == a_ms_ks_modes[j])
+                        return true;
+                }
+                return false;
+            };
 
-            for(int i = a_ms_ks_length/2;  i < MaxNumDimsM; i++)
+            auto it = std::partition_point(ds_ms_ns_modes.begin(), ds_ms_ns_modes.end(), isM);
+
+            std::vector<int32_t> ms_modes, ns_modes;
+            ms_modes.assign(ds_ms_ns_modes.begin(), it);
+            ns_modes.assign(it, ds_ms_ns_modes.end());
+
+            int mDim = ms_modes.size();
+            int nDim = ns_modes.size();
+
+            for(int i = mDim; i < MaxNumDimsM; i++)
             {
                 a_ms_ks_lengths.insert(a_ms_ks_lengths.begin() + i, 1);
                 a_ms_ks_strides.insert(a_ms_ks_strides.begin() + i, 1);
+                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
+                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
             }
 
-            for(int i = b_ns_ks_length/2;  i < MaxNumDimsN; i++)
+            for(int i = nDim; i < MaxNumDimsN; i++)
             {
                 b_ns_ks_lengths.insert(b_ns_ks_lengths.begin() + i, 1);
                 b_ns_ks_strides.insert(b_ns_ks_strides.begin() + i, 1);
-            }
-
-            for(int i = e_ms_ns_length/2;  i < MaxNumDimsM; i++)
-            {
-                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
-                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
             }
 
             a_ms_ks_lengths.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
