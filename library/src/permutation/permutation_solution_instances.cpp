@@ -24,23 +24,20 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#include "permutation_solution_instances.hpp"
+#include "permutation_solution.hpp"
 
-#include <hip/library_types.h>
-#include <vector>
+// Ensure access to
+#include "device/hiptensor_permutation_scale_instances.hpp"
 
-#include <hiptensor/hiptensor.hpp>
-
-hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*           handle,
-                                                const void*                        alpha,
-                                                const void*                        A,
-                                                const hiptensorTensorDescriptor_t* descA,
-                                                const int32_t                      modeA[],
-                                                void*                              B,
-                                                const hiptensorTensorDescriptor_t* descB,
-                                                const int32_t                      modeB[],
-                                                const hipDataType                  typeScalar,
-                                                const hipStream_t                  stream);
-
-#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+namespace hiptensor
+{
+    PermutationSolutionInstances::PermutationSolutionInstances()
+    {
+        PermutationSolution2DInstances();
+        PermutationSolution3DInstances();
+        PermutationSolution4DInstances();
+        PermutationSolution5DInstances();
+        PermutationSolution6DInstances();
+    }
+} // namespace hiptensor

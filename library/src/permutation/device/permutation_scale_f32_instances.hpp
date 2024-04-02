@@ -24,23 +24,36 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#ifndef PERMUTATION_SCALE_F32_INSTANCES_HPP
+#define PERMUTATION_SCALE_F32_INSTANCES_HPP
 
-#include <hip/library_types.h>
-#include <vector>
+#include "common.hpp"
 
-#include <hiptensor/hiptensor.hpp>
+namespace ck
+{
+    namespace tensor_operation
+    {
+        namespace device
+        {
+            namespace instance
+            {
+                using F32 = float;
 
-hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*           handle,
-                                                const void*                        alpha,
-                                                const void*                        A,
-                                                const hiptensorTensorDescriptor_t* descA,
-                                                const int32_t                      modeA[],
-                                                void*                              B,
-                                                const hiptensorTensorDescriptor_t* descB,
-                                                const int32_t                      modeB[],
-                                                const hipDataType                  typeScalar,
-                                                const hipStream_t                  stream);
+                // clang-format off
+                template <typename AOp,
+                          typename BOp,
+                          typename Scale,
+                          index_t NDims>
+                using device_permute_scale_f32_instances = std::tuple<
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                    >;
+                // clang-format on
+            } // namespace instance
+        } // namespace device
+    } // namespace tensor_operation
+} // namespace ck
 
-#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#endif // PERMUTATION_SCALE_F32_INSTANCES_HPP
