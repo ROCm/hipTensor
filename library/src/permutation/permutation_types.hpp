@@ -24,23 +24,46 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#ifndef HIPTENSOR_PERMUTATION_TYPES_HPP
+#define HIPTENSOR_PERMUTATION_TYPES_HPP
 
-#include <hip/library_types.h>
-#include <vector>
+#include <ostream>
 
-#include <hiptensor/hiptensor.hpp>
+namespace hiptensor
+{
+    /**
+     * \brief This enum decides the over the operation based on the inputs.
+     * \details This enum decides the operation based on the in puts passed in the
+     * hipTensorPermutationGetWorkspaceSize
+     */
+    enum struct PermutationOpId_t : int32_t
+    {
+        SCALE    = 0,
+        UNKNOWN,
+    };
 
-hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*           handle,
-                                                const void*                        alpha,
-                                                const void*                        A,
-                                                const hiptensorTensorDescriptor_t* descA,
-                                                const int32_t                      modeA[],
-                                                void*                              B,
-                                                const hiptensorTensorDescriptor_t* descB,
-                                                const int32_t                      modeB[],
-                                                const hipDataType                  typeScalar,
-                                                const hipStream_t                  stream);
+    // Map type to runtime hiptensorOperator_t
+    template <typename OpId>
+    struct ElementWiseOperatorType;
 
-#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+    template <typename OpId>
+    static constexpr auto ElementWiseOperatorType_v = ElementWiseOperatorType<OpId>::value;
+
+    // Map type to runtime PermutationOpId_t
+    template <typename OpId>
+    struct PermutationOperatorType;
+
+    template <typename OpId>
+    static constexpr auto PermutationOperatorType_v = PermutationOperatorType<OpId>::value;
+
+} // namespace hiptensor
+
+namespace std
+{
+    ostream& operator<<(ostream& os, hiptensor::PermutationOpId_t const&);
+
+} // namespace std
+
+#include "permutation_types_impl.hpp"
+
+#endif // HIPTENSOR_PERMUTATION_TYPES_HPP

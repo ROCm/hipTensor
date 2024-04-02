@@ -45,6 +45,7 @@ namespace hiptensor
         using LengthsT      = std::vector<std::size_t>;
         using AlphaT        = double;
         using PermutedDimsT = std::vector<std::size_t>;
+        using OperatorT     = std::vector<hiptensorOperator_t>;
 
     public:
         std::vector<TestTypesT>& dataTypes()
@@ -62,6 +63,11 @@ namespace hiptensor
             return mProblemLengths;
         }
 
+        std::vector<OperatorT>& operators()
+        {
+            return mOperators;
+        }
+
         std::vector<PermutedDimsT>& permutedDims()
         {
             return mPermutedDims;
@@ -77,6 +83,7 @@ namespace hiptensor
             std::cout << "DataTypes: " << mDataTypes << "\n"
                       << "LogLevelMask: " << mLogLevelMask << "\n"
                       << "ProblemLengths: " << mProblemLengths << "\n"
+                      << "Operators: " << mOperators << "\n"
                       << "Alphas: " << mAlphas << "\n"
                       << "PermutedDims: " << mPermutedDims << "\n";
         }
@@ -87,6 +94,7 @@ namespace hiptensor
         LogLevelT                  mLogLevelMask;
         std::vector<LengthsT>      mProblemLengths;
         std::vector<AlphaT>        mAlphas;
+        std::vector<OperatorT>     mOperators;
         std::vector<PermutedDimsT> mPermutedDims;
     };
 

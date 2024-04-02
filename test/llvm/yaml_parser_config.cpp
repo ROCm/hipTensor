@@ -89,6 +89,7 @@ LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::size_t>)
@@ -138,6 +139,7 @@ namespace llvm
             static void enumeration(IO& io, hiptensorOperator_t& value)
             {
                 io.enumCase(value, "HIPTENSOR_OP_IDENTITY", HIPTENSOR_OP_IDENTITY);
+                io.enumCase(value, "HIPTENSOR_OP_SQRT", HIPTENSOR_OP_SQRT);
                 io.enumCase(value, "HIPTENSOR_OP_UNKNOWN", HIPTENSOR_OP_UNKNOWN);
             }
         };
@@ -298,6 +300,7 @@ namespace llvm
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Lengths", doc.problemLengths());
                 io.mapRequired("Permuted Dims", doc.permutedDims());
+                io.mapRequired("Operators", (doc.operators()));
             }
 
             // Additional validation for input / output of the config
@@ -316,6 +319,11 @@ namespace llvm
                 if(doc.permutedDims().size() == 0)
                 {
                     return "Error: Empty Permuted Dims";
+                }
+
+                if(doc.operators().size() == 0)
+                {
+                    return "Error: Empty Operators";
                 }
 
                 return std::string{};
