@@ -41,8 +41,8 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
     int              nmodeB = modeB.size();
 
     std::unordered_map<int, int64_t> extent;
-    extent['h'] = 2;
     extent['w'] = 3;
+    extent['h'] = 2;
     extent['c'] = 4;
     extent['n'] = 5;
 
@@ -117,14 +117,17 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
         handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, HIPTENSOR_OP_IDENTITY));
 
-    hiptensor::detail::permuteByCpu(&alphaValue,
-                                    aArray.data(),
-                                    &descA,
-                                    modeA.data(),
-                                    bArray.data(),
-                                    &descB,
-                                    modeB.data(),
-                                    typeCompute);
+    hiptensorPermutationReference(handle,
+                                  &alphaValue,
+                                  aArray.data(),
+                                  &descA,
+                                  modeA.data(),
+                                  bArray.data(),
+                                  &descB,
+                                  modeB.data(),
+                                  typeCompute,
+                                  0);
+
     return compareEqual(referenceArray.data(),
                         bArray.data(),
                         bArray.size(),
