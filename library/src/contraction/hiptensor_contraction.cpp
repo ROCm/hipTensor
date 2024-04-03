@@ -142,6 +142,20 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         return errorCode;
     }
 
+    if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY ||
+       descB->mUnaryOp != HIPTENSOR_OP_IDENTITY ||
+       descD->mUnaryOp != HIPTENSOR_OP_IDENTITY ||
+       (descC && descC->mUnaryOp != HIPTENSOR_OP_IDENTITY))
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        snprintf(msg,
+                sizeof(msg),
+                "Unsupported Operator Type Error : The supported Operator is HIPTENSOR_OP_IDENTITY (%s)",
+                hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorInitContractionDescriptor", msg);
+        return errorCode;
+    }
+
     if(descC == nullptr || modeC == nullptr)
     {
         // Use a scale contraction due to

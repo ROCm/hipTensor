@@ -42,7 +42,7 @@ namespace hiptensor
     }
 
     template <typename T>
-    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths)
+    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths, bool col_major = false)
     {
         if(lengths.empty())
         {
@@ -50,10 +50,20 @@ namespace hiptensor
         }
 
         // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> strides(lengths.size());
-        strides.back() = 1;
-        std::partial_sum(
-            lengths.rbegin(), lengths.rend() - 1, strides.rbegin() + 1, std::multiplies<T>());
+        std::vector<std::size_t> strides(lengths.size(), 1);
+        if(!col_major)
+        {
+            strides.back() = 1;
+            std::partial_sum(
+                lengths.rbegin(), lengths.rend() - 1, strides.rbegin() + 1, std::multiplies<T>());
+        }
+        else
+        {
+            strides.front() = 1;
+            std::partial_sum(
+                lengths.begin(), lengths.end() - 1, strides.begin() + 1, std::multiplies<T>());
+        }
+
         return strides;
     }
 

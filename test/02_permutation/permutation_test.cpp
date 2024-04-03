@@ -56,8 +56,7 @@ namespace hiptensor
     // False = skip test
     bool PermutationTest::checkDevice(hipDataType datatype) const
     {
-        return (isF32Supported() && datatype == HIP_R_32F)
-               || (isF64Supported() && datatype == HIP_R_64F);
+        return isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F));
     }
 
     bool PermutationTest::checkSizes() const
@@ -91,19 +90,32 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
+        auto operators    = std::get<5>(param);
 
-        // 4D tensors only at the moment.
-        EXPECT_EQ(lengths.size(), 4); // Format {'n', 'c', 'w', 'h'}
-        EXPECT_EQ(permutedDims.size(), 4); // permutation of {0, 1, 2, 3}
+        EXPECT_TRUE((lengths.size() > 1) && (lengths.size() <= 6));
+        EXPECT_TRUE((permutedDims.size() > 1) && (permutedDims.size() <= 6));
+
+        EXPECT_EQ(operators.size(), 2); // HIPTENSOR_OP_IDENTITY or HIPTENSOR_OP_SQRT
+        auto op = operators[0];
+        EXPECT_TRUE((op == HIPTENSOR_OP_IDENTITY) || (op == HIPTENSOR_OP_SQRT));
 
         EXPECT_EQ(testType.size(), 2); // HIP_R_16F or HIP_R_32F
         auto abDataType = testType[0];
         EXPECT_TRUE((abDataType == HIP_R_16F) || (abDataType == HIP_R_32F));
 
-        getResource()->setupStorage(lengths, abDataType);
+        mRunFlag &= checkDevice(abDataType);
 
-        // set mPrintElements to true to print element
-        mPrintElements = false;
+        if(!mRunFlag)
+        {
+            GTEST_SKIP();
+        }
+        else
+        {
+            getResource()->setupStorage(lengths, abDataType);
+
+            // set mPrintElements to true to print element
+            mPrintElements = false;
+        }
     }
 
     void PermutationTest::reportResults(std::ostream& stream,
@@ -161,9 +173,13 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
+        auto operators    = std::get<5>(param);
 
         auto abDataType      = testType[0];
         auto computeDataType = testType[1];
+
+        auto Aop             = operators[0];
+        auto Bop             = operators[1];
 
         if(!mRunFlag)
         {
@@ -177,7 +193,10 @@ namespace hiptensor
               B_{w, h, c, n} = 1.0 *  \textsl{IDENTITY}(A_{c, n, h, w})
              **********************/
 
-            std::vector<int> modeA{'n', 'c', 'w', 'h'};
+            int nDim = lengths.size();
+            int arrDim[] = {'n', 'c', 'w', 'h','d','m'};
+
+            std::vector<int> modeA(arrDim, arrDim + nDim);
             std::vector<int> modeB;
             for(auto dim : permutedDims)
             {
@@ -211,7 +230,7 @@ namespace hiptensor
                                                                 extentA.data(),
                                                                 NULL /* stride */,
                                                                 abDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+                                                                Aop));
 
             hiptensorTensorDescriptor_t descB;
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
@@ -220,7 +239,7 @@ namespace hiptensor
                                                                 extentB.data(),
                                                                 NULL /* stride */,
                                                                 abDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+                                                                Bop));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -245,16 +264,19 @@ namespace hiptensor
 
             if(abDataType == HIP_R_32F)
             {
-                hiptensor::detail::permuteByCpu(&alphaValue,
-                                                (const float*)resource->hostA().get(),
-                                                &descA,
-                                                modeA.data(),
-                                                (float*)resource->hostReference().get(),
-                                                &descB,
-                                                modeB.data(),
-                                                computeDataType);
-                resource->copyReferenceToDevice();
-                std::tie(mValidationResult, mMaxRelativeError)
+                CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
+                                                                    &alphaValue,
+                                                                    (const float*)resource->hostA().get(),
+                                                                    &descA,
+                                                                    modeA.data(),
+                                                                    (float*)resource->hostReference().get(),
+                                                                    &descB,
+                                                                    modeB.data(),
+                                                                    computeDataType,
+                                                                    0 /* stream */));
+
+               resource->copyReferenceToDevice();
+               std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
                                                       (float*)resource->deviceReference().get(),
                                                       resource->getCurrentMatrixElement(),
@@ -262,20 +284,24 @@ namespace hiptensor
             }
             else if(abDataType == HIP_R_16F)
             {
-                hiptensor::detail::permuteByCpu(&alphaValue,
-                                                (const _Float16*)resource->hostA().get(),
-                                                &descA,
-                                                modeA.data(),
-                                                (_Float16*)resource->hostReference().get(),
-                                                &descB,
-                                                modeB.data(),
-                                                computeDataType);
-                resource->copyReferenceToDevice();
-                std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
+                CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
+                                                                    &alphaValue,
+                                                                    (const _Float16*)resource->hostA().get(),
+                                                                    &descA,
+                                                                    modeA.data(),
+                                                                    (_Float16*)resource->hostReference().get(),
+                                                                    &descB,
+                                                                    modeB.data(),
+                                                                    computeDataType,
+                                                                    0 /* stream */));
+
+               resource->copyReferenceToDevice();
+
+               std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceB().get(),
                     (_Float16*)resource->deviceReference().get(),
-                    resource->getCurrentMatrixElement(),
-                    convertToComputeType(computeDataType));
+                     resource->getCurrentMatrixElement(),
+                     convertToComputeType(computeDataType));
             }
         }
 

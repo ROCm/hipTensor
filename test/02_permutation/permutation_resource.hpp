@@ -34,7 +34,7 @@
 #include "singleton.hpp"
 
 // PermutationResource class is intended to manage a shared pool of resources for
-// testing hiptensor contraction kernels on the GPU.
+// testing hiptensor permutation kernels on the GPU.
 //
 // It minimizes the memory handling overhead for launching thousands of GPU
 // kernels by allowing re-use of existing memory allocations. Memory is only
