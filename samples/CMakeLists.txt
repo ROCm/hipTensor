@@ -35,6 +35,9 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
         message( STATUS "adding hiptensor sample: ${BINARY_NAME}")
         add_executable(${BINARY_NAME} ${FILE_NAME})
 
+        target_compile_options(${BINARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
+        target_link_options(${BINARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
+
         # Sample must propagate the build interface includes to make sure
         # hiptensor includes are captured at runtime.
         target_link_libraries(${BINARY_NAME} PRIVATE hiptensor::hiptensor "-L${HIP_CLANG_ROOT}/lib" "-Wl,-rpath=$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
