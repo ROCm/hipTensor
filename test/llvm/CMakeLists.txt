@@ -68,9 +68,11 @@ set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_config.cpp
 # Create hiptensor_llvm object target
 # All LLVM resources are private to this object.
 # Interface will fwd includes of this dir to users of the object.
-add_library(hiptensor_llvm OBJECT ${HIPTENSOR_LLVM_SOURCES})
-set_target_properties(hiptensor_llvm PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(hiptensor_llvm PRIVATE ${HIPTENSOR_LLVM_LIBS})
-target_include_directories(hiptensor_llvm PRIVATE ${HIPTENSOR_LLVM_INCLUDES})
-target_include_directories(hiptensor_llvm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_options(hiptensor_llvm PRIVATE -fno-rtti)
+set(LIBRARY_NAME "hiptensor_llvm")
+add_library(${LIBRARY_NAME} OBJECT ${HIPTENSOR_LLVM_SOURCES})
+set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(${LIBRARY_NAME} PRIVATE ${HIPTENSOR_LLVM_LIBS})
+target_include_directories(${LIBRARY_NAME} PRIVATE ${HIPTENSOR_LLVM_INCLUDES})
+target_include_directories(${LIBRARY_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(${LIBRARY_NAME} PRIVATE -fno-rtti ${CLANG_DRIVER_MODE})
+target_link_options(${LIBRARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
