@@ -71,14 +71,18 @@ namespace hiptensor
                       void const*                     beta,
                       void const*                     D,
                       void*                           E,
-                      std::vector<std::size_t> const& a_ms_ks_lengths,
-                      std::vector<std::size_t> const& a_ms_ks_strides,
-                      std::vector<std::size_t> const& b_ns_ks_lengths,
-                      std::vector<std::size_t> const& b_ns_ks_strides,
-                      std::vector<std::size_t> const& ds_ms_ns_lengths,
-                      std::vector<std::size_t> const& ds_ms_ns_strides,
-                      std::vector<std::size_t> const& e_ms_ns_lengths,
-                      std::vector<std::size_t> const& e_ms_ns_strides,
+                      std::vector<std::size_t>        a_ms_ks_lengths,
+                      std::vector<std::size_t>        a_ms_ks_strides,
+                      std::vector<int32_t>            a_ms_ks_modes,
+                      std::vector<std::size_t>        b_ns_ks_lengths,
+                      std::vector<std::size_t>        b_ns_ks_strides,
+                      std::vector<int32_t>            b_ns_ks_modes,
+                      std::vector<std::size_t>        ds_ms_ns_lengths,
+                      std::vector<std::size_t>        ds_ms_ns_strides,
+                      std::vector<int32_t>            ds_ms_ns_modes,
+                      std::vector<std::size_t>        e_ms_ns_lengths,
+                      std::vector<std::size_t>        e_ms_ns_strides,
+                      std::vector<int32_t>            e_ms_ns_modes,
                       void*                           workspacePtr) override
         {
             using Base   = ContractionSolution;
@@ -111,7 +115,51 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            // Initialize the argument pointer
+            auto isM = [&](size_t i)
+            {
+                for(int j = 0; j < a_ms_ks_modes.size(); j++)
+                {
+                    if(i == a_ms_ks_modes[j])
+                        return true;
+                }
+                return false;
+            };
+
+            auto it = std::partition_point(ds_ms_ns_modes.begin(), ds_ms_ns_modes.end(), isM);
+
+            std::vector<int32_t> ms_modes, ns_modes;
+            ms_modes.assign(ds_ms_ns_modes.begin(), it);
+            ns_modes.assign(it, ds_ms_ns_modes.end());
+
+            int mDim = ms_modes.size();
+            int nDim = ns_modes.size();
+
+            for(int i = mDim; i < MaxNumDimsM; i++)
+            {
+                a_ms_ks_lengths.insert(a_ms_ks_lengths.begin() + i, 1);
+                a_ms_ks_strides.insert(a_ms_ks_strides.begin() + i, 1);
+                ds_ms_ns_lengths.insert(ds_ms_ns_lengths.begin() + i, 1);
+                ds_ms_ns_strides.insert(ds_ms_ns_strides.begin() + i, 1);
+                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
+                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
+            }
+
+            for(int i = nDim; i < MaxNumDimsN; i++)
+            {
+                b_ns_ks_lengths.insert(b_ns_ks_lengths.begin() + i, 1);
+                b_ns_ks_strides.insert(b_ns_ks_strides.begin() + i, 1);
+            }
+
+            a_ms_ks_lengths.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
+            a_ms_ks_strides.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
+            b_ns_ks_lengths.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
+            b_ns_ks_strides.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
+            ds_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
+            ds_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
+            e_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
+            e_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
+
+           // Initialize the argument pointer
             Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,
                 B,
@@ -186,14 +234,18 @@ namespace hiptensor
                       void const*                     beta,
                       void const*                     D,
                       void*                           E,
-                      std::vector<std::size_t> const& a_ms_ks_lengths,
-                      std::vector<std::size_t> const& a_ms_ks_strides,
-                      std::vector<std::size_t> const& b_ns_ks_lengths,
-                      std::vector<std::size_t> const& b_ns_ks_strides,
-                      std::vector<std::size_t> const& ds_ms_ns_lengths,
-                      std::vector<std::size_t> const& ds_ms_ns_strides,
-                      std::vector<std::size_t> const& e_ms_ns_lengths,
-                      std::vector<std::size_t> const& e_ms_ns_strides,
+                      std::vector<std::size_t>        a_ms_ks_lengths,
+                      std::vector<std::size_t>        a_ms_ks_strides,
+                      std::vector<int32_t>            a_ms_ks_modes,
+                      std::vector<std::size_t>        b_ns_ks_lengths,
+                      std::vector<std::size_t>        b_ns_ks_strides,
+                      std::vector<int32_t>            b_ns_ks_modes,
+                      std::vector<std::size_t>        ds_ms_ns_lengths,
+                      std::vector<std::size_t>        ds_ms_ns_strides,
+                      std::vector<int32_t>            ds_ms_ns_modes,
+                      std::vector<std::size_t>        e_ms_ns_lengths,
+                      std::vector<std::size_t>        e_ms_ns_strides,
+                      std::vector<int32_t>            e_ms_ns_modes,
                       void*                           workspacePtr) override
         {
             using Base   = ContractionSolution;
@@ -219,6 +271,46 @@ namespace hiptensor
             auto toCKVec = [](std::vector<std::size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
+
+            auto isM = [&](size_t i)
+            {
+                for(int j = 0; j < a_ms_ks_modes.size(); j++)
+                {
+                    if(i == a_ms_ks_modes[j])
+                        return true;
+                }
+                return false;
+            };
+
+            auto it = std::partition_point(ds_ms_ns_modes.begin(), ds_ms_ns_modes.end(), isM);
+
+            std::vector<int32_t> ms_modes, ns_modes;
+            ms_modes.assign(ds_ms_ns_modes.begin(), it);
+            ns_modes.assign(it, ds_ms_ns_modes.end());
+
+            int mDim = ms_modes.size();
+            int nDim = ns_modes.size();
+
+            for(int i = mDim; i < MaxNumDimsM; i++)
+            {
+                a_ms_ks_lengths.insert(a_ms_ks_lengths.begin() + i, 1);
+                a_ms_ks_strides.insert(a_ms_ks_strides.begin() + i, 1);
+                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
+                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
+            }
+
+            for(int i = nDim; i < MaxNumDimsN; i++)
+            {
+                b_ns_ks_lengths.insert(b_ns_ks_lengths.begin() + i, 1);
+                b_ns_ks_strides.insert(b_ns_ks_strides.begin() + i, 1);
+            }
+
+            a_ms_ks_lengths.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
+            a_ms_ks_strides.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
+            b_ns_ks_lengths.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
+            b_ns_ks_strides.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
+            e_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
+            e_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
 
             // Initialize the argument pointer
             Base::mArgPtr

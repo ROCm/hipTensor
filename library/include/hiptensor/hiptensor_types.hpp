@@ -176,6 +176,7 @@ struct hiptensorContractionDescriptor_t
     hiptensorComputeType_t                   mComputeType; /*!<Compute type for the contraction */
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc; /*!<Cache of tensor descriptors */
     std::vector<uint32_t>                    mAlignmentReq; /*!<Cache of alignment requirements */
+    std::vector<std::vector<int32_t>>        mTensorMode; /*!<Cache of modes of tensors */
 };
 
 /**
