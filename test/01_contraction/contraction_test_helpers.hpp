@@ -73,6 +73,7 @@ auto inline load_config_helper()
                               ::testing::Values(testParams.logLevelMask()),
                               ::testing::ValuesIn(testParams.problemLengths()),
                               ::testing::ValuesIn(testParams.problemStrides()),
+                              ::testing::ValuesIn(testParams.problemModes()),
                               ::testing::ValuesIn(testParams.alphas()),
                               ::testing::ValuesIn(testParams.betas()));
 }

@@ -47,8 +47,9 @@ namespace hiptensor
         using WorkSizePrefT = hiptensorWorksizePreference_t;
         using LogLevelT     = hiptensorLogLevel_t;
 
-        using LengthsT = std::vector<std::size_t>;
-        using StridesT = std::vector<std::size_t>;
+        using LengthsT = std::vector<std::vector<std::size_t>>;
+        using StridesT = std::vector<std::vector<std::size_t>>;
+        using ModesT   = std::vector<std::vector<int32_t>>;
         using AlphaT   = std::vector<double>;
         using BetaT    = std::vector<double>;
 
@@ -88,6 +89,11 @@ namespace hiptensor
             return mProblemStrides;
         }
 
+        std::vector<ModesT>& problemModes()
+        {
+            return mProblemModes;
+        }
+
         std::vector<AlphaT>& alphas()
         {
             return mAlphas;
@@ -107,6 +113,7 @@ namespace hiptensor
                       << "LogLevelMask: " << mLogLevelMask << std::endl
                       << "ProblemLengths: " << mProblemLengths << std::endl
                       << "ProblemStrides: " << mProblemStrides << std::endl
+                      << "ProblemModes: " << mProblemModes << std::endl
                       << "Alphas: " << mAlphas << std::endl
                       << "Betas: " << mBetas << std::endl;
         }
@@ -120,6 +127,7 @@ namespace hiptensor
         LogLevelT                  mLogLevelMask;
         std::vector<LengthsT>      mProblemLengths;
         std::vector<StridesT>      mProblemStrides;
+        std::vector<ModesT>        mProblemModes;
         std::vector<AlphaT>        mAlphas;
         std::vector<BetaT>         mBetas;
     };

@@ -98,17 +98,28 @@ namespace hiptensor
         auto logLevel     = std::get<4>(param);
         auto lengths      = std::get<5>(param);
         auto strides      = std::get<6>(param);
-        auto alpha        = std::get<7>(param);
-        auto beta         = std::get<8>(param);
+        auto modes        = std::get<7>(param);
+        auto alpha        = std::get<8>(param);
+        auto beta         = std::get<9>(param);
 
-        EXPECT_TRUE(operatorType == HIPTENSOR_OP_IDENTITY);
-
-        // 4D tensors only at the moment.
         EXPECT_EQ(testType.size(), 5);
-        EXPECT_EQ(lengths.size(), 6); // Format {'m', 'n', 'u', 'v', 'h', 'k'}
+
+        //Check the format of lengths, strides and Modes(Max support is 6D across M,N,K dimensions)
+        EXPECT_TRUE(lengths.size() == 3); // Tensors A, B, C/D
+        EXPECT_TRUE(modes.size() == 3); // Tensors A, B, C/D
         if(!strides.empty())
         {
-            EXPECT_EQ(strides.size(), 6);
+            EXPECT_TRUE(strides.size() == 3); // Tensors A, B, C/D
+        }
+
+        for(int i = 0; i < lengths.size(); i++)
+        {
+            EXPECT_TRUE(lengths[i].size() <= MaxNumDimsM + MaxNumDimsN);
+            if(!strides.empty())
+            {
+                EXPECT_TRUE(strides[i].size() == lengths[i].size());
+            }
+            EXPECT_TRUE(modes[i].size() == lengths[i].size());
         }
 
         // Separate compute type from test types
@@ -145,48 +156,50 @@ namespace hiptensor
         }
         else
         {
-            std::vector<int> modeA{0, 1, 4, 5};
-            std::vector<int> modeB{2, 3, 4, 5};
-            std::vector<int> modeCD{0, 1, 2, 3};
-
             std::vector<int64_t> a_ms_ks_lengths, a_ms_ks_strides;
-            for(auto mode : modeA)
+            std::vector<int32_t> a_ms_ks_modes;
+            for(int i = 0; i < lengths[0].size(); i++)
             {
-                a_ms_ks_lengths.push_back(lengths[mode]);
+                a_ms_ks_modes.push_back(modes[0][i]);
+                a_ms_ks_lengths.push_back(lengths[0][i]);
                 if(!strides.empty())
                 {
-                    a_ms_ks_strides.push_back(strides[mode]);
+                    a_ms_ks_strides.push_back(strides[0][i]);
                 }
             }
 
             std::vector<int64_t> b_ns_ks_lengths, b_ns_ks_strides;
-            for(auto mode : modeB)
+            std::vector<int32_t> b_ns_ks_modes;
+            for(int i = 0; i < lengths[1].size(); i++)
             {
-                b_ns_ks_lengths.push_back(lengths[mode]);
+                b_ns_ks_modes.push_back(modes[1][i]);
+                b_ns_ks_lengths.push_back(lengths[1][i]);
                 if(!strides.empty())
                 {
-                    b_ns_ks_strides.push_back(strides[mode]);
+                    b_ns_ks_strides.push_back(strides[1][i]);
                 }
             }
 
             std::vector<int64_t> cd_ms_ns_lengths, cd_ms_ns_strides;
-            for(auto mode : modeCD)
+            std::vector<int32_t> cd_ms_ns_modes;
+            for(int i = 0; i < lengths[2].size(); i++)
             {
-                cd_ms_ns_lengths.push_back(lengths[mode]);
+                cd_ms_ns_modes.push_back(modes[2][i]);
+                cd_ms_ns_lengths.push_back(lengths[2][i]);
                 if(!strides.empty())
                 {
-                    cd_ms_ns_strides.push_back(strides[mode]);
+                    cd_ms_ns_strides.push_back(strides[2][i]);
                 }
             }
 
             size_t elementsA  = std::accumulate(a_ms_ks_lengths.begin(),
-                                               a_ms_ks_lengths.end(),
-                                               size_t{1},
-                                               std::multiplies<size_t>());
+                                                a_ms_ks_lengths.end(),
+                                                size_t{1},
+                                                std::multiplies<size_t>());
             size_t elementsB  = std::accumulate(b_ns_ks_lengths.begin(),
-                                               b_ns_ks_lengths.end(),
-                                               size_t{1},
-                                               std::multiplies<size_t>());
+                                                b_ns_ks_lengths.end(),
+                                                size_t{1},
+                                                std::multiplies<size_t>());
             size_t elementsCD = std::accumulate(cd_ms_ns_lengths.begin(),
                                                 cd_ms_ns_lengths.end(),
                                                 size_t{1},
@@ -200,7 +213,7 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
                 handle,
                 &a_ms_ks,
-                modeA.size(),
+                a_ms_ks_lengths.size(),
                 a_ms_ks_lengths.data(),
                 strides.empty() ? NULL : a_ms_ks_strides.data(), /*stride*/
                 ADataType,
@@ -209,7 +222,7 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
                 handle,
                 &b_ns_ks,
-                modeB.size(),
+                b_ns_ks_lengths.size(),
                 b_ns_ks_lengths.data(),
                 strides.empty() ? NULL : b_ns_ks_strides.data(), /*stride*/
                 BDataType,
@@ -220,7 +233,7 @@ namespace hiptensor
                 CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
                     handle,
                     &c_ms_ns,
-                    modeCD.size(),
+                    cd_ms_ns_lengths.size(),
                     cd_ms_ns_lengths.data(),
                     strides.empty() ? NULL : cd_ms_ns_strides.data(), /*stride*/
                     CDataType,
@@ -230,7 +243,7 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
                 handle,
                 &d_ms_ns,
-                modeCD.size(),
+                cd_ms_ns_lengths.size(),
                 cd_ms_ns_lengths.data(),
                 strides.empty() ? NULL : cd_ms_ns_strides.data(), /*stride*/
                 DDataType,
@@ -358,16 +371,16 @@ namespace hiptensor
                 handle,
                 &desc,
                 &a_ms_ks,
-                modeA.data(),
+                a_ms_ks_modes.data(),
                 alignmentRequirementA,
                 &b_ns_ks,
-                modeB.data(),
+                b_ns_ks_modes.data(),
                 alignmentRequirementB,
                 (CDataType != NONE_TYPE) ? &c_ms_ns : nullptr,
-                (CDataType != NONE_TYPE) ? modeCD.data() : nullptr,
+                (CDataType != NONE_TYPE) ? cd_ms_ns_modes.data() : nullptr,
                 alignmentRequirementC,
                 &d_ms_ns,
-                modeCD.data(),
+                cd_ms_ns_modes.data(),
                 alignmentRequirementD,
                 computeType));
             /**************************
@@ -379,7 +392,6 @@ namespace hiptensor
             /**********************
             * Query workspace
             **********************/
-
             CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
                 handle, &desc, &find, workSizePref, &worksize));
 
@@ -409,13 +421,13 @@ namespace hiptensor
                 int size = hipDataTypeSize(DDataType);
 
                 size_t elementsA  = std::accumulate(a_ms_ks.mLengths.begin(),
-                                                   a_ms_ks.mLengths.end(),
-                                                   size_t{1},
-                                                   std::multiplies<size_t>());
+                                                    a_ms_ks.mLengths.end(),
+                                                    size_t{1},
+                                                    std::multiplies<size_t>());
                 size_t elementsB  = std::accumulate(b_ns_ks.mLengths.begin(),
-                                                   b_ns_ks.mLengths.end(),
-                                                   size_t{1},
-                                                   std::multiplies<size_t>());
+                                                    b_ns_ks.mLengths.end(),
+                                                    size_t{1},
+                                                    std::multiplies<size_t>());
                 size_t elementsCD = std::accumulate(d_ms_ns.mLengths.begin(),
                                                     d_ms_ns.mLengths.end(),
                                                     size_t{1},
@@ -567,8 +579,9 @@ namespace hiptensor
         auto logLevel     = std::get<4>(param);
         auto lengths      = std::get<5>(param);
         auto strides      = std::get<6>(param);
-        auto alpha        = std::get<7>(param);
-        auto beta         = std::get<8>(param);
+        auto modes        = std::get<7>(param);
+        auto alpha        = std::get<8>(param);
+        auto beta         = std::get<9>(param);
 
         if(mRunFlag)
         {
@@ -618,12 +631,16 @@ namespace hiptensor
                                                                 resource->hostD().get(),
                                                                 a_ms_ks.mLengths,
                                                                 a_ms_ks.mStrides,
+                                                                desc.mTensorMode[0],
                                                                 b_ns_ks.mLengths,
                                                                 b_ns_ks.mStrides,
+                                                                desc.mTensorMode[1],
                                                                 d_ms_ns.mLengths,
                                                                 d_ms_ns.mStrides,
+                                                                desc.mTensorMode[2],
                                                                 d_ms_ns.mLengths,
                                                                 d_ms_ns.mStrides,
+                                                                desc.mTensorMode[2],
                                                                 ADataType,
                                                                 BDataType,
                                                                 CDataType,

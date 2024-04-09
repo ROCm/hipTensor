@@ -161,6 +161,14 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         // Use a scale contraction due to
         // tensor C-descriptor is empty
 
+        // Store modes information in desc
+        int nModeA = descA->mLengths.size();
+        std::vector<int32_t> modeAV(modeA, modeA + nModeA);
+        int nModeB = descB->mLengths.size();
+        std::vector<int32_t> modeBV(modeB, modeB + nModeB);
+        int nModeD = descD->mLengths.size();
+        std::vector<int32_t> modeDV(modeD, modeD + nModeD);
+
         auto contractionOp
             = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
                   ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
@@ -173,12 +181,24 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                    std::vector<std::size_t>(descD->mLengths.size(), 0),
                    std::vector<std::size_t>(descD->mStrides.size(), 0)},
                   *descD},
-                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD}};
+                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD},
+                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
     }
     else
     {
         // Use a bilinear contraction due to
         // tensor C-descriptor is not empty
+
+        // Store modes information in desc
+        int nModeA = descA->mLengths.size();
+        std::vector<int32_t> modeAV(modeA, modeA + nModeA);
+        int nModeB = descB->mLengths.size();
+        std::vector<int32_t> modeBV(modeB, modeB + nModeB);
+        int nModeC = descC->mLengths.size();
+        std::vector<int32_t> modeCV(modeC, modeC + nModeC);
+        int nModeD = descD->mLengths.size();
+        std::vector<int32_t> modeDV(modeD, modeD + nModeD);
+
         auto contractionOp
             = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
                   ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
@@ -189,7 +209,8 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                  {alignmentRequirementA,
                   alignmentRequirementB,
                   alignmentRequirementC,
-                  alignmentRequirementD}};
+                  alignmentRequirementD},
+                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -362,12 +383,16 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
                               nullptr,
                               desc->mTensorDesc[0].mLengths,
                               desc->mTensorDesc[0].mStrides,
+                              desc->mTensorMode[0],
                               desc->mTensorDesc[1].mLengths,
                               desc->mTensorDesc[1].mStrides,
+                              desc->mTensorMode[1],
                               desc->mTensorDesc[2].mLengths,
                               desc->mTensorDesc[2].mStrides,
+                              desc->mTensorMode[2],
                               desc->mTensorDesc[3].mLengths,
                               desc->mTensorDesc[3].mStrides,
+                              desc->mTensorMode[2],
                               nullptr))
         {
             if(*workspaceSize == 0)
@@ -503,15 +528,19 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
                                             ADataType,
                                             desc->mTensorDesc[0].mLengths,
                                             desc->mTensorDesc[0].mStrides,
+                                            desc->mTensorMode[0],
                                             BDataType,
                                             desc->mTensorDesc[1].mLengths,
                                             desc->mTensorDesc[1].mStrides,
+                                            desc->mTensorMode[1],
                                             DDataType,
                                             desc->mTensorDesc[2].mLengths,
                                             desc->mTensorDesc[2].mStrides,
+                                            desc->mTensorMode[2],
                                             EDataType,
                                             desc->mTensorDesc[3].mLengths,
                                             desc->mTensorDesc[3].mStrides,
+                                            desc->mTensorMode[2],
                                             desc->mComputeType,
                                             workspaceSize);
     }
@@ -717,12 +746,16 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                       D,
                                       plan->mContractionDesc.mTensorDesc[0].mLengths,
                                       plan->mContractionDesc.mTensorDesc[0].mStrides,
+                                      plan->mContractionDesc.mTensorMode[0],
                                       plan->mContractionDesc.mTensorDesc[1].mLengths,
                                       plan->mContractionDesc.mTensorDesc[1].mStrides,
+                                      plan->mContractionDesc.mTensorMode[1],
                                       plan->mContractionDesc.mTensorDesc[2].mLengths,
                                       plan->mContractionDesc.mTensorDesc[2].mStrides,
+                                      plan->mContractionDesc.mTensorMode[2],
                                       plan->mContractionDesc.mTensorDesc[3].mLengths,
                                       plan->mContractionDesc.mTensorDesc[3].mStrides,
+                                      plan->mContractionDesc.mTensorMode[2],
                                       workspace);
 
     if(canRun)
