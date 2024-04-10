@@ -49,8 +49,7 @@ namespace ck
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // m/n/n/n are the fast changing dimension for A/B/D/E
                 using device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_f32_f32_f32_f32_compute_f16_mnnn_instance
-                    = device_contraction_mn_instance<6,
-                                                     F32,
+                    = device_contraction_mn_instance<F32,
                                                      F32,
                                                      F32,
                                                      F32,
@@ -59,7 +58,8 @@ namespace ck
                                                      F16,
                                                      PassThrough,
                                                      PassThrough,
-                                                     Bilinear>;
+                                                     Bilinear,
+                                                     6>;
 
                 void
                     add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_f32_f32_f32_f32_compute_f16_mnnn_instance(
