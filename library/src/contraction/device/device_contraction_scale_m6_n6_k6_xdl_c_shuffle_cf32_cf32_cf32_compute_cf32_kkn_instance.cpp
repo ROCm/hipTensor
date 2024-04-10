@@ -48,16 +48,15 @@ namespace ck
             namespace instance
             {
 
-                using F32           = float;
-                using CF32          = hipFloatComplex;
-                using Empty_Tuple   = ck::Tuple<>;
-                using ScaleComplex  = element_wise::ScaleComplex;
+                using F32          = float;
+                using CF32         = hipFloatComplex;
+                using Empty_Tuple  = ck::Tuple<>;
+                using ScaleComplex = element_wise::ScaleComplex;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/k/n/n are the fast changing dimension for A/B/D/E
                 using device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance
-                    = device_contraction_kk_instance<6,
-                                                     CF32,
+                    = device_contraction_kk_instance<CF32,
                                                      CF32,
                                                      F32,
                                                      F32,
@@ -66,7 +65,8 @@ namespace ck
                                                      CF32,
                                                      PassThrough,
                                                      PassThrough,
-                                                     ScaleComplex>;
+                                                     ScaleComplex,
+                                                     6>;
                 void
                     add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance(
                         std::vector<std::unique_ptr<DeviceContractionMultipleD<6,
@@ -80,7 +80,7 @@ namespace ck
                                                                                PassThrough,
                                                                                ScaleComplex,
                                                                                CF32>>>& instances)
-                    {
+                {
                     add_device_operation_instances(
                         instances,
                         device_contraction_scale_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_compute_cf32_kkn_instance{});
@@ -90,4 +90,3 @@ namespace ck
         } // namespace device
     } // namespace tensor_operation
 } // namespace ck
-
