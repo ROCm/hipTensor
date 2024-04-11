@@ -6,13 +6,10 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 
 ### Additions
 
-* API support
-  * Permutation of rank 4 tensors
-* Data type support
-  * Contraction - new supported data types f16, bf16, complex f32, complex f64
-* Samples
-  * Added scale and bilinear contraction samples and tests for new supported data types.
-  * Added permutation samples and tests for f16, f32 types
+* API support for permutation of rank 4 tensors: f16 and f32
+* New datatype support in contractions of rank 4: f16, bf16, complex f32, complex f64
+* Added scale and bilinear contraction samples and tests for new supported data types
+* Added permutation samples and tests for f16, f32 types
 
 ### Fixes
 
