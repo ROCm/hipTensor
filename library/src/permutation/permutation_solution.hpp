@@ -36,9 +36,9 @@
 #include <device_elementwise_scale_impl.hpp>
 #include <element_wise_operation.hpp>
 
+#include "performance.hpp"
 #include "permutation_meta_traits.hpp"
 #include "permutation_solution_params.hpp"
-#include "performance.hpp"
 #include "util.hpp"
 
 namespace hiptensor
@@ -62,31 +62,31 @@ namespace hiptensor
         PermutationSolution& operator=(PermutationSolution&& other);
 
         // Must specialize incoming arg handling
-        virtual bool initArgs(void const*                       alpha,
-                              void const*                       A,
-                              void*                             B,
-                              std::vector<std::size_t> const&   a_lengths,
-                              std::vector<std::size_t> const&   a_strides,
-                              const int32_t                     modeA[],
-                              std::vector<std::size_t> const&   b_lengths,
-                              std::vector<std::size_t> const&   b_strides,
-                              const int32_t                     modeB[],
-                              const hipDataType                 typeScalar)
+        virtual bool initArgs(void const*                     alpha,
+                              void const*                     A,
+                              void*                           B,
+                              std::vector<std::size_t> const& a_lengths,
+                              std::vector<std::size_t> const& a_strides,
+                              const int32_t                   modeA[],
+                              std::vector<std::size_t> const& b_lengths,
+                              std::vector<std::size_t> const& b_strides,
+                              const int32_t                   modeB[],
+                              const hipDataType               typeScalar)
             = 0;
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});
 
-        float operator()(void const*                        alpha,
-                         void const*                        A,
-                         void*                              B,
-                         std::vector<std::size_t> const&    a_lengths,
-                         std::vector<std::size_t> const&    a_strides,
-                         const int32_t                      modeA[],
-                         std::vector<std::size_t> const&    b_lengths,
-                         std::vector<std::size_t> const&    b_strides,
-                         const int32_t                      modeB[],
-                         const hipDataType                  typeScalar,
-                         StreamConfig const&                streamConfig = StreamConfig{});
+        float operator()(void const*                     alpha,
+                         void const*                     A,
+                         void*                           B,
+                         std::vector<std::size_t> const& a_lengths,
+                         std::vector<std::size_t> const& a_strides,
+                         const int32_t                   modeA[],
+                         std::vector<std::size_t> const& b_lengths,
+                         std::vector<std::size_t> const& b_strides,
+                         const int32_t                   modeB[],
+                         const hipDataType               typeScalar,
+                         StreamConfig const&             streamConfig = StreamConfig{});
 
         /// Accessors
 
@@ -127,7 +127,7 @@ namespace hiptensor
         // Kernel Params
         std::unique_ptr<PermutationSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
-        std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
+        std::unique_ptr<ck::tensor_operation::device::BaseArgument> mInvokerArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
     };
 

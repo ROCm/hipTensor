@@ -65,49 +65,49 @@ namespace hiptensor
         ContractionSolution& operator=(ContractionSolution&& other);
 
         // Must specialize incoming arg handling
-        virtual bool initArgs(void const*                     alpha,
-                              void const*                     A,
-                              void const*                     B,
-                              void const*                     beta,
-                              void const*                     D,
-                              void*                           E,
-                              std::vector<std::size_t>        a_ms_ns_lengths,
-                              std::vector<std::size_t>        a_ms_ks_strides,
-                              std::vector<int32_t>            a_ms_ks_modes,
-                              std::vector<std::size_t>        b_ns_ks_lengths,
-                              std::vector<std::size_t>        b_ns_ks_strides,
-                              std::vector<int32_t>            b_ns_ks_modes,
-                              std::vector<std::size_t>        ds_ms_ns_lengths,
-                              std::vector<std::size_t>        ds_ms_ns_strides,
-                              std::vector<int32_t>            ds_ms_ns_modes,
-                              std::vector<std::size_t>        e_ms_ns_lengths,
-                              std::vector<std::size_t>        e_ms_ns_strides,
-                              std::vector<int32_t>            e_ms_ns_modes,
-                              void*                           workspacePtr)
+        virtual bool initArgs(void const*              alpha,
+                              void const*              A,
+                              void const*              B,
+                              void const*              beta,
+                              void const*              D,
+                              void*                    E,
+                              std::vector<std::size_t> a_ms_ns_lengths,
+                              std::vector<std::size_t> a_ms_ks_strides,
+                              std::vector<int32_t>     a_ms_ks_modes,
+                              std::vector<std::size_t> b_ns_ks_lengths,
+                              std::vector<std::size_t> b_ns_ks_strides,
+                              std::vector<int32_t>     b_ns_ks_modes,
+                              std::vector<std::size_t> ds_ms_ns_lengths,
+                              std::vector<std::size_t> ds_ms_ns_strides,
+                              std::vector<int32_t>     ds_ms_ns_modes,
+                              std::vector<std::size_t> e_ms_ns_lengths,
+                              std::vector<std::size_t> e_ms_ns_strides,
+                              std::vector<int32_t>     e_ms_ns_modes,
+                              void*                    workspacePtr)
             = 0;
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});
 
-        float operator()(void const*                     alpha,
-                         void const*                     A,
-                         void const*                     B,
-                         void const*                     beta,
-                         void const*                     D,
-                         void*                           E,
-                         std::vector<std::size_t>        a_ms_ns_lengths,
-                         std::vector<std::size_t>        a_ms_ks_strides,
-                         std::vector<int32_t>            a_ms_ks_modes,
-                         std::vector<std::size_t>        b_ns_ks_lengths,
-                         std::vector<std::size_t>        b_ns_ks_strides,
-                         std::vector<int32_t>            b_ns_ks_modes,
-                         std::vector<std::size_t>        ds_ms_ns_lengths,
-                         std::vector<std::size_t>        ds_ms_ns_strides,
-                         std::vector<int32_t>            ds_ms_ns_modes,
-                         std::vector<std::size_t>        e_ms_ns_lengths,
-                         std::vector<std::size_t>        e_ms_ns_strides,
-                         std::vector<int32_t>            e_ms_ns_modes,
-                         void*                           workspacePtr,
-                         StreamConfig const&             streamConfig = StreamConfig{});
+        float operator()(void const*              alpha,
+                         void const*              A,
+                         void const*              B,
+                         void const*              beta,
+                         void const*              D,
+                         void*                    E,
+                         std::vector<std::size_t> a_ms_ns_lengths,
+                         std::vector<std::size_t> a_ms_ks_strides,
+                         std::vector<int32_t>     a_ms_ks_modes,
+                         std::vector<std::size_t> b_ns_ks_lengths,
+                         std::vector<std::size_t> b_ns_ks_strides,
+                         std::vector<int32_t>     b_ns_ks_modes,
+                         std::vector<std::size_t> ds_ms_ns_lengths,
+                         std::vector<std::size_t> ds_ms_ns_strides,
+                         std::vector<int32_t>     ds_ms_ns_modes,
+                         std::vector<std::size_t> e_ms_ns_lengths,
+                         std::vector<std::size_t> e_ms_ns_strides,
+                         std::vector<int32_t>     e_ms_ns_modes,
+                         void*                    workspacePtr,
+                         StreamConfig const&      streamConfig = StreamConfig{});
 
         /// Accessors
 
@@ -136,6 +136,8 @@ namespace hiptensor
         void resetArgs();
 
     protected:
+        void resetInvokerArgs();
+
         // Derived runtime arguments
         ck::index_t mM, mN, mK;
         ck::index_t mBytes;
@@ -144,7 +146,7 @@ namespace hiptensor
         // Kernel Params
         std::unique_ptr<ContractionSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
-        std::unique_ptr<ck::tensor_operation::device::BaseArgument> mArgPtr;
+        std::unique_ptr<ck::tensor_operation::device::BaseArgument> mInvokerArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
     };
 

@@ -53,9 +53,9 @@ namespace hiptensor
     class ContractionSolutionImpl<
         DeviceOp,
         std::enable_if_t<(std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Bilinear>)
-                          || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::BilinearComplex>)>>
+                                         ck::tensor_operation::element_wise::Bilinear>)
+                         || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                            ck::tensor_operation::element_wise::BilinearComplex>)>>
         : public ContractionSolution
     {
     public:
@@ -65,25 +65,25 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                     alpha,
-                      void const*                     A,
-                      void const*                     B,
-                      void const*                     beta,
-                      void const*                     D,
-                      void*                           E,
-                      std::vector<std::size_t>        a_ms_ks_lengths,
-                      std::vector<std::size_t>        a_ms_ks_strides,
-                      std::vector<int32_t>            a_ms_ks_modes,
-                      std::vector<std::size_t>        b_ns_ks_lengths,
-                      std::vector<std::size_t>        b_ns_ks_strides,
-                      std::vector<int32_t>            b_ns_ks_modes,
-                      std::vector<std::size_t>        ds_ms_ns_lengths,
-                      std::vector<std::size_t>        ds_ms_ns_strides,
-                      std::vector<int32_t>            ds_ms_ns_modes,
-                      std::vector<std::size_t>        e_ms_ns_lengths,
-                      std::vector<std::size_t>        e_ms_ns_strides,
-                      std::vector<int32_t>            e_ms_ns_modes,
-                      void*                           workspacePtr) override
+        bool initArgs(void const*              alpha,
+                      void const*              A,
+                      void const*              B,
+                      void const*              beta,
+                      void const*              D,
+                      void*                    E,
+                      std::vector<std::size_t> a_ms_ks_lengths,
+                      std::vector<std::size_t> a_ms_ks_strides,
+                      std::vector<int32_t>     a_ms_ks_modes,
+                      std::vector<std::size_t> b_ns_ks_lengths,
+                      std::vector<std::size_t> b_ns_ks_strides,
+                      std::vector<int32_t>     b_ns_ks_modes,
+                      std::vector<std::size_t> ds_ms_ns_lengths,
+                      std::vector<std::size_t> ds_ms_ns_strides,
+                      std::vector<int32_t>     ds_ms_ns_modes,
+                      std::vector<std::size_t> e_ms_ns_lengths,
+                      std::vector<std::size_t> e_ms_ns_strides,
+                      std::vector<int32_t>     e_ms_ns_modes,
+                      void*                    workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
@@ -115,8 +115,7 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            auto isM = [&](size_t i)
-            {
+            auto isM = [&](size_t i) {
                 for(int j = 0; j < a_ms_ks_modes.size(); j++)
                 {
                     if(i == a_ms_ks_modes[j])
@@ -159,8 +158,8 @@ namespace hiptensor
             e_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
             e_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
 
-           // Initialize the argument pointer
-            Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
+            // Initialize the argument pointer
+            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,
                 B,
                 std::array<const void*, 1>{D},
@@ -178,7 +177,7 @@ namespace hiptensor
                 typename Traits::CDEOp(alphaF, betaF)));
 
             // Attach the workspace pointer
-            deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
+            deviceOp->SetWorkSpacePointer(Base::mInvokerArgPtr.get(), workspacePtr);
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -206,7 +205,7 @@ namespace hiptensor
                            + sizeof(typename Traits::EDataT) * Base::mM * Base::mN;
 
             // Arg test
-            Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());
+            Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
 
             return mValid;
         }
@@ -216,9 +215,9 @@ namespace hiptensor
     class ContractionSolutionImpl<
         DeviceOp,
         std::enable_if_t<(std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::Scale>)
-                          || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
-                                        ck::tensor_operation::element_wise::ScaleComplex>)>>
+                                         ck::tensor_operation::element_wise::Scale>)
+                         || (std::is_same_v<typename MetaTraits<DeviceOp>::CDEOp,
+                                            ck::tensor_operation::element_wise::ScaleComplex>)>>
         : public ContractionSolution
     {
     public:
@@ -228,25 +227,25 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                     alpha,
-                      void const*                     A,
-                      void const*                     B,
-                      void const*                     beta,
-                      void const*                     D,
-                      void*                           E,
-                      std::vector<std::size_t>        a_ms_ks_lengths,
-                      std::vector<std::size_t>        a_ms_ks_strides,
-                      std::vector<int32_t>            a_ms_ks_modes,
-                      std::vector<std::size_t>        b_ns_ks_lengths,
-                      std::vector<std::size_t>        b_ns_ks_strides,
-                      std::vector<int32_t>            b_ns_ks_modes,
-                      std::vector<std::size_t>        ds_ms_ns_lengths,
-                      std::vector<std::size_t>        ds_ms_ns_strides,
-                      std::vector<int32_t>            ds_ms_ns_modes,
-                      std::vector<std::size_t>        e_ms_ns_lengths,
-                      std::vector<std::size_t>        e_ms_ns_strides,
-                      std::vector<int32_t>            e_ms_ns_modes,
-                      void*                           workspacePtr) override
+        bool initArgs(void const*              alpha,
+                      void const*              A,
+                      void const*              B,
+                      void const*              beta,
+                      void const*              D,
+                      void*                    E,
+                      std::vector<std::size_t> a_ms_ks_lengths,
+                      std::vector<std::size_t> a_ms_ks_strides,
+                      std::vector<int32_t>     a_ms_ks_modes,
+                      std::vector<std::size_t> b_ns_ks_lengths,
+                      std::vector<std::size_t> b_ns_ks_strides,
+                      std::vector<int32_t>     b_ns_ks_modes,
+                      std::vector<std::size_t> ds_ms_ns_lengths,
+                      std::vector<std::size_t> ds_ms_ns_strides,
+                      std::vector<int32_t>     ds_ms_ns_modes,
+                      std::vector<std::size_t> e_ms_ns_lengths,
+                      std::vector<std::size_t> e_ms_ns_strides,
+                      std::vector<int32_t>     e_ms_ns_modes,
+                      void*                    workspacePtr) override
         {
             using Base   = ContractionSolution;
             using Traits = MetaTraits<DeviceOp>;
@@ -272,8 +271,7 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            auto isM = [&](size_t i)
-            {
+            auto isM = [&](size_t i) {
                 for(int j = 0; j < a_ms_ks_modes.size(); j++)
                 {
                     if(i == a_ms_ks_modes[j])
@@ -313,7 +311,7 @@ namespace hiptensor
             e_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
 
             // Initialize the argument pointer
-            Base::mArgPtr
+            Base::mInvokerArgPtr
                 = std::move(deviceOp->MakeArgumentPointer(A,
                                                           B,
                                                           std::array<const void*, 0>{},
@@ -331,7 +329,7 @@ namespace hiptensor
                                                           typename Traits::CDEOp(alphaF)));
 
             // Attach the workspace pointer
-            deviceOp->SetWorkSpacePointer(Base::mArgPtr.get(), workspacePtr);
+            deviceOp->SetWorkSpacePointer(Base::mInvokerArgPtr.get(), workspacePtr);
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -358,7 +356,7 @@ namespace hiptensor
                            + sizeof(typename Traits::EDataT) * Base::mM * Base::mN;
 
             // Arg test
-            Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());
+            Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
 
             return Base::mValid;
         }

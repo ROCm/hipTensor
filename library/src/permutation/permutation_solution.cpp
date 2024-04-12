@@ -46,7 +46,7 @@ namespace hiptensor
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
         , mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
+        , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
     {
     }
@@ -60,17 +60,17 @@ namespace hiptensor
             mBytes = other.mBytes;
             mValid = other.mValid;
 
-            mParams     = std::move(other.mParams);
-            mDeviceOp   = std::move(other.mDeviceOp);
-            mArgPtr     = std::move(other.mArgPtr);
-            mInvokerPtr = std::move(other.mInvokerPtr);
+            mParams        = std::move(other.mParams);
+            mDeviceOp      = std::move(other.mDeviceOp);
+            mInvokerArgPtr = std::move(other.mInvokerArgPtr);
+            mInvokerPtr    = std::move(other.mInvokerPtr);
         }
         return *this;
     }
 
     float PermutationSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
-        if(!mArgPtr || !mInvokerPtr || !mParams)
+        if(!mInvokerArgPtr || !mInvokerPtr || !mParams)
         {
 #if !NDEBUG
             std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -86,7 +86,7 @@ namespace hiptensor
             return -1.0f;
         }
 
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
+        return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
     float PermutationSolution::operator()(void const*                     alpha,
@@ -101,16 +101,8 @@ namespace hiptensor
                                           const hipDataType               typeScalar,
                                           StreamConfig const&             streamConfig)
     {
-        if(!initArgs(alpha,
-                     A,
-                     B,
-                     a_lengths,
-                     a_strides,
-                     modeA,
-                     b_lengths,
-                     b_strides,
-                     modeB,
-                     typeScalar))
+        if(!initArgs(
+               alpha, A, B, a_lengths, a_strides, modeA, b_lengths, b_strides, modeB, typeScalar))
         {
 #if !NDEBUG
             std::cout << kernelName() << " does not support this problem" << std::endl;
@@ -118,7 +110,7 @@ namespace hiptensor
             return -1.0f;
         }
 
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
+        return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
     bool PermutationSolution::isValid() const
@@ -164,7 +156,7 @@ namespace hiptensor
     {
         if(mValid)
         {
-            return mDeviceOp->GetWorkSpaceSize(mArgPtr.get());
+            return mDeviceOp->GetWorkSpaceSize(mInvokerArgPtr.get());
         }
         else
         {
@@ -177,11 +169,10 @@ namespace hiptensor
         mDim   = 0;
         mBytes = 0;
 
-        mArgPtr.reset(nullptr);
+        mInvokerArgPtr.reset(nullptr);
         mInvokerPtr.reset(nullptr);
 
         mValid = false;
     }
-
 
 } // namespace hiptensor
