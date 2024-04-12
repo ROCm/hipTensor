@@ -50,7 +50,7 @@ namespace hiptensor
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
         , mParams(std::move(other.mParams))
-        , mArgPtr(std::move(other.mArgPtr))
+        , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
     {
     }
@@ -66,17 +66,18 @@ namespace hiptensor
             mBytes = other.mBytes;
             mValid = other.mValid;
 
-            mParams     = std::move(other.mParams);
-            mDeviceOp   = std::move(other.mDeviceOp);
-            mArgPtr     = std::move(other.mArgPtr);
-            mInvokerPtr = std::move(other.mInvokerPtr);
+            mParams        = std::move(other.mParams);
+            mDeviceOp      = std::move(other.mDeviceOp);
+            mInvokerArgPtr = std::move(other.mInvokerArgPtr);
+            mInvokerPtr    = std::move(other.mInvokerPtr);
         }
         return *this;
     }
 
     float ContractionSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
-        if(!mArgPtr || !mInvokerPtr || !mParams || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
+        if(!mInvokerArgPtr || !mInvokerPtr || !mParams
+           || mParams->opCDE() == ContractionOpId_t::UNKNOWN)
         {
 #if !NDEBUG
             std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -92,28 +93,34 @@ namespace hiptensor
             return -1.0f;
         }
 
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
+        auto result = mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
+
+        // have to free device memory after using a solution. Otherwise, hundreds of used complex solutions
+        // will all hold large device memory buffers since solutions have a lifetime as long as the program.
+        resetInvokerArgs();
+
+        return result;
     }
 
-    float ContractionSolution::operator()(void const*                     alpha,
-                                          void const*                     A,
-                                          void const*                     B,
-                                          void const*                     beta,
-                                          void const*                     D,
-                                          void*                           E,
-                                          std::vector<std::size_t>        a_ms_ns_lengths,
-                                          std::vector<std::size_t>        a_ms_ks_strides,
-                                          std::vector<int32_t>            a_ms_ks_modes,
-                                          std::vector<std::size_t>        b_ns_ks_lengths,
-                                          std::vector<std::size_t>        b_ns_ks_strides,
-                                          std::vector<int32_t>            b_ns_ks_modes,
-                                          std::vector<std::size_t>        ds_ms_ns_lengths,
-                                          std::vector<std::size_t>        ds_ms_ns_strides,
-                                          std::vector<int32_t>            ds_ms_ns_modes,
-                                          std::vector<std::size_t>        e_ms_ns_lengths,
-                                          std::vector<std::size_t>        e_ms_ns_strides,
-                                          std::vector<int32_t>            e_ms_ns_modes,
-                                          void*                           workspacePtr,
+    float ContractionSolution::operator()(void const*              alpha,
+                                          void const*              A,
+                                          void const*              B,
+                                          void const*              beta,
+                                          void const*              D,
+                                          void*                    E,
+                                          std::vector<std::size_t> a_ms_ns_lengths,
+                                          std::vector<std::size_t> a_ms_ks_strides,
+                                          std::vector<int32_t>     a_ms_ks_modes,
+                                          std::vector<std::size_t> b_ns_ks_lengths,
+                                          std::vector<std::size_t> b_ns_ks_strides,
+                                          std::vector<int32_t>     b_ns_ks_modes,
+                                          std::vector<std::size_t> ds_ms_ns_lengths,
+                                          std::vector<std::size_t> ds_ms_ns_strides,
+                                          std::vector<int32_t>     ds_ms_ns_modes,
+                                          std::vector<std::size_t> e_ms_ns_lengths,
+                                          std::vector<std::size_t> e_ms_ns_strides,
+                                          std::vector<int32_t>     e_ms_ns_modes,
+                                          void*                    workspacePtr,
                                           StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
         if(!initArgs(alpha,
@@ -142,7 +149,7 @@ namespace hiptensor
             return -1.0f;
         }
 
-        return mInvokerPtr->Run(mArgPtr.get(), streamConfig);
+        return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
     bool ContractionSolution::isValid() const
@@ -183,7 +190,7 @@ namespace hiptensor
     {
         if(mValid)
         {
-            return mDeviceOp->GetWorkSpaceSize(mArgPtr.get());
+            return mDeviceOp->GetWorkSpaceSize(mInvokerArgPtr.get());
         }
         else
         {
@@ -198,10 +205,14 @@ namespace hiptensor
         mK     = 0;
         mBytes = 0;
 
-        mArgPtr.reset(nullptr);
+        mInvokerArgPtr.reset(nullptr);
         mInvokerPtr.reset(nullptr);
 
         mValid = false;
     }
 
+    void ContractionSolution::resetInvokerArgs()
+    {
+        mInvokerArgPtr.reset(nullptr);
+    }
 } // namespace hiptensor

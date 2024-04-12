@@ -27,11 +27,11 @@
 #ifndef HIPTENSOR_PERMUTATION_SOLUTION_IMPL_HPP
 #define HIPTENSOR_PERMUTATION_SOLUTION_IMPL_HPP
 
-#include <numeric>
 #include <map>
+#include <numeric>
 
-#include "permutation_solution.hpp"
 #include "hash.hpp"
+#include "permutation_solution.hpp"
 
 namespace std
 {
@@ -51,8 +51,7 @@ namespace hiptensor
     class PermutationSolutionImpl;
 
     template <typename DeviceOp>
-    class PermutationSolutionImpl<DeviceOp>
-        : public PermutationSolution
+    class PermutationSolutionImpl<DeviceOp> : public PermutationSolution
     {
     public:
         PermutationSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
@@ -61,16 +60,16 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                       alpha,
-                      void const*                       A,
-                      void*                             B,
-                      std::vector<std::size_t> const&   a_lengths,
-                      std::vector<std::size_t> const&   a_strides,
-                      const int32_t                     modeA[],
-                      std::vector<std::size_t> const&   b_lengths,
-                      std::vector<std::size_t> const&   b_strides,
-                      const int32_t                     modeB[],
-                      const hipDataType                 typeScalar) override
+        bool initArgs(void const*                     alpha,
+                      void const*                     A,
+                      void*                           B,
+                      std::vector<std::size_t> const& a_lengths,
+                      std::vector<std::size_t> const& a_strides,
+                      const int32_t                   modeA[],
+                      std::vector<std::size_t> const& b_lengths,
+                      std::vector<std::size_t> const& b_strides,
+                      const int32_t                   modeB[],
+                      const hipDataType               typeScalar) override
         {
             using Base   = PermutationSolution;
             using Traits = MetaTraits<DeviceOp>;
@@ -86,12 +85,12 @@ namespace hiptensor
                 return 0;
             }
 
-            auto findThreadDim = [](std::string argValues)  -> uint32_t  {
+            auto findThreadDim = [](std::string argValues) -> uint32_t {
                 if(!argValues.empty())
                 {
                     std::string kernelName = argValues.substr(0, argValues.find('<'));
-                    if(kernelName == "DeviceElementwiseNormalizationImpl" ||
-                       kernelName == "ReferencePermutation")
+                    if(kernelName == "DeviceElementwiseNormalizationImpl"
+                       || kernelName == "ReferencePermutation")
                     {
                         int beg = argValues.find(',');
                         int end = argValues.find('>');
@@ -109,10 +108,11 @@ namespace hiptensor
             }
 
             // CK has its own format for indices...
-            auto toCKArr = [](std::vector<std::size_t> const& v, std::array<ck::index_t, Traits::NDim>& a) {
-                std::copy_n(v.begin(), Traits::NDim, a.begin());
-            };
- 
+            auto toCKArr
+                = [](std::vector<std::size_t> const& v, std::array<ck::index_t, Traits::NDim>& a) {
+                      std::copy_n(v.begin(), Traits::NDim, a.begin());
+                  };
+
             // Re-construct strides from lengths, assuming packed.
             std::array<ck::index_t, Traits::NDim> aStrides, bStrides, bStridesCk, abLengths;
 
@@ -122,8 +122,10 @@ namespace hiptensor
                 modeAToIndex[modeA[i]] = i;
             }
 
-            toCKArr(hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), aStrides);
-            toCKArr(hiptensor::stridesFromLengths(b_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR), bStrides);
+            toCKArr(hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR),
+                    aStrides);
+            toCKArr(hiptensor::stridesFromLengths(b_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR),
+                    bStrides);
             for(int i = 0; i < Traits::NDim; i++)
             {
                 bStridesCk[modeAToIndex[modeB[i]]] = bStrides[i];
@@ -132,15 +134,15 @@ namespace hiptensor
             toCKArr(a_lengths, abLengths);
 
             // Initialize the argument pointer
-            Base::mArgPtr = std::move(deviceOp->MakeArgumentPointer(
-                abLengths,
-                {aStrides},
-                {bStridesCk},
-                {A},
-                {B},
-                typename Traits::AOp{},
-                typename Traits::BOp{},
-                typename Traits::ScaleOp{alphaF}));
+            Base::mInvokerArgPtr
+                = std::move(deviceOp->MakeArgumentPointer(abLengths,
+                                                          {aStrides},
+                                                          {bStridesCk},
+                                                          {A},
+                                                          {B},
+                                                          typename Traits::AOp{},
+                                                          typename Traits::BOp{},
+                                                          typename Traits::ScaleOp{alphaF}));
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -153,7 +155,7 @@ namespace hiptensor
                            + sizeof(typename Traits::OutDataT) * Base::mDim;
 
             // Arg test
-            Base::mValid = deviceOp->IsSupportedArgument(Base::mArgPtr.get());
+            Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
 
             Base::mThreadDim = findThreadDim(deviceOp->GetTypeString());
 
@@ -169,13 +171,8 @@ namespace hiptensor
               ck::index_t NumDim>
     std::vector<std::unique_ptr<hiptensor::PermutationSolution>> enumeratePermutationSolutions()
     {
-        using PermutationOp
-             = ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
-                                                               OutDataTypeTuple,
-                                                               Aop,
-                                                               Bop,
-                                                               Scale,
-                                                               NumDim>;
+        using PermutationOp = ck::tensor_operation::device::
+            DeviceElementwise<InDataTypeTuple, OutDataTypeTuple, Aop, Bop, Scale, NumDim>;
 
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<PermutationOp>;
