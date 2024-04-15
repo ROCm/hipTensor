@@ -92,10 +92,10 @@ LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
-LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::size_t>)
+LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(std::vector<std::size_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::size_t>>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::vector<std::size_t>>>)
-LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<int32_t>)
+LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(std::vector<int32_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<int32_t>>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::vector<int32_t>>>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<double>)
@@ -241,17 +241,21 @@ namespace llvm
                 io.mapOptional("Betas",
                                (std::vector<std::vector<double>>&)(doc.betas()),
                                std::vector<std::vector<double>>(doc.alphas().size()));
-                io.mapRequired("Lengths", (std::vector<std::vector<std::vector<size_t>>>&)doc.problemLengths());
-                io.mapRequired("Modes", (std::vector<std::vector<std::vector<int32_t>>>&)doc.problemModes());
+                io.mapRequired(
+                    "Lengths",
+                    (std::vector<std::vector<std::vector<size_t>>>&)doc.problemLengths());
+                io.mapRequired("Modes",
+                               (std::vector<std::vector<std::vector<int32_t>>>&)doc.problemModes());
 
                 // Default values for optional values
-                auto defaultStrides = std::vector<std::vector<std::vector<std::size_t>>>(doc.problemLengths());
+                auto defaultStrides
+                    = std::vector<std::vector<std::vector<std::size_t>>>(doc.problemLengths());
                 for(auto i = 0; i < defaultStrides.size(); i++)
                 {
                     for(auto j = 0; j < defaultStrides[i].size(); j++)
                     {
-                        defaultStrides[i][j]
-                            = std::vector<std::size_t>(doc.problemLengths()[i][j].size(), std::size_t(0));
+                        defaultStrides[i][j] = std::vector<std::size_t>(
+                            doc.problemLengths()[i][j].size(), std::size_t(0));
                     }
                 }
 

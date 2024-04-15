@@ -49,8 +49,7 @@ namespace ck
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // m/n/n/n are the fast changing dimension for A/B/D/E
                 using device_contraction_scale_m6_n6_k6_xdl_c_shuffle_f16_f16_f16_compute_f32_mnn_instance
-                    = device_contraction_mn_instance<6,
-                                                     F16,
+                    = device_contraction_mn_instance<F16,
                                                      F16,
                                                      F32,
                                                      F16,
@@ -59,7 +58,8 @@ namespace ck
                                                      F32,
                                                      PassThrough,
                                                      PassThrough,
-                                                     Scale>;
+                                                     Scale,
+                                                     6>;
 
                 void
                     add_device_contraction_scale_m6_n6_k6_xdl_c_shuffle_f16_f16_f16_compute_f32_mnn_instance(

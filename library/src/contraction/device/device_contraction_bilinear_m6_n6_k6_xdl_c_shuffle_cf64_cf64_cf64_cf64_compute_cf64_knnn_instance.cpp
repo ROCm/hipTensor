@@ -54,8 +54,7 @@ namespace ck
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/n/n/n are the fast changing dimension for A/B/D/E
                 using device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_knnn_instance
-                    = device_contraction_f64_kn_instance<6,
-                                                         CF64,
+                    = device_contraction_f64_kn_instance<CF64,
                                                          CF64,
                                                          F64,
                                                          F64,
@@ -64,7 +63,8 @@ namespace ck
                                                          CF64,
                                                          PassThrough,
                                                          PassThrough,
-                                                         BilinearComplex>;
+                                                         BilinearComplex,
+                                                         6>;
 
                 void
                     add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf64_cf64_cf64_cf64_compute_cf64_knnn_instance(
