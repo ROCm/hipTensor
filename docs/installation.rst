@@ -110,7 +110,7 @@ There are GitHub branches at the hipTensor site with names ``rocm-major.minor.x`
 
 Replace ``x.y`` in the above command with the version of ROCm installed on your machine. For example, if you have ROCm 5.0 installed, then replace release/rocm-rel-x.y with release/rocm-rel-5.0.
 
-Build Documentation
+Build documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To build documentation locally, run:
@@ -131,9 +131,9 @@ To build documentation locally, run:
 
     pdflatex hiptensor.tex
 
-Running the above commands generates ``hiptensor.pdf``.
+Running the above commands generates ``hiptensor.pdf``. Alternatively, the latest docs build can be found `here <https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html>`_.
 
-Build Configuration
+Build configuration
 ^^^^^^^^^^^^^^^^^^^^^
 
 You can choose to build any of the following:
@@ -141,9 +141,9 @@ You can choose to build any of the following:
 * library only
 * library and samples
 * library and tests
-* library, sampes and tests
+* library, samples and tests
 
-You only need (library) for calling and linking to hipTensor from your code.
+You only need the hipTensor library for calling and linking to hipTensor API from your code.
 The clients contain the tests and sample codes.
 
 Below are the project options available to build hipTensor library with or without clients.
@@ -193,7 +193,7 @@ To build the library alone, run:
 
 .. code-block:: bash
 
-    `CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B <build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=OFF`
+    CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B <build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF -DHIPTENSOR_BUILD_SAMPLES=OFF
 
 After configuration, build using:
 
@@ -220,6 +220,9 @@ After configuration, build using:
     cmake --build <build_dir> -- -j<nproc>
 
 The samples folder in ``<build_dir>`` contains executables in the table below.
+
+.. tabularcolumns::
+   |\X{2}{4}|\X{2}{4}|
 
 ================================================================== =====================================================================================================================================================================
 Executable Name                                                    Description
@@ -260,6 +263,9 @@ After configuration, build using:
 
 The tests in ``<build_dir>`` contain executables as given in the table below.
 
+.. tabularcolumns::
+   |\X{2}{4}|\X{2}{4}|
+
 ================================================ ===========================================================================================================================
 Executable name                                  Description
 ================================================ ===========================================================================================================================
@@ -292,7 +298,7 @@ Executable name                                  Description
 ``rank6_permutation_test``                       Permutation test with half and single precision datatypes of rank 6
 ================================================ ===========================================================================================================================
 
-Make Targets List
+Make targets list
 ^^^^^^^^^^^^^^^^^
 
 When building hipTensor during the ``make`` step, we can specify make targets instead of defaulting ``make all``. The following table highlights relationships between high level grouped targets and individual targets.
@@ -392,7 +398,7 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   |rank6_permutation_test                                                       |
 +-----------------------------------+-----------------------------------------------------------------------------+
 
-Build Performance
+Build performance
 ^^^^^^^^^^^^^^^^^
 
 Depending on the resources available to the build machine and the build configuration selected, hipTensor build times can be on the order of an hour or more. Here are some things you can do to reduce build times:
@@ -402,7 +408,7 @@ Depending on the resources available to the build machine and the build configur
 * If they aren't needed, specify either ``HIPTENSOR_BUILD_TESTS`` or ``HIPTENSOR_BUILD_SAMPLES`` as OFF to disable client builds.
 * During the ``make`` command, build a specific target, e.g: ``logger_test``.
 
-Test Runtime
+Test runtime
 ^^^^^^^^^^^^^^^^^
 
 Depending on the resources available to the machine running the selected tests, hipTensor test runtimes can be on the order of an hour or more. Here are some things you can do to reduce run-times:
@@ -418,7 +424,7 @@ Depending on the resources available to the machine running the selected tests, 
 * Alternatively, use your own testing YAML config with a reduced parameter set.
 * For tests with large tensor ranks, avoid using larger lengths to reduce computational load.
 
-Test Verbosity and File Redirection
+Test verbosity and file redirection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tests support logging arguments that can be used to control verbosity and output redirection.
