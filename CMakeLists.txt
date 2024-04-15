@@ -56,6 +56,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O2") # clang++ crashes without -O2
+set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -DNDEBUG") # clang++ failed to build the project with the default -Os
+
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
