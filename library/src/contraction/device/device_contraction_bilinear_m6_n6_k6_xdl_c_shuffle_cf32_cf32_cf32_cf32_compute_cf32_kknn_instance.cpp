@@ -47,16 +47,15 @@ namespace ck
         {
             namespace instance
             {
-                using F32               = float;
-                using CF32              = hipFloatComplex;
-                using CF32_Tuple        = ck::Tuple<CF32>;
-                using BilinearComplex   = element_wise::BilinearComplex;
+                using F32             = float;
+                using CF32            = hipFloatComplex;
+                using CF32_Tuple      = ck::Tuple<CF32>;
+                using BilinearComplex = element_wise::BilinearComplex;
 
                 // A[m0, m1, k0, k1] * B[n0, n1, k0, k1] + D[m0, m1, n0, n1] = E[m0, m1, n0, n1]
                 // k/k/n/n are the fast changing dimension for A/B/D/E
                 using device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_kknn_instance
-                    = device_contraction_kk_instance<6,
-                                                     CF32,
+                    = device_contraction_kk_instance<CF32,
                                                      CF32,
                                                      F32,
                                                      F32,
@@ -65,7 +64,8 @@ namespace ck
                                                      CF32,
                                                      PassThrough,
                                                      PassThrough,
-                                                     BilinearComplex>;
+                                                     BilinearComplex,
+                                                     6>;
 
                 void
                     add_device_contraction_bilinear_m6_n6_k6_xdl_c_shuffle_cf32_cf32_cf32_cf32_compute_cf32_kknn_instance(
