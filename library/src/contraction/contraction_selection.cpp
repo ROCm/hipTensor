@@ -116,29 +116,30 @@ namespace hiptensor
 
         for(auto* solution : candidates)
         {
-            if(solution->initArgs(&alpha,
-                                  A_d,
-                                  B_d,
-                                  &beta,
-                                  D_d,
-                                  E_d,
-                                  a_ms_ks_lengths,
-                                  a_ms_ks_strides,
-                                  a_ms_ks_modes,
-                                  b_ns_ks_lengths,
-                                  b_ns_ks_strides,
-                                  b_ns_ks_modes,
-                                  d_ms_ns_lengths,
-                                  d_ms_ns_strides,
-                                  d_ms_ns_modes,
-                                  e_ms_ns_lengths,
-                                  e_ms_ns_strides,
-                                  e_ms_ns_modes,
-                                  wspace)
-               && solution->workspaceSize() <= workspaceSize)
+            auto [errorCode, time] = (*solution)(&alpha,
+                                                 A_d,
+                                                 B_d,
+                                                 &beta,
+                                                 D_d,
+                                                 E_d,
+                                                 a_ms_ks_lengths,
+                                                 a_ms_ks_strides,
+                                                 a_ms_ks_modes,
+                                                 b_ns_ks_lengths,
+                                                 b_ns_ks_strides,
+                                                 b_ns_ks_modes,
+                                                 d_ms_ns_lengths,
+                                                 d_ms_ns_strides,
+                                                 d_ms_ns_modes,
+                                                 e_ms_ns_lengths,
+                                                 e_ms_ns_strides,
+                                                 e_ms_ns_modes,
+                                                 wspace,
+                                                 workspaceSize,
+                                                 StreamConfig{nullptr, true});
+            if(errorCode == HIPTENSOR_STATUS_SUCCESS && time > 0)
             {
                 // Make sure to time the kernels
-                auto    time = (*solution)(StreamConfig{nullptr, true});
                 int32_t m, n, k;
                 std::tie(m, n, k) = solution->problemDims();
                 auto flops        = std::size_t(2) * m * n * k;

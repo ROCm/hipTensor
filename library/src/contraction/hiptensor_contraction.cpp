@@ -142,16 +142,16 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         return errorCode;
     }
 
-    if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY ||
-       descB->mUnaryOp != HIPTENSOR_OP_IDENTITY ||
-       descD->mUnaryOp != HIPTENSOR_OP_IDENTITY ||
-       (descC && descC->mUnaryOp != HIPTENSOR_OP_IDENTITY))
+    if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY || descB->mUnaryOp != HIPTENSOR_OP_IDENTITY
+       || descD->mUnaryOp != HIPTENSOR_OP_IDENTITY
+       || (descC && descC->mUnaryOp != HIPTENSOR_OP_IDENTITY))
     {
         auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
         snprintf(msg,
-                sizeof(msg),
-                "Unsupported Operator Type Error : The supported Operator is HIPTENSOR_OP_IDENTITY (%s)",
-                hiptensorGetErrorString(errorCode));
+                 sizeof(msg),
+                 "Unsupported Operator Type Error : The supported Operator is "
+                 "HIPTENSOR_OP_IDENTITY (%s)",
+                 hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorInitContractionDescriptor", msg);
         return errorCode;
     }
@@ -162,11 +162,11 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         // tensor C-descriptor is empty
 
         // Store modes information in desc
-        int nModeA = descA->mLengths.size();
+        int                  nModeA = descA->mLengths.size();
         std::vector<int32_t> modeAV(modeA, modeA + nModeA);
-        int nModeB = descB->mLengths.size();
+        int                  nModeB = descB->mLengths.size();
         std::vector<int32_t> modeBV(modeB, modeB + nModeB);
-        int nModeD = descD->mLengths.size();
+        int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
         auto contractionOp
@@ -190,13 +190,13 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         // tensor C-descriptor is not empty
 
         // Store modes information in desc
-        int nModeA = descA->mLengths.size();
+        int                  nModeA = descA->mLengths.size();
         std::vector<int32_t> modeAV(modeA, modeA + nModeA);
-        int nModeB = descB->mLengths.size();
+        int                  nModeB = descB->mLengths.size();
         std::vector<int32_t> modeBV(modeB, modeB + nModeB);
-        int nModeC = descC->mLengths.size();
+        int                  nModeC = descC->mLengths.size();
         std::vector<int32_t> modeCV(modeC, modeC + nModeC);
-        int nModeD = descD->mLengths.size();
+        int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
         auto contractionOp
@@ -210,7 +210,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                   alignmentRequirementB,
                   alignmentRequirementC,
                   alignmentRequirementD},
-                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
+                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -736,58 +736,43 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         return errorCode;
     }
 
-    auto* cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
+    auto*             cSolution = (hiptensor::ContractionSolution*)(plan->mSolution);
+    hiptensorStatus_t errorCode = HIPTENSOR_STATUS_SUCCESS;
+    float             time      = 0.0f;
 
-    auto canRun = cSolution->initArgs(alpha,
-                                      A,
-                                      B,
-                                      beta,
-                                      C,
-                                      D,
-                                      plan->mContractionDesc.mTensorDesc[0].mLengths,
-                                      plan->mContractionDesc.mTensorDesc[0].mStrides,
-                                      plan->mContractionDesc.mTensorMode[0],
-                                      plan->mContractionDesc.mTensorDesc[1].mLengths,
-                                      plan->mContractionDesc.mTensorDesc[1].mStrides,
-                                      plan->mContractionDesc.mTensorMode[1],
-                                      plan->mContractionDesc.mTensorDesc[2].mLengths,
-                                      plan->mContractionDesc.mTensorDesc[2].mStrides,
-                                      plan->mContractionDesc.mTensorMode[2],
-                                      plan->mContractionDesc.mTensorDesc[3].mLengths,
-                                      plan->mContractionDesc.mTensorDesc[3].mStrides,
-                                      plan->mContractionDesc.mTensorMode[2],
-                                      workspace);
-
-    if(canRun)
+    // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
+    if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
     {
-        if(cSolution->workspaceSize() > workspaceSize)
-        {
-            auto errorCode = HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE;
-            snprintf(msg,
-                     sizeof(msg),
-                     "Insufficient workspace: req: %lu alloc: %lu (%s)",
-                     cSolution->workspaceSize(),
-                     workspaceSize,
-                     hiptensorGetErrorString(errorCode));
-            logger->logError("hiptensorContraction", msg);
-            return errorCode;
-        }
+        std::tie(errorCode, time) = (*cSolution)(alpha,
+                                                 A,
+                                                 B,
+                                                 beta,
+                                                 C,
+                                                 D,
+                                                 plan->mContractionDesc.mTensorDesc[0].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[0].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[0],
+                                                 plan->mContractionDesc.mTensorDesc[1].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[1].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[1],
+                                                 plan->mContractionDesc.mTensorDesc[2].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[2].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[2],
+                                                 plan->mContractionDesc.mTensorDesc[3].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[3].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[2],
+                                                 workspace,
+                                                 workspaceSize,
+                                                 StreamConfig{
+                                                     stream, // stream id
+                                                     true, // time_kernel
+                                                     0, // log_level
+                                                     0, // cold_niters
+                                                     1, // nrepeat
+                                                 });
 
-        // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
-        if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+        if(errorCode == HIPTENSOR_STATUS_SUCCESS)
         {
-            auto time = (*cSolution)(StreamConfig{
-                stream, // stream id
-                true, // time_kernel
-                0, // log_level
-                0, // cold_niters
-                1, // nrepeat
-            });
-            if(time < 0)
-            {
-                return HIPTENSOR_STATUS_CK_ERROR;
-            }
-
             int32_t m, n, k;
             std::tie(m, n, k) = cSolution->problemDims();
             auto flops        = std::size_t(2) * m * n * k;
@@ -812,25 +797,50 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                      metrics.mBandwidth);
             logger->logPerformanceTrace("hiptensorContraction", msg);
         }
-        // Perform contraction without timing
-        else
-        {
-            if((*cSolution)(StreamConfig{stream, false}) < 0)
-            {
-                return HIPTENSOR_STATUS_CK_ERROR;
-            }
-        }
-
-        return HIPTENSOR_STATUS_SUCCESS;
     }
-    else
+    else // Perform contraction without timing
     {
-        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+        std::tie(errorCode, time) = (*cSolution)(alpha,
+                                                 A,
+                                                 B,
+                                                 beta,
+                                                 C,
+                                                 D,
+                                                 plan->mContractionDesc.mTensorDesc[0].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[0].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[0],
+                                                 plan->mContractionDesc.mTensorDesc[1].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[1].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[1],
+                                                 plan->mContractionDesc.mTensorDesc[2].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[2].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[2],
+                                                 plan->mContractionDesc.mTensorDesc[3].mLengths,
+                                                 plan->mContractionDesc.mTensorDesc[3].mStrides,
+                                                 plan->mContractionDesc.mTensorMode[2],
+                                                 workspace,
+                                                 workspaceSize,
+                                                 StreamConfig{stream, false});
+    }
+
+    if(errorCode == HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE)
+    {
+        snprintf(msg,
+                 sizeof(msg),
+                 "Insufficient workspace: req: %lu alloc: %lu (%s)",
+                 cSolution->workspaceSize(),
+                 workspaceSize,
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+    }
+    else if(errorCode == HIPTENSOR_STATUS_INTERNAL_ERROR)
+    {
         snprintf(msg,
                  sizeof(msg),
                  "Selected kernel is unable to solve the problem (%s)",
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
-        return errorCode;
     }
+
+    return errorCode;
 }

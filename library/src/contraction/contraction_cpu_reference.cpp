@@ -69,29 +69,27 @@ hiptensorStatus_t hiptensorContractionReference(const hiptensorContractionPlan_t
     }
     else
     {
-        auto refCandidate = candidates.solutions().begin()->second;
-        if(refCandidate->initArgs(alpha,
-                                  A,
-                                  B,
-                                  beta,
-                                  C,
-                                  D,
-                                  a_ms_ks_lengths,
-                                  a_ms_ks_strides,
-                                  a_ms_ks_modes,
-                                  b_ns_ks_lengths,
-                                  b_ns_ks_strides,
-                                  b_ns_ks_modes,
-                                  c_ms_ns_lengths,
-                                  c_ms_ns_strides,
-                                  c_ms_ns_modes,
-                                  d_ms_ns_lengths,
-                                  d_ms_ns_strides,
-                                  d_ms_ns_modes,
-                                  workspace))
-        {
-            (*refCandidate)();
-        }
-        return HIPTENSOR_STATUS_SUCCESS;
+        auto refCandidate      = candidates.solutions().begin()->second;
+        auto [errorCode, time] = (*refCandidate)(alpha,
+                                                 A,
+                                                 B,
+                                                 beta,
+                                                 C,
+                                                 D,
+                                                 a_ms_ks_lengths,
+                                                 a_ms_ks_strides,
+                                                 a_ms_ks_modes,
+                                                 b_ns_ks_lengths,
+                                                 b_ns_ks_strides,
+                                                 b_ns_ks_modes,
+                                                 c_ms_ns_lengths,
+                                                 c_ms_ns_strides,
+                                                 c_ms_ns_modes,
+                                                 d_ms_ns_lengths,
+                                                 d_ms_ns_strides,
+                                                 d_ms_ns_modes,
+                                                 workspace,
+                                                 0);
+        return errorCode;
     }
 }
