@@ -33,8 +33,6 @@ set (PermutationTestSources ${PermutationCommonSources}
     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_impl_test.cpp
     )
 
-set (PermutationTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank4_test_params.yaml)
-add_hiptensor_test(permutation_test ${PermutationTestConfig}  ${PermutationTestSources})
 
 # Rank 2 tests
 set (PermutationRank2TestSources ${PermutationCommonSources}

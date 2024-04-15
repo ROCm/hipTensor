@@ -157,7 +157,7 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 rocm_create_package(
     NAME hiptensor
-    DESCRIPTION "Adaptation library of tensor contraction with composable_kernel backend"
+    DESCRIPTION "AMD's high-performance HIP library for tensor primitives"
     MAINTAINER "hiptensor Maintainer <hiptensor-maintainer@amd.com>"
     LDCONFIG
 )
