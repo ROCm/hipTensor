@@ -42,6 +42,8 @@ function(add_hiptensor_component COMPONENT_NAME COMPONENT_SOURCES)
     # Make sure they have -fPIC and that they inherit the hip::device environment
     # so that they build for all archs in AMDGPU_TARGETS
     add_library(${COMPONENT_NAME} OBJECT ${COMPONENT_SOURCES})
+    target_compile_options(${COMPONENT_NAME} PRIVATE ${CLANG_DRIVER_MODE})
+    target_link_options(${COMPONENT_NAME} PRIVATE ${CLANG_DRIVER_MODE})
     set_target_properties(${COMPONENT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(${COMPONENT_NAME} PRIVATE hip::device)
     if(HIPTENSOR_BUILD_COMPRESSED_DBG)
@@ -86,7 +88,11 @@ add_library(hiptensor SHARED
 
 add_library(hiptensor::hiptensor ALIAS hiptensor)
 
-target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS})
+# Add driver mode to both cxx and link flags
+target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS} ${CLANG_DRIVER_MODE})
+target_link_options(hiptensor PRIVATE ${CLANG_DRIVER_MODE})
+
+# Compressed debug symbols flags
 if(HIPTENSOR_BUILD_COMPRESSED_DBG)
     target_compile_options(hiptensor PRIVATE
         "$<$<CONFIG:Debug>:-gz>"
