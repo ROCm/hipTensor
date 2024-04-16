@@ -74,12 +74,16 @@ Dependencies
 ^^^^^^^^^^^^
 hipTensor is designed to have minimal external dependencies such that it is light-weight and portable.
 
+.. <!-- spellcheck-disable -->
+
 * Minimum ROCm version support is 6.0.
 * Minimum cmake version support is 3.14.
 * Minimum ROCm-cmake version support is 0.8.0.
 * Minimum Composable Kernel version support is composable_kernel 1.1.0 for ROCm 6.0.2 (or ROCm package composablekernel-dev).
 * Minimum HIP runtime version support is 4.3.0 (or ROCm package ROCm hip-runtime-amd).
 * Minimum LLVM dev package version support is 10.0 (available as ROCm package rocm-llvm-dev).
+
+.. <!-- spellcheck-enable -->
 
 .. note::
     It is best to use available ROCm packages from the same release where applicable.
@@ -123,7 +127,7 @@ To build documentation locally, run:
     sudo apt-get install doxygen
     sudo apt-get install texlive-latex-base texlive-latex-extra
 
-    pip3 install -r .sphinx/requirements.txt
+    pip3 install -r sphinx/requirements.txt
 
     python3 -m sphinx -T -E -b latex -d _build/doctrees -D language=en . _build/latex
 
@@ -451,5 +455,5 @@ Tests support logging arguments that can be used to control verbosity and output
 |                        |                                     +--------------------------------------------+
 |                        |                                     |  code = 8: Omit all gtest output           |
 |                        |                                     +--------------------------------------------+
-|                        |                                     |  code = <N>: OR'd combination of 1, 2, 4   |
+|                        |                                     |  code = <N>: OR combination of 1, 2, 4     |
 +------------------------+-------------------------------------+--------------------------------------------+

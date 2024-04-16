@@ -37,178 +37,188 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
-/**
- * \brief hipTensor status type
- * \details The type is used to indicate the status of hipTensor library functions.
- * It can have the following values.
- */
+//! @brief hipTensor status type enumeration
+//! @details The type is used to indicate the resulting status of hipTensor library function calls
 typedef enum
 {
-    /** The operation is successful.*/
+    //! The operation is successful.
     HIPTENSOR_STATUS_SUCCESS = 0,
-    /** The handle was not initialized.*/
+    //! The handle was not initialized.
     HIPTENSOR_STATUS_NOT_INITIALIZED = 1,
-    /** Resource allocation failed inside the hipTensor library.*/
+    //! Resource allocation failed inside the hipTensor library.
     HIPTENSOR_STATUS_ALLOC_FAILED = 3,
-    /** Invalid value or parameter was passed to the function (indicates an
-     user error).*/
+    //! Invalid value or parameter was passed to the function (indicates a user error).
     HIPTENSOR_STATUS_INVALID_VALUE = 7,
-    /** Indicates that the target architecure is not supported, or the
-     device is not ready.*/
+    //! Indicates that the target architecure is not supported, or the device is not ready.
     HIPTENSOR_STATUS_ARCH_MISMATCH = 8,
-    /** Indicates the failure of a GPU program or a kernel, which can be caused by multiple
-     reasons.*/
+    //! Indicates the failure of a GPU program or a kernel, which can be caused by multiple reasons.
     HIPTENSOR_STATUS_EXECUTION_FAILED = 13,
-    /** An internal error has occurred.*/
+    //! An internal error has occurred.
     HIPTENSOR_STATUS_INTERNAL_ERROR = 14,
-    /** The requested operation is not supported.*/
+    //! The requested operation is not supported.
     HIPTENSOR_STATUS_NOT_SUPPORTED = 15,
-    /** A call to Composable Kernels did not succeed.*/
+    //! A call to Composable Kernels did not succeed.
     HIPTENSOR_STATUS_CK_ERROR = 17,
-    /** Unknown hipTensor error has occurred.*/
+    //! Unknown hipTensor error has occurred.
     HIPTENSOR_STATUS_HIP_ERROR = 18,
-    /** The provided workspace was insufficient.*/
+    //! The provided workspace was insufficient.
     HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE = 19,
-    /** Indicates that the driver version is insufficient.*/
+    //! Indicates that the driver version is insufficient.
     HIPTENSOR_STATUS_INSUFFICIENT_DRIVER = 20,
-    /** Indicates an error related to file I/O.*/
+    //! Indicates an error related to file I/O.
     HIPTENSOR_STATUS_IO_ERROR = 21,
+
 } hiptensorStatus_t;
 
-/**
- * \brief hipTensor's compute type
- *
- */
+//! @brief hipTensor compute type enumeration
 typedef enum
 {
+    //! Single precision floating point
     HIPTENSOR_COMPUTE_32F = (1U << 2U),
+    //! Double precision floating point
     HIPTENSOR_COMPUTE_64F = (1U << 4U),
-    /*!< Following types to be added (TBA) */
-    HIPTENSOR_COMPUTE_16F  = (1U << 0U),
+    //! Half precision floating point
+    HIPTENSOR_COMPUTE_16F = (1U << 0U),
+    //! Brain float half precision floating point
     HIPTENSOR_COMPUTE_16BF = (1U << 10U),
-    HIPTENSOR_COMPUTE_8U   = (1U << 6U),
-    HIPTENSOR_COMPUTE_8I   = (1U << 8U),
-    HIPTENSOR_COMPUTE_32U  = (1U << 7U),
-    HIPTENSOR_COMPUTE_32I  = (1U << 9U),
+    //! Complex single precision floating point
     HIPTENSOR_COMPUTE_C32F = (1U << 11U),
+    //! Complex double precision floating point
     HIPTENSOR_COMPUTE_C64F = (1U << 12U),
-    HIPTENSOR_COMPUTE_NONE = 0
+    //! No type
+    HIPTENSOR_COMPUTE_NONE = 0,
+
+    //! <Following type to be added (TBA)>
+    HIPTENSOR_COMPUTE_8U  = (1U << 6U),
+    HIPTENSOR_COMPUTE_8I  = (1U << 8U),
+    HIPTENSOR_COMPUTE_32U = (1U << 7U),
+    HIPTENSOR_COMPUTE_32I = (1U << 9U),
+
 } hiptensorComputeType_t;
 
-/**
- * \brief This enum captures the operations supported by the hipTensor library.
- */
+//! @brief Element-wise operations
 typedef enum
 {
-    HIPTENSOR_OP_IDENTITY = 1,   /*!< Identity operator  */
-    HIPTENSOR_OP_SQRT = 3,       /*!< Square operator  */
-    HIPTENSOR_OP_UNKNOWN  = 126, /*!< reserved */
+    //! Identity operator
+    HIPTENSOR_OP_IDENTITY = 1,
+    //! Square root operator
+    HIPTENSOR_OP_SQRT = 3,
+    //! Reserved
+    HIPTENSOR_OP_UNKNOWN = 126,
+
 } hiptensorOperator_t;
 
-/**
- * \brief This captures the algorithm to be used to perform the tensor contraction.
- */
+//! @brief Tensor contraction kernel selection algorithm
 typedef enum
 {
-    HIPTENSOR_ALGO_ACTOR_CRITIC = -8, /*!< Uses novel actor-critic selection model (To be Added) */
-    HIPTENSOR_ALGO_DEFAULT      = -1, /*!< Lets the internal heuristic choose */
-    HIPTENSOR_ALGO_DEFAULT_PATIENT = -6, /*!< Uses the more accurate and time-consuming model */
+    //! Uses novel actor-critic selection model
+    HIPTENSOR_ALGO_ACTOR_CRITIC = -8,
+    //! Lets the internal heuristic choose
+    HIPTENSOR_ALGO_DEFAULT = -1,
+    //! Uses the more accurate and time-consuming model
+    HIPTENSOR_ALGO_DEFAULT_PATIENT = -6,
+
 } hiptensorAlgo_t;
 
-/**
- * \brief This enum gives control over the workspace selection
- */
+//! @brief Workspace size selection
 typedef enum
 {
-    HIPTENSOR_WORKSPACE_MIN         = 1, /*!< At least one algorithm will be available */
-    HIPTENSOR_WORKSPACE_RECOMMENDED = 2, /*!< The most suitable algorithm will be available */
-    HIPTENSOR_WORKSPACE_MAX         = 3, /*!< All algorithms will be available */
+    //! At least one algorithm will be available
+    HIPTENSOR_WORKSPACE_MIN = 1,
+    //! The most suitable algorithm will be available
+    HIPTENSOR_WORKSPACE_RECOMMENDED = 2,
+    //! All algorithms will be available
+    HIPTENSOR_WORKSPACE_MAX = 3,
+
 } hiptensorWorksizePreference_t;
 
-/**
- * \brief This enum decides the logging context.
- * \details The logger output of certain contexts maybe constrained to these levels.
- */
+//! @brief Logging context
+//! @details The logger output of certain contexts maybe constrained to these levels
 typedef enum
 {
-    HIPTENSOR_LOG_LEVEL_OFF              = 0,
-    HIPTENSOR_LOG_LEVEL_ERROR            = 1,
-    HIPTENSOR_LOG_LEVEL_PERF_TRACE       = 2,
-    HIPTENSOR_LOG_LEVEL_PERF_HINT        = 4,
+    //! No logging
+    HIPTENSOR_LOG_LEVEL_OFF = 0,
+    //! Log errors
+    HIPTENSOR_LOG_LEVEL_ERROR = 1,
+    //! Log performance messages
+    HIPTENSOR_LOG_LEVEL_PERF_TRACE = 2,
+    //! Log performance hints
+    HIPTENSOR_LOG_LEVEL_PERF_HINT = 4,
+    //! Log selection messages
     HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE = 8,
-    HIPTENSOR_LOG_LEVEL_API_TRACE        = 16
+    //! Log a trace of API calls
+    HIPTENSOR_LOG_LEVEL_API_TRACE = 16
+
 } hiptensorLogLevel_t;
 
-/**
- * \brief hipTensor's library context contained in a opaque handle
- */
+//! @brief hipTensor's library context
 struct hiptensorHandle_t
 {
     int64_t fields[512];
 };
 
-/**
- * \brief Structure representing a tensor descriptor with the given lengths, and
- * strides.
- *
- * Constructs a descriptor for the input tensor with the given lengths, strides
- * when passed in the function hiptensorInitTensorDescriptor
- */
+//! @brief Structure representing a tensor descriptor
+//!
+//! Represents a descriptor for the tensor with the given properties of
+//! data type, lengths, strides and element-wise unary operation.
+//! Constructed with hiptensorInitTensorDescriptor() function.
 struct hiptensorTensorDescriptor_t
 {
-    hipDataType              mType; /*!< Data type of the tensors enum selection */
-    std::vector<std::size_t> mLengths; /*!< Lengths of the tensor */
-    std::vector<std::size_t> mStrides; /*!< Strides of the tensor */
-    hiptensorOperator_t      mUnaryOp; /*!< Unary operator applied to the tensor */
+    //! Data type of the tensors enum selection
+    hipDataType mType;
+    //! Lengths of the tensor
+    std::vector<std::size_t> mLengths;
+    //! Strides of the tensor
+    std::vector<std::size_t> mStrides;
+    //! Unary operator applied to the tensor
+    hiptensorOperator_t mUnaryOp;
 };
 
-/**
- * \brief Structure representing a tensor contraction descriptor
- *
- * Constructs a contraction descriptor with all the input tensor descriptors and
- * updates the dimensions on to this structure when passed into the function
- * hiptensorInitContractionDescriptor
- *
- */
+//! @brief Structure representing a tensor contraction descriptor
+//!
+//! Represents contraction descriptor with the given properties of internal
+//! contraction op (either scale or bilinear), the internal compute type,
+//! as well as all of the input tensor descriptors, their alignment requirements
+//! and modes.
+//! Constructed with hiptensorInitContractionDescriptor() function.
 struct hiptensorContractionDescriptor_t
 {
-    int32_t mContractionOpId; /*!< Enum that differentiates the internal contraction operation */
-    hiptensorComputeType_t                   mComputeType; /*!<Compute type for the contraction */
-    std::vector<hiptensorTensorDescriptor_t> mTensorDesc; /*!<Cache of tensor descriptors */
-    std::vector<uint32_t>                    mAlignmentReq; /*!<Cache of alignment requirements */
-    std::vector<std::vector<int32_t>>        mTensorMode; /*!<Cache of modes of tensors */
+    //! Enum that differentiates the internal contraction operation
+    int32_t mContractionOpId;
+    //! Compute type for the contraction
+    hiptensorComputeType_t mComputeType;
+    //! Cache of tensor descriptors
+    std::vector<hiptensorTensorDescriptor_t> mTensorDesc;
+    //! Cache of alignment requirements
+    std::vector<uint32_t> mAlignmentReq;
+    //! Tensor modes
+    std::vector<std::vector<int32_t>> mTensorMode;
 };
 
-/**
- * \brief hipTensor structure representing the algorithm candidates.
- *
- */
+//! @brief hipTensor structure representing the contraction selection algorithm and candidates.
 struct hiptensorContractionFind_t
 {
-    hiptensorAlgo_t    mSelectionAlgorithm;
+    //! Id of the selection algorithm
+    hiptensorAlgo_t mSelectionAlgorithm;
+    //! A vector of the solver candidates
     std::vector<void*> mCandidates;
 };
 
-/**
- * \brief structure representing a plan
- *
- * Constructs a contraction plan with the contractions descriptor passed into
- * the function hiptensorInitContractionPlan
- *
- */
+//! @brief hipTensor structure representing a contraction plan.
+//! Constructed with the hiptensorInitContractionPlan() function.
 struct hiptensorContractionPlan_t
 {
-    void*                            mSolution;
-    hiptensorContractionDescriptor_t mContractionDesc; /*!< Represent the contraction descriptor */
+    //! Final solution candidate
+    void* mSolution;
+    //! Contraction parameters
+    hiptensorContractionDescriptor_t mContractionDesc;
 };
 
-/**
- * \brief Logging callback
- *
- * The specified callback is invoked whenever logging is enabled and information
- * is logged.
- *
- */
+//! @brief Logging callback
+//! The specified callback is invoked whenever logging is enabled and a message is generated.
+//! @param logContext The logging context enum
+//! @param funcName A string holding the function name where the logging message was generated
+//! @param msg A string holding the logging message
 typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
                                           const char* funcName,
                                           const char* msg);
