@@ -35,7 +35,7 @@ between the API objects and the desired functionality. The solution layer encomp
 Solution candidates provide interface abstractions into functional backends such as Composable Kernel objects which may be invoked and whose results are passed back up through the API. The Composable Kernel library
 is consumed as a header library where all kernel instances are customized by hipTensor and statically bundled which is managed by the hipTensor functional backend layer. This way if additional backends were
 to be considered in the future, the backends could be isolated into their own modules as they are now. The hipTensor solution layer is also split up into functional components, such as permutation and contraction. Each component contains a registry of backend instances which are held as potential solution candidates
-to a given set of input parameters. These instances go through selection processing as directed with hints from the API, and are populated with appropriate arguments and readied for invokation by the API.
+to a given set of input parameters. These instances go through selection processing as directed with hints from the API, and are populated with appropriate arguments and readied for invocation by the API.
 
 hipTensor tests and samples are consumers of the hipTensor library and demonstrate the usages of the API in different contexts, such as tensor contractions and permutations.
 
@@ -117,7 +117,7 @@ The ``samples`` directory contains the sample codes for the following simple dem
 The ``test`` directory contains the test codes for testing the following functionalities:
 
 - ``00_unit/logger_test``: Tests logger API functions of hipTensor.
-- ``00_unit/yaml_test``: Tests the YAML serialization / deserialization for testing parameters.
+- ``00_unit/yaml_test``: Tests the YAML serialization / de-serialization for testing parameters.
 - ``01_contraction/contraction_test``: Testing harness for the bilinear and scale contractions.
 - ``01_contraction/complex_*_contraction``: Testing harness for the bilinear and scale contractions with complex data types.
 - ``01_contraction/contraction_resource``: Shared resource infrastructure for testing contractions.
