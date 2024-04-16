@@ -148,6 +148,7 @@ namespace hiptensor
         }
     }
 
+    // @cond
     template <>
     ScalarData readVal(void const* value, hiptensorComputeType_t id)
     {
@@ -201,6 +202,7 @@ namespace hiptensor
             return {HIPTENSOR_COMPUTE_NONE, 0, 0};
         }
     }
+    // @endcond
 
     void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value)
     {

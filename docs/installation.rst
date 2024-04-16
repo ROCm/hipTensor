@@ -23,7 +23,7 @@ Available ROCm packages are:
 Prerequisites
 -------------
 
-* A ROCm 6.0 enabled platform. More information `here <https://github.com/ROCm/ROCm>`_.
+* A ROCm 6.0 enabled platform. More information at `ROCm Github <https://github.com/ROCm/ROCm>`_.
 
 -----------------------------
 Installing pre-built packages
@@ -91,7 +91,7 @@ hipTensor is designed to have minimal external dependencies such that it is ligh
 Download hipTensor
 ^^^^^^^^^^^^^^^^^^
 
-The hipTensor source code is available `here <https://github.com/ROCmSoftwarePlatform/hipTensor>`_. hipTensor has a minimum ROCm support version 6.0.
+The hipTensor source code is available on `hipTensor Github <https://github.com/ROCmSoftwarePlatform/hipTensor>`_. hipTensor has a minimum ROCm support version 6.0.
 To check the ROCm Version on your system, use:
 
 ::
@@ -135,7 +135,7 @@ To build documentation locally, run:
 
     pdflatex hiptensor.tex
 
-Running the above commands generates ``hiptensor.pdf``. Alternatively, the latest docs build can be found `here <https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html>`_.
+Running the above commands generates ``hiptensor.pdf``. Alternatively, the latest docs build can be found at `hipTensor docs <https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html>`_.
 
 Build configuration
 ^^^^^^^^^^^^^^^^^^^^^
