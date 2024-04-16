@@ -88,11 +88,13 @@ typedef enum
     //! No type
     HIPTENSOR_COMPUTE_NONE = 0,
 
-    //! <Following type to be added (TBA)>
+    // @cond
+    //! <Following types to be added (TBA)>
     HIPTENSOR_COMPUTE_8U  = (1U << 6U),
     HIPTENSOR_COMPUTE_8I  = (1U << 8U),
     HIPTENSOR_COMPUTE_32U = (1U << 7U),
     HIPTENSOR_COMPUTE_32I = (1U << 9U),
+    // @endcond
 
 } hiptensorComputeType_t;
 

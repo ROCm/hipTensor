@@ -412,7 +412,7 @@ Depending on the resources available to the build machine and the build configur
 * If they aren't needed, specify either ``HIPTENSOR_BUILD_TESTS`` or ``HIPTENSOR_BUILD_SAMPLES`` as OFF to disable client builds.
 * During the ``make`` command, build a specific target, e.g: ``logger_test``.
 
-Test runtime
+Test run lengths
 ^^^^^^^^^^^^^^^^^
 
 Depending on the resources available to the machine running the selected tests, hipTensor test runtimes can be on the order of an hour or more. Here are some things you can do to reduce run-times:
@@ -422,7 +422,7 @@ Depending on the resources available to the machine running the selected tests, 
 
 .. code-block:: bash
 
-    <test_exe> --gtest_filter=\*name_filter\*
+    <test_exe> --gtest_filter=*name_filter*
 
 * Manually adjust the test cases coverage. Using your favorite text editor, you can modify test YAML configs to affect the test parameter coverage.
 * Alternatively, use your own testing YAML config with a reduced parameter set.
