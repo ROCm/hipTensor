@@ -93,6 +93,8 @@ function(add_hiptensor_test BINARY_NAME YAML_CONFIG_FILE TEST_SOURCES)
     # message(STATUS "test config include: ${hiptensor_test_YAML_INCLUDE_FILE}")
 
     add_executable(${BINARY_NAME} ${TEST_SOURCES})
+    target_compile_options(${BINARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
+    target_link_options(${BINARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.
@@ -142,6 +144,9 @@ function(add_hiptensor_unit_test BINARY_NAME FILE_NAME)
 
     message( STATUS "adding hiptensor unit test: ${BINARY_NAME}")
     add_executable(${BINARY_NAME} ${FILE_NAME})
+
+    target_compile_options(${BINARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
+    target_link_options(${BINARY_NAME} PRIVATE ${CLANG_DRIVER_MODE})
 
     # Test must propagate the build interface includes to make sure
     # hiptensor includes are captured at runtime.

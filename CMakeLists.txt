@@ -56,6 +56,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+#Set clang - driver mode to g++
+set(CLANG_DRIVER_MODE "--driver-mode=g++")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O2") # clang++ crashes without -O2
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -DNDEBUG") # clang++ failed to build the project with the default -Os
 
