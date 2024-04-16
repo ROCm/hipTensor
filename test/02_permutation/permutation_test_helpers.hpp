@@ -47,13 +47,21 @@ auto inline load_config_helper()
 
     if(testOptions->usingDefaultConfig() && HIPTENSOR_TEST_YAML_BUNDLE)
     {
-        testParams = hiptensor::YamlConfigLoader<hiptensor::PermutationTestParams>::loadFromString(
+        auto params = hiptensor::YamlConfigLoader<hiptensor::PermutationTestParams>::loadFromString(
             HIPTENSOR_TEST_GET_YAML);
+        if(params)
+        {
+            testParams = params.value();
+        }
     }
     else
     {
-        testParams = hiptensor::YamlConfigLoader<hiptensor::PermutationTestParams>::loadFromFile(
+        auto params = hiptensor::YamlConfigLoader<hiptensor::PermutationTestParams>::loadFromFile(
             testOptions->inputFilename());
+        if(params)
+        {
+            testParams = params.value();
+        }
     }
 
     // testParams.printParams();
@@ -62,7 +70,8 @@ auto inline load_config_helper()
                               ::testing::Values(testParams.logLevelMask()),
                               ::testing::ValuesIn(testParams.problemLengths()),
                               ::testing::ValuesIn(testParams.permutedDims()),
-                              ::testing::ValuesIn(testParams.alphas()));
+                              ::testing::ValuesIn(testParams.alphas()),
+                              ::testing::ValuesIn(testParams.operators()));
 }
 
 #endif // HIPTENSOR_PERMUTATION_TEST_HELPERS_HPP

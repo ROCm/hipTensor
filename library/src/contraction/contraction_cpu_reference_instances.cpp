@@ -34,9 +34,9 @@ namespace hiptensor
         // Register all the solutions exactly once
         // Bilinear f16
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         ck::half_t,
                                         ck::half_t,
                                         float,
@@ -49,9 +49,9 @@ namespace hiptensor
 
         // Bilinear bf16
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         ck::bhalf_t,
                                         ck::bhalf_t,
                                         float,
@@ -64,9 +64,9 @@ namespace hiptensor
 
         // Bilinear f32
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         float,
                                         float,
                                         float,
@@ -78,9 +78,9 @@ namespace hiptensor
                                         ck::half_t>());
 
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         float,
                                         float,
                                         float,
@@ -92,9 +92,9 @@ namespace hiptensor
                                         ck::bhalf_t>());
 
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         float,
                                         float,
                                         float,
@@ -107,9 +107,9 @@ namespace hiptensor
 
         // Bilinear complex f32
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         hipFloatComplex,
                                         hipFloatComplex,
                                         float,
@@ -122,9 +122,9 @@ namespace hiptensor
 
         // Bilinear f64
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         double,
                                         double,
                                         float,
@@ -136,9 +136,9 @@ namespace hiptensor
                                         float>());
 
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         double,
                                         double,
                                         double,
@@ -151,9 +151,9 @@ namespace hiptensor
 
         // Bilinear complex f64
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         hipDoubleComplex,
                                         hipDoubleComplex,
                                         double,
@@ -166,9 +166,9 @@ namespace hiptensor
 
         // Scale f16
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         ck::half_t,
                                         ck::half_t,
                                         float,
@@ -181,9 +181,9 @@ namespace hiptensor
 
         // Scale bf16
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         ck::bhalf_t,
                                         ck::bhalf_t,
                                         float,
@@ -196,9 +196,9 @@ namespace hiptensor
 
         // Scale f32
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         float,
                                         float,
                                         float,
@@ -210,9 +210,9 @@ namespace hiptensor
                                         ck::half_t>());
 
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         float,
                                         float,
                                         float,
@@ -224,9 +224,9 @@ namespace hiptensor
                                         ck::bhalf_t>());
 
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         float,
                                         float,
                                         float,
@@ -239,9 +239,9 @@ namespace hiptensor
 
         // Scale complex f32
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         hipFloatComplex,
                                         hipFloatComplex,
                                         float,
@@ -254,9 +254,9 @@ namespace hiptensor
 
         // Scale f64
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         double,
                                         double,
                                         float,
@@ -268,9 +268,9 @@ namespace hiptensor
                                         float>());
 
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         double,
                                         double,
                                         double,
@@ -283,9 +283,9 @@ namespace hiptensor
 
         // Scale complex f64
         registerSolutions(
-            enumerateReferenceSolutions<2,
-                                        2,
-                                        2,
+            enumerateReferenceSolutions<6,
+                                        6,
+                                        6,
                                         hipDoubleComplex,
                                         hipDoubleComplex,
                                         double,

@@ -89,9 +89,15 @@ LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
-LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::size_t>)
+LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(std::vector<std::size_t>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::size_t>>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::vector<std::size_t>>>)
+LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(std::vector<int32_t>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<int32_t>>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::vector<int32_t>>>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<double>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(AlphaT)
 LLVM_YAML_IS_SEQUENCE_VECTOR(BetaT)
@@ -138,6 +144,7 @@ namespace llvm
             static void enumeration(IO& io, hiptensorOperator_t& value)
             {
                 io.enumCase(value, "HIPTENSOR_OP_IDENTITY", HIPTENSOR_OP_IDENTITY);
+                io.enumCase(value, "HIPTENSOR_OP_SQRT", HIPTENSOR_OP_SQRT);
                 io.enumCase(value, "HIPTENSOR_OP_UNKNOWN", HIPTENSOR_OP_UNKNOWN);
             }
         };
@@ -234,14 +241,22 @@ namespace llvm
                 io.mapOptional("Betas",
                                (std::vector<std::vector<double>>&)(doc.betas()),
                                std::vector<std::vector<double>>(doc.alphas().size()));
-                io.mapRequired("Lengths", doc.problemLengths());
+                io.mapRequired(
+                    "Lengths",
+                    (std::vector<std::vector<std::vector<size_t>>>&)doc.problemLengths());
+                io.mapRequired("Modes",
+                               (std::vector<std::vector<std::vector<int32_t>>>&)doc.problemModes());
 
                 // Default values for optional values
-                auto defaultStrides = std::vector<std::vector<std::size_t>>(doc.problemLengths());
+                auto defaultStrides
+                    = std::vector<std::vector<std::vector<std::size_t>>>(doc.problemLengths());
                 for(auto i = 0; i < defaultStrides.size(); i++)
                 {
-                    defaultStrides[i]
-                        = std::vector<std::size_t>(doc.problemLengths()[i].size(), std::size_t(0));
+                    for(auto j = 0; j < defaultStrides[i].size(); j++)
+                    {
+                        defaultStrides[i][j] = std::vector<std::size_t>(
+                            doc.problemLengths()[i][j].size(), std::size_t(0));
+                    }
                 }
 
                 io.mapOptional("Strides", doc.problemStrides(), defaultStrides);
@@ -253,6 +268,11 @@ namespace llvm
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";
+                }
+
+                if(doc.problemModes().size() == 0)
+                {
+                    return "Error: Empty Modes";
                 }
 
                 if(doc.alphas().size() == 0)
@@ -273,9 +293,14 @@ namespace llvm
                 }
 
                 if(doc.problemStrides().size() > 1
-                   && doc.problemStrides().size() != doc.problemLengths().size())
+                   && doc.problemStrides()[0].size() != doc.problemLengths()[0].size())
                 {
                     return "Error: Problem strides and lengths must have same size";
+                }
+
+                if(doc.problemModes()[0].size() != doc.problemLengths()[0].size())
+                {
+                    return "Error: Problem modes and lengths must have same size";
                 }
 
                 return std::string{};
@@ -298,6 +323,7 @@ namespace llvm
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Lengths", doc.problemLengths());
                 io.mapRequired("Permuted Dims", doc.permutedDims());
+                io.mapRequired("Operators", (doc.operators()));
             }
 
             // Additional validation for input / output of the config
@@ -316,6 +342,11 @@ namespace llvm
                 if(doc.permutedDims().size() == 0)
                 {
                     return "Error: Empty Permuted Dims";
+                }
+
+                if(doc.operators().size() == 0)
+                {
+                    return "Error: Empty Operators";
                 }
 
                 return std::string{};

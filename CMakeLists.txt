@@ -58,11 +58,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 #Set clang - driver mode to g++
 set(CLANG_DRIVER_MODE "--driver-mode=g++")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O2") # clang++ crashes without -O2
+set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -DNDEBUG") # clang++ failed to build the project with the default -Os
 
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
+  option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON)
   option( HIPTENSOR_DATA_LAYOUT_COL_MAJOR "Set hiptensor data layout to column major" ON )
 endif()
 
