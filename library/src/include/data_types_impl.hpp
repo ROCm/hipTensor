@@ -235,8 +235,11 @@ namespace hiptensor
         }
     }
 
+    // @cond
     template <>
     ScalarData readVal(void const* value, hiptensorComputeType_t id);
+    // @endcond
+
 } // namespace hiptensor
 
 #endif // HIPTENSOR_LIBRARY_DATA_TYPES_IMPL_HPP
