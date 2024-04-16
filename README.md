@@ -69,7 +69,6 @@ The HTML documentation can be viewed in your browser by opening docs/_build/html
 The latest official documentation for hipTensor is available at:
 [https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-
 ## Contributing to the hipTensor Library
 
 Community collaboration is encouraged! If you are considering contributing, please follow the [hipTensor Contribution Guide](https://github.com/ROCm/hipTensor/CONTRIBUTING.md) to get started.
