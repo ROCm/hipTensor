@@ -37,37 +37,29 @@ namespace hiptensor
 {
     template <typename ConfigT>
     /* static */
-    ConfigT YamlConfigLoader<ConfigT>::loadFromFile(std::string const& filePath)
+    std::optional<ConfigT> YamlConfigLoader<ConfigT>::loadFromFile(std::string const& filePath)
     {
-        auto result = ConfigT{};
-
-        auto in = llvm::MemoryBuffer::getFile(filePath, true);
-        if(std::error_code ec = in.getError())
+        std::ifstream inputStream(filePath);
+        if(!inputStream)
         {
             llvm::errs() << "Cannot open file for reading: " << filePath << "\n";
-            llvm::errs() << ec.message() << '\n';
-            return result;
+            return {};
         }
         else
         {
             llvm::outs() << "Opened file for reading: " << filePath << "\n";
         }
 
-        llvm::yaml::Input reader(**in);
+        std::string yamlString((std::istreambuf_iterator<char>(inputStream)),
+                               std::istreambuf_iterator<char>());
 
-        reader >> result;
-
-        if(reader.error())
-        {
-            llvm::errs() << "Error reading input config: " << filePath << "\n";
-        }
-
-        return result;
+        return loadFromString(yamlString);
     }
 
     template <typename ConfigT>
     /* static */
-    ConfigT YamlConfigLoader<ConfigT>::loadFromString(std::string const& yaml /*= ""*/)
+    std::optional<ConfigT>
+        YamlConfigLoader<ConfigT>::loadFromString(std::string const& yaml /*= ""*/)
     {
         auto result = ConfigT{};
 
@@ -75,11 +67,7 @@ namespace hiptensor
         if(in->getBufferSize() == 0)
         {
             llvm::errs() << "Cannot use empty string for MemoryBuffer\n";
-            return result;
-        }
-        else
-        {
-            llvm::outs() << "Using yaml input string for buffer.\n";
+            return {};
         }
 
         llvm::yaml::Input reader(*in);
@@ -89,6 +77,7 @@ namespace hiptensor
         if(reader.error())
         {
             llvm::errs() << "Error reading input config: " << yaml << "\n";
+            return {};
         }
 
         return result;

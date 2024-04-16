@@ -60,7 +60,7 @@ namespace hiptensor
         using HostPtrT   = Base::HostPtrT;
 
         // M, N, U, V, H, K
-        using ProblemDims = std::vector<std::size_t>;
+        using ProblemDims = std::vector<std::vector<std::size_t>>;
         ;
 
         // MatrixA, MatrixB, MatrixC, MatrixD (# of elements)
@@ -76,14 +76,6 @@ namespace hiptensor
             MatrixB = 1,
             MatrixC = 2,
             MatrixD = 3,
-
-            // Problem size indices
-            M = 0,
-            N = 1,
-            U = 2,
-            V = 3,
-            H = 4,
-            K = 5
         };
 
     private: // No public instantiation except make_unique.

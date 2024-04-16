@@ -106,16 +106,25 @@ namespace hiptensor
                            * std::get<MatrixD>(bytesPerElement));
     }
 
-    void ContractionResource::resizeStorage(ProblemDims const& size, ElementBytes bytesPerElement)
+    void ContractionResource::resizeStorage(ProblemDims const& dimSizes, ElementBytes bytesPerElement)
     {
-        // elements MatrixA = M * N * H * K
-        // elements MatrixB = U * V * H * K
-        // elements MatrixC = M * N * U * V
-        // elements MatrixD = M * N * U * V
-        resizeStorage(std::make_tuple(size[M] * size[N] * size[H] * size[K],
-                                      size[U] * size[V] * size[H] * size[K],
-                                      size[M] * size[N] * size[U] * size[V],
-                                      size[M] * size[N] * size[U] * size[V]),
+        // elements MatrixA = 2d to 12d
+        // elements MatrixB = 2d to 12d
+        // elements MatrixC = 2d to 12d
+        // elements MatrixD = 2d to 12d
+        int nLengthMatrix = dimSizes[0].size();
+        int aSize = 1, bSize = 1, cdSize = 1;
+        for(int i = 0 ; i < nLengthMatrix; i++)
+        {
+            aSize   *= dimSizes[0][i];
+            bSize   *= dimSizes[1][i];
+            cdSize  *= dimSizes[2][i];
+        }
+
+        resizeStorage(std::make_tuple(aSize,
+                                      bSize,
+                                      cdSize,
+                                      cdSize),
                       bytesPerElement);
     }
 

@@ -52,8 +52,9 @@ namespace hiptensor
         using WorkSizePrefT = hiptensorWorksizePreference_t;
         using LogLevelT     = hiptensorLogLevel_t;
 
-        using LengthsT = std::vector<std::size_t>;
-        using StridesT = std::vector<std::size_t>;
+        using LengthsT = std::vector<std::vector<std::size_t>>;
+        using StridesT = std::vector<std::vector<std::size_t>>;
+        using ModesT   = std::vector<std::vector<int32_t>>;
         using AlphaT   = std::vector<double>;
         using BetaT    = std::vector<double>;
 
@@ -65,6 +66,7 @@ namespace hiptensor
         LogLevelT                  mLogLevelMask;
         std::vector<LengthsT>      mProblemLengths;
         std::vector<StridesT>      mProblemStrides;
+        std::vector<ModesT>        mProblemModes;
         std::vector<AlphaT>        mAlphas;
         std::vector<BetaT>         mBetas;
     };
@@ -96,7 +98,10 @@ int main(int argc, char* argv[])
     yee.mLogLevelMask
         = {hiptensorLogLevel_t(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE)};
     yee.mProblemLengths
-        = {{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}};
+        = {{{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}},
+           {{3, 3, 3, 3}, {3, 3, 3, 3}, {33, 33, 33, 33, 33}}};
+    yee.mProblemModes = {{{5, 6, 7, 8, 4, 2, 3, 4}, {1, 2, 3, 4}, {99, 12, 44, 31, 59, 23, 54, 22}},
+                         {{7, 7, 7}, {7, 7, 7, 7}, {77, 77, 77}}};
     yee.mProblemStrides = {{}};
     yee.mAlphas         = {{0}, {1}, {1}};
     yee.mBetas          = {{2}, {2}, {2}};
@@ -127,6 +132,10 @@ int main(int argc, char* argv[])
     hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::storeToFile(tmpFile, yee);
     auto yee1
         = hiptensor::YamlConfigLoader<hiptensor::ContractionTestParams>::loadFromFile(tmpFile);
+    if(!yee1)
+    {
+        return -1;
+    }
 
     return 0;
 }

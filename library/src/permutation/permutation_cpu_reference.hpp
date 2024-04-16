@@ -26,22 +26,21 @@
 
 #ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
 #define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#include <hiptensor/hiptensor.hpp>
-namespace hiptensor
-{
-    namespace detail
-    {
-        template <typename DataType>
-        hiptensorStatus_t permuteByCpu(const void*                        alpha,
-                                       const DataType*                    A,
-                                       const hiptensorTensorDescriptor_t* descA,
-                                       const int32_t                      modeA[],
-                                       DataType*                          B,
-                                       const hiptensorTensorDescriptor_t* descB,
-                                       const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar);
-    }
-}
 
-#include "permutation_cpu_reference_impl.hpp"
+#include <hip/library_types.h>
+#include <vector>
+
+#include <hiptensor/hiptensor.hpp>
+
+hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*           handle,
+                                                const void*                        alpha,
+                                                const void*                        A,
+                                                const hiptensorTensorDescriptor_t* descA,
+                                                const int32_t                      modeA[],
+                                                void*                              B,
+                                                const hiptensorTensorDescriptor_t* descB,
+                                                const int32_t                      modeB[],
+                                                const hipDataType                  typeScalar,
+                                                const hipStream_t                  stream);
+
 #endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
