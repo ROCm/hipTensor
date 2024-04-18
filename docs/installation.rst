@@ -140,13 +140,13 @@ After configuration, build using:
 
     cmake --build <build_dir> -- -j
 
-The samples folder in ``<build_dir>`` contains executables in the table below.
+The samples folder in ``<build_dir>`` contains executables as given in the table below.
 
 =================================== ===================================================================================
 Executable Name                     Description
 =================================== ===================================================================================
-simple_contraction_bilinear_f32     bilinear contraction using hipTensor API for single-precision floating point types
-simple_contraction_scale_f32        scale contraction using hipTensor API for single-precision floating point types
+simple_contraction_bilinear_f32     Bilinear contraction using hipTensor API for single-precision floating point types
+simple_contraction_scale_f32        Scale contraction using hipTensor API for single-precision floating point types
 =================================== ===================================================================================
 
 
