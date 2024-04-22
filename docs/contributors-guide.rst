@@ -4,9 +4,9 @@
 
 .. _contributors-guide:
 
-===================
-Contributor's guide
-===================
+==========================
+Contributing to hipTensor
+==========================
 
 This document provides the coding guidelines to be followed while contributing to the hipTensor APIs.
 

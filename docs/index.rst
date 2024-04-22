@@ -8,14 +8,16 @@
 hipTensor documentation
 ===========================
 
-Welcome to the hipTensor docs home page! To learn more, see :ref:`what-is-hiptensor`.
+hipTensor is a high-performance HIP library for tensor primitives. It is AMD’s C++ library for accelerating tensor primitives based on the composable kernel library through general-purpose kernel languages such as HIP C++.
 
-Our documentation is structured as follows:
+You can access hipTensor code on our `GitHub repository <https://github.com/ROCm/hipTensor>`_.
+
+The documentation is structured as follows:
 
 .. grid:: 2
   :gutter: 3
 
-  .. grid-item-card:: Tutorial
+  .. grid-item-card:: Install
 
     * :ref:`installation`
 
@@ -31,8 +33,7 @@ Our documentation is structured as follows:
 
     * :ref:`contributors-guide`
 
-To contribute to the documentation refer to
+To contribute to the documentation, refer to
 `Contributing to ROCm  <https://rocm.docs.amd.com/en/latest/contribute/contributing.html>`_.
 
-Licensing information can be found on the
-`Licensing <https://rocm.docs.amd.com/en/latest/about/license.html>`_ page.
+You can find licensing information on the `Licensing <https://rocm.docs.amd.com/en/latest/about/license.html>`_ page.

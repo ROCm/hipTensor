@@ -2,9 +2,7 @@
 # These comments will also be removed.
 root: index
 subtrees:
-  - entries:
-    - file: what-is-hiptensor
-  - caption:  Tutorial
+  - caption:  Install
     entries:
     - file: installation
   - caption:  Conceptual
