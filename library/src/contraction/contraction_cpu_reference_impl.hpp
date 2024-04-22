@@ -156,12 +156,12 @@ namespace hiptensor
                         indices.begin(), indices.end(), strides.begin(), std::size_t{0});
                 };
 
-                if constexpr((std::is_same_v<ADataType, hipFloatComplex> &&
-                              std::is_same_v<BDataType, hipFloatComplex> &&
-                              std::is_same_v<EDataType, hipFloatComplex>) ||
-                              (std::is_same_v<ADataType, hipDoubleComplex> &&
-                               std::is_same_v<BDataType, hipDoubleComplex> &&
-                               std::is_same_v<EDataType, hipDoubleComplex>))
+                if constexpr((std::is_same_v<ADataType, hipFloatComplex>
+                              && std::is_same_v<BDataType, hipFloatComplex>
+                              && std::is_same_v<EDataType, hipFloatComplex>)
+                             || (std::is_same_v<ADataType, hipDoubleComplex>
+                                 && std::is_same_v<BDataType, hipDoubleComplex>
+                                 && std::is_same_v<EDataType, hipDoubleComplex>))
                 {
                     auto f_ms_ns_complex = [&](auto m0,
                                                auto m1,
@@ -175,106 +175,136 @@ namespace hiptensor
                                                auto n3,
                                                auto n4,
                                                auto n5) {
-                            HIP_vector_type<AccDataType, 2> accum{0};
+                        HIP_vector_type<AccDataType, 2> accum{0};
 
-                            auto K0 = arg.mA_ms_ks_lengths[NumDimM];
-                            auto K1 = arg.mA_ms_ks_lengths[NumDimM + 1];
-                            auto K2 = arg.mA_ms_ks_lengths[NumDimM + 2];
-                            auto K3 = arg.mA_ms_ks_lengths[NumDimM + 3];
-                            auto K4 = arg.mA_ms_ks_lengths[NumDimM + 4];
-                            auto K5 = arg.mA_ms_ks_lengths[NumDimM + 5];
+                        auto K0 = arg.mA_ms_ks_lengths[NumDimM];
+                        auto K1 = arg.mA_ms_ks_lengths[NumDimM + 1];
+                        auto K2 = arg.mA_ms_ks_lengths[NumDimM + 2];
+                        auto K3 = arg.mA_ms_ks_lengths[NumDimM + 3];
+                        auto K4 = arg.mA_ms_ks_lengths[NumDimM + 4];
+                        auto K5 = arg.mA_ms_ks_lengths[NumDimM + 5];
 
-                            for(size_t k0 = 0; k0 < K0; k0++)
+                        for(size_t k0 = 0; k0 < K0; k0++)
+                        {
+                            for(size_t k1 = 0; k1 < K1; k1++)
                             {
-                                for(size_t k1 = 0; k1 < K1; k1++)
+                                for(size_t k2 = 0; k2 < K2; k2++)
                                 {
-                                    for(size_t k2 = 0; k2 < K2; k2++)
+                                    for(size_t k3 = 0; k3 < K3; k3++)
                                     {
-                                        for(size_t k3 = 0; k3 < K3; k3++)
+                                        for(size_t k4 = 0; k4 < K4; k4++)
                                         {
-                                            for(size_t k4 = 0; k4 < K4; k4++)
+                                            for(size_t k5 = 0; k5 < K5; k5++)
                                             {
-                                                for(size_t k5 = 0; k5 < K5; k5++)
+                                                auto indexA = offset(std::vector<size_t>{m0,
+                                                                                         m1,
+                                                                                         m2,
+                                                                                         m3,
+                                                                                         m4,
+                                                                                         m5,
+                                                                                         k0,
+                                                                                         k1,
+                                                                                         k2,
+                                                                                         k3,
+                                                                                         k4,
+                                                                                         k5},
+                                                                     arg.mA_ms_ks_strides);
+                                                auto indexB = offset(std::vector<size_t>{n0,
+                                                                                         n1,
+                                                                                         n2,
+                                                                                         n3,
+                                                                                         n4,
+                                                                                         n5,
+                                                                                         k0,
+                                                                                         k1,
+                                                                                         k2,
+                                                                                         k3,
+                                                                                         k4,
+                                                                                         k5},
+                                                                     arg.mB_ns_ks_strides);
+
+                                                ADataType valA = ((ADataType*)arg.mA)[indexA];
+                                                BDataType valB = ((BDataType*)arg.mB)[indexB];
+
+                                                // Mult / accum
+                                                if constexpr(std::is_same_v<AccDataType, float>)
                                                 {
-                                                    auto indexA
-                                                        = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, k0, k1, k2, k3, k4, k5},
-                                                                 arg.mA_ms_ks_strides);
-                                                    auto indexB
-                                                        = offset(std::vector<size_t>{n0, n1, n2, n3, n4, n5, k0, k1, k2, k3, k4, k5},
-                                                                 arg.mB_ns_ks_strides);
-
-                                                    ADataType valA = ((ADataType*)arg.mA)[indexA];
-                                                    BDataType valB = ((BDataType*)arg.mB)[indexB];
-
-                                                    // Mult / accum
-                                                    if constexpr(std::is_same_v<AccDataType, float>)
-                                                    {
-                                                        accum = hipCaddf(accum, hipCmulf(valA, valB));
-                                                    }
-                                                    else if constexpr(std::is_same_v<AccDataType, double>)
-                                                    {
-                                                        accum = hipCadd(accum, hipCmul(valA, valB));
-                                                    }
+                                                    accum = hipCaddf(accum, hipCmulf(valA, valB));
+                                                }
+                                                else if constexpr(std::is_same_v<AccDataType,
+                                                                                 double>)
+                                                {
+                                                    accum = hipCadd(accum, hipCmul(valA, valB));
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
 
-                            auto indexE = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5}, arg.mE_ms_ns_strides);
+                        auto indexE = offset(
+                            std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5},
+                            arg.mE_ms_ns_strides);
 
-                            if constexpr(std::is_same_v<CDEElementwiseOperation,
-                                                        ck::tensor_operation::element_wise::Scale>)
+                        if constexpr(std::is_same_v<CDEElementwiseOperation,
+                                                    ck::tensor_operation::element_wise::Scale>)
+                        {
+                            ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.scale_ * (EDataType)accum;
+                        }
+                        else if constexpr(std::is_same_v<
+                                              CDEElementwiseOperation,
+                                              ck::tensor_operation::element_wise::ScaleComplex>)
+                        {
+                            if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
                             {
-                                ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.scale_ * (EDataType)accum;
+                                ((EDataType*)arg.mE)[indexE] = hipCmulf(
+                                    hipComplexDoubleToFloat(arg.mOpCDE.scale_), (EDataType)accum);
                             }
-                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
-                                                             ck::tensor_operation::element_wise::ScaleComplex>)
+                            else
                             {
-                                if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
-                                {
-                                    ((EDataType*)arg.mE)[indexE] = hipCmulf(hipComplexDoubleToFloat(arg.mOpCDE.scale_), (EDataType)accum);
-                                }
-                                else
-                                {
-                                    ((EDataType*)arg.mE)[indexE] = hipCmul(arg.mOpCDE.scale_, (EDataType)accum);
-                                }
+                                ((EDataType*)arg.mE)[indexE]
+                                    = hipCmul(arg.mOpCDE.scale_, (EDataType)accum);
                             }
-                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
-                                                             ck::tensor_operation::element_wise::Bilinear>)
-                            {
-                                // NumDTensor will be 1 due to SFINAE of this class
-                                auto indexD
-                                    = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5}, arg.mD_ms_ns_strides[0]);
+                        }
+                        else if constexpr(std::is_same_v<
+                                              CDEElementwiseOperation,
+                                              ck::tensor_operation::element_wise::Bilinear>)
+                        {
+                            // NumDTensor will be 1 due to SFINAE of this class
+                            auto indexD = offset(
+                                std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5},
+                                arg.mD_ms_ns_strides[0]);
 
-                                ((EDataType*)arg.mE)[indexE] = arg.mOpCDE.alpha_ * (EDataType)accum +
-                                                               arg.mOpCDE.beta_ * ((EDataType*)(arg.mD[0]))[indexD];
-                            }
-                            else if constexpr(std::is_same_v<CDEElementwiseOperation,
-                                                             ck::tensor_operation::element_wise::BilinearComplex>)
-                            {
-                                // NumDTensor will be 1 due to SFINAE of this class
-                                auto indexD
-                                    = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5}, arg.mD_ms_ns_strides[0]);
+                            ((EDataType*)arg.mE)[indexE]
+                                = arg.mOpCDE.alpha_ * (EDataType)accum
+                                  + arg.mOpCDE.beta_ * ((EDataType*)(arg.mD[0]))[indexD];
+                        }
+                        else if constexpr(std::is_same_v<
+                                              CDEElementwiseOperation,
+                                              ck::tensor_operation::element_wise::BilinearComplex>)
+                        {
+                            // NumDTensor will be 1 due to SFINAE of this class
+                            auto indexD = offset(
+                                std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5},
+                                arg.mD_ms_ns_strides[0]);
 
-                                if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
-                                {
-                                    ((EDataType*)arg.mE)[indexE] = hipCaddf(
-                                                                            hipCmulf(
-                                                                                    hipComplexDoubleToFloat(arg.mOpCDE.alpha_),
-                                                                                    (EDataType)accum),
-                                                                            hipCmulf(
-                                                                                    hipComplexDoubleToFloat(arg.mOpCDE.beta_),
-                                                                                    ((EDataType*)(arg.mD[0]))[indexD]));
-                                }
-                                else
-                                {
-                                    ((EDataType*)arg.mE)[indexE] = hipCadd(hipCmul(arg.mOpCDE.alpha_, (EDataType)accum),
-                                                                           hipCmul(arg.mOpCDE.beta_, ((EDataType*)(arg.mD[0]))[indexD]));
-                                }
+                            if constexpr(std::is_same_v<EDataType, hipFloatComplex>)
+                            {
+                                ((EDataType*)arg.mE)[indexE]
+                                    = hipCaddf(hipCmulf(hipComplexDoubleToFloat(arg.mOpCDE.alpha_),
+                                                        (EDataType)accum),
+                                               hipCmulf(hipComplexDoubleToFloat(arg.mOpCDE.beta_),
+                                                        ((EDataType*)(arg.mD[0]))[indexD]));
                             }
-                        };
+                            else
+                            {
+                                ((EDataType*)arg.mE)[indexE] = hipCadd(
+                                    hipCmul(arg.mOpCDE.alpha_, (EDataType)accum),
+                                    hipCmul(arg.mOpCDE.beta_, ((EDataType*)(arg.mD[0]))[indexD]));
+                            }
+                        }
+                    };
 
                     make_ParallelTensorFunctor(f_ms_ns_complex,
                                                arg.mE_ms_ns_lengths[0],
@@ -326,23 +356,43 @@ namespace hiptensor
                                         {
                                             for(size_t k5 = 0; k5 < K5; k5++)
                                             {
-                                                auto indexA
-                                                    = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, k0, k1, k2, k3, k4, k5},
-                                                             arg.mA_ms_ks_strides);
-                                                auto indexB
-                                                    = offset(std::vector<size_t>{n0, n1, n2, n3, n4, n5, k0, k1, k2, k3, k4, k5},
-                                                             arg.mB_ns_ks_strides);
+                                                auto indexA = offset(std::vector<size_t>{m0,
+                                                                                         m1,
+                                                                                         m2,
+                                                                                         m3,
+                                                                                         m4,
+                                                                                         m5,
+                                                                                         k0,
+                                                                                         k1,
+                                                                                         k2,
+                                                                                         k3,
+                                                                                         k4,
+                                                                                         k5},
+                                                                     arg.mA_ms_ks_strides);
+                                                auto indexB = offset(std::vector<size_t>{n0,
+                                                                                         n1,
+                                                                                         n2,
+                                                                                         n3,
+                                                                                         n4,
+                                                                                         n5,
+                                                                                         k0,
+                                                                                         k1,
+                                                                                         k2,
+                                                                                         k3,
+                                                                                         k4,
+                                                                                         k5},
+                                                                     arg.mB_ns_ks_strides);
 
                                                 AccDataType valA;
                                                 AccDataType valB;
 
                                                 // Element-wise ops
-                                                arg.mOpA(
-                                                    valA,
-                                                    ck::type_convert<ComputeDataType>(((ADataType*)arg.mA)[indexA]));
-                                                arg.mOpB(
-                                                    valB,
-                                                    ck::type_convert<ComputeDataType>(((BDataType*)arg.mB)[indexB]));
+                                                arg.mOpA(valA,
+                                                         ck::type_convert<ComputeDataType>(
+                                                             ((ADataType*)arg.mA)[indexA]));
+                                                arg.mOpB(valB,
+                                                         ck::type_convert<ComputeDataType>(
+                                                             ((BDataType*)arg.mB)[indexB]));
 
                                                 // Mult / accum
                                                 accum += valA * valB;
@@ -353,22 +403,25 @@ namespace hiptensor
                             }
                         }
 
-                        auto indexE = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5}, arg.mE_ms_ns_strides);
+                        auto indexE = offset(
+                            std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5},
+                            arg.mE_ms_ns_strides);
 
                         if constexpr(std::is_same_v<CDEElementwiseOperation,
                                                     ck::tensor_operation::element_wise::Scale>)
                         {
                             arg.mOpCDE(((EDataType*)arg.mE)[indexE],
-                                    ck::type_convert<EDataType>(accum));
+                                       ck::type_convert<EDataType>(accum));
                         }
                         else // bilinear
                         {
                             // NumDTensor will be 1 due to SFINAE of this class
-                            auto indexD
-                                = offset(std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5}, arg.mD_ms_ns_strides[0]);
+                            auto indexD = offset(
+                                std::vector<size_t>{m0, m1, m2, m3, m4, m5, n0, n1, n2, n3, n4, n5},
+                                arg.mD_ms_ns_strides[0]);
                             arg.mOpCDE(((EDataType*)arg.mE)[indexE],
-                                    ck::type_convert<EDataType>(accum),
-                                    ((EDataType*)(arg.mD[0]))[indexD]);
+                                       ck::type_convert<EDataType>(accum),
+                                       ((EDataType*)(arg.mD[0]))[indexD]);
                         }
                     };
 
@@ -451,6 +504,11 @@ namespace hiptensor
         std::unique_ptr<BaseInvoker> MakeInvokerPointer() override
         {
             return std::make_unique<Invoker>(Invoker{});
+        }
+
+        size_t GetWorkSpaceSize(const BaseArgument*) const override
+        {
+            return 0;
         }
 
         std::unique_ptr<BaseArgument> MakeArgumentPointer(
