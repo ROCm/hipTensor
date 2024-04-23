@@ -6,9 +6,25 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 
 ### Additions
 
+* Added support for tensor permutation of ranks of 2, 3, 4, 5 and 6
+* Added tests for tensor permutation of ranks of 2, 3, 4, 5 and 6
+* Added support for tensor contraction of M6N6K6: M, N, K up to rank 6
+* Added tests for tensor contraction of M6N6K6: M, N, K up to rank 6
+* Added new test YAML parsing to support sequential parameters ordering
+
 ### Changes
 
+* Documentation updates for installation, programmer's guide and API reference
+* Prefer amd-llvm-devel package before system LLVM library
+* Preferred compilers changed to CC=amdclang CXX=amdclang++
+* Updated actor-critic selection for new contraction kernel additions
+
 ### Fixes
+
+* Fixed LLVM parsing crash
+* Fixed memory consumption issue in complex kernels
+* Work-around implemented for compiler crash during debug build
+* Allow random modes ordering for tensor contractions
 
 ## hipTensor 1.2.0 for ROCm 6.1.0
 
