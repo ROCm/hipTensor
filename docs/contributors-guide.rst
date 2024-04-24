@@ -111,22 +111,20 @@ Example
 1. Create and track a hipTensor fork.
 2. Clone your fork:
 
-```bash
-git clone -b develop https://github.com/<your_fork>/hipTensor.git .
-.githooks/install
-git checkout -b <new_branch>
-...
-git add <new_work>
-git commit -m "What was changed"
-git push origin <new_branch>
-...
-```
+.. code-block:: bash
+    git clone -b develop https://github.com/<your_fork>/hipTensor.git .
+    .githooks/install
+    git checkout -b <new_branch>
+    ...
+    git add <new_work>
+    git commit -m "What was changed"
+    git push origin <new_branch>
+    ...
 
-<!-- markdownlint-disable ol-prefix -->
 3. Create a pull request to ROCmSoftwarePlatform/hipTensor targeting develop branch.
 4. Make sure to respond to code reviews.
 5. Await CI and approval feedback.
 6. Once approved, await for dev team to merge!
-<!-- markdownlint-enable ol-prefix -->
 
-`Note: Please don't forget to install the githooks as there are triggers for clang formatting in commits.`
+.. note::
+    Please don't forget to install the githooks via ``.githooks/install`` as there are triggers for clang formatting in commits.

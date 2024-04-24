@@ -82,6 +82,11 @@ Data Types **<Ti / To / Tc>** = <Input type / Output Type / Compute Type>, where
 |                     |     f32 / f32 / \-           |                     |                     |
 +---------------------+------------------------------+---------------------+---------------------+
 
+Limitations
+------------
+
+* hipTensor currently supports tensors up to 2GB in size due to backend address-space limitations.
+
 
 hipTensor API objects
 ========================
