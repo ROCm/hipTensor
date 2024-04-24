@@ -356,6 +356,8 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   +-----------------------------------------------------------------------------+
 |                                   |yaml_test                                                                    |
 |                                   +-----------------------------------------------------------------------------+
+|                                   |bilinear_contraction_test_m1n1k1                                             |
+|                                   +-----------------------------------------------------------------------------+
 | hiptensor_tests                   |bilinear_contraction_test_m2n2k2                                             |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |bilinear_contraction_test_m3n3k3                                             |
@@ -365,6 +367,8 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   |bilinear_contraction_test_m5n5k5                                             |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |bilinear_contraction_test_m6n6k6                                             |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |complex_bilinear_contraction_test_m1n1k1                                     |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |complex_bilinear_contraction_test_m2n2k2                                     |
 |                                   +-----------------------------------------------------------------------------+
@@ -376,6 +380,8 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   +-----------------------------------------------------------------------------+
 |                                   |complex_bilinear_contraction_test_m6n6k6                                     |
 |                                   +-----------------------------------------------------------------------------+
+|                                   |scale_contraction_test_m1n1k1                                                |
+|                                   +-----------------------------------------------------------------------------+
 |                                   |scale_contraction_test_m2n2k2                                                |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |scale_contraction_test_m3n3k3                                                |
@@ -385,6 +391,8 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   |scale_contraction_test_m5n5k5                                                |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |scale_contraction_test_m6n6k6                                                |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |complex_scale_contraction_test_m1n1k1                                        |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |complex_scale_contraction_test_m2n2k2                                        |
 |                                   +-----------------------------------------------------------------------------+
