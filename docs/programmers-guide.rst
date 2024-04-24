@@ -129,4 +129,4 @@ The ``test`` directory contains the test codes for testing the following functio
 Contributing
 ^^^^^^^^^^^^
 
-For those wishing to contribute to the project, please see `Contributing to hipTensor  <https://github.com/ROCm/hipTensor/blob/develop/CONTRIBUTING.md>`_.
+For those wishing to contribute to the project, please see :ref:`contributors-guide`.

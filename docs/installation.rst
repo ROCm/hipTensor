@@ -81,11 +81,12 @@ hipTensor is designed to have minimal external dependencies such that it is ligh
 * Minimum ROCm-cmake version support is 0.8.0.
 * Minimum Composable Kernel version support is composable_kernel 1.1.0 for ROCm 6.0.2 (or ROCm package composablekernel-dev).
 * Minimum HIP runtime version support is 4.3.0 (or ROCm package ROCm hip-runtime-amd).
-* Minimum LLVM dev package version support is 10.0 (available as ROCm package rocm-llvm-dev).
+* Minimum LLVM dev package version support is 7.0 (available as ROCm package rocm-llvm-dev).
 
 .. <!-- spellcheck-enable -->
 
 .. note::
+
     It is best to use available ROCm packages from the same release where applicable.
 
 Download hipTensor
@@ -275,21 +276,25 @@ Executable name                                  Description
 ================================================ ===========================================================================================================================
 ``logger_test``                                  Unit test to validate hipTensor Logger APIs
 ``yaml_test``                                    Unit test to validate the YAML functionality used to bundle and run test suites
+``bilinear_contraction_test_m1n1k1``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with  half, single and mixed precision datatypes of rank 2
 ``bilinear_contraction_test_m2n2k2``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with  half, single and mixed precision datatypes of rank 4
 ``bilinear_contraction_test_m3n3k3``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with  half, single and mixed precision datatypes of rank 6
 ``bilinear_contraction_test_m4n4k4``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with  half, single and mixed precision datatypes of rank 8
 ``bilinear_contraction_test_m5n5k5``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with  half, single and mixed precision datatypes of rank 10
 ``bilinear_contraction_test_m6n6k6``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with  half, single and mixed precision datatypes of rank 12
+``complex_bilinear_contraction_test_m1n2k1``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with  complex single and double precision datatypes of rank 2
 ``complex_bilinear_contraction_test_m2n2k2``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with  complex single and double precision datatypes of rank 4
 ``complex_bilinear_contraction_test_m3n3k3``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with  complex single and double precision datatypes of rank 6
 ``complex_bilinear_contraction_test_m4n4k4``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with  complex single and double precision datatypes of rank 8
 ``complex_bilinear_contraction_test_m5n5k5``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with  complex single and double precision datatypes of rank 10
 ``complex_bilinear_contraction_test_m6n6k6``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with  complex single and double precision datatypes of rank 12
+``scale_contraction_test_m1n1k1``                Scale contraction test [D = alpha * (A x B)] with  half, single and mixed precision datatypes of rank 2
 ``scale_contraction_test_m2n2k2``                Scale contraction test [D = alpha * (A x B)] with  half, single and mixed precision datatypes of rank 4
 ``scale_contraction_test_m3n3k3``                Scale contraction test [D = alpha * (A x B)] with  half, single and mixed precision datatypes of rank 6
 ``scale_contraction_test_m4n4k4``                Scale contraction test [D = alpha * (A x B)] with  half, single and mixed precision datatypes of rank 8
 ``scale_contraction_test_m5n5k5``                Scale contraction test [D = alpha * (A x B)] with  half, single and mixed precision datatypes of rank 10
 ``scale_contraction_test_m6n6k6``                Scale contraction test [D = alpha * (A x B)] with  half, single and mixed precision datatypes of rank 12
+``complex_scale_contraction_test_m1n1k1``        Scale contraction test [D = alpha * (A x B)] with  complex single and double precision datatypes of rank 2
 ``complex_scale_contraction_test_m2n2k2``        Scale contraction test [D = alpha * (A x B)] with  complex single and double precision datatypes of rank 4
 ``complex_scale_contraction_test_m3n3k3``        Scale contraction test [D = alpha * (A x B)] with  complex single and double precision datatypes of rank 6
 ``complex_scale_contraction_test_m4n4k4``        Scale contraction test [D = alpha * (A x B)] with  complex single and double precision datatypes of rank 8
