@@ -112,6 +112,7 @@ Example
 2. Clone your fork:
 
 .. code-block:: bash
+
     git clone -b develop https://github.com/<your_fork>/hipTensor.git .
     .githooks/install
     git checkout -b <new_branch>
