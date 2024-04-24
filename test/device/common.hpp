@@ -30,7 +30,8 @@
 template <typename T>
 __device__ inline double toDouble(T const& val)
 {
-    return static_cast<double>(static_cast<float>(val));
+    // TODO: deprecate. Not needed anymore because bfloat16_t has float operator
+    return static_cast<double>(val);
 }
 
 __device__ inline double maxDouble(double a, double b)
