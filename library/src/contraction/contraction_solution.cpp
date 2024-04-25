@@ -143,7 +143,7 @@ namespace hiptensor
             else
             {
                 normal_e_ms_ns_lengths[i] = 1;
-                normal_e_ms_ns_strides[i] = 1;
+                normal_e_ms_ns_strides[i] = normal_e_ms_ns_strides[i - 1];
             }
         }
 
