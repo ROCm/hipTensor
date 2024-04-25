@@ -73,7 +73,7 @@ Tensor mode
 ^^^^^^^^^^^
 
 Tensor modes are a way for the user to easily specify the ordering or labeling of the input strides that define the dimensional data relationship. This is used to describe how
-the data is laid out in memory and how they related to each other spatially.
+the data is laid out in memory and how they are related to each other spatially.
 
 --------------------------------
 Library source code organization
