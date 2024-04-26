@@ -1,3 +1,17 @@
+AMD
 GoogleTest
 rocm
 mandatorily
+gtest
+WIP
+Nvidia
+cuTensor
+hipTensor
+hiptensor
+csv
+composablekernel
+markdownlint
+ol
+Mn
+Nn
+Kn

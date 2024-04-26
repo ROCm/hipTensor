@@ -58,8 +58,8 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
 # If building hipTensor samples as a standalone Cmake project
 else()
     if(NOT CMAKE_CXX_COMPILER)
-        set(CMAKE_CXX_COMPILER "/opt/rocm/bin/hipcc" CACHE STRING
-            "Choose the type of compiler to build: Default point to hipcc"
+        set(CMAKE_CXX_COMPILER "/opt/rocm/bin/amdclang++" CACHE STRING
+            "Choose the type of compiler to build: Default point to amdclang++"
             FORCE)
     endif()
 

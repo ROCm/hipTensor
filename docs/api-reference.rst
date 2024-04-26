@@ -8,10 +8,88 @@
 API reference guide
 ********************
 
-This document provides a category-wise list of the hipTensor APIs, data types, and other programming constructs.
+This document provides information about hipTensor APIs, data types, and other programming constructs.
 
-hipTensor data types
-====================
+
+Supported GPU architectures
+----------------------------
+
+List of supported CDNA architectures:
+
+* gfx908
+* gfx90a
+* gfx940
+* gfx941
+* gfx942
+
+.. note::
+    gfx9 = gfx908, gfx90a, gfx940, gfx941, gfx942
+
+    gfx940+ = gfx940, gfx941, gfx942
+
+
+Supported data types
+--------------------
+
+hipTensor supports the following datatype combinations in API functionality.
+
+Data Types **<Ti / To / Tc>** = <Input type / Output Type / Compute Type>, where:
+
+* Input Type = Matrix A / B
+* Output Type = Matrix C / D
+* Compute Type = Math / accumulation type
+
+
+* f16 = half-precision floating point
+* bf16 = half-precision brain floating point
+* f32 = single-precision floating point
+* cf32 = complex single-precision floating point
+* f64 = double-precision floating point
+* cf64 = complex double-precision floating point
+
+.. note::
+    f16 represents equivalent support for both _Float16 and __half types.
+
+.. tabularcolumns::
+   |C|C|C|C|
+
++---------------------+------------------------------+---------------------+---------------------+
+|   API context       | Datatype Support             |GPU Support          |Tensor Rank Support  |
+|                     | <Ti / To / Tc>               |                     |                     |
++=====================+==============================+=====================+=====================+
+|                     |     f16 / f16 / f32          |  gfx908             | 2m2n2k (Rank4)      |
+| Contraction         +------------------------------+  gfx90a             |                     |
+| (Scale, bilinear)   |     bf16 / bf16 / f32        |  gfx940+            | 3m3n3k (Rank6)      |
+|                     +------------------------------+                     |                     |
+|                     |     f32 / f32 / f32          |                     | 4m4n4k (Rank8)      |
+|                     +------------------------------+                     |                     |
+|                     |     f32 / f32 / f16          |                     | 5m5n5k (Rank10)     |
+|                     +------------------------------+                     |                     |
+|                     |     f32 / f32 / bf16         |                     | 6m6n6k (Rank12)     |
+|                     +------------------------------+                     |                     |
+|                     |     cf32 / cf32 / cf32       |                     |                     |
+|                     +------------------------------+---------------------+                     |
+|                     |     f64 / f64 / f64          |  gfx940+            |                     |
+|                     +------------------------------+                     |                     |
+|                     |     f64 / f64 / f32          |                     |                     |
+|                     +------------------------------+                     |                     |
+|                     |     cf64 / cf64 / cf64       |                     |                     |
++---------------------+------------------------------+---------------------+---------------------+
+|                     |     f16 / f16 / \-           |  gfx908             | Rank2 - Rank6       |
+| Permutation         +------------------------------+  gfx90a             |                     |
+|                     |     f16 / f32 / \-           |  gfx940+            |                     |
+|                     +------------------------------+                     |                     |
+|                     |     f32 / f32 / \-           |                     |                     |
++---------------------+------------------------------+---------------------+---------------------+
+
+Limitations
+------------
+
+* hipTensor currently supports tensors up to 2GB in size due to backend address-space limitations.
+
+
+hipTensor API objects
+========================
 
 .. <!-- spellcheck-disable -->
 
