@@ -41,7 +41,7 @@ namespace ck
             using hiptensor::allocDevice;
             using hiptensor::ceilDiv;
             using hiptensor::DeviceDeleter;
-            using hiptensor::elementSpaceFromLengthsAndStrides;
+            using hiptensor::elementsFromLengths;
 
             using Bilinear        = ck::tensor_operation::element_wise::Bilinear;
             using BilinearComplex = ck::tensor_operation::element_wise::BilinearComplex;
@@ -348,14 +348,10 @@ namespace ck
                         // Take the incoming arguments, treat them as complex.
 
                         // Allocate Real and Imaginary inputs
-                        auto elementsA
-                            = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides);
-                        auto elementsB
-                            = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides);
-                        auto elementsD = elementSpaceFromLengthsAndStrides(ds_ms_ns_lengths[0],
-                                                                           ds_ms_ns_strides[0]);
-                        elementsE
-                            = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides);
+                        auto elementsA = elementsFromLengths(a_ms_ks_lengths);
+                        auto elementsB = elementsFromLengths(b_ns_ks_lengths);
+                        auto elementsD = elementsFromLengths(ds_ms_ns_lengths[0]);
+                        elementsE      = elementsFromLengths(e_ms_ns_lengths);
 
                         mA_real.reset(nullptr);
                         mA_imag.reset(nullptr);
