@@ -104,10 +104,20 @@ typedef enum
     //! Identity operator
     HIPTENSOR_OP_IDENTITY = 1,
     //! Square root operator
-    HIPTENSOR_OP_SQRT = 3,
+    HIPTENSOR_OP_SQRT = 2,
+
+    /* Binary */
+    //! Addition operator
+    HIPTENSOR_OP_ADD = 3,
+    //! Multiplication operator
+    HIPTENSOR_OP_MUL = 5,
+    //! Maximum operator
+    HIPTENSOR_OP_MAX = 6,
+    //! Minimum operator
+    HIPTENSOR_OP_MIN = 7,
+
     //! Reserved
     HIPTENSOR_OP_UNKNOWN = 126,
-
 } hiptensorOperator_t;
 
 //! @brief Tensor contraction kernel selection algorithm
