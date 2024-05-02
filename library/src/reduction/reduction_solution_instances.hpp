@@ -24,52 +24,35 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HASH_HPP
-#define HIPTENSOR_HASH_HPP
+#ifndef HIPTENSOR_REDUCTION_SOLUTION_INSTANCES_HPP
+#define HIPTENSOR_REDUCTION_SOLUTION_INSTANCES_HPP
 
-#include <functional>
+#include <memory>
+
+#include "reduction_solution_registry.hpp"
+#include "singleton.hpp"
 
 namespace hiptensor
 {
-    class Hash
+    class ReductionSolutionInstances : public ReductionSolutionRegistry,
+                                       public LazySingleton<ReductionSolutionInstances>
     {
     public:
-        Hash()            = default;
-        ~Hash()           = default;
-        Hash(Hash const&) = default;
+        // For static initialization
+        friend std::unique_ptr<ReductionSolutionInstances>
+            std::make_unique<ReductionSolutionInstances>();
 
-        template <typename... Ts>
-        std::size_t operator()(Ts const&... ts) const
-        {
-            std::size_t seed = 0;
-            operator()(seed, ts...);
-            return seed;
-        }
+        ~ReductionSolutionInstances() = default;
 
     private:
-        template <typename T, typename... Ts>
-        void operator()(std::size_t& seed, T const& t, Ts const&... ts) const
-        {
-            seed ^= std::hash<T>{}(t) + 0x9e3779b9 + (seed * 64) + (seed / 4);
-            if constexpr(sizeof...(ts) > 0)
-            {
-                operator()(seed, ts...);
-            }
-        }
-
-        template <typename T, typename... Ts>
-        void printArgs(T const& t, Ts const&... ts) const
-        {
-            std::cout << t << ", ";
-            printArgs(ts...);
-        }
-        template <typename T>
-        void printArgs(T const& t) const
-        {
-            std::cout << t << std::endl;
-        }
+        // Singleton: only one instance
+        ReductionSolutionInstances();
+        ReductionSolutionInstances(ReductionSolutionInstances const&)            = delete;
+        ReductionSolutionInstances(ReductionSolutionInstances&&)                 = delete;
+        ReductionSolutionInstances& operator=(ReductionSolutionInstances const&) = delete;
+        ReductionSolutionInstances& operator=(ReductionSolutionInstances&&)      = delete;
     };
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HASH_HPP
+#endif // HIPTENSOR_REDUCTION_SOLUTION_INSTANCES_HPP

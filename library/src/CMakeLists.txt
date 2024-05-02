@@ -24,7 +24,7 @@
  #
  ###############################################################################
 
-find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_contraction_operations device_other_operations)
+find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_contraction_operations device_reduction_operations device_other_operations)
 rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -64,6 +64,8 @@ include_directories(BEFORE
 add_subdirectory(contraction)
 # Generates hiptensor_permutation and hiptensor_permutation_instances
 add_subdirectory(permutation)
+# Generates hiptensor_reduction and hiptensor_reduction_instances
+add_subdirectory(reduction)
 
 # Core API code
 set(HIPTENSOR_CORE_SOURCES
@@ -84,6 +86,8 @@ add_library(hiptensor SHARED
     $<TARGET_OBJECTS:hiptensor_contraction_instances>
     $<TARGET_OBJECTS:hiptensor_permutation>
     $<TARGET_OBJECTS:hiptensor_permutation_instances>
+    $<TARGET_OBJECTS:hiptensor_reduction>
+    # $<TARGET_OBJECTS:hiptensor_reduction_instances>
     )
 
 add_library(hiptensor::hiptensor ALIAS hiptensor)
