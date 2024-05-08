@@ -130,3 +130,10 @@ add_hiptensor_test(complex_scale_contraction_test_m5n5k5 ${ComplexScaleContracti
 # Complex Scale M6N6K6 tests
 set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank6.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m6n6k6 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
+
+
+# Contraction mode tests
+set (ContractionModeTestSources ${ContractionCommonSources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/contraction_mode_test.cpp)
+set (ContractionModeTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/mode_test_params.yaml)
+add_hiptensor_test(contraction_mode_test ${ContractionModeTestConfig}  ${ContractionModeTestSources})

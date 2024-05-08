@@ -27,6 +27,7 @@
 #ifndef HIPTENSOR_CONTRACTION_SOLUTION_IMPL_HPP
 #define HIPTENSOR_CONTRACTION_SOLUTION_IMPL_HPP
 
+#include <algorithm>
 #include <numeric>
 
 #include "contraction_solution.hpp"
@@ -46,6 +47,17 @@ namespace std
 
 namespace hiptensor
 {
+    std::array<std::vector<std::size_t>, 8>
+        normalizeTensorModes(std::vector<std::size_t> const& a_ms_ks_lengths,
+                             std::vector<std::size_t> const& a_ms_ks_strides,
+                             std::vector<int32_t> const&     a_ms_ks_modes,
+                             std::vector<std::size_t> const& b_ns_ks_lengths,
+                             std::vector<std::size_t> const& b_ns_ks_strides,
+                             std::vector<int32_t> const&     b_ns_ks_modes,
+                             std::vector<std::size_t> const& e_ms_ns_lengths,
+                             std::vector<std::size_t> const& e_ms_ns_strides,
+                             std::vector<int32_t> const&     e_ms_ns_modes);
+
     template <typename DeviceOp, typename Enabler = void>
     class ContractionSolutionImpl;
 
@@ -110,53 +122,28 @@ namespace hiptensor
                     beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
+            auto [normal_a_ms_ks_lengths,
+                  normal_a_ms_ks_strides,
+                  normal_b_ns_ks_lengths,
+                  normal_b_ns_ks_strides,
+                  normal_ds_ms_ns_lengths,
+                  normal_ds_ms_ns_strides,
+                  normal_e_ms_ns_lengths,
+                  normal_e_ms_ns_strides]
+                = normalizeTensorModes(a_ms_ks_lengths,
+                                       a_ms_ks_strides,
+                                       a_ms_ks_modes,
+                                       b_ns_ks_lengths,
+                                       b_ns_ks_strides,
+                                       b_ns_ks_modes,
+                                       e_ms_ns_lengths,
+                                       e_ms_ns_strides,
+                                       e_ms_ns_modes);
+
             // CK has its own format for indices...
-            auto toCKVec = [](std::vector<std::size_t> const& v) {
+            auto toCKVec = [](std::vector<size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
-
-            auto isM = [&](size_t i) {
-                for(int j = 0; j < a_ms_ks_modes.size(); j++)
-                {
-                    if(i == a_ms_ks_modes[j])
-                        return true;
-                }
-                return false;
-            };
-
-            auto it = std::partition_point(ds_ms_ns_modes.begin(), ds_ms_ns_modes.end(), isM);
-
-            std::vector<int32_t> ms_modes, ns_modes;
-            ms_modes.assign(ds_ms_ns_modes.begin(), it);
-            ns_modes.assign(it, ds_ms_ns_modes.end());
-
-            int mDim = ms_modes.size();
-            int nDim = ns_modes.size();
-
-            for(int i = mDim; i < MaxNumDimsM; i++)
-            {
-                a_ms_ks_lengths.insert(a_ms_ks_lengths.begin() + i, 1);
-                a_ms_ks_strides.insert(a_ms_ks_strides.begin() + i, 1);
-                ds_ms_ns_lengths.insert(ds_ms_ns_lengths.begin() + i, 1);
-                ds_ms_ns_strides.insert(ds_ms_ns_strides.begin() + i, 1);
-                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
-                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
-            }
-
-            for(int i = nDim; i < MaxNumDimsN; i++)
-            {
-                b_ns_ks_lengths.insert(b_ns_ks_lengths.begin() + i, 1);
-                b_ns_ks_strides.insert(b_ns_ks_strides.begin() + i, 1);
-            }
-
-            a_ms_ks_lengths.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
-            a_ms_ks_strides.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
-            b_ns_ks_lengths.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
-            b_ns_ks_strides.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
-            ds_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
-            ds_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
-            e_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
-            e_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
 
             // Initialize the argument pointer
             Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
@@ -164,14 +151,14 @@ namespace hiptensor
                 B,
                 std::array<const void*, 1>{D},
                 E,
-                toCKVec(a_ms_ks_lengths),
-                toCKVec(a_ms_ks_strides),
-                toCKVec(b_ns_ks_lengths),
-                toCKVec(b_ns_ks_strides),
-                std::array<std::vector<ck::index_t>, 1>{toCKVec(ds_ms_ns_lengths)},
-                std::array<std::vector<ck::index_t>, 1>{toCKVec(ds_ms_ns_strides)},
-                toCKVec(e_ms_ns_lengths),
-                toCKVec(e_ms_ns_strides),
+                toCKVec(normal_a_ms_ks_lengths),
+                toCKVec(normal_a_ms_ks_strides),
+                toCKVec(normal_b_ns_ks_lengths),
+                toCKVec(normal_b_ns_ks_strides),
+                std::array<std::vector<ck::index_t>, 1>{toCKVec(normal_ds_ms_ns_lengths)},
+                std::array<std::vector<ck::index_t>, 1>{toCKVec(normal_ds_ms_ns_strides)},
+                toCKVec(normal_e_ms_ns_lengths),
+                toCKVec(normal_e_ms_ns_strides),
                 typename Traits::AOp{},
                 typename Traits::BOp{},
                 typename Traits::CDEOp(alphaF, betaF)));
@@ -183,18 +170,18 @@ namespace hiptensor
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
             // Fill problem metrics
-            Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                       e_ms_ns_lengths.begin() + Traits::DimsM,
+            Base::mM = std::accumulate(normal_a_ms_ks_lengths.begin(),
+                                       normal_a_ms_ks_lengths.begin() + MaxNumDimsM,
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
-            Base::mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                       e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+            Base::mN = std::accumulate(normal_b_ns_ks_lengths.begin(),
+                                       normal_b_ns_ks_lengths.begin() + MaxNumDimsN,
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
-            Base::mK = std::accumulate(a_ms_ks_lengths.begin() + Traits::DimsM,
-                                       a_ms_ks_lengths.begin() + Traits::DimsM + Traits::DimsK,
+            Base::mK = std::accumulate(normal_a_ms_ks_lengths.begin() + MaxNumDimsM,
+                                       normal_a_ms_ks_lengths.end(),
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
@@ -266,49 +253,28 @@ namespace hiptensor
                     alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             }
 
+            auto [normal_a_ms_ks_lengths,
+                  normal_a_ms_ks_strides,
+                  normal_b_ns_ks_lengths,
+                  normal_b_ns_ks_strides,
+                  _1,
+                  _2,
+                  normal_e_ms_ns_lengths,
+                  normal_e_ms_ns_strides]
+                = normalizeTensorModes(a_ms_ks_lengths,
+                                       a_ms_ks_strides,
+                                       a_ms_ks_modes,
+                                       b_ns_ks_lengths,
+                                       b_ns_ks_strides,
+                                       b_ns_ks_modes,
+                                       e_ms_ns_lengths,
+                                       e_ms_ns_strides,
+                                       e_ms_ns_modes);
+
             // CK has its own format for indices...
-            auto toCKVec = [](std::vector<std::size_t> const& v) {
+            auto toCKVec = [](std::vector<size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
-
-            auto isM = [&](size_t i) {
-                for(int j = 0; j < a_ms_ks_modes.size(); j++)
-                {
-                    if(i == a_ms_ks_modes[j])
-                        return true;
-                }
-                return false;
-            };
-
-            auto it = std::partition_point(ds_ms_ns_modes.begin(), ds_ms_ns_modes.end(), isM);
-
-            std::vector<int32_t> ms_modes, ns_modes;
-            ms_modes.assign(ds_ms_ns_modes.begin(), it);
-            ns_modes.assign(it, ds_ms_ns_modes.end());
-
-            int mDim = ms_modes.size();
-            int nDim = ns_modes.size();
-
-            for(int i = mDim; i < MaxNumDimsM; i++)
-            {
-                a_ms_ks_lengths.insert(a_ms_ks_lengths.begin() + i, 1);
-                a_ms_ks_strides.insert(a_ms_ks_strides.begin() + i, 1);
-                e_ms_ns_lengths.insert(e_ms_ns_lengths.begin() + i, 1);
-                e_ms_ns_strides.insert(e_ms_ns_strides.begin() + i, 1);
-            }
-
-            for(int i = nDim; i < MaxNumDimsN; i++)
-            {
-                b_ns_ks_lengths.insert(b_ns_ks_lengths.begin() + i, 1);
-                b_ns_ks_strides.insert(b_ns_ks_strides.begin() + i, 1);
-            }
-
-            a_ms_ks_lengths.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
-            a_ms_ks_strides.resize(MaxNumDimsM + MaxNumDimsK, size_t(1));
-            b_ns_ks_lengths.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
-            b_ns_ks_strides.resize(MaxNumDimsN + MaxNumDimsK, size_t(1));
-            e_ms_ns_lengths.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
-            e_ms_ns_strides.resize(MaxNumDimsM + MaxNumDimsN, size_t(1));
 
             // Initialize the argument pointer
             Base::mInvokerArgPtr
@@ -316,14 +282,14 @@ namespace hiptensor
                                                           B,
                                                           std::array<const void*, 0>{},
                                                           E,
-                                                          toCKVec(a_ms_ks_lengths),
-                                                          toCKVec(a_ms_ks_strides),
-                                                          toCKVec(b_ns_ks_lengths),
-                                                          toCKVec(b_ns_ks_strides),
+                                                          toCKVec(normal_a_ms_ks_lengths),
+                                                          toCKVec(normal_a_ms_ks_strides),
+                                                          toCKVec(normal_b_ns_ks_lengths),
+                                                          toCKVec(normal_b_ns_ks_strides),
                                                           std::array<std::vector<ck::index_t>, 0>{},
                                                           std::array<std::vector<ck::index_t>, 0>{},
-                                                          toCKVec(e_ms_ns_lengths),
-                                                          toCKVec(e_ms_ns_strides),
+                                                          toCKVec(normal_e_ms_ns_lengths),
+                                                          toCKVec(normal_e_ms_ns_strides),
                                                           typename Traits::AOp{},
                                                           typename Traits::BOp{},
                                                           typename Traits::CDEOp(alphaF)));
@@ -335,18 +301,18 @@ namespace hiptensor
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
 
             // Fill problem metrics
-            Base::mM = std::accumulate(e_ms_ns_lengths.begin(),
-                                       e_ms_ns_lengths.begin() + Traits::DimsM,
+            Base::mM = std::accumulate(normal_a_ms_ks_lengths.begin(),
+                                       normal_a_ms_ks_lengths.begin() + MaxNumDimsM,
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
-            Base::mN = std::accumulate(e_ms_ns_lengths.begin() + Traits::DimsM,
-                                       e_ms_ns_lengths.begin() + Traits::DimsM + Traits::DimsN,
+            Base::mN = std::accumulate(normal_b_ns_ks_lengths.begin(),
+                                       normal_b_ns_ks_lengths.begin() + MaxNumDimsN,
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 
-            Base::mK = std::accumulate(a_ms_ks_lengths.begin() + Traits::DimsM,
-                                       a_ms_ks_lengths.begin() + Traits::DimsM + Traits::DimsK,
+            Base::mK = std::accumulate(normal_a_ms_ks_lengths.begin() + MaxNumDimsM,
+                                       normal_a_ms_ks_lengths.end(),
                                        ck::index_t{1},
                                        std::multiplies<ck::index_t>{});
 

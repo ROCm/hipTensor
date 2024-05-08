@@ -45,4 +45,4 @@ TEST_P(BilinearContractionTest, RunKernel)
     this->RunKernel();
 }
 
-INSTANTIATE_TEST_SUITE_P(ContractionTests, BilinearContractionTest, load_config_helper());
+INSTANTIATE_TEST_SUITE_P(ContractionTests, BilinearContractionTest, load_combined_config_params());

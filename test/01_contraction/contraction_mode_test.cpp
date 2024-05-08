@@ -30,11 +30,11 @@
 #include "contraction_test.hpp"
 #include "contraction_test_helpers.hpp"
 
-class ScaleContractionTest : public hiptensor::ContractionTest
+class ContractionModeTest : public hiptensor::ContractionTest
 {
 };
 
-TEST_P(ScaleContractionTest, RunKernel)
+TEST_P(ContractionModeTest, RunKernel)
 {
     static bool ranWarmup = false;
     if(!ranWarmup)
@@ -45,4 +45,4 @@ TEST_P(ScaleContractionTest, RunKernel)
     this->RunKernel();
 }
 
-INSTANTIATE_TEST_SUITE_P(ContractionTests, ScaleContractionTest, load_combined_config_params());
+INSTANTIATE_TEST_SUITE_P(ContractionModeTests, ContractionModeTest, load_sequence_config_params());

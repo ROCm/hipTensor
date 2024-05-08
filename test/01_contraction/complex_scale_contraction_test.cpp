@@ -45,4 +45,6 @@ TEST_P(ComplexScaleContractionTest, RunKernel)
     this->RunKernel();
 }
 
-INSTANTIATE_TEST_SUITE_P(ContractionTests, ComplexScaleContractionTest, load_config_helper());
+INSTANTIATE_TEST_SUITE_P(ContractionTests,
+                         ComplexScaleContractionTest,
+                         load_combined_config_params());

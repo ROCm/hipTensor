@@ -42,7 +42,8 @@ namespace hiptensor
     }
 
     template <typename T>
-    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths, bool col_major = false)
+    static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths,
+                                                    bool                  col_major = false)
     {
         if(lengths.empty())
         {
@@ -72,24 +73,6 @@ namespace hiptensor
     {
         return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
     }
-
-    template <typename T>
-    static inline T elementSpaceFromLengthsAndStrides(std::vector<T> const& lengths,
-                                                      std::vector<T> const& strides)
-    {
-        auto accum = T{1};
-        for(int i = 0; i < lengths.size(); i++)
-        {
-            if(lengths[i] == 0)
-            {
-                continue;
-            }
-
-            accum += (lengths[i] - 1) * strides[i];
-        }
-        return accum;
-    }
-
 } // namespace hiptensor
 
 #endif // HIPTENSOR_SRC_UTIL_HPP
