@@ -62,18 +62,14 @@ namespace hiptensor
                                       const uint64_t                           workspaceSize)
     {
         // Make sure that we calculate full element space incase strides are not packed.
-        auto sizeA = elementSpaceFromLengthsAndStrides(a_ms_ks_lengths, a_ms_ks_strides)
-                     * hipDataTypeSize(typeA);
-        auto sizeB = elementSpaceFromLengthsAndStrides(b_ns_ks_lengths, b_ns_ks_strides)
-                     * hipDataTypeSize(typeB);
+        auto sizeA = elementsFromLengths(a_ms_ks_lengths) * hipDataTypeSize(typeA);
+        auto sizeB = elementsFromLengths(b_ns_ks_lengths) * hipDataTypeSize(typeB);
         auto sizeD = 0;
         if(typeD != NONE_TYPE)
         {
-            sizeD = elementSpaceFromLengthsAndStrides(d_ms_ns_lengths, d_ms_ns_strides)
-                    * hipDataTypeSize(typeD);
+            sizeD = elementsFromLengths(d_ms_ns_lengths) * hipDataTypeSize(typeD);
         }
-        auto sizeE = elementSpaceFromLengthsAndStrides(e_ms_ns_lengths, e_ms_ns_strides)
-                     * hipDataTypeSize(typeE);
+        auto sizeE = elementsFromLengths(e_ms_ns_lengths) * hipDataTypeSize(typeE);
 
         void *A_d, *B_d, *D_d, *E_d, *wspace;
 
