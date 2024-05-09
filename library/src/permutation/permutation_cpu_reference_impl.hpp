@@ -29,13 +29,13 @@
 
 // Std includes
 #include <array>
+#include <list>
 #include <numeric>
 #include <vector>
-#include <list>
 
 // CK includes
-#include <device_elementwise_scale_impl.hpp>
-#include <element_wise_operation.hpp>
+#include <combined_element_wise_operation.hpp>
+#include <device_elementwise_dynamic_vector_dims_impl.hpp>
 #include <host_tensor.hpp>
 
 #include "permutation_meta_traits.hpp"
@@ -45,18 +45,19 @@ namespace hiptensor
 {
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename Aop,
-              typename Bop,
-              typename Scale,
+              typename ElementOp,
               ck::index_t NumDim>
     struct ReferencePermutation
         : public ck::tensor_operation::device::DeviceElementwiseImpl<InDataTypeTuple,
                                                                      OutDataTypeTuple,
-                                                                     Aop,
-                                                                     Bop,
-                                                                     Scale,
+                                                                     ElementOp,
                                                                      NumDim,
-                                                                     1,
+                                                                     32,
+                                                                     16,
+                                                                     32,
+                                                                     4,
+                                                                     4,
+                                                                     ck::Sequence<1, 0>,
                                                                      ck::Sequence<1>,
                                                                      ck::Sequence<1>>
     {
@@ -73,21 +74,17 @@ namespace hiptensor
         // Argument
         struct Argument : public BaseArgument
         {
-             Argument(const std::array<index_t, NumDim> lengths,
-                      const std::array<std::array<index_t, NumDim>, NumInput> inStridesArray,
-                      const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
-                      const void* in_dev_buffers,
-                      void* out_dev_buffers,
-                      Aop a_op,
-                      Bop b_op,
-                      Scale scale_op)
-                    : BaseArgument()
-                    , mLengths(lengths)
-                    , mInStrides(inStridesArray)
-                    , mOutStrides(outStridesArray)
-                    , mElementOp(a_op)
-                    , mUnaryOp(b_op)
-                    , mScaleOp(scale_op)
+            Argument(const std::array<index_t, NumDim>                        lengths,
+                     const std::array<std::array<index_t, NumDim>, NumInput>  inStridesArray,
+                     const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
+                     const void*                                              in_dev_buffers,
+                     void*                                                    out_dev_buffers,
+                     ElementOp                                                elementwise_op)
+                : BaseArgument()
+                , mLengths(lengths)
+                , mInStrides(inStridesArray)
+                , mOutStrides(outStridesArray)
+                , mElementOp(elementwise_op)
             {
                 mInput  = (mInDataType*)in_dev_buffers;
                 mOutput = (mOutDataType*)out_dev_buffers;
@@ -97,16 +94,14 @@ namespace hiptensor
             Argument& operator=(Argument const&) = default;
             ~Argument()                          = default;
 
-            const mInDataType *mInput;
-            mOutDataType      *mOutput;
+            const mInDataType* mInput;
+            mOutDataType*      mOutput;
 
-            std::array<index_t, NumDim>                         mLengths;
-            std::array<std::array<index_t, NumDim>, NumInput>   mInStrides;
-            std::array<std::array<index_t, NumDim>, NumOutput>  mOutStrides;
+            std::array<index_t, NumDim>                        mLengths;
+            std::array<std::array<index_t, NumDim>, NumInput>  mInStrides;
+            std::array<std::array<index_t, NumDim>, NumOutput> mOutStrides;
 
-            Aop mElementOp;
-            Bop       mUnaryOp;
-            Scale                mScaleOp;
+            ElementOp mElementOp;
         };
 
         // Invoker
@@ -117,18 +112,20 @@ namespace hiptensor
             float Run(const Argument& arg)
             {
                 int  modeSize     = arg.mLengths.size();
-                auto elementCount = hiptensor::elementsFromLengths(std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
+                auto elementCount = hiptensor::elementsFromLengths(
+                    std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
 
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                 // Sort the output strides to calculate output tensor lengths
-                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
-                std::sort (outStrides.begin(), outStrides.end());
+                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]),
+                                            std::end(arg.mOutStrides[0]));
+                std::sort(outStrides.begin(), outStrides.end());
                 assert(outStrides.front() == 1);
 
                 // Map the lengths in output to its indices( using list to cover redundant lengths )
                 std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
-                int prevLength = 1, i;
-                for(i = 1; i < modeSize ; i++)
+                int                                             prevLength = 1, i;
+                for(i = 1; i < modeSize; i++)
                 {
                     bLengthToIndex[outStrides[i] / prevLength].push_back(i - 1);
                     prevLength = outStrides[i];
@@ -136,13 +133,14 @@ namespace hiptensor
                 bLengthToIndex[elementCount / prevLength].push_back(i - 1);
 #else
                 // Sort the output strides to calculate output tensor lengths
-                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]), std::end(arg.mOutStrides[0]));
-                std::sort (outStrides.rbegin(), outStrides.rend());
+                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]),
+                                            std::end(arg.mOutStrides[0]));
+                std::sort(outStrides.rbegin(), outStrides.rend());
                 assert(outStrides.back() == 1);
 
                 // Map the lengths in output to its indices( using list to cover redundant lengths )
                 std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
-                int prevLength = 1, i;
+                int                                             prevLength = 1, i;
                 for(i = modeSize - 2; i >= 0; i--)
                 {
                     bLengthToIndex[outStrides[i] / prevLength].push_back(i + 1);
@@ -154,14 +152,14 @@ namespace hiptensor
                 // From computed output lengths and argument's input lengths,
                 // create a mode map between input and output
                 std::map<int, int> modeATomodeBmap;
-                for (int i = 0; i < modeSize; i++)
+                for(int i = 0; i < modeSize; i++)
                 {
                     modeATomodeBmap[i] = bLengthToIndex[arg.mLengths[i]].front();
                     bLengthToIndex[arg.mLengths[i]].pop_front();
                 }
 
                 // Find the write offset and index in output for every input element
-                auto    bIndices  = std::vector<int32_t>(modeSize, 0);
+                auto bIndices = std::vector<int32_t>(modeSize, 0);
                 for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
                 {
                     auto index = elementIndex;
@@ -171,25 +169,20 @@ namespace hiptensor
                         bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
                         index /= arg.mLengths[modeIndex];
                     }
-                    auto bOffset
-                        = std::inner_product(bIndices.begin(), bIndices.end(), std::begin(outStrides), 0);
+                    auto bOffset = std::inner_product(
+                        bIndices.begin(), bIndices.end(), std::begin(outStrides), 0);
 #else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                     for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
                     {
                         bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
                         index /= arg.mLengths[modeIndex];
                     }
-                    auto bOffset
-                        = std::inner_product(bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
+                    auto bOffset = std::inner_product(
+                        bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
 
-                    mInDataType input;
-                    // Perform elementwise tensor operation of input
-                    arg.mUnaryOp(input, arg.mInput[elementIndex]);
-                    // Perform permute scale
-                    mOutDataType output = static_cast<mOutDataType>(input) * static_cast<mOutDataType>(arg.mScaleOp.scale_);
-                    // Perform elementwise tensor operation of output
-                    arg.mElementOp(arg.mOutput[bOffset], output);
+                    // Perforn sequence of unary, scale operations on input
+                    arg.mElementOp(arg.mOutput[bOffset], arg.mInput[elementIndex]);
                 }
                 return 0;
             }
@@ -213,43 +206,35 @@ namespace hiptensor
         }
 
         static auto
-            MakeArgument(const std::array<index_t, NumDim> lengths,
-                         const std::array<std::array<index_t, NumDim>, NumInput> inStridesArray,
+            MakeArgument(const std::array<index_t, NumDim>                        lengths,
+                         const std::array<std::array<index_t, NumDim>, NumInput>  inStridesArray,
                          const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
-                         const void* in_dev_buffers,
-                         void* out_dev_buffers,
-                         Aop a_op,
-                         Bop b_op,
-                         Scale scale_op)
+                         const void*                                              in_dev_buffers,
+                         void*                                                    out_dev_buffers,
+                         ElementOp                                                elementwise_op)
         {
             return Argument{lengths,
                             inStridesArray,
                             outStridesArray,
                             in_dev_buffers,
                             out_dev_buffers,
-                            a_op,
-                            b_op,
-                            scale_op};
+                            elementwise_op};
         }
 
         std::unique_ptr<BaseArgument> MakeArgumentPointer(
-            const std::array<index_t, NumDim> lengths,
-            const std::array<std::array<index_t, NumDim>, NumInput> inStridesArray,
+            const std::array<index_t, NumDim>                        lengths,
+            const std::array<std::array<index_t, NumDim>, NumInput>  inStridesArray,
             const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
-            const void* in_dev_buffers,
-            void* out_dev_buffers,
-            Aop a_op,
-            Bop b_op,
-            Scale scale_op)
+            const void*                                              in_dev_buffers,
+            void*                                                    out_dev_buffers,
+            ElementOp                                                elementwise_op)
         {
             return std::make_unique<Argument>(Argument{lengths,
                                                        inStridesArray,
                                                        outStridesArray,
                                                        in_dev_buffers,
                                                        out_dev_buffers,
-                                                       a_op,
-                                                       b_op,
-                                                       scale_op});
+                                                       elementwise_op});
         }
 
         static auto MakeInvoker()
@@ -283,22 +268,18 @@ namespace hiptensor
               typename Bop,
               typename Scale,
               ck::index_t NumDim>
-    struct MetaTraits<ReferencePermutation<InDataTypeTuple,
-                                           OutDataTypeTuple,
-                                           Aop,
-                                           Bop,
-                                           Scale,
-                                           NumDim>>
-        : public MetaTraits<
-              ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
-                                                              OutDataTypeTuple,
-                                                              Aop,
-                                                              Bop,
-                                                              Scale,
-                                                              NumDim>>
+    struct MetaTraits<
+        ReferencePermutation<InDataTypeTuple,
+                             OutDataTypeTuple,
+                             ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+                             NumDim>>
+        : public MetaTraits<ck::tensor_operation::device::DeviceElementwise<
+              InDataTypeTuple,
+              OutDataTypeTuple,
+              ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+              NumDim>>
     {
     };
-
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
@@ -308,15 +289,14 @@ namespace hiptensor
               ck::index_t NumDim>
     auto enumerateReferenceSolutions()
     {
-        using ReferenceOp = ReferencePermutation<InDataTypeTuple,
-                                                 OutDataTypeTuple,
-                                                 Aop,
-                                                 Bop,
-                                                 Scale,
-                                                 NumDim>;
+        using ReferenceOp = ReferencePermutation<
+            InDataTypeTuple,
+            OutDataTypeTuple,
+            ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+            NumDim>;
 
         auto solution = std::make_unique<PermutationSolutionImpl<ReferenceOp>>(
-                                                    std::make_unique<ReferenceOp>());
+            std::make_unique<ReferenceOp>());
 
         auto result = std::vector<std::unique_ptr<PermutationSolution>>();
         result.push_back(std::move(solution));

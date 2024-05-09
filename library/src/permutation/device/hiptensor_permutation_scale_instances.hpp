@@ -45,49 +45,107 @@ namespace ck
                 using F32 = float;
 
                 // clang-format off
-                template <typename AOp,
-                          typename BOp,
-                          typename Scale,
-                          index_t NDims>
+                template <index_t NDims,
+                          typename ElementwiseOp>
                 using device_permute_scale_f16_instances =
                     std::tuple <
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, AOp, BOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256, 64,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256, 128, 32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256, 32,  128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 64,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 32,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 16,  128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 128, 16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,  32,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,  16,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,  64,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 32,  32,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 32,  16,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256, 128, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256, 256, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256,  64, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 128, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128,  64, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128,  32, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 256, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,   64, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,   32, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,  128, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 32,   64, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 32,   32, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp,  NDims, 32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>
                     >;
 
-                template <typename AOp,
-                          typename BOp,
-                          typename Scale,
-                          index_t NDims>
+                template <index_t NDims,
+                          typename ElementwiseOp>
                 using device_permute_scale_f32_instances = std::tuple<
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 1, ck::Sequence<1>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 8, ck::Sequence<8>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 4, ck::Sequence<4>, ck::Sequence<1>>,
-                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, AOp, BOp, Scale, NDims, 2, ck::Sequence<2>, ck::Sequence<1>>
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256, 128, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256, 256,  64, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256,  64, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128, 128,  64, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  64, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  32, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128, 256,  32, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   64,  64, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   32, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,  128,  32, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 32,   64,  32, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 32,   32,  64, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                        DeviceElementwiseImpl<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp,  NDims, 32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>
                     >;
                 // clang-format on
 
                 template <typename InDataTypeTuple,
                           typename OutDataTypeTuple,
-                          typename AOp,
-                          typename BOp,
-                          typename Scale,
+                          typename ElementwiseOperation,
                           index_t NumDim>
                 struct DeviceOperationInstanceFactory<
                     ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
                                                                     OutDataTypeTuple,
-                                                                    AOp,
-                                                                    BOp,
-                                                                    Scale,
+                                                                    ElementwiseOperation,
                                                                     NumDim>>
                 {
                     using DeviceOp = DeviceElementwise<InDataTypeTuple,
                                                        OutDataTypeTuple,
-                                                       AOp,
-                                                       BOp,
-                                                       Scale,
+                                                       ElementwiseOperation,
                                                        NumDim>;
 
                     static auto GetInstances()
@@ -95,78 +153,78 @@ namespace ck
                         std::vector<std::unique_ptr<DeviceOp>> op_ptrs;
                         if constexpr(NumDim == 1)
                         {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>> &&
-                                         is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
+                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
+                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
                             {
                                 add_device_permute_scale_1d_f32_instances(op_ptrs);
                             }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>> &&
-                                              is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
+                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
+                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
                             {
                                 add_device_permute_scale_1d_f16_instances(op_ptrs);
                             }
                         }
                         else if constexpr(NumDim == 2)
                         {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>> &&
-                                         is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
+                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
+                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
                             {
                                 add_device_permute_scale_2d_f32_instances(op_ptrs);
                             }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>> &&
-                                              is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
+                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
+                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
                             {
                                 add_device_permute_scale_2d_f16_instances(op_ptrs);
                             }
                         }
                         else if constexpr(NumDim == 3)
                         {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>> &&
-                                         is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
+                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
+                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
                             {
                                 add_device_permute_scale_3d_f32_instances(op_ptrs);
                             }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>> &&
-                                              is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
+                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
+                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
                             {
                                 add_device_permute_scale_3d_f16_instances(op_ptrs);
                             }
                         }
                         else if constexpr(NumDim == 4)
                         {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>> &&
-                                         is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
+                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
+                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
                             {
                                 add_device_permute_scale_4d_f32_instances(op_ptrs);
                             }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>> &&
-                                              is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
+                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
+                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
                             {
                                 add_device_permute_scale_4d_f16_instances(op_ptrs);
                             }
                         }
                         else if constexpr(NumDim == 5)
                         {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>> &&
-                                         is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
+                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
+                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
                             {
                                 add_device_permute_scale_5d_f32_instances(op_ptrs);
                             }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>> &&
-                                              is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
+                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
+                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
                             {
                                 add_device_permute_scale_5d_f16_instances(op_ptrs);
                             }
                         }
                         else if constexpr(NumDim == 6)
                         {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>> &&
-                                         is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
+                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
+                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
                             {
                                 add_device_permute_scale_6d_f32_instances(op_ptrs);
                             }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>> &&
-                                              is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
+                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
+                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
                             {
                                 add_device_permute_scale_6d_f16_instances(op_ptrs);
                             }

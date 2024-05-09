@@ -89,11 +89,11 @@ namespace hiptensor
                 if(!argValues.empty())
                 {
                     std::string kernelName = argValues.substr(0, argValues.find('<'));
-                    if(kernelName == "DeviceElementwiseNormalizationImpl"
+                    if(kernelName == "DeviceElementwiseImpl"
                        || kernelName == "ReferencePermutation")
                     {
                         int beg = argValues.find(',');
-                        int end = argValues.find('>');
+                        int end = argValues.find(',', beg + 1);
                         return std::stoi(argValues.substr(beg + 1, end - beg));
                     }
                 }
@@ -133,16 +133,21 @@ namespace hiptensor
 
             toCKArr(a_lengths, abLengths);
 
+            using UnaryCombinedOp
+                = ck::tensor_operation::element_wise::UnaryCombinedOp<typename Traits::AOp,
+                                                                      typename Traits::ScaleOp,
+                                                                      typename Traits::BOp>;
+
             // Initialize the argument pointer
-            Base::mInvokerArgPtr
-                = std::move(deviceOp->MakeArgumentPointer(abLengths,
-                                                          {aStrides},
-                                                          {bStridesCk},
-                                                          {A},
-                                                          {B},
-                                                          typename Traits::AOp{},
-                                                          typename Traits::BOp{},
-                                                          typename Traits::ScaleOp{alphaF}));
+            Base::mInvokerArgPtr = std::move(
+                deviceOp->MakeArgumentPointer(abLengths,
+                                              {aStrides},
+                                              {bStridesCk},
+                                              {A},
+                                              {B},
+                                              UnaryCombinedOp{typename Traits::AOp{},
+                                                              typename Traits::ScaleOp{alphaF},
+                                                              typename Traits::BOp{}}));
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -171,8 +176,11 @@ namespace hiptensor
               ck::index_t NumDim>
     std::vector<std::unique_ptr<hiptensor::PermutationSolution>> enumeratePermutationSolutions()
     {
-        using PermutationOp = ck::tensor_operation::device::
-            DeviceElementwise<InDataTypeTuple, OutDataTypeTuple, Aop, Bop, Scale, NumDim>;
+        using PermutationOp = ck::tensor_operation::device::DeviceElementwise<
+            InDataTypeTuple,
+            OutDataTypeTuple,
+            ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+            NumDim>;
 
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<PermutationOp>;
