@@ -37,6 +37,8 @@ namespace hiptensor
     {
 
         // add entries to mSolutionQuery
+
+        // @todo Add all reference instances. How to stop the explosion of number of instances? Wait for CK
 #if 0
         registerSolutions(enumerateReductionSolutions<hiptensor::float16_t,
                                                       hiptensor::float16_t,

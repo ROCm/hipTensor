@@ -61,10 +61,12 @@ namespace hiptensor
         constexpr static bool        TensorPropagateNan = PropagateNan;
         constexpr static bool        TensorOutputIndex  = OutputIndex;
 
-        using TensorInDataType      = InDataType;
-        using TensorAccDataType     = AccDataType;
-        using TensorOutDataType     = OutDataType;
-        using TensorReduceOperation = ReduceOperation;
+        using TensorInDataType       = InDataType;
+        using TensorAccDataType      = AccDataType;
+        using TensorOutDataType      = OutDataType;
+        using TensorReduceOperation  = ReduceOperation;
+        using TensorInElementwiseOp  = InElementwiseOp;
+        using TensorAccElementwiseOp = AccElementwiseOp;
         static_assert((std::is_same_v<TensorReduceOperation, typename ck::reduce::Add>)
                           || (std::is_same_v<TensorReduceOperation, typename ck::reduce::Mul>)
                           || (std::is_same_v<TensorReduceOperation, typename ck::reduce::Min>)

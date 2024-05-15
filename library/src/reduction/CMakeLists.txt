@@ -30,12 +30,11 @@ get_target_property(composable_kernel_INCLUDES composable_kernel::device_reducti
 get_target_property(composable_kernel_INCLUDES composable_kernel::device_other_operations INTERFACE_INCLUDE_DIRECTORIES)
 set(HIPTENSOR_REDUCTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_reduction.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_selection.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_registry.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution.cpp
 )
 
 add_hiptensor_component(hiptensor_reduction ${HIPTENSOR_REDUCTION_SOURCES})
