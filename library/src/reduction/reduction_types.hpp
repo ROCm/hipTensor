@@ -27,6 +27,7 @@
 #ifndef HIPTENSOR_REDUCTION_TYPES_HPP
 #define HIPTENSOR_REDUCTION_TYPES_HPP
 
+#include <ck/tensor_operation/gpu/device/reduction_operator_mapping.hpp>
 #include <ck/utility/reduction_enums.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 
@@ -61,5 +62,29 @@ namespace hiptensor
                                                                             : HIPTENSOR_OP_MAX;
         return reduceOpId;
     }
+    inline auto reductionUnaryOperators(hiptensorOperator_t opReduce, int32_t reduceLength)
+    {
+        if(opReduce == HIPTENSOR_OP_ADD)
+        {
+            return ck::reduce_unary_operator<ck::ReduceTensorOp::ADD, true, true>::
+                GetElementwiseOperator(reduceLength);
+        }
+        else if(opReduce == HIPTENSOR_OP_MUL)
+        {
+            return ck::reduce_unary_operator<ck::ReduceTensorOp::MUL, true, true>::
+                GetElementwiseOperator(reduceLength);
+        }
+        else if(opReduce == HIPTENSOR_OP_MIN)
+        {
+            return ck::reduce_unary_operator<ck::ReduceTensorOp::MIN, true, true>::
+                GetElementwiseOperator(reduceLength);
+        }
+        else
+        {
+            return ck::reduce_unary_operator<ck::ReduceTensorOp::MAX, true, true>::
+                GetElementwiseOperator(reduceLength);
+        }
+    }
+
 } // namespace hiptensor
 #endif // HIPTENSOR_REDUCTION_TYPES_HPP
