@@ -33,6 +33,10 @@ set(HIPTENSOR_REDUCTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution.cpp
+   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_f16_f16_instance.cpp
+   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_bf16_bf16_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_f64_f64_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_registry.cpp
 )

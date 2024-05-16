@@ -51,6 +51,11 @@ namespace hiptensor
         ReductionSolutionInstances(ReductionSolutionInstances&&)                 = delete;
         ReductionSolutionInstances& operator=(ReductionSolutionInstances const&) = delete;
         ReductionSolutionInstances& operator=(ReductionSolutionInstances&&)      = delete;
+
+        // void genReductionSolutionF16F16Instances();
+        // void genReductionSolutionBf16Bf16Instances();
+        void genReductionSolutionF32F32Instances();
+        void genReductionSolutionF64F64Instances();
     };
 
 } // namespace hiptensor
