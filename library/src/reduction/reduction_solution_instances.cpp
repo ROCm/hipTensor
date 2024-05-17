@@ -41,7 +41,27 @@ namespace hiptensor
         // @todo Add all reference instances. How to stop the explosion of number of instances? Wait for CK
         // genReductionSolutionF16F16Instances();
         // genReductionSolutionBf16Bf16Instances();
-        genReductionSolutionF32F32Instances();
+        genReductionSolution1x1F32F32Instances();
+        genReductionSolution2x1F32F32Instances();
+        genReductionSolution2x2F32F32Instances();
+        genReductionSolution3x1F32F32Instances();
+        genReductionSolution3x2F32F32Instances();
+        genReductionSolution3x3F32F32Instances();
+        genReductionSolution4x1F32F32Instances();
+        genReductionSolution4x2F32F32Instances();
+        genReductionSolution4x3F32F32Instances();
+        genReductionSolution4x4F32F32Instances();
+        genReductionSolution5x1F32F32Instances();
+        genReductionSolution5x2F32F32Instances();
+        genReductionSolution5x3F32F32Instances();
+        genReductionSolution5x4F32F32Instances();
+        genReductionSolution5x5F32F32Instances();
+        genReductionSolution6x1F32F32Instances();
+        genReductionSolution6x2F32F32Instances();
+        genReductionSolution6x3F32F32Instances();
+        genReductionSolution6x4F32F32Instances();
+        genReductionSolution6x5F32F32Instances();
+        genReductionSolution6x6F32F32Instances();
         genReductionSolutionF64F64Instances();
     }
 } // namespace hiptensor
