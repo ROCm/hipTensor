@@ -131,8 +131,7 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
     return compareEqual(referenceArray.data(),
                         bArray.data(),
                         bArray.size(),
-                        hiptensor::convertToComputeType(typeCompute),
-                        10);
+                        hiptensor::convertToComputeType(typeCompute));
 }
 
 TEST(PermutationCpuImplTest, CompareF32ResultWithReference)

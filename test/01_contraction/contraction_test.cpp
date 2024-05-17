@@ -193,13 +193,13 @@ namespace hiptensor
             }
 
             size_t elementsA  = std::accumulate(a_ms_ks_lengths.begin(),
-                                                a_ms_ks_lengths.end(),
-                                                size_t{1},
-                                                std::multiplies<size_t>());
+                                               a_ms_ks_lengths.end(),
+                                               size_t{1},
+                                               std::multiplies<size_t>());
             size_t elementsB  = std::accumulate(b_ns_ks_lengths.begin(),
-                                                b_ns_ks_lengths.end(),
-                                                size_t{1},
-                                                std::multiplies<size_t>());
+                                               b_ns_ks_lengths.end(),
+                                               size_t{1},
+                                               std::multiplies<size_t>());
             size_t elementsCD = std::accumulate(cd_ms_ns_lengths.begin(),
                                                 cd_ms_ns_lengths.end(),
                                                 size_t{1},
@@ -421,13 +421,13 @@ namespace hiptensor
                 int size = hipDataTypeSize(DDataType);
 
                 size_t elementsA  = std::accumulate(a_ms_ks.mLengths.begin(),
-                                                    a_ms_ks.mLengths.end(),
-                                                    size_t{1},
-                                                    std::multiplies<size_t>());
+                                                   a_ms_ks.mLengths.end(),
+                                                   size_t{1},
+                                                   std::multiplies<size_t>());
                 size_t elementsB  = std::accumulate(b_ns_ks.mLengths.begin(),
-                                                    b_ns_ks.mLengths.end(),
-                                                    size_t{1},
-                                                    std::multiplies<size_t>());
+                                                   b_ns_ks.mLengths.end(),
+                                                   size_t{1},
+                                                   std::multiplies<size_t>());
                 size_t elementsCD = std::accumulate(d_ms_ns.mLengths.begin(),
                                                     d_ms_ns.mLengths.end(),
                                                     size_t{1},
@@ -435,6 +435,7 @@ namespace hiptensor
 
                 auto D = resource->allocHost(elementsCD * size);
                 resource->copyData(D, resource->deviceD(), elementsCD * size);
+                auto& references = resource->hostD();
 
                 if(DDataType == HIP_R_16F)
                 {
@@ -455,6 +456,11 @@ namespace hiptensor
 
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<_Float16>(stream, (_Float16*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<_Float16>(
+                        stream, (_Float16*)references.get(), elementsCD);
                     stream << std::endl;
                 }
                 else if(DDataType == HIP_R_16BF)
@@ -478,6 +484,11 @@ namespace hiptensor
                     hiptensorPrintArrayElements<hip_bfloat16>(
                         stream, (hip_bfloat16*)D.get(), elementsCD);
                     stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<hip_bfloat16>(
+                        stream, (hip_bfloat16*)references.get(), elementsCD);
+                    stream << std::endl;
                 }
                 else if(DDataType == HIP_R_32F)
                 {
@@ -499,6 +510,11 @@ namespace hiptensor
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<float>(stream, (float*)D.get(), elementsCD);
                     stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<float>(
+                        stream, (float*)references.get(), elementsCD);
+                    stream << std::endl;
                 }
                 else if(DDataType == HIP_R_64F)
                 {
@@ -519,6 +535,11 @@ namespace hiptensor
 
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<double>(stream, (double*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)references.get(), elementsCD);
                     stream << std::endl;
                 }
                 else if(DDataType == HIP_C_32F)
@@ -542,6 +563,11 @@ namespace hiptensor
                     hiptensorPrintArrayElements<hipFloatComplex>(
                         stream, (hipFloatComplex*)D.get(), elementsCD);
                     stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<hipFloatComplex>(
+                        stream, (hipFloatComplex*)references.get(), elementsCD);
+                    stream << std::endl;
                 }
                 else if(DDataType == HIP_C_64F)
                 {
@@ -563,6 +589,11 @@ namespace hiptensor
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<hipDoubleComplex>(
                         stream, (hipDoubleComplex*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<hipDoubleComplex>(
+                        stream, (hipDoubleComplex*)references.get(), elementsCD);
                     stream << std::endl;
                 }
             }

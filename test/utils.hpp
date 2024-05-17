@@ -168,14 +168,7 @@ __host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSiz
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
-    hipLaunchKernelGGL((fillKernel<DataType>),
-                       gridDim,
-                       blockDim,
-                       0,
-                       0,
-                       data,
-                       elementSize,
-                       static_cast<uint32_t>(std::time(nullptr)));
+    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize);
 }
 
 // fill kernel wrapper for 'elementSize' elements with a specific value
@@ -194,7 +187,7 @@ std::pair<bool, double> compareEqual(DDataType const*       deviceD,
                                      DDataType const*       hostD,
                                      std::size_t            elementsD,
                                      hiptensorComputeType_t computeType,
-                                     double                 tolerance = 100.0)
+                                     double                 tolerance = 0.0)
 {
     bool   retval             = true;
     double max_relative_error = 0.0;
@@ -245,7 +238,21 @@ std::pair<bool, double> compareEqual(DDataType const*       deviceD,
         }
     }
 
-    auto eps = getEpsilon(computeType);
+    if(tolerance == 0.0)
+    {
+        // use the same default tolerance value as CK
+        if(computeType == HIPTENSOR_COMPUTE_16BF || computeType == HIPTENSOR_COMPUTE_16F
+           || std::is_same_v<DDataType, hiptensor::float16_t>
+           || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
+        {
+            tolerance = 1e-3;
+        }
+        else
+        {
+            tolerance = 1e-5;
+        }
+    }
+
     if(isInf)
     {
         retval             = false;
@@ -256,7 +263,7 @@ std::pair<bool, double> compareEqual(DDataType const*       deviceD,
         retval             = false;
         max_relative_error = std::numeric_limits<DDataType>::signaling_NaN();
     }
-    else if(max_relative_error > (eps * tolerance))
+    else if(max_relative_error > tolerance)
     {
         retval = false;
     }
@@ -269,7 +276,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
                                                  DDataType*             hostD,
                                                  std::size_t            elementsD,
                                                  hiptensorComputeType_t computeType,
-                                                 double                 tolerance = 100.0)
+                                                 double                 tolerance = 0.0)
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
@@ -331,13 +338,27 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
     auto toDouble
         = [](DDataType const& val) { return static_cast<double>(static_cast<float>(val)); };
 
-    auto eps = getEpsilon(computeType);
+    if(tolerance == 0.0)
+    {
+        // use the same default tolerance value as CK
+        if(computeType == HIPTENSOR_COMPUTE_16BF || computeType == HIPTENSOR_COMPUTE_16F
+           || std::is_same_v<DDataType, hiptensor::float16_t>
+           || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
+        {
+            tolerance = 1e-3;
+        }
+        else
+        {
+            tolerance = 1e-5;
+        }
+    }
+
     if(isNaN)
     {
         retval           = false;
         maxRelativeError = std::numeric_limits<DDataType>::signaling_NaN();
     }
-    else if(maxRelativeError > (eps * tolerance))
+    else if(maxRelativeError > tolerance)
     {
         retval = false;
     }

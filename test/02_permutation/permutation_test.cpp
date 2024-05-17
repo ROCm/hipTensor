@@ -148,6 +148,11 @@ namespace hiptensor
                     hiptensorPrintArrayElements<float>(
                         stream, (float*)resource->hostB().get(), elementsB);
                     stream << std::endl;
+
+                    stream << "Reference elements (" << elementsB << "):\n";
+                    hiptensorPrintArrayElements<float>(
+                        stream, (float*)resource->hostReference().get(), elementsB);
+                    stream << std::endl;
                 }
                 else
                 {
@@ -159,6 +164,11 @@ namespace hiptensor
                     stream << "Tensor B elements (" << elementsB << "):\n";
                     hiptensorPrintArrayElements<_Float16>(
                         stream, (_Float16*)resource->hostB().get(), elementsB);
+                    stream << std::endl;
+
+                    stream << "Reference elements (" << elementsB << "):\n";
+                    hiptensorPrintArrayElements<hiptensor::float16_t>(
+                        stream, (hiptensor::float16_t*)resource->hostReference().get(), elementsB);
                     stream << std::endl;
                 }
             }
@@ -178,8 +188,8 @@ namespace hiptensor
         auto abDataType      = testType[0];
         auto computeDataType = testType[1];
 
-        auto Aop             = operators[0];
-        auto Bop             = operators[1];
+        auto Aop = operators[0];
+        auto Bop = operators[1];
 
         if(!mRunFlag)
         {
@@ -193,8 +203,8 @@ namespace hiptensor
               B_{w, h, c, n} = 1.0 *  \textsl{IDENTITY}(A_{c, n, h, w})
              **********************/
 
-            int nDim = lengths.size();
-            int arrDim[] = {'n', 'c', 'w', 'h','d','m'};
+            int nDim     = lengths.size();
+            int arrDim[] = {'n', 'c', 'w', 'h', 'd', 'm'};
 
             std::vector<int> modeA(arrDim, arrDim + nDim);
             std::vector<int> modeB;
@@ -224,22 +234,12 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
             hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descA,
-                                                                nmodeA,
-                                                                extentA.data(),
-                                                                NULL /* stride */,
-                                                                abDataType,
-                                                                Aop));
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, abDataType, Aop));
 
             hiptensorTensorDescriptor_t descB;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descB,
-                                                                nmodeB,
-                                                                extentB.data(),
-                                                                NULL /* stride */,
-                                                                abDataType,
-                                                                Bop));
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, abDataType, Bop));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -264,19 +264,20 @@ namespace hiptensor
 
             if(abDataType == HIP_R_32F)
             {
-                CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
-                                                                    &alphaValue,
-                                                                    (const float*)resource->hostA().get(),
-                                                                    &descA,
-                                                                    modeA.data(),
-                                                                    (float*)resource->hostReference().get(),
-                                                                    &descB,
-                                                                    modeB.data(),
-                                                                    computeDataType,
-                                                                    0 /* stream */));
+                CHECK_HIPTENSOR_ERROR(
+                    hiptensorPermutationReference(handle,
+                                                  &alphaValue,
+                                                  (const float*)resource->hostA().get(),
+                                                  &descA,
+                                                  modeA.data(),
+                                                  (float*)resource->hostReference().get(),
+                                                  &descB,
+                                                  modeB.data(),
+                                                  computeDataType,
+                                                  0 /* stream */));
 
-               resource->copyReferenceToDevice();
-               std::tie(mValidationResult, mMaxRelativeError)
+                resource->copyReferenceToDevice();
+                std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
                                                       (float*)resource->deviceReference().get(),
                                                       resource->getCurrentMatrixElement(),
@@ -284,24 +285,25 @@ namespace hiptensor
             }
             else if(abDataType == HIP_R_16F)
             {
-                CHECK_HIPTENSOR_ERROR(hiptensorPermutationReference(handle,
-                                                                    &alphaValue,
-                                                                    (const _Float16*)resource->hostA().get(),
-                                                                    &descA,
-                                                                    modeA.data(),
-                                                                    (_Float16*)resource->hostReference().get(),
-                                                                    &descB,
-                                                                    modeB.data(),
-                                                                    computeDataType,
-                                                                    0 /* stream */));
+                CHECK_HIPTENSOR_ERROR(
+                    hiptensorPermutationReference(handle,
+                                                  &alphaValue,
+                                                  (const _Float16*)resource->hostA().get(),
+                                                  &descA,
+                                                  modeA.data(),
+                                                  (_Float16*)resource->hostReference().get(),
+                                                  &descB,
+                                                  modeB.data(),
+                                                  computeDataType,
+                                                  0 /* stream */));
 
-               resource->copyReferenceToDevice();
+                resource->copyReferenceToDevice();
 
-               std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
+                std::tie(mValidationResult, mMaxRelativeError) = compareEqualLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceB().get(),
                     (_Float16*)resource->deviceReference().get(),
-                     resource->getCurrentMatrixElement(),
-                     convertToComputeType(computeDataType));
+                    resource->getCurrentMatrixElement(),
+                    convertToComputeType(computeDataType));
             }
         }
 
