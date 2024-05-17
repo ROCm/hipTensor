@@ -54,7 +54,27 @@ namespace hiptensor
 
         // void genReductionSolutionF16F16Instances();
         // void genReductionSolutionBf16Bf16Instances();
-        void genReductionSolutionF32F32Instances();
+        void genReductionSolution1x1F32F32Instances();
+        void genReductionSolution2x1F32F32Instances();
+        void genReductionSolution2x2F32F32Instances();
+        void genReductionSolution3x1F32F32Instances();
+        void genReductionSolution3x2F32F32Instances();
+        void genReductionSolution3x3F32F32Instances();
+        void genReductionSolution4x1F32F32Instances();
+        void genReductionSolution4x2F32F32Instances();
+        void genReductionSolution4x3F32F32Instances();
+        void genReductionSolution4x4F32F32Instances();
+        void genReductionSolution5x1F32F32Instances();
+        void genReductionSolution5x2F32F32Instances();
+        void genReductionSolution5x3F32F32Instances();
+        void genReductionSolution5x4F32F32Instances();
+        void genReductionSolution5x5F32F32Instances();
+        void genReductionSolution6x1F32F32Instances();
+        void genReductionSolution6x2F32F32Instances();
+        void genReductionSolution6x3F32F32Instances();
+        void genReductionSolution6x4F32F32Instances();
+        void genReductionSolution6x5F32F32Instances();
+        void genReductionSolution6x6F32F32Instances();
         void genReductionSolutionF64F64Instances();
     };
 

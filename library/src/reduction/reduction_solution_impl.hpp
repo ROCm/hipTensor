@@ -100,12 +100,17 @@ namespace hiptensor
                 return 0;
             }
 
-            std::array<ck::index_t, Traits::TensorRank>                              arrInLengths;
-            std::array<ck::index_t, Traits::TensorRank>                              arrInStrides;
-            std::array<ck::index_t, Traits::TensorRank - Traits::TensorNumReduceDim> arrOutLengths;
-            std::array<ck::index_t, Traits::TensorRank - Traits::TensorNumReduceDim> arrOutStrides;
-            std::array<ck::index_t, Traits::TensorNumReduceDim>                      reduceDims;
-            auto                                                                     toCKArr
+            static_assert(Traits::TensorRank >= Traits::TensorNumReduceDim, "TensorRank must be greater than or equal to TensorNumReduceDim");
+            constexpr ck::index_t OutputDim
+                = (Traits::TensorRank - Traits::TensorNumReduceDim)
+                      ? (Traits::TensorRank - Traits::TensorNumReduceDim)
+                      : 1;
+            std::array<ck::index_t, Traits::TensorRank>         arrInLengths;
+            std::array<ck::index_t, Traits::TensorRank>         arrInStrides;
+            std::array<ck::index_t, OutputDim>                  arrOutLengths;
+            std::array<ck::index_t, OutputDim>                  arrOutStrides;
+            std::array<ck::index_t, Traits::TensorNumReduceDim> reduceDims;
+            auto                                                toCKArr
                 = [](auto const& v, auto& a) { std::copy(v.cbegin(), v.cend(), a.begin()); };
             auto findReduceModes
                 = [](const std::vector<int32_t>& modeA, const std::vector<int32_t> modeD) {
