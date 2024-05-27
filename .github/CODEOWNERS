@@ -1,8 +1,8 @@
 * @cgmillette @bragadeesh @mkarunan @dlangbe @congma13 @afanfa
 # Documentation files
-docs/* @ROCm/rocm-documentation
+docs/ @ROCm/rocm-documentation
 *.md @ROCm/rocm-documentation
 *.rst @ROCm/rocm-documentation
 .readthedocs.yaml @ROCm/rocm-documentation
 # Header directory
-library/include/* @ROCm/rocm-documentation @cgmillette @bragadeesh @mkarunan @dlangbe @congma13 @afanfa
+library/include/ @ROCm/rocm-documentation @cgmillette @bragadeesh @mkarunan @dlangbe @congma13 @afanfa
