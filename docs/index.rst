@@ -15,7 +15,7 @@ Our documentation is structured as follows:
 .. grid:: 2
   :gutter: 3
 
-  .. grid-item-card:: Tutorial
+  .. grid-item-card:: Install
 
     * :ref:`installation`
 
