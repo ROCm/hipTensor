@@ -24,52 +24,13 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HASH_HPP
-#define HIPTENSOR_HASH_HPP
+#include "reduction_types.hpp"
 
-#include <functional>
-
-namespace hiptensor
+namespace std
 {
-    class Hash
+    ostream& operator<<(ostream& os, hiptensor::ReductionOpId_t const& op)
     {
-    public:
-        Hash()            = default;
-        ~Hash()           = default;
-        Hash(Hash const&) = default;
+        return os << (int32_t)op;
+    }
 
-        template <typename... Ts>
-        std::size_t operator()(Ts const&... ts) const
-        {
-            std::size_t seed = 0;
-            operator()(seed, ts...);
-            return seed;
-        }
-
-    private:
-        template <typename T, typename... Ts>
-        void operator()(std::size_t& seed, T const& t, Ts const&... ts) const
-        {
-            seed ^= std::hash<T>{}(t) + 0x9e3779b9 + (seed * 64) + (seed / 4);
-            if constexpr(sizeof...(ts) > 0)
-            {
-                operator()(seed, ts...);
-            }
-        }
-
-        template <typename T, typename... Ts>
-        void printArgs(T const& t, Ts const&... ts) const
-        {
-            std::cout << t << ", ";
-            printArgs(ts...);
-        }
-        template <typename T>
-        void printArgs(T const& t) const
-        {
-            std::cout << t << std::endl;
-        }
-    };
-
-} // namespace hiptensor
-
-#endif // HIPTENSOR_HASH_HPP
+} // namespace std

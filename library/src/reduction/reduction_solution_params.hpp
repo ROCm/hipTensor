@@ -24,52 +24,42 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HASH_HPP
-#define HIPTENSOR_HASH_HPP
+#ifndef HIPTENSOR_REDUCTION_SOLUTION_PARAMS_HPP
+#define HIPTENSOR_REDUCTION_SOLUTION_PARAMS_HPP
 
-#include <functional>
+#include <memory>
+#include <unordered_map>
+#include <vector>
+
+#include "data_types.hpp"
+#include "reduction_types.hpp"
+#include "singleton.hpp"
 
 namespace hiptensor
 {
-    class Hash
+    struct ReductionSolutionParams
     {
-    public:
-        Hash()            = default;
-        ~Hash()           = default;
-        Hash(Hash const&) = default;
+        ReductionSolutionParams()                                          = default;
+        virtual ~ReductionSolutionParams()                                 = default;
+        ReductionSolutionParams(ReductionSolutionParams const&)            = default;
+        ReductionSolutionParams(ReductionSolutionParams&&)                 = default;
+        ReductionSolutionParams& operator=(ReductionSolutionParams const&) = default;
+        ReductionSolutionParams& operator=(ReductionSolutionParams&&)      = default;
 
-        template <typename... Ts>
-        std::size_t operator()(Ts const&... ts) const
-        {
-            std::size_t seed = 0;
-            operator()(seed, ts...);
-            return seed;
-        }
+        virtual int32_t rankIn() const        = 0;
+        virtual int32_t numReducedDim() const = 0;
+        virtual bool    propagateNan() const  = 0;
+        virtual bool    outputIndex() const   = 0;
 
-    private:
-        template <typename T, typename... Ts>
-        void operator()(std::size_t& seed, T const& t, Ts const&... ts) const
-        {
-            seed ^= std::hash<T>{}(t) + 0x9e3779b9 + (seed * 64) + (seed / 4);
-            if constexpr(sizeof...(ts) > 0)
-            {
-                operator()(seed, ts...);
-            }
-        }
+        virtual hipDataType            typeIn() const  = 0;
+        virtual hiptensorComputeType_t typeAcc() const = 0;
+        virtual hipDataType            typeOut() const = 0;
 
-        template <typename T, typename... Ts>
-        void printArgs(T const& t, Ts const&... ts) const
-        {
-            std::cout << t << ", ";
-            printArgs(ts...);
-        }
-        template <typename T>
-        void printArgs(T const& t) const
-        {
-            std::cout << t << std::endl;
-        }
+        virtual hiptensorOperator_t opReduce() const = 0;
     };
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HASH_HPP
+#include "reduction_solution_params_impl.hpp"
+
+#endif // HIPTENSOR_REDUCTION_SOLUTION_PARAMS_HPP
