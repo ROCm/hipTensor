@@ -314,6 +314,16 @@ namespace ck
                     {
                     }
 
+                    ~Argument()
+                    {
+                        mA_real.reset(nullptr);
+                        mA_imag.reset(nullptr);
+                        mB_real.reset(nullptr);
+                        mB_imag.reset(nullptr);
+                        mE_real.reset(nullptr);
+                        mE_imag.reset(nullptr);
+                    }
+
                     Argument& operator=(Argument&& other)
                     {
                         if(this != &other)
@@ -374,6 +384,7 @@ namespace ck
                             {
                                 out_r = std::move(allocDevice<DecompT>(elementCount));
                                 out_i = std::move(allocDevice<DecompT>(elementCount));
+                                // printf("Allocated %d\n", elementCount * 2);
 
                                 auto gridDim = dim3(ceilDiv(elementCount, blockDim.x));
                                 hiptensor::unpack<<<gridDim, blockDim, 0>>>(

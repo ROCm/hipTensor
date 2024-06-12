@@ -316,6 +316,19 @@ namespace ck
                     {
                     }
 
+                    ~Argument()
+                    {
+                        mA_real.reset(nullptr);
+                        mA_imag.reset(nullptr);
+                        mB_real.reset(nullptr);
+                        mB_imag.reset(nullptr);
+                        mD_real.reset(nullptr);
+                        mD_imag.reset(nullptr);
+                        mE_real.reset(nullptr);
+                        mE_imag.reset(nullptr);
+                        // printf("Calling arg deconstructor\n");
+                    }
+
                     Argument& operator=(Argument&& other)
                     {
                         if(this != &other)
@@ -379,6 +392,7 @@ namespace ck
                             {
                                 out_r = std::move(allocDevice<DecompT>(elementCount));
                                 out_i = std::move(allocDevice<DecompT>(elementCount));
+                                // printf("Allocated %d\n", elementCount * 2);
 
                                 auto gridDim = dim3(ceilDiv(elementCount, blockDim.x));
                                 hiptensor::unpack<<<gridDim, blockDim, 0>>>(
@@ -390,7 +404,7 @@ namespace ck
                         decompGrid(mA_real, mA_imag, (const ComplexA*)p_a_grid, elementsA);
                         decompGrid(mB_real, mB_imag, (const ComplexB*)p_b_grid, elementsB);
                         decompGrid(mD_real, mD_imag, (const ComplexDs*)p_ds_grid[0], elementsD);
-                        decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);
+                        decompGrid(mE_real, mE_imag, (const ComplexE*)p_e_grid, elementsE);                 
 
                         auto allocScaleArgs = [a_ms_ks_lengths,
                                                a_ms_ks_strides,
