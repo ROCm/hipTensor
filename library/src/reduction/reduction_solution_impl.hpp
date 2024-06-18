@@ -136,23 +136,6 @@ namespace hiptensor
             // toCKArr( c_strides.empty() ? hiptensor::stridesFromLengths(c_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR) : c_strides, arrOutStrides);
             toCKArr(findReduceModes(a_modes, c_modes), reduceDims);
 
-            // @TODO test
-            auto pa = [](std::string msg, auto& a) {
-                std::cout << msg << "\n";
-                for(auto item : a)
-                {
-                    std::cout << item << " ";
-                }
-                std::cout << "\n";
-            };
-            std::cout << "alpha, beta: " << alpha << ", " << beta << "\n";
-            pa("arrInLengths", arrInLengths);
-            pa("arrInStrides", arrInStrides);
-            pa("arrOutLengths", arrOutLengths);
-            pa("arrOutStrides", arrOutStrides);
-            pa("reduceDims", reduceDims);
-            // end test
-
             auto [in_elementwise_op, acc_elementwise_op]
                 = reductionUnaryOperators(opReduce,
                                           hiptensor::elementsFromLengths(a_lengths)

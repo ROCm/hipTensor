@@ -185,8 +185,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
-    logger->setLogMask(0x1F);
-    char msg[2048];
+    char  msg[2048];
 
     snprintf(msg,
              sizeof(msg),

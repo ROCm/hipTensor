@@ -62,6 +62,26 @@ namespace hiptensor
         genReductionSolution6x4F32F32Instances();
         genReductionSolution6x5F32F32Instances();
         genReductionSolution6x6F32F32Instances();
-        genReductionSolutionF64F64Instances();
+        genReductionSolution1x1F64F64Instances();
+        genReductionSolution2x1F64F64Instances();
+        genReductionSolution2x2F64F64Instances();
+        genReductionSolution3x1F64F64Instances();
+        genReductionSolution3x2F64F64Instances();
+        genReductionSolution3x3F64F64Instances();
+        genReductionSolution4x1F64F64Instances();
+        genReductionSolution4x2F64F64Instances();
+        genReductionSolution4x3F64F64Instances();
+        genReductionSolution4x4F64F64Instances();
+        genReductionSolution5x1F64F64Instances();
+        genReductionSolution5x2F64F64Instances();
+        genReductionSolution5x3F64F64Instances();
+        genReductionSolution5x4F64F64Instances();
+        genReductionSolution5x5F64F64Instances();
+        genReductionSolution6x1F64F64Instances();
+        genReductionSolution6x2F64F64Instances();
+        genReductionSolution6x3F64F64Instances();
+        genReductionSolution6x4F64F64Instances();
+        genReductionSolution6x5F64F64Instances();
+        genReductionSolution6x6F64F64Instances();
     }
 } // namespace hiptensor

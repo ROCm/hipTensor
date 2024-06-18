@@ -54,7 +54,27 @@ set(HIPTENSOR_REDUCTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_4_f32_f32_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_5_f32_f32_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_6_f32_f32_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_1_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_4_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_4_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_5_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_4_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_5_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_6_f64_f64_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_registry.cpp
 )
