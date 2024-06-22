@@ -60,6 +60,15 @@ include_directories(BEFORE
     ${PROJECT_SOURCE_DIR}/library/src/include
 )
 
+if (NOT DEFINED ADDRESS_SANITIZER AND DEFINED ENV{ADDRESS_SANITIZER})
+    set(ADDRESS_SANITIZER $ENV{ADDRESS_SANITIZER})
+endif()
+
+if (ADDRESS_SANITIZER OR CMAKE_CXX_FLAGS MATCHES "-fsanitize=address")
+    add_compile_options(-mcmodel=large)
+    add_link_options(-mcmodel=large)
+endif()
+
 # Generates hiptensor_contraction and hiptensor_contraction_instances
 add_subdirectory(contraction)
 # Generates hiptensor_permutation and hiptensor_permutation_instances
