@@ -40,6 +40,8 @@ namespace ck
                 using F32 = float;
 
                 // clang-format off
+                /* NDims - No of dimensions of input/output tensors
+                ElementwiseOp - element_wise::Scale */
                 template <index_t NDims,
                           typename ElementwiseOp>
                 using device_permute_scale_f32_instances = std::tuple<
