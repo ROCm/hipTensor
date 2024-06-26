@@ -113,7 +113,7 @@ namespace hiptensor
             {
                 int  modeSize     = arg.mLengths.size();
                 auto elementCount = hiptensor::elementsFromLengths(
-                    std::vector(std::begin(arg.mLengths), std::end(arg.mLengths)));
+                    std::vector<index_t>(std::begin(arg.mLengths), std::end(arg.mLengths)));
 
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
                 // Sort the output strides to calculate output tensor lengths

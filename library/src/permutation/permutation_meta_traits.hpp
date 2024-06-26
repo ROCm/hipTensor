@@ -57,9 +57,10 @@ namespace hiptensor
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
 
-        using AOp     = Aop;
-        using BOp     = Bop;
-        using ScaleOp = Scale;
+        using AOp        = Aop;
+        using BOp        = Bop;
+        using ScaleOp    = Scale;
+        using CombinedOp = ck::tensor_operation::element_wise::UnaryCombinedOp<AOp, ScaleOp, BOp>;
     };
 } // namespace hiptensor
 

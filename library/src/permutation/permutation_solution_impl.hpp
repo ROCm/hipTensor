@@ -133,21 +133,16 @@ namespace hiptensor
 
             toCKArr(a_lengths, abLengths);
 
-            using UnaryCombinedOp
-                = ck::tensor_operation::element_wise::UnaryCombinedOp<typename Traits::AOp,
-                                                                      typename Traits::ScaleOp,
-                                                                      typename Traits::BOp>;
-
             // Initialize the argument pointer
-            Base::mInvokerArgPtr = std::move(
-                deviceOp->MakeArgumentPointer(abLengths,
-                                              {aStrides},
-                                              {bStridesCk},
-                                              {A},
-                                              {B},
-                                              UnaryCombinedOp{typename Traits::AOp{},
-                                                              typename Traits::ScaleOp{alphaF},
-                                                              typename Traits::BOp{}}));
+            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                abLengths,
+                {aStrides},
+                {bStridesCk},
+                {A},
+                {B},
+                typename Traits::CombinedOp{typename Traits::AOp{},
+                                            typename Traits::ScaleOp{alphaF},
+                                            typename Traits::BOp{}}));
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
