@@ -181,7 +181,7 @@ namespace hiptensor
                         bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
 
-                    // Perforn sequence of unary, scale operations on input
+                    // Perform sequence of unary, scale operations on input
                     arg.mElementOp(arg.mOutput[bOffset], arg.mInput[elementIndex]);
                 }
                 return 0;

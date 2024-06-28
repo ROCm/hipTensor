@@ -227,6 +227,80 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                        uint64_t                          workspaceSize,
                                        hipStream_t                       stream);
 
+//! @brief Implements a tensor reduction of the form \f[ D = alpha * opReduce(opA(A)) + beta * opC(C) \f]
+//!
+//! @param[in] handle Opaque handle holding hipTensor's library context.
+//! @param[in] alpha Scaling for A; its data type is determined by 'typeCompute'. Pointer to the host memory.
+//! @param[in] A Pointer to the data corresponding to A in device memory. Pointer to the GPU-accessible memory.
+//! @param[in] descA A descriptor that holds the information about the data type, modes and strides of A.
+//! @param[in] modeA Array with 'nmodeA' entries that represent the modes of A. modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor. Modes that only appear in modeA but not in modeC are reduced (contracted).
+//! @param[in] beta Scaling for C; its data type is determined by 'typeCompute'. Pointer to the host memory.
+//! @param[in] C Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
+//! @param[in] descC A descriptor that holds the information about the data type, modes and strides of C.
+//! @param[in] modeC Array with 'nmodeC' entries that represent the modes of C. modeC[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor.
+//! @param[out] D Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
+//! @param[in] descD Must be identical to descC for now.
+//! @param[in] modeD Must be identical to modeC for now.
+//! @param[in] opReduce binary operator used to reduce elements of A.
+//! @param[in] typeCompute All arithmetic is performed using this data type (i.e., it affects the accuracy and performance).
+//! @param[out] workspace Scratchpad (device) memory; the workspace must be aligned to 128 bytes.
+//! @param[in] workspaceSize Please use hiptensorReductionGetWorkspaceSize() to query the required workspace.
+//!            While lower values, including zero, are valid, they may lead to grossly suboptimal performance.
+//! @param[in] stream The CUDA stream in which all the computation is performed.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if operation is not supported.
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
+//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+
+hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
+                                     const void*                        alpha,
+                                     const void*                        A,
+                                     const hiptensorTensorDescriptor_t* descA,
+                                     const int32_t                      modeA[],
+                                     const void*                        beta,
+                                     const void*                        C,
+                                     const hiptensorTensorDescriptor_t* descC,
+                                     const int32_t                      modeC[],
+                                     void*                              D,
+                                     const hiptensorTensorDescriptor_t* descD,
+                                     const int32_t                      modeD[],
+                                     hiptensorOperator_t                opReduce,
+                                     hiptensorComputeType_t             typeCompute,
+                                     void*                              workspace,
+                                     uint64_t                           workspaceSize,
+                                     hipStream_t                        stream);
+
+//! @brief Determines the required workspaceSize for a given tensor reduction (see \ref hiptensorReduction)
+//! @param[in] handle Opaque handle holding hipTensor's library context.
+//! @param[in] A same as in hiptensorReduction
+//! @param[in] descA same as in hiptensorReduction
+//! @param[in] modeA same as in hiptensorReduction
+//! @param[in] C same as in hiptensorReduction
+//! @param[in] descC same as in hiptensorReduction
+//! @param[in] modeC same as in hiptensorReduction
+//! @param[in] D same as in hiptensorReduction
+//! @param[in] descD same as in hiptensorReduction
+//! @param[in] modeD same as in hiptensorReduction
+//! @param[in] opReduce same as in hiptensorReduction
+//! @param[in] typeCompute same as in hiptensorReduction
+//! @param[out] workspaceSize The workspace size (in bytes) that is required for the given tensor reduction.
+//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
+hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t*           handle,
+                                                     const void*                        A,
+                                                     const hiptensorTensorDescriptor_t* descA,
+                                                     const int32_t                      modeA[],
+                                                     const void*                        C,
+                                                     const hiptensorTensorDescriptor_t* descC,
+                                                     const int32_t                      modeC[],
+                                                     const void*                        D,
+                                                     const hiptensorTensorDescriptor_t* descD,
+                                                     const int32_t                      modeD[],
+                                                     hiptensorOperator_t                opReduce,
+                                                     hiptensorComputeType_t             typeCompute,
+                                                     uint64_t* workspaceSize);
+
 //! @brief Registers a callback function that will be invoked by logger calls.
 //! @param[in] callback This parameter is the callback function pointer provided to the logger.
 //! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
