@@ -2,11 +2,17 @@ name: Linting
 
 on:
   push:
-    branches: [develop]
+    branches: 
+    - develop
+    - master
+    - 'docs/*'
   pull_request:
-    branches: [develop]
+    branches: 
+    - develop
+    - master
+    - 'docs/*'
 
 jobs:
   call-workflow-passing-data:
     name: Documentation
-    uses: RadeonOpenCompute/rocm-docs-core/.github/workflows/linting.yml@develop
+    uses: ROCm/rocm-docs-core/.github/workflows/linting.yml@develop
