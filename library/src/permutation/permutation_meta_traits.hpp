@@ -28,13 +28,13 @@
 #define HIPTENSOR_PERMUTATION_META_TRAITS_HPP
 
 // CK includes
-#include <device_elementwise_scale_impl.hpp>
-#include <element_wise_operation.hpp>
+#include <combined_element_wise_operation.hpp>
+#include <device_elementwise_dynamic_vector_dims_impl.hpp>
 #include <device_operation_instance_factory.hpp>
 
 // hiptensor includes
-#include "device/hiptensor_permutation_scale_instances.hpp"
 #include "data_types.hpp"
+#include "device/hiptensor_permutation_scale_instances.hpp"
 #include "meta_traits.hpp"
 
 namespace hiptensor
@@ -47,21 +47,20 @@ namespace hiptensor
               typename Scale,
               ck::index_t NumDim>
     struct MetaTraits<ck::tensor_operation::device::DeviceElementwise<
-                                                                    InDataTypeTuple,
-                                                                    OutDataTypeTuple,
-                                                                    Aop,
-                                                                    Bop,
-                                                                    Scale,
-                                                                    NumDim>>
+        InDataTypeTuple,
+        OutDataTypeTuple,
+        ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+        NumDim>>
     {
         constexpr static ck::index_t NDim = NumDim;
 
-        using InDataT   = InDataTypeTuple;
-        using OutDataT  = OutDataTypeTuple;
-        
-        using AOp = Aop;
-        using BOp   = Bop;
-        using ScaleOp   = Scale;
+        using InDataT  = InDataTypeTuple;
+        using OutDataT = OutDataTypeTuple;
+
+        using AOp        = Aop;
+        using BOp        = Bop;
+        using ScaleOp    = Scale;
+        using CombinedOp = ck::tensor_operation::element_wise::UnaryCombinedOp<AOp, ScaleOp, BOp>;
     };
 } // namespace hiptensor
 

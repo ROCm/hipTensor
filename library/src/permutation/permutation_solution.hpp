@@ -33,8 +33,8 @@
 #include <vector>
 
 // CK includes
-#include <device_elementwise_scale_impl.hpp>
-#include <element_wise_operation.hpp>
+#include <combined_element_wise_operation.hpp>
+#include <device_elementwise_dynamic_vector_dims_impl.hpp>
 
 #include "performance.hpp"
 #include "permutation_meta_traits.hpp"

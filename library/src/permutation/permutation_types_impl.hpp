@@ -28,7 +28,7 @@
 #define HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP
 
 // CK includes
-#include <element_wise_operation.hpp>
+#include <combined_element_wise_operation.hpp>
 
 #include "permutation_types.hpp"
 #include <hiptensor/hiptensor_types.hpp>
