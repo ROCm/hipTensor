@@ -38,40 +38,24 @@ namespace ck
         {
             namespace instance
             {
-                template <typename AOp,
-                          typename BOp,
-                          typename Scale>
+                template <typename ElementwiseOp>
                 void add_device_permute_scale_4d_f16_instances(
-                    std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F16>,
-                                                                  ck::Tuple<F16>,
-                                                                  AOp,
-                                                                  BOp,
-                                                                  Scale,
-                                                                  4>>>& instances)
+                    std::vector<std::unique_ptr<
+                        DeviceElementwise<ck::Tuple<F16>, ck::Tuple<F16>, ElementwiseOp, 4>>>&
+                        instances)
                 {
-                    add_device_operation_instances(instances,
-                                                   device_permute_scale_f16_instances<AOp,
-                                                                                      BOp,
-                                                                                      Scale,
-                                                                                      4>{});
+                    add_device_operation_instances(
+                        instances, device_permute_scale_f16_instances<4, ElementwiseOp>{});
                 }
 
-                template <typename AOp,
-                          typename BOp,
-                          typename Scale>
+                template <typename ElementwiseOp>
                 void add_device_permute_scale_4d_f32_instances(
-                    std::vector<std::unique_ptr<DeviceElementwise<ck::Tuple<F32>,
-                                                                  ck::Tuple<F32>,
-                                                                  AOp,
-                                                                  BOp,
-                                                                  Scale,
-                                                                  4>>>& instances)
+                    std::vector<std::unique_ptr<
+                        DeviceElementwise<ck::Tuple<F32>, ck::Tuple<F32>, ElementwiseOp, 4>>>&
+                        instances)
                 {
-                    add_device_operation_instances(instances,
-                                                   device_permute_scale_f32_instances<AOp,
-                                                                                      BOp,
-                                                                                      Scale,
-                                                                                      4>{});
+                    add_device_operation_instances(
+                        instances, device_permute_scale_f32_instances<4, ElementwiseOp>{});
                 }
             } // namespace instance
         } // namespace device

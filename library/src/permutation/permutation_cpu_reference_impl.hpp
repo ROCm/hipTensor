@@ -34,8 +34,8 @@
 #include <vector>
 
 // CK includes
-#include <device_elementwise_scale_impl.hpp>
-#include <element_wise_operation.hpp>
+#include <combined_element_wise_operation.hpp>
+#include <device_elementwise_dynamic_vector_dims_impl.hpp>
 #include <host_tensor.hpp>
 
 #include "permutation_meta_traits.hpp"
@@ -45,18 +45,19 @@ namespace hiptensor
 {
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename Aop,
-              typename Bop,
-              typename Scale,
+              typename ElementOp,
               ck::index_t NumDim>
     struct ReferencePermutation
         : public ck::tensor_operation::device::DeviceElementwiseImpl<InDataTypeTuple,
                                                                      OutDataTypeTuple,
-                                                                     Aop,
-                                                                     Bop,
-                                                                     Scale,
+                                                                     ElementOp,
                                                                      NumDim,
-                                                                     1,
+                                                                     32,
+                                                                     16,
+                                                                     32,
+                                                                     4,
+                                                                     4,
+                                                                     ck::Sequence<1, 0>,
                                                                      ck::Sequence<1>,
                                                                      ck::Sequence<1>>
     {
@@ -78,16 +79,12 @@ namespace hiptensor
                      const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
                      const void*                                              in_dev_buffers,
                      void*                                                    out_dev_buffers,
-                     Aop                                                      a_op,
-                     Bop                                                      b_op,
-                     Scale                                                    scale_op)
+                     ElementOp                                                elementwise_op)
                 : BaseArgument()
                 , mLengths(lengths)
                 , mInStrides(inStridesArray)
                 , mOutStrides(outStridesArray)
-                , mElementOp(a_op)
-                , mUnaryOp(b_op)
-                , mScaleOp(scale_op)
+                , mElementOp(elementwise_op)
             {
                 mInput  = (mInDataType*)in_dev_buffers;
                 mOutput = (mOutDataType*)out_dev_buffers;
@@ -104,9 +101,7 @@ namespace hiptensor
             std::array<std::array<index_t, NumDim>, NumInput>  mInStrides;
             std::array<std::array<index_t, NumDim>, NumOutput> mOutStrides;
 
-            Aop   mElementOp;
-            Bop   mUnaryOp;
-            Scale mScaleOp;
+            ElementOp mElementOp;
         };
 
         // Invoker
@@ -186,14 +181,8 @@ namespace hiptensor
                         bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
 
-                    mInDataType input;
-                    // Perform elementwise tensor operation of input
-                    arg.mUnaryOp(input, arg.mInput[elementIndex]);
-                    // Perform permute scale
-                    mOutDataType output = static_cast<mOutDataType>(input)
-                                          * static_cast<mOutDataType>(arg.mScaleOp.scale_);
-                    // Perform elementwise tensor operation of output
-                    arg.mElementOp(arg.mOutput[bOffset], output);
+                    // Perform sequence of unary, scale operations on input
+                    arg.mElementOp(arg.mOutput[bOffset], arg.mInput[elementIndex]);
                 }
                 return 0;
             }
@@ -222,18 +211,14 @@ namespace hiptensor
                          const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
                          const void*                                              in_dev_buffers,
                          void*                                                    out_dev_buffers,
-                         Aop                                                      a_op,
-                         Bop                                                      b_op,
-                         Scale                                                    scale_op)
+                         ElementOp                                                elementwise_op)
         {
             return Argument{lengths,
                             inStridesArray,
                             outStridesArray,
                             in_dev_buffers,
                             out_dev_buffers,
-                            a_op,
-                            b_op,
-                            scale_op};
+                            elementwise_op};
         }
 
         std::unique_ptr<BaseArgument> MakeArgumentPointer(
@@ -242,18 +227,14 @@ namespace hiptensor
             const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
             const void*                                              in_dev_buffers,
             void*                                                    out_dev_buffers,
-            Aop                                                      a_op,
-            Bop                                                      b_op,
-            Scale                                                    scale_op)
+            ElementOp                                                elementwise_op)
         {
             return std::make_unique<Argument>(Argument{lengths,
                                                        inStridesArray,
                                                        outStridesArray,
                                                        in_dev_buffers,
                                                        out_dev_buffers,
-                                                       a_op,
-                                                       b_op,
-                                                       scale_op});
+                                                       elementwise_op});
         }
 
         static auto MakeInvoker()
@@ -288,10 +269,15 @@ namespace hiptensor
               typename Scale,
               ck::index_t NumDim>
     struct MetaTraits<
-        ReferencePermutation<InDataTypeTuple, OutDataTypeTuple, Aop, Bop, Scale, NumDim>>
-        : public MetaTraits<
-              ck::tensor_operation::device::
-                  DeviceElementwise<InDataTypeTuple, OutDataTypeTuple, Aop, Bop, Scale, NumDim>>
+        ReferencePermutation<InDataTypeTuple,
+                             OutDataTypeTuple,
+                             ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+                             NumDim>>
+        : public MetaTraits<ck::tensor_operation::device::DeviceElementwise<
+              InDataTypeTuple,
+              OutDataTypeTuple,
+              ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+              NumDim>>
     {
     };
 
@@ -303,8 +289,11 @@ namespace hiptensor
               ck::index_t NumDim>
     auto enumerateReferenceSolutions()
     {
-        using ReferenceOp
-            = ReferencePermutation<InDataTypeTuple, OutDataTypeTuple, Aop, Bop, Scale, NumDim>;
+        using ReferenceOp = ReferencePermutation<
+            InDataTypeTuple,
+            OutDataTypeTuple,
+            ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+            NumDim>;
 
         auto solution = std::make_unique<PermutationSolutionImpl<ReferenceOp>>(
             std::make_unique<ReferenceOp>());
