@@ -11,6 +11,7 @@ Tensor Data Types:
 Algorithm Types:
   - HIPTENSOR_ALGO_DEFAULT
   - HIPTENSOR_ALGO_DEFAULT_PATIENT
+  - HIPTENSOR_ALGO_ACTOR_CRITIC
 Operators:
   - HIPTENSOR_OP_IDENTITY
 Worksize Prefs:
