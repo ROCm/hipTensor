@@ -62,7 +62,7 @@ int main()
      **********************/
 
     std::vector<int32_t> modeA{'m', 'h', 'k', 'v'};
-    std::vector<int32_t> modeC{'k', 'm'};
+    std::vector<int32_t> modeC{'k', 'v'};
     int32_t              nmodeA = modeA.size();
     int32_t              nmodeC = modeC.size();
 
@@ -207,7 +207,6 @@ int main()
         hiptensorPrintElementsToFile(tensorC, C, elementsC, ", ");
         tensorC.close();
     }
-
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));

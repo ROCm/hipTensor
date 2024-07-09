@@ -100,12 +100,17 @@ namespace hiptensor
                 return 0;
             }
 
-            std::array<ck::index_t, Traits::TensorRank>                              arrInLengths;
-            std::array<ck::index_t, Traits::TensorRank>                              arrInStrides;
-            std::array<ck::index_t, Traits::TensorRank - Traits::TensorNumReduceDim> arrOutLengths;
-            std::array<ck::index_t, Traits::TensorRank - Traits::TensorNumReduceDim> arrOutStrides;
-            std::array<ck::index_t, Traits::TensorNumReduceDim>                      reduceDims;
-            auto                                                                     toCKArr
+            static_assert(Traits::TensorRank >= Traits::TensorNumReduceDim, "TensorRank must be greater than or equal to TensorNumReduceDim");
+            constexpr ck::index_t OutputDim
+                = (Traits::TensorRank - Traits::TensorNumReduceDim)
+                      ? (Traits::TensorRank - Traits::TensorNumReduceDim)
+                      : 1;
+            std::array<ck::index_t, Traits::TensorRank>         arrInLengths;
+            std::array<ck::index_t, Traits::TensorRank>         arrInStrides;
+            std::array<ck::index_t, OutputDim>                  arrOutLengths;
+            std::array<ck::index_t, OutputDim>                  arrOutStrides;
+            std::array<ck::index_t, Traits::TensorNumReduceDim> reduceDims;
+            auto                                                toCKArr
                 = [](auto const& v, auto& a) { std::copy(v.cbegin(), v.cend(), a.begin()); };
             auto findReduceModes
                 = [](const std::vector<int32_t>& modeA, const std::vector<int32_t> modeD) {
@@ -113,7 +118,7 @@ namespace hiptensor
                       for(int i = 0; i < modeA.size(); i++)
                       {
                           if(auto it = std::find(modeD.cbegin(), modeD.cend(), modeA[i]);
-                             it != modeD.cend())
+                             it == modeD.cend())
                           {
                               reduceModes.push_back(i);
                           }
@@ -131,36 +136,10 @@ namespace hiptensor
             // toCKArr( c_strides.empty() ? hiptensor::stridesFromLengths(c_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR) : c_strides, arrOutStrides);
             toCKArr(findReduceModes(a_modes, c_modes), reduceDims);
 
-            // TODO test
-            auto pa = [](std::string msg, auto& a) {
-                std::cout << msg << "\n";
-                for(auto item : a)
-                {
-                    std::cout << item << " ";
-                }
-                std::cout << "\n";
-            };
-            std::cout << "alpha, beta: " << alpha << ", " << beta << "\n";
-            pa("arrInLengths", arrInLengths);
-            pa("arrInStrides", arrInStrides);
-            pa("arrOutLengths", arrOutLengths);
-            pa("arrOutStrides", arrOutStrides);
-            pa("reduceDims", reduceDims);
-            // end test
-
-            // TODO hardcode ReduceOpId
-            constexpr ck::ReduceTensorOp ReduceOpId = ck::ReduceTensorOp::ADD;
-            using InElementwiseOperation =
-                typename ck::reduce_unary_operator<ReduceOpId, true, true>::InElementwiseOperation;
-            using AccElementwiseOperation =
-                typename ck::reduce_unary_operator<ReduceOpId, true, true>::AccElementwiseOperation;
-            InElementwiseOperation  in_elementwise_op;
-            AccElementwiseOperation acc_elementwise_op;
-
-            std::tie(in_elementwise_op, acc_elementwise_op)
-                = ck::reduce_unary_operator<ReduceOpId, true, true>::GetElementwiseOperator(
-                    hiptensor::elementsFromLengths(a_lengths)
-                    / hiptensor::elementsFromLengths(c_lengths));
+            auto [in_elementwise_op, acc_elementwise_op]
+                = reductionUnaryOperators(opReduce,
+                                          hiptensor::elementsFromLengths(a_lengths)
+                                              / hiptensor::elementsFromLengths(c_lengths));
 
             Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(arrInLengths,
                                                                            arrInStrides,
@@ -209,9 +188,9 @@ namespace hiptensor
         constexpr auto ReduceOpId = convertHiptensorReduceOperatorToCk<opReduce>();
 
         using ReduceOperation = typename ck::reduce_binary_operator<ReduceOpId>::opType;
-        using InElementwiseOp =
+        using InElementwiseOperation =
             typename ck::reduce_unary_operator<ReduceOpId, true, true>::InElementwiseOperation;
-        using AccElementwiseOp =
+        using AccElementwiseOperation =
             typename ck::reduce_unary_operator<ReduceOpId, true, true>::AccElementwiseOperation;
 
         using DeviceOp    = ck::tensor_operation::device::DeviceReduce<InDataType,
@@ -220,8 +199,8 @@ namespace hiptensor
                                                                     Rank,
                                                                     NumReduceDim,
                                                                     ReduceOperation,
-                                                                    InElementwiseOp,
-                                                                    AccElementwiseOp,
+                                                                    InElementwiseOperation,
+                                                                    AccElementwiseOperation,
                                                                     PropagateNan,
                                                                     OutputIndex>;
         using DeviceOpPtr = ck::tensor_operation::device::DeviceReducePtr<InDataType,
@@ -230,8 +209,8 @@ namespace hiptensor
                                                                           Rank,
                                                                           NumReduceDim,
                                                                           ReduceOperation,
-                                                                          InElementwiseOp,
-                                                                          AccElementwiseOp,
+                                                                          InElementwiseOperation,
+                                                                          AccElementwiseOperation,
                                                                           PropagateNan,
                                                                           OutputIndex>;
 
@@ -243,8 +222,8 @@ namespace hiptensor
             Rank,
             NumReduceDim,
             ReduceOperation,
-            InElementwiseOp,
-            AccElementwiseOp,
+            InElementwiseOperation,
+            AccElementwiseOperation,
             PropagateNan,
             OutputIndex>(opPtrs);
 

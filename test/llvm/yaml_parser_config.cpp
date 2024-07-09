@@ -32,6 +32,7 @@
 
 #include "01_contraction/contraction_test_params.hpp"
 #include "02_permutation/permutation_test_params.hpp"
+#include "03_reduction/reduction_test_params.hpp"
 #include "yaml_parser_impl.hpp"
 
 // Fwd declare NoneType
@@ -145,6 +146,10 @@ namespace llvm
             {
                 io.enumCase(value, "HIPTENSOR_OP_IDENTITY", HIPTENSOR_OP_IDENTITY);
                 io.enumCase(value, "HIPTENSOR_OP_SQRT", HIPTENSOR_OP_SQRT);
+                io.enumCase(value, "HIPTENSOR_OP_ADD", HIPTENSOR_OP_ADD);
+                io.enumCase(value, "HIPTENSOR_OP_MUL", HIPTENSOR_OP_MUL);
+                io.enumCase(value, "HIPTENSOR_OP_MIN", HIPTENSOR_OP_MIN);
+                io.enumCase(value, "HIPTENSOR_OP_MAX", HIPTENSOR_OP_MAX);
                 io.enumCase(value, "HIPTENSOR_OP_UNKNOWN", HIPTENSOR_OP_UNKNOWN);
             }
         };
@@ -353,6 +358,58 @@ namespace llvm
             }
         };
 
+        ///
+        // Mapping of the test param elements of ReductionTestParams for reading / writing.
+        ///
+        template <>
+        struct MappingTraits<hiptensor::ReductionTestParams>
+        {
+            static void mapping(IO& io, hiptensor::ReductionTestParams& doc)
+            {
+                // Logging bitfield
+                io.mapRequired("Log Level", doc.logLevelMask());
+
+                // Sequences of combinatorial fields
+                io.mapRequired("Tensor Data Types", doc.dataTypes());
+                io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
+                io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
+                io.mapRequired("Lengths", doc.problemLengths());
+                io.mapRequired("Reduced Dims", doc.reducedDims());
+                io.mapRequired("Operators", (doc.operators()));
+            }
+
+            // Additional validation for input / output of the config
+            static std::string validate(IO& io, hiptensor::ReductionTestParams& doc)
+            {
+                if(doc.problemLengths().size() == 0)
+                {
+                    return "Error: Empty Lengths";
+                }
+
+                if(doc.alphas().size() == 0)
+                {
+                    return "Error: Empty Alphas";
+                }
+
+                if(doc.betas().size() == 0)
+                {
+                    return "Error: Empty Betas";
+                }
+
+                if(doc.reducedDims().size() == 0)
+                {
+                    return "Error: Empty Reduced Dims";
+                }
+
+                if(doc.operators().size() == 0)
+                {
+                    return "Error: Empty Operators";
+                }
+
+                return std::string{};
+            }
+        };
+
     } // namespace yaml
 
 } // namespace llvm
@@ -362,4 +419,5 @@ namespace hiptensor
 {
     template struct YamlConfigLoader<ContractionTestParams>;
     template struct YamlConfigLoader<PermutationTestParams>;
+    template struct YamlConfigLoader<ReductionTestParams>;
 }
