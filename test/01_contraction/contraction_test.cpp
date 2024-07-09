@@ -406,6 +406,7 @@ namespace hiptensor
 
     void ContractionTest::reportResults(std::ostream& stream,
                                         hipDataType   DDataType,
+                                        hiptensorComputeType_t computeType,
                                         bool          omitSkipped,
                                         bool          omitFailed,
                                         bool          omitPassed) const
@@ -414,6 +415,12 @@ namespace hiptensor
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
+            
+
+            ContractionTest::sAPILogBuff << "TypeA/B/C/D: " << hipTypeToString(DDataType) 
+                   << ", ComputeType: " << computeTypeToString(computeType)
+                   << std::endl;
+
             stream << ContractionTest::sAPILogBuff.str();
 
             if(mPrintElements)
@@ -728,6 +735,7 @@ namespace hiptensor
             {
                 reportResults(std::cout,
                               DDataType,
+                              computeType,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
@@ -737,6 +745,7 @@ namespace hiptensor
             {
                 reportResults(loggingOptions->ostream().fstream(),
                               DDataType,
+                              computeType,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());

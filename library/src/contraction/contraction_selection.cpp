@@ -100,7 +100,6 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipMalloc(&D_d, sizeD));
         CHECK_HIP_ALLOC(hipMalloc(&E_d, sizeE));
         CHECK_HIP_ALLOC(hipMalloc(&wspace, workspaceSize));
-        printf("sizeA = %d, sizeB = %d, sizeD = %d, sizeE = %d\n", sizeA, sizeB, sizeD, sizeE);
 
         std::string          best_op_name;
         ContractionSolution* bestSolution = nullptr;
@@ -114,7 +113,6 @@ namespace hiptensor
 
         for(auto* solution : candidates)
         {
-            // printf("Brute force candidate\n");
             auto [errorCode, time] = (*solution)(&alpha,
                                                  A_d,
                                                  B_d,
@@ -192,6 +190,26 @@ namespace hiptensor
         }
     }
 
+    bool is1D(std::vector<std::size_t> const& a_ms_ks_lengths,
+                std::vector<std::size_t> const& a_ms_ks_strides,
+                std::vector<std::size_t> const& b_ns_ks_lengths)
+    {
+        bool dim1 = false;
+        int dimension = a_ms_ks_lengths.size() / 2;
+        
+        for (int i = 0; i < dimension; i++)
+        {
+            if (a_ms_ks_lengths[i] == 1 || 
+                b_ns_ks_lengths[i] == 1 || 
+                a_ms_ks_lengths[dimension + i] == 1)
+            {
+                dim1 = true;
+            }
+        }
+
+        return dim1;
+    }
+    
     template <>
     struct ActorCriticSelection<_Float16,
                                 _Float16,
@@ -229,9 +247,16 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
+            
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 5113293080724535756ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 17912428805389269017ull;
             }
@@ -311,8 +336,16 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 58303249112943560ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
+            // if (d1 == 1 || (d2 == 1 && (a_ms_ks_lengths[3] == 1 || b_ns_ks_lengths[3] == 1)))
             {
                 unique_id = 58303249112943560ull;
             }
@@ -392,8 +425,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 14015334081946837014ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 1015685992483452995ull;
             }
@@ -473,8 +513,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 16299024124514902126ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 378062791888302715ull;
             }
@@ -549,8 +596,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 4548033111668367400ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 10800739437646028422ull;
             }
@@ -625,8 +679,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 8251132190088736039ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 2897979232477761524ull;
             }
@@ -701,8 +762,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 16420628376898423538ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 17959510091945286251ull;
             }
@@ -782,8 +850,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 8067958629699904967ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 8116863550692548667ull;
             }
@@ -858,8 +933,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 8826603567277321994ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 18096417737618973195ull;
             }
@@ -934,8 +1016,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 14915761978535949477ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 14915761978535949477ull;
             }
@@ -1011,8 +1100,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 14901158961446820896ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 8188562791036959263ull;
             }
@@ -1087,8 +1183,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 11269655469469274301ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 2143493311543532856ull;
             }
@@ -1164,8 +1267,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 3879892272436099392ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 3879892272436099392ull;
             }
@@ -1240,8 +1350,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 2054609181761357786ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 14145390177844245465ull;
             }
@@ -1322,8 +1439,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 7812623739736355326ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 6132850456576499774ull;
             }
@@ -1403,8 +1527,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 15330878641001915472ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 11537900932066889768ull;
             }
@@ -1485,8 +1616,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 10254320286859648634ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 12959721676360111684ull;
             }
@@ -1566,8 +1704,15 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
+            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+
+            // rank2 dim1 case
+            if (d2 == 1 && dim1)
+            {
+                unique_id = 14051358583041094215ull;
+            }
             // m1n1k1
-            if (d1 == 1)
+            else if (d1 == 1) 
             {
                 unique_id = 8503926755447648324ull;
             }

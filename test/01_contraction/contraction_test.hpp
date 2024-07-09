@@ -97,6 +97,7 @@ namespace hiptensor
 
         void reportResults(std::ostream& stream,
                            hipDataType   DDataType,
+                           hiptensorComputeType_t computeType,
                            bool          omitSkipped,
                            bool          omitFailed,
                            bool          omitPassed) const;
