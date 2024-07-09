@@ -186,6 +186,7 @@ endfunction()
 add_subdirectory(00_unit)
 add_subdirectory(01_contraction)
 add_subdirectory(02_permutation)
+add_subdirectory(03_reduction)
 
 rocm_install(
     FILES "${INSTALL_TEST_FILE}"

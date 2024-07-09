@@ -117,7 +117,7 @@ namespace hiptensor
             }
             else
             {
-                // MetaTraitsT::TensorReduceOperation has only 4 options
+                // MetaTraitsT::TensorReduceOperation has only 4 options : ADD, MUL, MIN, MAX
                 return HIPTENSOR_OP_MAX;
             }
         }

@@ -30,12 +30,53 @@ get_target_property(composable_kernel_INCLUDES composable_kernel::device_reducti
 get_target_property(composable_kernel_INCLUDES composable_kernel::device_other_operations INTERFACE_INCLUDE_DIRECTORIES)
 set(HIPTENSOR_REDUCTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_reduction.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_selection.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_1_1_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_1_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_2_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_1_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_2_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_3_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_1_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_2_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_3_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_4_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_1_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_2_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_3_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_4_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_5_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_1_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_2_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_3_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_4_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_5_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_6_f32_f32_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_1_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_4_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_4_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_5_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_1_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_2_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_3_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_4_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_5_f64_f64_instance.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_6_f64_f64_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_registry.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution.cpp
 )
 
 add_hiptensor_component(hiptensor_reduction ${HIPTENSOR_REDUCTION_SOURCES})
