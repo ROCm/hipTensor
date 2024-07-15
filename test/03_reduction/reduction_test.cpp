@@ -56,8 +56,8 @@ namespace hiptensor
     bool ReductionTest::checkDevice(hipDataType            datatype,
                                     hiptensorComputeType_t computeDataType) const
     {
-        return ((datatype == HIP_R_32F || computeDataType == HIP_R_32F) && isF32Supported())
-               || ((datatype == HIP_R_64F || computeDataType == HIP_R_64F) && isF64Supported());
+        return !(((datatype == HIP_R_32F || computeDataType == HIP_R_32F) && !isF32Supported())
+                 || ((datatype == HIP_R_64F || computeDataType == HIP_R_64F) && !isF64Supported()));
     }
 
     bool ReductionTest::checkSizes() const
@@ -103,10 +103,12 @@ namespace hiptensor
         EXPECT_EQ(testType.size(), 2); // HIP_R_16F or HIP_R_32F
         auto acDataType      = testType[0];
         auto computeDataType = convertToComputeType(testType[1]);
-        EXPECT_TRUE(
-            (((acDataType == HIP_R_16F) || (acDataType == HIP_R_16BF) || (acDataType == HIP_R_32F))
-             && computeDataType == HIPTENSOR_COMPUTE_32F)
-            || (acDataType == HIP_R_64F && computeDataType == HIPTENSOR_COMPUTE_64F));
+        EXPECT_TRUE((acDataType == HIP_R_16F && computeDataType == HIPTENSOR_COMPUTE_16F)
+                    || (acDataType == HIP_R_16F && computeDataType == HIPTENSOR_COMPUTE_32F)
+                    || (acDataType == HIP_R_16BF && computeDataType == HIPTENSOR_COMPUTE_16BF)
+                    || (acDataType == HIP_R_16BF && computeDataType == HIPTENSOR_COMPUTE_32F)
+                    || (acDataType == HIP_R_32F && computeDataType == HIPTENSOR_COMPUTE_32F)
+                    || (acDataType == HIP_R_64F && computeDataType == HIPTENSOR_COMPUTE_64F));
 
         mRunFlag &= checkDevice(acDataType, computeDataType);
         mRunFlag &= lengths.size() > outputDims.size();
@@ -141,7 +143,7 @@ namespace hiptensor
         {
             stream << ReductionTest::sAPILogBuff.str();
 
-            if(mPrintElements)
+            if(1 || mPrintElements)
             {
                 auto resource = getResource();
 
