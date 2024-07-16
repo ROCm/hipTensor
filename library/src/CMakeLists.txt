@@ -60,11 +60,7 @@ include_directories(BEFORE
     ${PROJECT_SOURCE_DIR}/library/src/include
 )
 
-if (NOT DEFINED ADDRESS_SANITIZER AND DEFINED ENV{ADDRESS_SANITIZER})
-    set(ADDRESS_SANITIZER $ENV{ADDRESS_SANITIZER})
-endif()
-
-if (ADDRESS_SANITIZER OR CMAKE_CXX_FLAGS MATCHES "-fsanitize=address")
+if (ADDRESS_SANITIZER_ENABLED)
     add_compile_options(-mcmodel=large)
     add_link_options(-mcmodel=large)
 endif()
