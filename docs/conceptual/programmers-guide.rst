@@ -1,6 +1,6 @@
 .. meta::
    :description: A high-performance HIP library for tensor primitives
-   :keywords: hipTensor, ROCm, library, API, tool
+   :keywords: hipTensor, cuTensor, ROCm, library, API, tool
 
 .. _programmers-guide:
 
