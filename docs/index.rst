@@ -14,7 +14,7 @@ The hipTensor API offers functionality for defining tensor data objects and curr
 
 Supporting host code is required for GPU device and memory management. The hipTensor code samples and tests provided are built and launched via the HIP ecosystem within ROCm.
 
-You can access hipTensor code on our `GitHub repository <https://github.com/ROCm/hipTensor>`_.
+hipTensor library code is open source and available via the `GitHub repository <https://github.com/ROCm/hipTensor>`_.
 
 The documentation is structured as follows:
 
