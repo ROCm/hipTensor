@@ -65,28 +65,42 @@ __global__ static void
     }
 }
 
+__device__ inline unsigned pcg_hash(unsigned input)
+{
+    unsigned state = input * 747796405u + 2891336453u;
+    unsigned word  = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
+}
+
+// gen random float in range [-range, range)
+template <unsigned range = 1>
+__device__ inline float gen_random_float(unsigned input)
+{
+    return (static_cast<float>(pcg_hash(input)) / static_cast<float>(UINT_MAX) - 0.5f)
+           * static_cast<float>(range) * 2;
+}
+
 // fill kernel for 'elementSize' elements
 template <typename DataType>
-__global__ void fillKernel(DataType* data, uint32_t elementSize, uint32_t seed)
+__global__ void fillKernel(DataType* data, uint32_t elementSize)
 {
     uint32_t index = (blockIdx.x * blockDim.x + threadIdx.x);
 
     if(index < elementSize)
     {
-        // Input values scaled by 10, Doing UnarySquare Operation for tensors(16F) may cause overflow.
         if constexpr(std::is_same_v<DataType, hipFloatComplex>)
         {
-            auto value  = (float(index / float(RAND_MAX) - 0.5) * 10) / elementSize;
+            auto value  = gen_random_float(index);
             data[index] = make_hipFloatComplex(value, value);
         }
         else if constexpr(std::is_same_v<DataType, hipDoubleComplex>)
         {
-            auto value  = (double(index / double(RAND_MAX) - 0.5) * 10) / elementSize;
+            auto value  = static_cast<double>(gen_random_float(index));
             data[index] = make_hipDoubleComplex(value, value);
         }
         else
         {
-            auto value  = (DataType(index / double(RAND_MAX) - 0.5) * 10) / elementSize;
+            auto value  = gen_random_float(index);
             data[index] = static_cast<DataType>(value);
         }
     }

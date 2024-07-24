@@ -656,13 +656,36 @@ namespace hiptensor
             auto reference = resource->allocDevice(sizeD);
             resource->copyData(reference, resource->hostD(), sizeD);
 
+            // Compute tolerance based on compute type
+            auto dimension = a_ms_ks.mLengths.size() / 2;
+            auto nelems_k = std::accumulate(a_ms_ks.mLengths.begin() + dimension,
+                                            a_ms_ks.mLengths.end(),
+                                            size_t{1},
+                                            std::multiplies<size_t>());
+
+            auto eps = getEpsilon(computeType);
+            double tolerance = 2 * nelems_k * eps;
+
+            // use the same default tolerance value as CK
+            if (computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIP_R_16BF)
+            {
+                const double epsilon = std::pow(2, -7);
+                tolerance += epsilon * 2;
+            }
+            else if (computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIP_R_16F)
+            {
+                const double epsilon = std::pow(2, -10);
+                tolerance += epsilon * 2;
+            }
+
             if(DDataType == HIP_R_16F)
             {
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
                                                          (_Float16*)reference.get(),
                                                          elementsCD,
-                                                         computeType);
+                                                         computeType,
+                                                         tolerance);
             }
             else if(DDataType == HIP_R_16BF)
             {
@@ -671,7 +694,8 @@ namespace hiptensor
                         (hip_bfloat16*)resource->deviceD().get(),
                         (hip_bfloat16*)reference.get(),
                         elementsCD,
-                        computeType);
+                        computeType,
+                        tolerance);
             }
             else if(DDataType == HIP_R_32F || DDataType == HIP_C_32F)
             {
@@ -679,7 +703,8 @@ namespace hiptensor
                     = compareEqualLaunchKernel<float>((float*)resource->deviceD().get(),
                                                       (float*)reference.get(),
                                                       elementsCD,
-                                                      computeType);
+                                                      computeType,
+                                                      tolerance);
             }
             else if(DDataType == HIP_R_64F || DDataType == HIP_C_64F)
             {
@@ -687,7 +712,8 @@ namespace hiptensor
                     = compareEqualLaunchKernel<double>((double*)resource->deviceD().get(),
                                                        (double*)reference.get(),
                                                        elementsCD,
-                                                       computeType);
+                                                       computeType,
+                                                       tolerance);
             }
 
             EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
