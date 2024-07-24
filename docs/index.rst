@@ -8,11 +8,11 @@
 hipTensor documentation
 ===========================
 
-hipTensor is a work-in-progress (WIP) high-performance HIP library for tensor primitives. It is AMD's C++ library for accelerating tensor primitives which can leverage specialized GPU matrix cores on AMD's latest discrete GPUs. hipTensor is currently powered by the composable kernel library. The API is designed to be portable with the Nvidia cuTensor library, allowing those users to easily migrate to the AMD platform.
+hipTensor is a work-in-progress (WIP) high-performance Heterogeneous-Compute Interface for Portability (HIP) library for tensor primitives. It’s AMD’s C++ library for accelerating tensor primitives, which can leverage specialized GPU matrix cores on AMD’s latest discrete GPUs. hipTensor is currently powered by the composable kernel (CK) library backend. The API is designed to be portable with the NVIDIA CUDA cuTensor library, allowing those users to easily migrate to the AMD platform.
 
-The hipTensor API offers functionality for defining tensor data objects and currently supports contraction, permutation and reduction operations on the tensor objects. Users may also control several available logging options. Under the hood, the hipTensor library is bundled with multitude of GPU kernels which are automatically selected and invoked to solve problems as defined by input parameters to the API. As hipTensor is currently a WIP, future tensor operation support may include reductions, element-wise operations and caching of selection instances.
+The hipTensor API offers functionality for defining tensor data objects and currently supports contraction, permutation and reduction operations on the tensor objects. Users may also control several available logging options. The hipTensor library is bundled with GPU kernel instances, which are automatically selected and invoked to solve problems as defined by the API input parameters. As hipTensor is a WIP, future tensor operation support might include additional element-wise operations and caching of selection instances.
 
-Supporting host code is required for GPU device and memory management. The hipTensor code samples and tests provided are built and launched via the Heterogeneous-Compute Interface for Portability (HIP) ecosystem within ROCm.
+Supporting host code is required for GPU device and memory management. The hipTensor code samples and tests provided are built and launched via the HIP ecosystem within ROCm.
 
 You can access hipTensor code on our `GitHub repository <https://github.com/ROCm/hipTensor>`_.
 
