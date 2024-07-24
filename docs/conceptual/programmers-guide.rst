@@ -57,7 +57,7 @@ Tensor permutation is essentially the re-ordering of the stride indices such tha
 Tensor reduction
 ^^^^^^^^^^^^^^^^^^^
 
-Tensor reduction refers to the process of obtaining a lower-dimensional tensor from a higher-dimensional one by performing some kind of operation on the original tensor.
+Tensor reduction refers to obtaining a lower-dimensional tensor from a higher-dimensional one by performing some operation on the original tensor.
 
 Tensor rank
 ^^^^^^^^^^^
