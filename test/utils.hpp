@@ -164,7 +164,7 @@ auto getProduct(const Container&               container,
 
 // fill kernel for 'elementSize' elements
 template <typename DataType>
-__host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize)
+__host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSize, uint32_t seed)
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
@@ -174,7 +174,8 @@ __host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSiz
                        0,
                        0,
                        data,
-                       elementSize);
+                       elementSize,
+                       seed);
 }
 
 // fill kernel wrapper for 'elementSize' elements with a specific value
