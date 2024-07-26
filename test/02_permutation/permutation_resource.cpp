@@ -96,13 +96,15 @@ namespace hiptensor
 
     void PermutationResource::fillRandToA()
     {
+        uint32_t seed = static_cast<uint32_t>(std::time(nullptr));
+        
         if(mCurrentDataType == HIP_R_32F)
         {
-            fillLaunchKernel<float>((float*)deviceA().get(), mCurrentMatrixElement);
+            fillLaunchKernel<float>((float*)deviceA().get(), mCurrentMatrixElement, seed);
         }
         else
         {
-            fillLaunchKernel<_Float16>((_Float16*)deviceA().get(), mCurrentMatrixElement);
+            fillLaunchKernel<_Float16>((_Float16*)deviceA().get(), mCurrentMatrixElement, seed);
         }
         Base::copyData(hostA(), deviceA(), getCurrentMatrixMemorySize());
     }

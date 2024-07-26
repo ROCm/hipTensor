@@ -82,25 +82,26 @@ __device__ inline float gen_random_float(unsigned input)
 
 // fill kernel for 'elementSize' elements
 template <typename DataType>
-__global__ void fillKernel(DataType* data, uint32_t elementSize)
+__global__ void fillKernel(DataType* data, uint32_t elementSize, uint32_t seed)
 {
     uint32_t index = (blockIdx.x * blockDim.x + threadIdx.x);
+    uint32_t seededIndex = static_cast<uint32_t>(uint64_t(index + seed) % UINT_MAX);
 
     if(index < elementSize)
     {
         if constexpr(std::is_same_v<DataType, hipFloatComplex>)
         {
-            auto value  = gen_random_float(index);
+            auto value  = gen_random_float(seededIndex);
             data[index] = make_hipFloatComplex(value, value);
         }
         else if constexpr(std::is_same_v<DataType, hipDoubleComplex>)
         {
-            auto value  = static_cast<double>(gen_random_float(index));
+            auto value  = static_cast<double>(gen_random_float(seededIndex));
             data[index] = make_hipDoubleComplex(value, value);
         }
         else
         {
-            auto value  = gen_random_float(index);
+            auto value  = gen_random_float(seededIndex);
             data[index] = static_cast<DataType>(value);
         }
     }
