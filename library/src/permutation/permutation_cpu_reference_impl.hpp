@@ -115,74 +115,31 @@ namespace hiptensor
                 auto elementCount = hiptensor::elementsFromLengths(
                     std::vector<index_t>(std::begin(arg.mLengths), std::end(arg.mLengths)));
 
-#if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                // Sort the output strides to calculate output tensor lengths
-                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]),
-                                            std::end(arg.mOutStrides[0]));
-                std::sort(outStrides.begin(), outStrides.end());
-                assert(outStrides.front() == 1);
-
-                // Map the lengths in output to its indices( using list to cover redundant lengths )
-                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
-                int                                             prevLength = 1, i;
-                for(i = 1; i < modeSize; i++)
-                {
-                    bLengthToIndex[outStrides[i] / prevLength].push_back(i - 1);
-                    prevLength = outStrides[i];
-                }
-                bLengthToIndex[elementCount / prevLength].push_back(i - 1);
-#else
-                // Sort the output strides to calculate output tensor lengths
-                std::vector<int> outStrides(std::begin(arg.mOutStrides[0]),
-                                            std::end(arg.mOutStrides[0]));
-                std::sort(outStrides.rbegin(), outStrides.rend());
-                assert(outStrides.back() == 1);
-
-                // Map the lengths in output to its indices( using list to cover redundant lengths )
-                std::unordered_map<int32_t, std::list<int32_t>> bLengthToIndex;
-                int                                             prevLength = 1, i;
-                for(i = modeSize - 2; i >= 0; i--)
-                {
-                    bLengthToIndex[outStrides[i] / prevLength].push_back(i + 1);
-                    prevLength = outStrides[i];
-                }
-                bLengthToIndex[elementCount / prevLength].push_back(i + 1);
-#endif
-
-                // From computed output lengths and argument's input lengths,
-                // create a mode map between input and output
-                std::map<int, int> modeATomodeBmap;
-                for(int i = 0; i < modeSize; i++)
-                {
-                    modeATomodeBmap[i] = bLengthToIndex[arg.mLengths[i]].front();
-                    bLengthToIndex[arg.mLengths[i]].pop_front();
-                }
-
                 // Find the write offset and index in output for every input element
-                auto bIndices = std::vector<int32_t>(modeSize, 0);
+                auto indices = std::vector<int32_t>(modeSize, 0);
                 for(int elementIndex = 0; elementIndex < elementCount; elementIndex++)
                 {
-                    auto index = elementIndex;
-#if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                    for(int modeIndex = 0; modeIndex < modeSize; modeIndex++)
-                    {
-                        bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
-                        index /= arg.mLengths[modeIndex];
-                    }
+                    auto nextIndex = [&indices, &arg]() -> bool {
+                        int N = indices.size();
+                        for (int i = N - 1; i >= 0; --i) {
+                            if (indices[i] < arg.mLengths[i] - 1) {
+                                ++indices[i];
+                                return true;
+                            } else {
+                                indices[i] = 0;
+                            }
+                        }
+                        return false;
+                    };
+
                     auto bOffset = std::inner_product(
-                        bIndices.begin(), bIndices.end(), std::begin(outStrides), 0);
-#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-                    for(int modeIndex = modeSize - 1; modeIndex >= 0; modeIndex--)
-                    {
-                        bIndices[modeATomodeBmap[modeIndex]] = index % arg.mLengths[modeIndex];
-                        index /= arg.mLengths[modeIndex];
-                    }
-                    auto bOffset = std::inner_product(
-                        bIndices.rbegin(), bIndices.rend(), std::rbegin(outStrides), 0);
-#endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+                         indices.rbegin(), indices.rend(), std::rbegin(arg.mOutStrides[0]), 0);
+                    auto aOffset = std::inner_product(
+                         indices.rbegin(), indices.rend(), std::rbegin(arg.mInStrides[0]), 0);
+                    nextIndex();
 
                     // Perform sequence of unary, scale operations on input
-                    arg.mElementOp(arg.mOutput[bOffset], arg.mInput[elementIndex]);
+                    arg.mElementOp(arg.mOutput[bOffset], arg.mInput[aOffset]);
                 }
                 return 0;
             }
