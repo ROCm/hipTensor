@@ -266,7 +266,6 @@ namespace hiptensor
                 fillLaunchKernel<_Float16>((_Float16*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_16F)
                 {
-                    printf("Filling C\n\n");
                     fillLaunchKernel<_Float16>((_Float16*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
@@ -666,7 +665,8 @@ namespace hiptensor
                                             size_t{1},
                                             std::multiplies<size_t>());
 
-            auto eps = getEpsilon(computeType);
+            auto eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
+                : HIPTENSOR_COMPUTE_32F);
             double tolerance = 2 * nelems_k * eps;
 
             // use the same default tolerance value as CK
