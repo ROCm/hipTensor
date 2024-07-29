@@ -350,8 +350,6 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
     auto toDouble
         = [](DDataType const& val) { return static_cast<double>(static_cast<float>(val)); };
 
-    auto eps = getEpsilon(computeType);
-
     if(tolerance == 0.0)
     {
         // use the same default tolerance value as CK
