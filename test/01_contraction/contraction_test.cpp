@@ -257,7 +257,7 @@ namespace hiptensor
             auto resource = getResource();
             resource->resizeStorage(lengths, elementBytes);
 
-            uint32_t seed = static_cast<uint32_t>(std::time(nullptr));
+            uint32_t seed = static_cast<uint32_t>(256);
 
             if(ADataType == HIP_R_16F && BDataType == HIP_R_16F && DDataType == HIP_R_16F)
             {
