@@ -277,7 +277,8 @@ namespace hiptensor
                            + sizeof(typename Traits::DDataT) * Base::mM * Base::mN
                            + sizeof(typename Traits::EDataT) * Base::mM * Base::mN;
 
-
+            // Arg test
+            Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
             
             return mValid;
         }

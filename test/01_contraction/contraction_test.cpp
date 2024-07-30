@@ -445,6 +445,8 @@ namespace hiptensor
                 auto D = resource->allocHost(elementsCD * size);
                 resource->copyData(D, resource->deviceD(), elementsCD * size);
 
+                auto& references = resource->hostD();
+
                 if(DDataType == HIP_R_16F)
                 {
                     stream << "Tensor A elements:\n";
@@ -464,6 +466,11 @@ namespace hiptensor
 
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<_Float16>(stream, (_Float16*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<_Float16>(
+                        stream, (_Float16*)references.get(), elementsCD);
                     stream << std::endl;
                 }
                 else if(DDataType == HIP_R_16BF)
