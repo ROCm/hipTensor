@@ -127,21 +127,23 @@ namespace hiptensor
 
     void ReductionResource::fillRand(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount)
     {
+        uint32_t seed = static_cast<uint32_t>(256);
+
         if(mCurrentDataType == HIP_R_16F)
         {
-            fillLaunchKernel<float16_t>((float16_t*)deviceBuf.get(), elementCount);
+            fillLaunchKernel<float16_t>((float16_t*)deviceBuf.get(), elementCount, seed);
         }
         else if(mCurrentDataType == HIP_R_16BF)
         {
-            fillLaunchKernel<bfloat16_t>((bfloat16_t*)deviceBuf.get(), elementCount);
+            fillLaunchKernel<bfloat16_t>((bfloat16_t*)deviceBuf.get(), elementCount, seed);
         }
         else if(mCurrentDataType == HIP_R_32F)
         {
-            fillLaunchKernel<float32_t>((float32_t*)deviceBuf.get(), elementCount);
+            fillLaunchKernel<float32_t>((float32_t*)deviceBuf.get(), elementCount, seed);
         }
         else if(mCurrentDataType == HIP_R_64F)
         {
-            fillLaunchKernel<float64_t>((float64_t*)deviceBuf.get(), elementCount);
+            fillLaunchKernel<float64_t>((float64_t*)deviceBuf.get(), elementCount, seed);
         }
         Base::copyData(hostBuf, deviceBuf, elementCount);
     }
