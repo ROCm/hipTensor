@@ -96,11 +96,12 @@ else()
 endif()
 
 if (ADDRESS_SANITIZER_ENABLED)
-rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
-    TARGETS "gfx90a:xnack+;gfx940:xnack+;gfx941:xnack+;gfx942:xnack+" )
+    set(CMAKE_NO_BUILTIN_CHRPATH ON)
+    rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
+        TARGETS "gfx90a:xnack+;gfx940:xnack+;gfx941:xnack+;gfx942:xnack+" )
 else()
-rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
-    TARGETS "gfx908;gfx90a;gfx940;gfx941;gfx942" )
+    rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
+        TARGETS "gfx908;gfx90a;gfx940;gfx941;gfx942" )
 endif()
 
 # Variable AMDGPU_TARGET must be a cached variable and must be specified before calling find_package(hip)
