@@ -81,6 +81,18 @@ Data Types **<Ti / To / Tc>** = <Input type / Output Type / Compute Type>, where
 |                     +------------------------------+                     |                     |
 |                     |     f32 / f32 / \-           |                     |                     |
 +---------------------+------------------------------+---------------------+---------------------+
+|                     |     f16 / f16 / f16          |  gfx908             | Rank2 - Rank6       |
+| Reduction           +------------------------------+  gfx90a             |                     |
+|                     |     f16 / f16 / f32          |  gfx940+            |                     |
+|                     +------------------------------+                     |                     |
+|                     |     bf16 / bf16 / bf16       |                     |                     |
+|                     +------------------------------+                     |                     |
+|                     |     bf16 / bf16 / f32        |                     |                     |
+|                     +------------------------------+                     |                     |
+|                     |     f32 / f32 / f32          |                     |                     |
+|                     +------------------------------+---------------------+                     |
+|                     |     f64 / f64 / f64          |  gfx940+            |                     |
++---------------------+------------------------------+---------------------+---------------------+
 
 Limitations
 ------------
@@ -208,6 +220,19 @@ hiptensorContractionGetWorkspaceSize
 ------------------------------------
 
 .. doxygenfunction::  hiptensorContractionGetWorkspaceSize
+
+Reduction operations
+======================
+
+hiptensorReduction
+----------------------------------
+
+.. doxygenfunction::  hiptensorReduction
+
+hiptensorReductionGetWorkspaceSize
+----------------------------------
+
+.. doxygenfunction::  hiptensorReductionGetWorkspaceSize
 
 Logging functions
 =================
