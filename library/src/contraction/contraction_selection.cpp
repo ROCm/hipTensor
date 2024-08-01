@@ -150,7 +150,7 @@ namespace hiptensor
                     static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
                 };
 
-		using hiptensor::Logger;
+		        using hiptensor::Logger;
                 auto& logger = Logger::instance();
 
                 // Log Kernel performances access
