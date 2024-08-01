@@ -109,7 +109,7 @@ namespace hiptensor
 
         if(needFillDataC)
         {
-            fillRand(hostC(), deviceC(), getCurrentMatrixCMemorySize());
+            fillConstant(hostC(), deviceC(), getCurrentMatrixCMemorySize());
         }
     }
 
@@ -144,6 +144,33 @@ namespace hiptensor
         else if(mCurrentDataType == HIP_R_64F)
         {
             fillLaunchKernel<float64_t>((float64_t*)deviceBuf.get(), elementCount, seed);
+        }
+        Base::copyData(hostBuf, deviceBuf, elementCount);
+    }
+
+    void ReductionResource::fillConstant(HostPtrT&   hostBuf,
+                                         DevicePtrT& deviceBuf,
+                                         size_t      elementCount)
+    {
+        if(mCurrentDataType == HIP_R_16F)
+        {
+            fillValLaunchKernel<float16_t>(
+                (float16_t*)deviceBuf.get(), elementCount, (float16_t)1.0);
+        }
+        else if(mCurrentDataType == HIP_R_16BF)
+        {
+            fillValLaunchKernel<bfloat16_t>(
+                (bfloat16_t*)deviceBuf.get(), elementCount, (bfloat16_t)1.0);
+        }
+        else if(mCurrentDataType == HIP_R_32F)
+        {
+            fillValLaunchKernel<float32_t>(
+                (float32_t*)deviceBuf.get(), elementCount, (float32_t)1.0);
+        }
+        else if(mCurrentDataType == HIP_R_64F)
+        {
+            fillValLaunchKernel<float64_t>(
+                (float64_t*)deviceBuf.get(), elementCount, (float64_t)1.0);
         }
         Base::copyData(hostBuf, deviceBuf, elementCount);
     }

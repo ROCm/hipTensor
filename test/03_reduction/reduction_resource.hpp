@@ -76,6 +76,7 @@ namespace hiptensor
                           ProblemDims const& outputSizes,
                           hipDataType        dataType);
         void fillRand(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount);
+        void fillConstant(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount);
         void copyCToHost();
         void copyReferenceToDevice();
 

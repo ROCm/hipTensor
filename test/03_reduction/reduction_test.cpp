@@ -115,6 +115,9 @@ namespace hiptensor
 
         if(!mRunFlag)
         {
+            std::cout << "Case parameters: type[" << testType[0] << ", " << testType[1]
+                      << "], alpha = " << alpha << " beta = " << beta << "; " << lengths << "; "
+                      << outputDims << "\n";
             GTEST_SKIP();
         }
         else
