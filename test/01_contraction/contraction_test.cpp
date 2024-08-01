@@ -257,14 +257,16 @@ namespace hiptensor
             auto resource = getResource();
             resource->resizeStorage(lengths, elementBytes);
 
+            uint32_t seed = static_cast<uint32_t>(256);
+
             if(ADataType == HIP_R_16F && BDataType == HIP_R_16F && DDataType == HIP_R_16F)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<_Float16>((_Float16*)resource->deviceA().get(), elementsA);
-                fillLaunchKernel<_Float16>((_Float16*)resource->deviceB().get(), elementsB);
+                fillLaunchKernel<_Float16>((_Float16*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<_Float16>((_Float16*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_16F)
                 {
-                    fillLaunchKernel<_Float16>((_Float16*)resource->deviceC().get(), elementsCD);
+                    fillLaunchKernel<_Float16>((_Float16*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
                                               elementsCD,
@@ -273,12 +275,12 @@ namespace hiptensor
             else if(ADataType == HIP_R_16BF && BDataType == HIP_R_16BF && DDataType == HIP_R_16BF)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceA().get(), elementsA);
-                fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceB().get(), elementsB);
+                fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_16BF)
                 {
                     fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceC().get(),
-                                                   elementsCD);
+                                                   elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<hip_bfloat16>(
                     (hip_bfloat16*)resource->deviceD().get(),
@@ -288,11 +290,11 @@ namespace hiptensor
             else if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && DDataType == HIP_R_32F)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<float>((float*)resource->deviceA().get(), elementsA);
-                fillLaunchKernel<float>((float*)resource->deviceB().get(), elementsB);
+                fillLaunchKernel<float>((float*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<float>((float*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_32F)
                 {
-                    fillLaunchKernel<float>((float*)resource->deviceC().get(), elementsCD);
+                    fillLaunchKernel<float>((float*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<float>((float*)resource->deviceD().get(),
                                            elementsCD,
@@ -301,11 +303,11 @@ namespace hiptensor
             else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && DDataType == HIP_R_64F)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<double>((double*)resource->deviceA().get(), elementsA);
-                fillLaunchKernel<double>((double*)resource->deviceB().get(), elementsB);
+                fillLaunchKernel<double>((double*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<double>((double*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_64F)
                 {
-                    fillLaunchKernel<double>((double*)resource->deviceC().get(), elementsCD);
+                    fillLaunchKernel<double>((double*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<double>((double*)resource->deviceD().get(),
                                             elementsCD,
@@ -315,13 +317,13 @@ namespace hiptensor
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceA().get(),
-                                                  elementsA);
+                                                  elementsA, seed - 1);
                 fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceB().get(),
-                                                  elementsB);
+                                                  elementsB, seed);
                 if(CDataType == HIP_C_32F)
                 {
                     fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceC().get(),
-                                                      elementsCD);
+                                                      elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<hipFloatComplex>(
                     (hipFloatComplex*)resource->deviceD().get(),
@@ -332,13 +334,13 @@ namespace hiptensor
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceA().get(),
-                                                   elementsA);
+                                                   elementsA, seed - 1);
                 fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceB().get(),
-                                                   elementsB);
+                                                   elementsB, seed);
                 if(CDataType == HIP_C_64F)
                 {
                     fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceC().get(),
-                                                       elementsCD);
+                                                       elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<hipDoubleComplex>(
                     (hipDoubleComplex*)resource->deviceD().get(),
@@ -656,13 +658,37 @@ namespace hiptensor
             auto reference = resource->allocDevice(sizeD);
             resource->copyData(reference, resource->hostD(), sizeD);
 
+            // Compute tolerance based on compute type
+            auto dimension = a_ms_ks.mLengths.size() / 2;
+            auto nelems_k = std::accumulate(a_ms_ks.mLengths.begin() + dimension,
+                                            a_ms_ks.mLengths.end(),
+                                            size_t{1},
+                                            std::multiplies<size_t>());
+
+            auto eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
+                : HIPTENSOR_COMPUTE_32F);
+            double tolerance = 2 * nelems_k * eps;
+
+            // use the same default tolerance value as CK
+            if (computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIP_R_16BF)
+            {
+                const double epsilon = std::pow(2, -7);
+                tolerance += epsilon * 2;
+            }
+            else if (computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIP_R_16F)
+            {
+                const double epsilon = std::pow(2, -10);
+                tolerance += epsilon * 2;
+            }
+
             if(DDataType == HIP_R_16F)
             {
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
                                                          (_Float16*)reference.get(),
                                                          elementsCD,
-                                                         computeType);
+                                                         computeType,
+                                                         tolerance);
             }
             else if(DDataType == HIP_R_16BF)
             {
@@ -671,7 +697,8 @@ namespace hiptensor
                         (hip_bfloat16*)resource->deviceD().get(),
                         (hip_bfloat16*)reference.get(),
                         elementsCD,
-                        computeType);
+                        computeType,
+                        tolerance);
             }
             else if(DDataType == HIP_R_32F || DDataType == HIP_C_32F)
             {
@@ -679,7 +706,8 @@ namespace hiptensor
                     = compareEqualLaunchKernel<float>((float*)resource->deviceD().get(),
                                                       (float*)reference.get(),
                                                       elementsCD,
-                                                      computeType);
+                                                      computeType,
+                                                      tolerance);
             }
             else if(DDataType == HIP_R_64F || DDataType == HIP_C_64F)
             {
@@ -687,7 +715,8 @@ namespace hiptensor
                     = compareEqualLaunchKernel<double>((double*)resource->deviceD().get(),
                                                        (double*)reference.get(),
                                                        elementsCD,
-                                                       computeType);
+                                                       computeType,
+                                                       tolerance);
             }
 
             EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;

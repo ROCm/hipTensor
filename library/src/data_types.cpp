@@ -254,6 +254,102 @@ namespace hiptensor
             return;
         }
     }
+
+    std::string computeTypeToString(hiptensorComputeType_t computeType)
+    {
+        if(computeType == HIPTENSOR_COMPUTE_16BF)
+        {
+            return "HIPTENSOR_COMPUTE_16BF";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_16F)
+        {
+            return "HIPTENSOR_COMPUTE_16F";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_32F)
+        {
+            return "HIPTENSOR_COMPUTE_32F";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_64F)
+        {
+            return "HIPTENSOR_COMPUTE_64F";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_8I)
+        {
+            return "HIPTENSOR_COMPUTE_8I";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_8U)
+        {
+            return "HIPTENSOR_COMPUTE_8U";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_32I)
+        {
+            return "HIPTENSOR_COMPUTE_32I";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_32U)
+        {
+            return "HIPTENSOR_COMPUTE_32U";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_C32F)
+        {
+            return "HIPTENSOR_COMPUTE_C32F";
+        }
+        else if(computeType == HIPTENSOR_COMPUTE_C64F)
+        {
+            return "HIPTENSOR_COMPUTE_C64F";
+        }
+        else
+        {
+            return "HIPTENSOR_COMPUTE_NONE";
+        }
+    }
+
+    std::string hipTypeToString(hipDataType hipType)
+    {
+        if(hipType == HIP_R_16BF)
+        {
+            return "HIP_R_16BF";
+        }
+        else if(hipType == HIP_R_16F)
+        {
+            return "HIP_R_16F";
+        }
+        else if(hipType == HIP_R_32F)
+        {
+            return "HIP_R_32F";
+        }
+        else if(hipType == HIP_R_64F)
+        {
+            return "HIP_R_64F";
+        }
+        else if(hipType == HIP_R_8I)
+        {
+            return "HIP_R_8I";
+        }
+        else if(hipType == HIP_R_8U)
+        {
+            return "HIP_R_8U";
+        }
+        else if(hipType == HIP_R_32I)
+        {
+            return "HIP_R_32I";
+        }
+        else if(hipType == HIP_R_32U)
+        {
+            return "HIP_R_32U";
+        }
+        else if(hipType == HIP_C_32F)
+        {
+            return "HIP_C_32F";
+        }
+        else if(hipType == HIP_C_64F)
+        {
+            return "HIP_C_64F";
+        }
+        else
+        {
+            return "HIP_TYPE_NONE";
+        }
+    }
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)

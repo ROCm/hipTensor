@@ -107,6 +107,9 @@ namespace hiptensor
     T readVal(void const* value, hiptensorComputeType_t id);
 
     void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value);
+
+    std::string computeTypeToString(hiptensorComputeType_t computeType);
+    std::string hipTypeToString(hipDataType hipType);
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);
