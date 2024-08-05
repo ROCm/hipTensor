@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
- 
+
 #ifndef HIPTENSOR_CONTRACTION_HEURISTICS_HPP
 #define HIPTENSOR_CONTRACTION_HEURISTICS_HPP
 

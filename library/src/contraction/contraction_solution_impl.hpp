@@ -77,7 +77,6 @@ namespace hiptensor
         {
         }
 
-
         bool checkValidity(std::vector<std::size_t> a_ms_ks_lengths,
                            std::vector<std::size_t> a_ms_ks_strides,
                            std::vector<int32_t>     a_ms_ks_modes,
@@ -110,9 +109,9 @@ namespace hiptensor
             }
 
             auto alphaF = hiptensor::readVal<ScalarData>(
-                    &alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+                &alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
             auto betaF = hiptensor::readVal<ScalarData>(
-                    &beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+                &beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
 
             auto [normal_a_ms_ks_lengths,
                   normal_a_ms_ks_strides,
@@ -141,7 +140,8 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(nullptr,
+            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                nullptr,
                 nullptr,
                 std::array<const void*, 1>{nullptr},
                 nullptr,
@@ -161,7 +161,6 @@ namespace hiptensor
 
             return mValid;
         }
-
 
         bool initArgs(void const*              alpha,
                       void const*              A,
@@ -248,7 +247,7 @@ namespace hiptensor
                 typename Traits::AOp{},
                 typename Traits::BOp{},
                 typename Traits::CDEOp(alphaF, betaF)));
-            
+
             // Attach the workspace pointer
             deviceOp->SetWorkSpacePointer(Base::mInvokerArgPtr.get(), workspacePtr);
 
@@ -279,7 +278,7 @@ namespace hiptensor
 
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
-            
+
             return mValid;
         }
     };
@@ -329,7 +328,7 @@ namespace hiptensor
             }
 
             auto alphaF = hiptensor::readVal<ScalarData>(
-                    &alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+                &alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
 
             auto [normal_a_ms_ks_lengths,
                   normal_a_ms_ks_strides,
@@ -358,21 +357,22 @@ namespace hiptensor
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
 
-            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(nullptr,
-                nullptr,
-                std::array<const void*, 0>{},
-                nullptr,
-                toCKVec(normal_a_ms_ks_lengths),
-                toCKVec(normal_a_ms_ks_strides),
-                toCKVec(normal_b_ns_ks_lengths),
-                toCKVec(normal_b_ns_ks_strides),
-                std::array<std::vector<ck::index_t>, 0>{},
-                std::array<std::vector<ck::index_t>, 0>{},
-                toCKVec(normal_e_ms_ns_lengths),
-                toCKVec(normal_e_ms_ns_strides),
-                typename Traits::AOp{},
-                typename Traits::BOp{},
-                typename Traits::CDEOp(alphaF)));
+            Base::mInvokerArgPtr
+                = std::move(deviceOp->MakeArgumentPointer(nullptr,
+                                                          nullptr,
+                                                          std::array<const void*, 0>{},
+                                                          nullptr,
+                                                          toCKVec(normal_a_ms_ks_lengths),
+                                                          toCKVec(normal_a_ms_ks_strides),
+                                                          toCKVec(normal_b_ns_ks_lengths),
+                                                          toCKVec(normal_b_ns_ks_strides),
+                                                          std::array<std::vector<ck::index_t>, 0>{},
+                                                          std::array<std::vector<ck::index_t>, 0>{},
+                                                          toCKVec(normal_e_ms_ns_lengths),
+                                                          toCKVec(normal_e_ms_ns_strides),
+                                                          typename Traits::AOp{},
+                                                          typename Traits::BOp{},
+                                                          typename Traits::CDEOp(alphaF)));
 
             Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
 
@@ -406,7 +406,7 @@ namespace hiptensor
             resetArgs();
 
             // Promote to derived class for necessary functions such as
-            // MakeArgumentPointer and MakeInvokerPointer
+            // MakeArgumentPointer and MakeInvokerPointer.
             auto* deviceOp = dynamic_cast<DeviceOp*>(Base::mDeviceOp.get());
 
             // Note: CK ALWAYS uses float for alpha / beta in contraction multipleD

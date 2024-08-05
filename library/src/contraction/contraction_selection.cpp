@@ -33,9 +33,9 @@
 #endif
 
 #include "contraction_selection.hpp"
+#include "logger.hpp"
 #include "performance.hpp"
 #include "util.hpp"
-#include "logger.hpp"
 
 #include "contraction_cpu_reference.hpp"
 
@@ -150,19 +150,23 @@ namespace hiptensor
                     static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
                 };
 
-		        using hiptensor::Logger;
+                using hiptensor::Logger;
                 auto& logger = Logger::instance();
 
-                // Log Kernel performances access
-                char msg[256];
-                snprintf(msg,
-                        sizeof(msg),
-                        "KernelId: %lu, KernelName: %s, AvgTime: %0.3f ms",
-                        solution->uid(),
-                        solution->kernelName().c_str(),
-                        time);
+                // Log brute force timings for actor critic training
+                if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_AC_TRAINING)
+                {
+                    // Log Kernel performances access
+                    char msg[256];
+                    snprintf(msg,
+                             sizeof(msg),
+                             "KernelId: %lu, KernelName: %s, AvgTime: %0.3f ms",
+                             solution->uid(),
+                             solution->kernelName().c_str(),
+                             time);
 
-                logger->logPerformanceTrace("BRUTE_FORCE_KERNEL_PERF", msg);
+                    logger->logACTraining("BRUTE_FORCE_KERNEL_PERF", msg);
+                }
 
                 if(metrics > bestMetrics)
                 {
@@ -191,17 +195,16 @@ namespace hiptensor
     }
 
     bool is1D(std::vector<std::size_t> const& a_ms_ks_lengths,
-                std::vector<std::size_t> const& a_ms_ks_strides,
-                std::vector<std::size_t> const& b_ns_ks_lengths)
+              std::vector<std::size_t> const& a_ms_ks_strides,
+              std::vector<std::size_t> const& b_ns_ks_lengths)
     {
-        bool dim1 = false;
-        int dimension = a_ms_ks_lengths.size() / 2;
-        
-        for (int i = 0; i < dimension; i++)
+        bool dim1      = false;
+        int  dimension = a_ms_ks_lengths.size() / 2;
+
+        for(int i = 0; i < dimension; i++)
         {
-            if (a_ms_ks_lengths[i] == 1 || 
-                b_ns_ks_lengths[i] == 1 || 
-                a_ms_ks_lengths[dimension + i] == 1)
+            if(a_ms_ks_lengths[i] == 1 || b_ns_ks_lengths[i] == 1
+               || a_ms_ks_lengths[dimension + i] == 1)
             {
                 dim1 = true;
             }
@@ -209,7 +212,7 @@ namespace hiptensor
 
         return dim1;
     }
-    
+
     template <>
     struct ActorCriticSelection<_Float16,
                                 _Float16,
@@ -219,7 +222,7 @@ namespace hiptensor
                                 float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -247,36 +250,36 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
-            
+
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 2317674114976786230ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 2317674114976786230ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 2317674114976786230ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 12241437837959333440ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 12241437837959333440ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 11152060091307708334ull;
             }
@@ -302,7 +305,7 @@ namespace hiptensor
                                 float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -334,38 +337,38 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 58303249112943560ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             // if (d1 == 1 || (d2 == 1 && (a_ms_ks_lengths[3] == 1 || b_ns_ks_lengths[3] == 1)))
             {
                 unique_id = 58303249112943560ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 2303552229010777601ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 58303249112943560ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 58303249112943560ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 58303249112943560ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 2303552229010777601ull;
             }
@@ -391,7 +394,7 @@ namespace hiptensor
                                 float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -423,32 +426,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 9967477699864925937ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 14071475272156866885ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 14071475272156866885ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 15452087623356707112ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 15452087623356707112ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 8307633941691601884ull;
             }
@@ -474,7 +477,7 @@ namespace hiptensor
                                 float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -506,37 +509,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 16299024124514902126ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 378062791888302715ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 76527422265261696ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 378062791888302715ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 378062791888302715ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 378062791888302715ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 378062791888302715ull;
             }
@@ -557,7 +560,7 @@ namespace hiptensor
     struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, _Float16>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -589,32 +592,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 17141562253969597117ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 17141562253969597117ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 17141562253969597117ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 17141562253969597117ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 17141562253969597117ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 6384780398804323250ull;
             }
@@ -635,7 +638,7 @@ namespace hiptensor
     struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR, _Float16>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -667,37 +670,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 8251132190088736039ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 2897979232477761524ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 2897979232477761524ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 2897979232477761524ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 2897979232477761524ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 2897979232477761524ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 2897979232477761524ull;
             }
@@ -718,7 +721,7 @@ namespace hiptensor
     struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, hip_bfloat16>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -750,32 +753,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 4373449368168185126ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 4373449368168185126ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 2008216990064456310ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 4373449368168185126ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 13613206280884761703ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 15116758930810193332ull;
             }
@@ -801,7 +804,7 @@ namespace hiptensor
                                 hip_bfloat16>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -833,37 +836,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 8067958629699904967ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 8116863550692548667ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 8116863550692548667ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 8116863550692548667ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 8116863550692548667ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 8116863550692548667ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 8116863550692548667ull;
             }
@@ -884,7 +887,7 @@ namespace hiptensor
     struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -916,32 +919,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 5794367356792942822ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 17939389824758640014ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 10640128726648594287ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 5794367356792942822ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 5794367356792942822ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 13933081369664111675ull;
             }
@@ -962,7 +965,7 @@ namespace hiptensor
     struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR, float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -994,37 +997,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 14915761978535949477ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 14915761978535949477ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 14915761978535949477ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 14915761978535949477ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 14915761978535949477ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 14915761978535949477ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 14915761978535949477ull;
             }
@@ -1045,7 +1048,7 @@ namespace hiptensor
     struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE, float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1078,32 +1081,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 18207091374964962208ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 16948282955506101335ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 16870758234615651290ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 15355329505248522280ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 14642257549075851915ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 14642257549075851915ull;
             }
@@ -1124,7 +1127,7 @@ namespace hiptensor
     struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR, float>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1156,37 +1159,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 11269655469469274301ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 2143493311543532856ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 2143493311543532856ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 2143493311543532856ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 2143493311543532856ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 2143493311543532856ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 2143493311543532856ull;
             }
@@ -1207,7 +1210,7 @@ namespace hiptensor
     struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE, double>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1240,32 +1243,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 3879892272436099392ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 8021137963958390646ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 3248584345341330494ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 3879892272436099392ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 3879892272436099392ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 7950787545240972863ull;
             }
@@ -1286,7 +1289,7 @@ namespace hiptensor
     struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR, double>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1318,37 +1321,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 2054609181761357786ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 14145390177844245465ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 14145390177844245465ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 14145390177844245465ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 14145390177844245465ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 14145390177844245465ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 14145390177844245465ull;
             }
@@ -1374,7 +1377,7 @@ namespace hiptensor
                                 hipFloatComplex>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1407,32 +1410,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 1688099565795560288ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 4348837698146370003ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 1688099565795560288ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 1688099565795560288ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 1688099565795560288ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 4363356859752806590ull;
             }
@@ -1458,7 +1461,7 @@ namespace hiptensor
                                 hipFloatComplex>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1490,37 +1493,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 15330878641001915472ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 11537900932066889768ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 8338926107119209426ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 11537900932066889768ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 11537900932066889768ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 11537900932066889768ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 11537900932066889768ull;
             }
@@ -1546,7 +1549,7 @@ namespace hiptensor
                                 hipDoubleComplex>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1579,32 +1582,32 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // m1n1k1
-            if (d1 == 1) 
+            if(d1 == 1)
             {
                 unique_id = 10254320286859648634ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 15705829219230515535ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 12959721676360111684ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 10254320286859648634ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 10254320286859648634ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 10254320286859648634ull;
             }
@@ -1630,7 +1633,7 @@ namespace hiptensor
                                 hipDoubleComplex>
     {
         static hiptensorStatus_t
-           selectWinner(ContractionSolution**                                   winner,
+            selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
                          hipDataType                                             typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
@@ -1662,37 +1665,37 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            if(d2 == 1 && dim1)
             {
                 unique_id = 14051358583041094215ull;
             }
             // m1n1k1
-            else if (d1 == 1) 
+            else if(d1 == 1)
             {
                 unique_id = 8503926755447648324ull;
             }
             // m2n2k2
-            else if (d2 == 1)
+            else if(d2 == 1)
             {
                 unique_id = 8503926755447648324ull;
             }
             // m3n3k3
-            else if (d3 == 1)
+            else if(d3 == 1)
             {
                 unique_id = 8503926755447648324ull;
             }
             // m4n4k4
-            else if (d4 == 1)
+            else if(d4 == 1)
             {
                 unique_id = 8503926755447648324ull;
             }
             // m5n5k5
-            else if (d5 == 1)
+            else if(d5 == 1)
             {
                 unique_id = 8503926755447648324ull;
             }
             // m6n6k6
-            else if (d6 == 1)
+            else if(d6 == 1)
             {
                 unique_id = 8503926755447648324ull;
             }
@@ -1908,24 +1911,24 @@ namespace hiptensor
                                         float,
                                         ContractionOpId_t::SCALE,
                                         hip_bfloat16>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                                    candidates,
+                                                                    typeA,
+                                                                    a_ms_ks_lengths,
+                                                                    a_ms_ks_strides,
+                                                                    a_ms_ks_modes,
+                                                                    typeB,
+                                                                    b_ns_ks_lengths,
+                                                                    b_ns_ks_strides,
+                                                                    b_ns_ks_modes,
+                                                                    typeD,
+                                                                    d_ms_ns_lengths,
+                                                                    d_ms_ns_strides,
+                                                                    d_ms_ns_modes,
+                                                                    typeE,
+                                                                    e_ms_ns_lengths,
+                                                                    e_ms_ns_strides,
+                                                                    e_ms_ns_modes,
+                                                                    workspaceSize);
         }
         else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
                 && computeType == HIP_R_16BF)
@@ -1936,24 +1939,24 @@ namespace hiptensor
                                         float,
                                         ContractionOpId_t::BILINEAR,
                                         hip_bfloat16>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                                    candidates,
+                                                                    typeA,
+                                                                    a_ms_ks_lengths,
+                                                                    a_ms_ks_strides,
+                                                                    a_ms_ks_modes,
+                                                                    typeB,
+                                                                    b_ns_ks_lengths,
+                                                                    b_ns_ks_strides,
+                                                                    b_ns_ks_modes,
+                                                                    typeD,
+                                                                    d_ms_ns_lengths,
+                                                                    d_ms_ns_strides,
+                                                                    d_ms_ns_modes,
+                                                                    typeE,
+                                                                    e_ms_ns_lengths,
+                                                                    e_ms_ns_strides,
+                                                                    e_ms_ns_modes,
+                                                                    workspaceSize);
         }
         else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
                 && computeType == HIPTENSOR_COMPUTE_32F)
@@ -2076,24 +2079,24 @@ namespace hiptensor
                                         double,
                                         ContractionOpId_t::SCALE,
                                         double>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                              candidates,
+                                                              typeA,
+                                                              a_ms_ks_lengths,
+                                                              a_ms_ks_strides,
+                                                              a_ms_ks_modes,
+                                                              typeB,
+                                                              b_ns_ks_lengths,
+                                                              b_ns_ks_strides,
+                                                              b_ns_ks_modes,
+                                                              typeD,
+                                                              d_ms_ns_lengths,
+                                                              d_ms_ns_strides,
+                                                              d_ms_ns_modes,
+                                                              typeE,
+                                                              e_ms_ns_lengths,
+                                                              e_ms_ns_strides,
+                                                              e_ms_ns_modes,
+                                                              workspaceSize);
         }
         else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F && typeE == HIP_R_64F
                 && computeType == HIPTENSOR_COMPUTE_64F)
@@ -2104,24 +2107,24 @@ namespace hiptensor
                                         double,
                                         ContractionOpId_t::BILINEAR,
                                         double>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                              candidates,
+                                                              typeA,
+                                                              a_ms_ks_lengths,
+                                                              a_ms_ks_strides,
+                                                              a_ms_ks_modes,
+                                                              typeB,
+                                                              b_ns_ks_lengths,
+                                                              b_ns_ks_strides,
+                                                              b_ns_ks_modes,
+                                                              typeD,
+                                                              d_ms_ns_lengths,
+                                                              d_ms_ns_strides,
+                                                              d_ms_ns_modes,
+                                                              typeE,
+                                                              e_ms_ns_lengths,
+                                                              e_ms_ns_strides,
+                                                              e_ms_ns_modes,
+                                                              workspaceSize);
         }
         else if(typeA == HIP_C_32F && typeB == HIP_C_32F && typeD == NONE_TYPE && typeE == HIP_C_32F
                 && computeType == HIPTENSOR_COMPUTE_C32F)
@@ -2132,24 +2135,24 @@ namespace hiptensor
                                         hipFloatComplex,
                                         ContractionOpId_t::SCALE_COMPLEX,
                                         hipFloatComplex>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                                       candidates,
+                                                                       typeA,
+                                                                       a_ms_ks_lengths,
+                                                                       a_ms_ks_strides,
+                                                                       a_ms_ks_modes,
+                                                                       typeB,
+                                                                       b_ns_ks_lengths,
+                                                                       b_ns_ks_strides,
+                                                                       b_ns_ks_modes,
+                                                                       typeD,
+                                                                       d_ms_ns_lengths,
+                                                                       d_ms_ns_strides,
+                                                                       d_ms_ns_modes,
+                                                                       typeE,
+                                                                       e_ms_ns_lengths,
+                                                                       e_ms_ns_strides,
+                                                                       e_ms_ns_modes,
+                                                                       workspaceSize);
         }
         else if(typeA == HIP_C_32F && typeB == HIP_C_32F && typeD == HIP_C_32F && typeE == HIP_C_32F
                 && computeType == HIPTENSOR_COMPUTE_C32F)
@@ -2160,24 +2163,24 @@ namespace hiptensor
                                         hipFloatComplex,
                                         ContractionOpId_t::BILINEAR_COMPLEX,
                                         hipFloatComplex>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                                       candidates,
+                                                                       typeA,
+                                                                       a_ms_ks_lengths,
+                                                                       a_ms_ks_strides,
+                                                                       a_ms_ks_modes,
+                                                                       typeB,
+                                                                       b_ns_ks_lengths,
+                                                                       b_ns_ks_strides,
+                                                                       b_ns_ks_modes,
+                                                                       typeD,
+                                                                       d_ms_ns_lengths,
+                                                                       d_ms_ns_strides,
+                                                                       d_ms_ns_modes,
+                                                                       typeE,
+                                                                       e_ms_ns_lengths,
+                                                                       e_ms_ns_strides,
+                                                                       e_ms_ns_modes,
+                                                                       workspaceSize);
         }
         else if(typeA == HIP_C_64F && typeB == HIP_C_64F && typeD == NONE_TYPE && typeE == HIP_C_64F
                 && computeType == HIPTENSOR_COMPUTE_C64F)
@@ -2188,24 +2191,24 @@ namespace hiptensor
                                         hipDoubleComplex,
                                         ContractionOpId_t::SCALE_COMPLEX,
                                         hipDoubleComplex>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                                        candidates,
+                                                                        typeA,
+                                                                        a_ms_ks_lengths,
+                                                                        a_ms_ks_strides,
+                                                                        a_ms_ks_modes,
+                                                                        typeB,
+                                                                        b_ns_ks_lengths,
+                                                                        b_ns_ks_strides,
+                                                                        b_ns_ks_modes,
+                                                                        typeD,
+                                                                        d_ms_ns_lengths,
+                                                                        d_ms_ns_strides,
+                                                                        d_ms_ns_modes,
+                                                                        typeE,
+                                                                        e_ms_ns_lengths,
+                                                                        e_ms_ns_strides,
+                                                                        e_ms_ns_modes,
+                                                                        workspaceSize);
         }
         else if(typeA == HIP_C_64F && typeB == HIP_C_64F && typeD == HIP_C_64F && typeE == HIP_C_64F
                 && computeType == HIPTENSOR_COMPUTE_C64F)
@@ -2216,24 +2219,24 @@ namespace hiptensor
                                         hipDoubleComplex,
                                         ContractionOpId_t::BILINEAR_COMPLEX,
                                         hipDoubleComplex>::selectWinner(winner,
-                                                                candidates,
-                                                                typeA,
-                                                                a_ms_ks_lengths,
-                                                                a_ms_ks_strides,
-                                                                a_ms_ks_modes,
-                                                                typeB,
-                                                                b_ns_ks_lengths,
-                                                                b_ns_ks_strides,
-                                                                b_ns_ks_modes,
-                                                                typeD,
-                                                                d_ms_ns_lengths,
-                                                                d_ms_ns_strides,
-                                                                d_ms_ns_modes,
-                                                                typeE,
-                                                                e_ms_ns_lengths,
-                                                                e_ms_ns_strides,
-                                                                e_ms_ns_modes,
-                                                                workspaceSize);
+                                                                        candidates,
+                                                                        typeA,
+                                                                        a_ms_ks_lengths,
+                                                                        a_ms_ks_strides,
+                                                                        a_ms_ks_modes,
+                                                                        typeB,
+                                                                        b_ns_ks_lengths,
+                                                                        b_ns_ks_strides,
+                                                                        b_ns_ks_modes,
+                                                                        typeD,
+                                                                        d_ms_ns_lengths,
+                                                                        d_ms_ns_strides,
+                                                                        d_ms_ns_modes,
+                                                                        typeE,
+                                                                        e_ms_ns_lengths,
+                                                                        e_ms_ns_strides,
+                                                                        e_ms_ns_modes,
+                                                                        workspaceSize);
         }
         return HIPTENSOR_STATUS_EXECUTION_FAILED;
     }
