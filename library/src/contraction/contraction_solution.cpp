@@ -227,7 +227,6 @@ namespace hiptensor
                                         unsigned long            workspaceSize,
                                         StreamConfig const&      streamConfig /*= StreamConfig{}*/)
     {
-        // printf("operator()\n");
         if (!checkValidity(a_ms_ns_lengths,
                            a_ms_ks_strides,
                            a_ms_ks_modes,
@@ -241,8 +240,6 @@ namespace hiptensor
                            e_ms_ns_strides,
                            e_ms_ns_modes))
         {
-            // printf("checkValidity failed\n");
-            //todo test if reset is needed
             resetInvokerArgs();
             return {HIPTENSOR_STATUS_INTERNAL_ERROR, -1.0f};
         }
@@ -272,10 +269,9 @@ namespace hiptensor
             resetInvokerArgs();
             return {HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE, -1.0f};
         }
-        // printf("about to invoke\n");
         auto time = mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
         resetInvokerArgs();
-        // printf("finished invoking\n");
+
         return {HIPTENSOR_STATUS_SUCCESS, time};
     }
 
@@ -341,6 +337,5 @@ namespace hiptensor
     void ContractionSolution::resetInvokerArgs()
     {
         mInvokerArgPtr.reset(nullptr);
-        // printf("resetInvokerArgs\n");
     }
 } // namespace hiptensor

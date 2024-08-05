@@ -230,7 +230,7 @@ namespace hiptensor
             auto toCKVec = [](std::vector<size_t> const& v) {
                 return std::vector<ck::index_t>(v.begin(), v.end());
             };
-            // printf("MakeArgumentPointer (with allocs)\n");
+
             // Initialize the argument pointer
             Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
                 A,

@@ -250,13 +250,7 @@ namespace hiptensor
             
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 5113293080724535756ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 2317674114976786230ull;
@@ -428,13 +422,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 14015334081946837014ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 9967477699864925937ull;
@@ -600,13 +588,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 4548033111668367400ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 17141562253969597117ull;
@@ -767,13 +749,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 16420628376898423538ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 4373449368168185126ull;
@@ -939,13 +915,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 8826603567277321994ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 5794367356792942822ull;
@@ -1107,13 +1077,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 14901158961446820896ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 18207091374964962208ull;
@@ -1275,13 +1239,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 3879892272436099392ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 3879892272436099392ull;
@@ -1448,13 +1406,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 7812623739736355326ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 1688099565795560288ull;
@@ -1626,13 +1578,7 @@ namespace hiptensor
 
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
-            // rank2 dim1 case
-            // if (d2 == 1 && dim1)
-            // {
-            //     unique_id = 10254320286859648634ull;
-            // }
-            // // m1n1k1
-            // else 
+            // m1n1k1
             if (d1 == 1) 
             {
                 unique_id = 10254320286859648634ull;
