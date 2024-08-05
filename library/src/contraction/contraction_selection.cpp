@@ -251,39 +251,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 5113293080724535756ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 5113293080724535756ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 17912428805389269017ull;
+                unique_id = 2317674114976786230ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 13987975603645579562ull;
+                unique_id = 2317674114976786230ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 13987975603645579562ull;
+                unique_id = 2317674114976786230ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 13987975603645579562ull;
+                unique_id = 12241437837959333440ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 13987975603645579562ull;
+                unique_id = 12241437837959333440ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 17912428805389269017ull;
+                unique_id = 11152060091307708334ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -428,39 +429,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 14015334081946837014ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 14015334081946837014ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 1015685992483452995ull;
+                unique_id = 9967477699864925937ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 1015685992483452995ull;
+                unique_id = 14071475272156866885ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 1015685992483452995ull;
+                unique_id = 14071475272156866885ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 1015685992483452995ull;
+                unique_id = 15452087623356707112ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 1015685992483452995ull;
+                unique_id = 15452087623356707112ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 1015685992483452995ull;
+                unique_id = 8307633941691601884ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -599,39 +601,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 4548033111668367400ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 4548033111668367400ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 10800739437646028422ull;
+                unique_id = 17141562253969597117ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 717325201541913345ull;
+                unique_id = 17141562253969597117ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 10800739437646028422ull;
+                unique_id = 17141562253969597117ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 10800739437646028422ull;
+                unique_id = 17141562253969597117ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 3781627802884041058ull;
+                unique_id = 17141562253969597117ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 10800739437646028422ull;
+                unique_id = 6384780398804323250ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -765,39 +768,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 16420628376898423538ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 16420628376898423538ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 17959510091945286251ull;
+                unique_id = 4373449368168185126ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 17959510091945286251ull;
+                unique_id = 4373449368168185126ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 17959510091945286251ull;
+                unique_id = 2008216990064456310ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 17959510091945286251ull;
+                unique_id = 4373449368168185126ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 17959510091945286251ull;
+                unique_id = 13613206280884761703ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 17959510091945286251ull;
+                unique_id = 15116758930810193332ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -936,39 +940,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 8826603567277321994ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 8826603567277321994ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 18096417737618973195ull;
+                unique_id = 5794367356792942822ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 16893702863645273417ull;
+                unique_id = 17939389824758640014ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 16893702863645273417ull;
+                unique_id = 10640128726648594287ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 16893702863645273417ull;
+                unique_id = 5794367356792942822ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 16893702863645273417ull;
+                unique_id = 5794367356792942822ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 16893702863645273417ull;
+                unique_id = 13933081369664111675ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1103,39 +1108,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 14901158961446820896ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 14901158961446820896ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 8188562791036959263ull;
+                unique_id = 18207091374964962208ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 8188562791036959263ull;
+                unique_id = 16948282955506101335ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 7606237861132087768ull;
+                unique_id = 16870758234615651290ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 7606237861132087768ull;
+                unique_id = 15355329505248522280ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 8188562791036959263ull;
+                unique_id = 14642257549075851915ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 7606237861132087768ull;
+                unique_id = 14642257549075851915ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1270,24 +1276,25 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
-            {
-                unique_id = 3879892272436099392ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 3879892272436099392ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
                 unique_id = 3879892272436099392ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 3879892272436099392ull;
+                unique_id = 8021137963958390646ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 3879892272436099392ull;
+                unique_id = 3248584345341330494ull;
             }
             // m4n4k4
             else if (d4 == 1)
@@ -1302,7 +1309,7 @@ namespace hiptensor
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 3879892272436099392ull;
+                unique_id = 7950787545240972863ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1442,39 +1449,40 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 7812623739736355326ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
-                unique_id = 7812623739736355326ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 6132850456576499774ull;
+                unique_id = 1688099565795560288ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 3843982104146107466ull;
+                unique_id = 4348837698146370003ull;
             }
             // m3n3k3
             else if (d3 == 1)
             {
-                unique_id = 6132850456576499774ull;
+                unique_id = 1688099565795560288ull;
             }
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 16674999420449441492ull;
+                unique_id = 1688099565795560288ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 3843982104146107466ull;
+                unique_id = 1688099565795560288ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 16674999420449441492ull;
+                unique_id = 4363356859752806590ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1619,19 +1627,20 @@ namespace hiptensor
             bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
 
             // rank2 dim1 case
-            if (d2 == 1 && dim1)
+            // if (d2 == 1 && dim1)
+            // {
+            //     unique_id = 10254320286859648634ull;
+            // }
+            // // m1n1k1
+            // else 
+            if (d1 == 1) 
             {
                 unique_id = 10254320286859648634ull;
-            }
-            // m1n1k1
-            else if (d1 == 1) 
-            {
-                unique_id = 12959721676360111684ull;
             }
             // m2n2k2
             else if (d2 == 1)
             {
-                unique_id = 12959721676360111684ull;
+                unique_id = 15705829219230515535ull;
             }
             // m3n3k3
             else if (d3 == 1)
@@ -1641,17 +1650,17 @@ namespace hiptensor
             // m4n4k4
             else if (d4 == 1)
             {
-                unique_id = 12959721676360111684ull;
+                unique_id = 10254320286859648634ull;
             }
             // m5n5k5
             else if (d5 == 1)
             {
-                unique_id = 12959721676360111684ull;
+                unique_id = 10254320286859648634ull;
             }
             // m6n6k6
             else if (d6 == 1)
             {
-                unique_id = 12959721676360111684ull;
+                unique_id = 10254320286859648634ull;
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
