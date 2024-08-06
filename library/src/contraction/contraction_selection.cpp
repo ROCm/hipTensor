@@ -154,7 +154,7 @@ namespace hiptensor
                 auto& logger = Logger::instance();
 
                 // Log brute force timings for actor critic training
-                if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_AC_TRAINING)
+                if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE)
                 {
                     // Log Kernel performances access
                     char msg[256];
@@ -165,7 +165,7 @@ namespace hiptensor
                              solution->kernelName().c_str(),
                              time);
 
-                    logger->logACTraining("BRUTE_FORCE_KERNEL_PERF", msg);
+                    logger->logHeuristics("BRUTE_FORCE_KERNEL_PERF", msg);
                 }
 
                 if(metrics > bestMetrics)
@@ -249,8 +249,6 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
-
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -422,8 +420,6 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
-
             // m1n1k1
             if(d1 == 1)
             {
@@ -588,8 +584,6 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
-
             // m1n1k1
             if(d1 == 1)
             {
@@ -748,8 +742,6 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
-
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -915,8 +907,6 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
-
             // m1n1k1
             if(d1 == 1)
             {
@@ -1077,8 +1067,6 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
-
             // m1n1k1
             if(d1 == 1)
             {
@@ -1238,8 +1226,6 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
-
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -1405,8 +1391,6 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
-
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -1577,8 +1561,6 @@ namespace hiptensor
             int d6 = a_ms_ks_strides[11];
 
             size_t unique_id = 0;
-
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)

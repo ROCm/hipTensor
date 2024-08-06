@@ -160,8 +160,6 @@ typedef enum
     HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE = 8,
     //! Log a trace of API calls
     HIPTENSOR_LOG_LEVEL_API_TRACE = 16,
-    //! Log metrics required for actor critic training
-    HIPTENSOR_LOG_LEVEL_AC_TRAINING = 32
 
 } hiptensorLogLevel_t;
 
