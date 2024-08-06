@@ -2,7 +2,29 @@
 
 Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-## (Unreleased) hipTensor 1.3.0 for ROCm 6.2.0
+## (Unreleased) hipTensor 1.4.0 for ROCm 6.3.0
+
+### Additions
+
+* Added API support for tensor reduction of ranks 2, 3, 4, 5 and 6
+* Added CPU reference for tensor reductions
+* Added unit tests for tensor reductions
+* Added documentation for tensor reductions
+
+### Changes
+
+* Updated target archs for ASAN builds
+* ASAN library builds now use -mcmodel=large to accommodate larger lib size
+* Updated permute backend to accommodate changes to element-wise ops implementation
+* Updated validation acceptance criteria to match CK backend tests
+
+### Fixes
+
+* Fixed a bug in randomized tensor input data generation
+* Various documentation formatting updates and fixes
+* Split kernel instances to improve build times
+
+## hipTensor 1.3.0 for ROCm 6.2.0
 
 ### Additions
 
