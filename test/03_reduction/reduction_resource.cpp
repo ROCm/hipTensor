@@ -86,31 +86,25 @@ namespace hiptensor
         // check buffer for C
         auto requiredElementCountC = getProduct(outputSizes);
         auto requiredMemorySizeC   = requiredElementCountC * hipDataTypeSize(dataType);
-        auto needFillDataC         = false;
         if(requiredMemorySizeC > mCurrentAllocByteC)
         {
             Base::reallocDeviceHostPair(mDeviceC, mHostC, requiredMemorySizeC);
             Base::reallocDeviceHostPair(mDeviceReference, mHostReference, requiredMemorySizeC);
             mCurrentAllocByteC = requiredMemorySizeC;
-            needFillDataC      = true;
-        }
-        if(mCurrentDataType != dataType || mCurrentMatrixCElement < requiredElementCountC)
-        {
-            needFillDataC = true;
         }
         mCurrentMatrixCElement = requiredElementCountC;
 
         mCurrentDataType = dataType;
 
+        const uint32_t seedA = 256;
+        const uint32_t seedC = 256;
         if(needFillDataA)
         {
-            fillRand(hostA(), deviceA(), getCurrentMatrixAMemorySize());
+            fillRand(hostA(), deviceA(), getCurrentMatrixAMemorySize(), seedA);
         }
 
-        if(needFillDataC)
-        {
-            fillConstant(hostC(), deviceC(), getCurrentMatrixCMemorySize());
-        }
+        fillRand(hostC(), deviceC(), getCurrentMatrixCMemorySize(), seedC);
+        fillRand(hostReference(), deviceReference(), getCurrentMatrixCMemorySize(), seedC);
     }
 
     void ReductionResource::reset()
@@ -125,10 +119,11 @@ namespace hiptensor
         mCurrentAllocByteC     = 0;
     }
 
-    void ReductionResource::fillRand(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount)
+    void ReductionResource::fillRand(HostPtrT&   hostBuf,
+                                     DevicePtrT& deviceBuf,
+                                     size_t      elementCount,
+                                     uint32_t    seed)
     {
-        uint32_t seed = static_cast<uint32_t>(256);
-
         if(mCurrentDataType == HIP_R_16F)
         {
             fillLaunchKernel<float16_t>((float16_t*)deviceBuf.get(), elementCount, seed);
@@ -150,27 +145,28 @@ namespace hiptensor
 
     void ReductionResource::fillConstant(HostPtrT&   hostBuf,
                                          DevicePtrT& deviceBuf,
-                                         size_t      elementCount)
+                                         size_t      elementCount,
+                                         double      value)
     {
         if(mCurrentDataType == HIP_R_16F)
         {
             fillValLaunchKernel<float16_t>(
-                (float16_t*)deviceBuf.get(), elementCount, (float16_t)1.0);
+                (float16_t*)deviceBuf.get(), elementCount, (float16_t)value);
         }
         else if(mCurrentDataType == HIP_R_16BF)
         {
             fillValLaunchKernel<bfloat16_t>(
-                (bfloat16_t*)deviceBuf.get(), elementCount, (bfloat16_t)1.0);
+                (bfloat16_t*)deviceBuf.get(), elementCount, (bfloat16_t)value);
         }
         else if(mCurrentDataType == HIP_R_32F)
         {
             fillValLaunchKernel<float32_t>(
-                (float32_t*)deviceBuf.get(), elementCount, (float32_t)1.0);
+                (float32_t*)deviceBuf.get(), elementCount, (float32_t)value);
         }
         else if(mCurrentDataType == HIP_R_64F)
         {
             fillValLaunchKernel<float64_t>(
-                (float64_t*)deviceBuf.get(), elementCount, (float64_t)1.0);
+                (float64_t*)deviceBuf.get(), elementCount, (float64_t)value);
         }
         Base::copyData(hostBuf, deviceBuf, elementCount);
     }
