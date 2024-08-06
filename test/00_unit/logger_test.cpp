@@ -195,6 +195,10 @@ bool hiptensorLoggerSetLevelTest()
     {
         return false;
     }
+    if(hiptensorLoggerSetLevel(HIPTENSOR_LOG_LEVEL_AC_TRAINING) != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return false;
+    }
 
     // Test out-of-range input value
     if(hiptensorLoggerSetLevel(hiptensorLogLevel_t(3)) == HIPTENSOR_STATUS_SUCCESS)
@@ -208,7 +212,7 @@ bool hiptensorLoggerSetLevelTest()
 bool hiptensorLoggerSetMaskTest()
 {
     // Test all bitmask values in range
-    for(int i = 0x00; i <= 0x1F; i++)
+    for(int i = 0x00; i <= 0x3F; i++)
     {
         if(hiptensorLoggerSetMask(i) != HIPTENSOR_STATUS_SUCCESS)
         {
@@ -217,7 +221,7 @@ bool hiptensorLoggerSetMaskTest()
     }
 
     // Test out-of-range input value
-    if(hiptensorLoggerSetMask(0x20) == HIPTENSOR_STATUS_SUCCESS)
+    if(hiptensorLoggerSetMask(0x40) == HIPTENSOR_STATUS_SUCCESS)
     {
         return false;
     }

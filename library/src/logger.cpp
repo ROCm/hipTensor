@@ -123,6 +123,7 @@ namespace hiptensor
         case LogLevel_t::LOG_LEVEL_PERF_HINT:
         case LogLevel_t::LOG_LEVEL_HEURISTICS_TRACE:
         case LogLevel_t::LOG_LEVEL_API_TRACE:
+        case LogLevel_t::LOG_LEVEL_AC_TRAINING:
         {
             mLogMask = (int32_t)level;
             return Status_t::SUCCESS;
