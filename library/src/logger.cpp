@@ -123,7 +123,6 @@ namespace hiptensor
         case LogLevel_t::LOG_LEVEL_PERF_HINT:
         case LogLevel_t::LOG_LEVEL_HEURISTICS_TRACE:
         case LogLevel_t::LOG_LEVEL_API_TRACE:
-        case LogLevel_t::LOG_LEVEL_AC_TRAINING:
         {
             mLogMask = (int32_t)level;
             return Status_t::SUCCESS;
@@ -138,7 +137,7 @@ namespace hiptensor
     Logger::Status_t Logger::setLogMask(int32_t mask)
     {
         std::scoped_lock lock(mMutex);
-        if(mask >= 0 && mask <= 0x3F)
+        if(mask >= 0 && mask <= 0x1F)
         {
             mLogMask = mask;
             return Status_t::SUCCESS;
@@ -212,12 +211,6 @@ namespace hiptensor
             static_cast<int>(LogLevel_t::LOG_LEVEL_API_TRACE), apiFuncName, message);
     }
 
-    Logger::Status_t Logger::logACTraining(const char* apiFuncName, const char* message)
-    {
-        return Logger::logMessage(
-            static_cast<int>(LogLevel_t::LOG_LEVEL_AC_TRAINING), apiFuncName, message);
-    }
-
     /* static */
     const char* Logger::timeStamp()
     {
@@ -289,8 +282,6 @@ namespace hiptensor
             return "Heuristics Trace";
         case LogLevel_t::LOG_LEVEL_API_TRACE:
             return "API";
-        case LogLevel_t::LOG_LEVEL_AC_TRAINING:
-            return "AC Training";
         default:
             return "";
         }

@@ -187,8 +187,6 @@ namespace llvm
                               HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE);
                 io.bitSetCase(
                     value, "HIPTENSOR_LOG_LEVEL_API_TRACE", HIPTENSOR_LOG_LEVEL_API_TRACE);
-                io.bitSetCase(
-                    value, "HIPTENSOR_LOG_LEVEL_AC_TRAINING", HIPTENSOR_LOG_LEVEL_AC_TRAINING);
             }
         };
 

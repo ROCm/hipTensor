@@ -58,7 +58,6 @@ namespace hiptensor
             LOG_LEVEL_PERF_HINT        = 4,
             LOG_LEVEL_HEURISTICS_TRACE = 8,
             LOG_LEVEL_API_TRACE        = 16,
-            LOG_LEVEL_AC_TRAINING      = 32
         };
 
         // For static initialization
@@ -80,7 +79,6 @@ namespace hiptensor
         Status_t logPerformanceTrace(const char* apiFuncName, const char* message);
         Status_t logHeuristics(const char* apiFuncName, const char* message);
         Status_t logAPITrace(const char* apiFuncName, const char* message);
-        Status_t logACTraining(const char* apiFuncName, const char* message);
 
         static const char* statusString(Status_t status);
 
