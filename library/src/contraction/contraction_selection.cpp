@@ -195,7 +195,6 @@ namespace hiptensor
     }
 
     bool is1D(std::vector<std::size_t> const& a_ms_ks_lengths,
-              std::vector<std::size_t> const& a_ms_ks_strides,
               std::vector<std::size_t> const& b_ns_ks_lengths)
     {
         bool dim1      = false;
@@ -251,7 +250,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -334,7 +333,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -423,7 +422,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -506,7 +505,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -589,7 +588,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -667,7 +666,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -750,7 +749,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -833,7 +832,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -916,7 +915,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -994,7 +993,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1078,7 +1077,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -1156,7 +1155,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1240,7 +1239,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -1318,7 +1317,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1407,7 +1406,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -1490,7 +1489,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1579,7 +1578,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // m1n1k1
             if(d1 == 1)
@@ -1662,7 +1661,7 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, a_ms_ks_strides, b_ns_ks_lengths);
+            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
