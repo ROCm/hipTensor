@@ -109,7 +109,6 @@ namespace hiptensor
                          const uint64_t                                          workspaceSize);
 
     bool is1D(std::vector<std::size_t> const& a_ms_ks_lengths,
-              std::vector<std::size_t> const& a_ms_ks_strides,
               std::vector<std::size_t> const& b_ns_ks_lengths);
 
 } // namespace hiptensor
