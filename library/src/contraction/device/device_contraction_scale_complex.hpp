@@ -314,16 +314,6 @@ namespace ck
                     {
                     }
 
-                    ~Argument()
-                    {
-                        mA_real.reset(nullptr);
-                        mA_imag.reset(nullptr);
-                        mB_real.reset(nullptr);
-                        mB_imag.reset(nullptr);
-                        mE_real.reset(nullptr);
-                        mE_imag.reset(nullptr);
-                    }
-
                     Argument& operator=(Argument&& other)
                     {
                         if(this != &other)
