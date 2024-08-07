@@ -194,24 +194,6 @@ namespace hiptensor
         }
     }
 
-    bool is1D(std::vector<std::size_t> const& a_ms_ks_lengths,
-              std::vector<std::size_t> const& b_ns_ks_lengths)
-    {
-        bool dim1      = false;
-        int  dimension = a_ms_ks_lengths.size() / 2;
-
-        for(int i = 0; i < dimension; i++)
-        {
-            if(a_ms_ks_lengths[i] == 1 || b_ns_ks_lengths[i] == 1
-               || a_ms_ks_lengths[dimension + i] == 1)
-            {
-                dim1 = true;
-            }
-        }
-
-        return dim1;
-    }
-
     template <>
     struct ActorCriticSelection<_Float16,
                                 _Float16,
@@ -331,7 +313,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -501,7 +484,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -660,7 +644,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -824,7 +809,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -983,7 +969,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1143,7 +1130,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1303,7 +1291,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1473,7 +1462,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
@@ -1643,7 +1633,8 @@ namespace hiptensor
 
             size_t unique_id = 0;
 
-            bool dim1 = is1D(a_ms_ks_lengths, b_ns_ks_lengths);
+            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
             // rank2 dim1 case
             if(d2 == 1 && dim1)
