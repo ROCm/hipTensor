@@ -125,7 +125,25 @@ message("-- HIPTENSOR_DATA_LAYOUT_COL_MAJOR=${HIPTENSOR_DATA_LAYOUT_COL_MAJOR}")
 
 # Setup HIP
 find_package(hip REQUIRED )
-message(STATUS "HIP version: ${hip_VERSION}")
+math(EXPR hip_VERSION_FLAT "(${hip_VERSION_MAJOR} * 1000 + ${hip_VERSION_MINOR}) * 100000 + ${hip_VERSION_PATCH}")
+message("hip_version_flat=${hip_VERSION_FLAT}")
+
+# No assumption that HIP kernels are launched with uniform block size for backward compatibility
+# SWDEV-413293 and https://reviews.llvm.org/D155213
+if(NOT WIN32 AND ${hip_VERSION_FLAT} GREATER 500723302)
+  message("Adding the fno-offload-uniform-block compiler flag")
+  add_compile_options(-fno-offload-uniform-block)
+endif()
+# Add optimization flags needed by backend
+if(NOT WIN32 AND ${hip_VERSION_FLAT} GREATER 600140090)
+  message("Adding the enable-post-misched=0 compiler flag")
+  add_compile_options("SHELL: -mllvm -enable-post-misched=0")
+endif()
+if(NOT WIN32 AND ${hip_VERSION_FLAT} GREATER 600241132)
+  message("Adding -amdgpu-early-inline-all=true and -amdgpu-function-calls=false")
+  add_compile_options("SHELL: -mllvm -amdgpu-early-inline-all=true")
+  add_compile_options("SHELL: -mllvm -amdgpu-function-calls=false")
+endif()
 
 # Configure library build
 add_subdirectory(library/src)
