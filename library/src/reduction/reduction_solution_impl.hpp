@@ -100,7 +100,8 @@ namespace hiptensor
                 return 0;
             }
 
-            static_assert(Traits::TensorRank >= Traits::TensorNumReduceDim, "TensorRank must be greater than or equal to TensorNumReduceDim");
+            static_assert(Traits::TensorRank >= Traits::TensorNumReduceDim,
+                          "TensorRank must be greater than or equal to TensorNumReduceDim");
             constexpr ck::index_t OutputDim
                 = (Traits::TensorRank - Traits::TensorNumReduceDim)
                       ? (Traits::TensorRank - Traits::TensorNumReduceDim)
@@ -214,8 +215,7 @@ namespace hiptensor
                                                                           PropagateNan,
                                                                           OutputIndex>;
 
-        std::vector<DeviceOpPtr> opPtrs;
-        ck::tensor_operation::device::instance::add_device_reduce_instance_blockwise<
+        using ReduceOpInstance = ck::tensor_operation::device::DeviceReduceMultiBlock<
             InDataType,
             AccDataType,
             OutDataType,
@@ -224,14 +224,22 @@ namespace hiptensor
             ReduceOperation,
             InElementwiseOperation,
             AccElementwiseOperation,
+            ck::InMemoryDataOperationEnum::Set,
             PropagateNan,
-            OutputIndex>(opPtrs);
+            OutputIndex,
+            false, // HaveIndexInputIfOutputIndex
+            256,
+            4,
+            64,
+            1,
+            1,
+            0,
+            1,
+            1>;
 
         std::vector<std::unique_ptr<ReductionSolution>> result;
-        for(auto& opPtr : opPtrs)
-        {
-            result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(std::move(opPtr)));
-        }
+        result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(
+            std::make_unique<ReduceOpInstance>(ReduceOpInstance{})));
         return result;
     }
 
