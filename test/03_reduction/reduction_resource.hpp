@@ -75,9 +75,14 @@ namespace hiptensor
         void setupStorage(ProblemDims const& dimSizes,
                           ProblemDims const& outputSizes,
                           hipDataType        dataType);
-        void fillRand(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount, uint32_t seed);
+        void fillRand(HostPtrT&   hostBuf,
+                      DevicePtrT& deviceBuf,
+                      hipDataType dataType,
+                      size_t      elementCount,
+                      uint32_t    seed);
         void fillConstant(HostPtrT&   hostBuf,
                           DevicePtrT& deviceBuf,
+                          hipDataType dataType,
                           size_t      elementCount,
                           double      value);
         void copyCToHost();
