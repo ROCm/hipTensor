@@ -23,7 +23,6 @@ Operators:
   - HIPTENSOR_OP_MIN
   - HIPTENSOR_OP_MAX
 Reduced Dims:
-  # - [0, 1, 2, 3, 4]
   - [1, 2, 3, 4]
   - [0, 2, 3, 4]
   - [0, 1, 3, 4]
