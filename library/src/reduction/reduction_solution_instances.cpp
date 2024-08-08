@@ -37,52 +37,6 @@ namespace hiptensor
     {
 
         // add entries to mSolutionQuery
-
-        // @todo Add all reference instances. How to stop the explosion of number of instances? Wait for CK
-        genReductionSolution1x1BF16BF16Instances();
-        genReductionSolution2x1BF16BF16Instances();
-        genReductionSolution2x2BF16BF16Instances();
-        genReductionSolution3x1BF16BF16Instances();
-        genReductionSolution3x2BF16BF16Instances();
-        genReductionSolution3x3BF16BF16Instances();
-        genReductionSolution4x1BF16BF16Instances();
-        genReductionSolution4x2BF16BF16Instances();
-        genReductionSolution4x3BF16BF16Instances();
-        genReductionSolution4x4BF16BF16Instances();
-        genReductionSolution5x1BF16BF16Instances();
-        genReductionSolution5x2BF16BF16Instances();
-        genReductionSolution5x3BF16BF16Instances();
-        genReductionSolution5x4BF16BF16Instances();
-        genReductionSolution5x5BF16BF16Instances();
-        genReductionSolution6x1BF16BF16Instances();
-        genReductionSolution6x2BF16BF16Instances();
-        genReductionSolution6x3BF16BF16Instances();
-        genReductionSolution6x4BF16BF16Instances();
-        genReductionSolution6x5BF16BF16Instances();
-        genReductionSolution6x6BF16BF16Instances();
-
-        genReductionSolution1x1F16F16Instances();
-        genReductionSolution2x1F16F16Instances();
-        genReductionSolution2x2F16F16Instances();
-        genReductionSolution3x1F16F16Instances();
-        genReductionSolution3x2F16F16Instances();
-        genReductionSolution3x3F16F16Instances();
-        genReductionSolution4x1F16F16Instances();
-        genReductionSolution4x2F16F16Instances();
-        genReductionSolution4x3F16F16Instances();
-        genReductionSolution4x4F16F16Instances();
-        genReductionSolution5x1F16F16Instances();
-        genReductionSolution5x2F16F16Instances();
-        genReductionSolution5x3F16F16Instances();
-        genReductionSolution5x4F16F16Instances();
-        genReductionSolution5x5F16F16Instances();
-        genReductionSolution6x1F16F16Instances();
-        genReductionSolution6x2F16F16Instances();
-        genReductionSolution6x3F16F16Instances();
-        genReductionSolution6x4F16F16Instances();
-        genReductionSolution6x5F16F16Instances();
-        genReductionSolution6x6F16F16Instances();
-
         genReductionSolution1x1BF16F32Instances();
         genReductionSolution2x1BF16F32Instances();
         genReductionSolution2x2BF16F32Instances();

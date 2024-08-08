@@ -115,9 +115,6 @@ namespace hiptensor
 
         if(!mRunFlag)
         {
-            std::cout << "Case parameters: type[" << testType[0] << ", " << testType[1]
-                      << "], alpha = " << alpha << " beta = " << beta << "; " << lengths << "; "
-                      << outputDims << "\n";
             GTEST_SKIP();
         }
         else
@@ -146,9 +143,21 @@ namespace hiptensor
         {
             stream << ReductionTest::sAPILogBuff.str();
 
-            if(1 || mPrintElements)
+            if(mPrintElements)
             {
                 auto resource = getResource();
+
+                auto param      = Base::GetParam();
+                auto testType   = std::get<0>(param);
+                auto logLevel   = std::get<1>(param);
+                auto lengths    = std::get<2>(param);
+                auto outputDims = std::get<3>(param);
+                auto alpha      = std::get<4>(param);
+                auto beta       = std::get<5>(param);
+                auto op         = std::get<6>(param);
+                stream << "Input [type: " << testType << ", lengths: " << lengths
+                       << ", outputDims: " << outputDims << ", alpha: " << alpha
+                       << ", beta: " << beta << ", opReduce: " << op << "]\n";
 
                 size_t elementsA = resource->getCurrentMatrixAElement();
                 size_t elementsC = resource->getCurrentMatrixCElement();
@@ -377,21 +386,29 @@ namespace hiptensor
             }
             else if(acDataType == HIP_R_32F)
             {
+                auto reducedSize
+                    = resource->getCurrentMatrixAElement() / resource->getCurrentMatrixCElement();
+                double tolerance = reducedSize * getEpsilon(computeDataType);
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float32_t>(
                         (float32_t*)resource->deviceC().get(),
                         (float32_t*)resource->deviceReference().get(),
                         resource->getCurrentMatrixCElement(),
-                        computeDataType);
+                        computeDataType,
+                        tolerance);
             }
             else if(acDataType == HIP_R_64F)
             {
+                auto reducedSize
+                    = resource->getCurrentMatrixAElement() / resource->getCurrentMatrixCElement();
+                double tolerance = reducedSize * getEpsilon(computeDataType);
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float64_t>(
                         (float64_t*)resource->deviceC().get(),
                         (float64_t*)resource->deviceReference().get(),
                         resource->getCurrentMatrixCElement(),
-                        computeDataType);
+                        computeDataType,
+                        tolerance);
             }
         }
 

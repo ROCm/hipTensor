@@ -33,48 +33,6 @@ set(HIPTENSOR_REDUCTION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_cpu_reference_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_1_1_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_1_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_2_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_1_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_2_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_3_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_1_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_2_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_3_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_4_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_1_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_2_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_3_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_4_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_5_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_1_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_2_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_3_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_4_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_5_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_6_f16_f16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_1_1_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_1_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_2_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_1_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_2_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_3_3_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_1_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_2_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_3_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_4_4_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_1_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_2_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_3_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_4_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_5_5_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_1_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_2_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_3_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_4_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_5_bf16_bf16_instance.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_6_6_bf16_bf16_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_1_1_f16_f32_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_1_f16_f32_instance.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/reduction_solution_2_2_f16_f32_instance.cpp

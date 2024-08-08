@@ -250,9 +250,16 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     auto ADataType    = descA->mType;
     auto DDataType    = descD->mType;
 
+    auto internalTypeCompute = typeCompute;
+    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    {
+        // CK does not support f16 or bf16 as compute type
+        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+    }
+
     // Query reduction solutions for the correct reduction operation and type
     auto solutionQ = instances->querySolutions(ADataType,
-                                               typeCompute,
+                                               internalTypeCompute,
                                                DDataType,
                                                rankA,
                                                numReduceDim,

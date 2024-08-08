@@ -48,15 +48,22 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
     auto ADataType    = descA->mType;
     auto DDataType    = descD->mType;
 
+    auto internalTypeCompute = typeCompute;
+    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    {
+        // CK does not support f16 or bf16 as compute type
+        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+    }
+
     auto& instances = hiptensor::ReductionCpuReferenceInstances::instance();
     auto  solutionQ = instances->querySolutions(ADataType,
-                                               typeCompute,
+                                               internalTypeCompute,
                                                DDataType,
                                                rankA,
                                                numReduceDim,
                                                opReduce,
-                                               true, // @TODO hardcode
-                                               false); // @TODO hardcode
+                                               true, // propagateNan
+                                               false); // outputIndex
 
     double alphaD;
     if(alpha != nullptr)
