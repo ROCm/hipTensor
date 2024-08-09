@@ -66,67 +66,6 @@ namespace hiptensor
 {
     ReductionCpuReferenceInstances::ReductionCpuReferenceInstances()
     {
-        // @todo Add all reference instances. How to stop the explosion of number of instances? Wait for CK
-        // registerSolutions(enumerateReferenceSolutions<hiptensor::bfloat16_t,
-        // hiptensor::bfloat16_t,
-        // hiptensor::bfloat16_t,
-        // 4,
-        // 2,
-        // HIPTENSOR_OP_ADD,
-        // true, // PropagateNan,
-        // false>()); // OutputIndex,
-        // registerSolutions(enumerateReferenceSolutions<hiptensor::float16_t,
-        // hiptensor::float16_t,
-        // hiptensor::float16_t,
-        // 4,
-        // 2,
-        // HIPTENSOR_OP_ADD,
-        // true, // PropagateNan,
-        // false>()); // OutputIndex,
-        REG_CPU_SOLUTION(1, 1, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(2, 1, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(2, 2, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(3, 1, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(3, 2, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(3, 3, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(4, 1, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(4, 2, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(4, 3, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(4, 4, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(5, 1, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(5, 2, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(5, 3, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(5, 4, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(5, 5, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(6, 1, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(6, 2, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(6, 3, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(6, 4, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(6, 5, ck::half_t, ck::half_t);
-        REG_CPU_SOLUTION(6, 6, ck::half_t, ck::half_t);
-
-        REG_CPU_SOLUTION(1, 1, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(2, 1, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(2, 2, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(3, 1, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(3, 2, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(3, 3, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(4, 1, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(4, 2, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(4, 3, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(4, 4, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(5, 1, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(5, 2, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(5, 3, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(5, 4, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(5, 5, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(6, 1, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(6, 2, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(6, 3, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(6, 4, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(6, 5, ck::bhalf_t, ck::bhalf_t);
-        REG_CPU_SOLUTION(6, 6, ck::bhalf_t, ck::bhalf_t);
-
         REG_CPU_SOLUTION(1, 1, ck::half_t, float);
         REG_CPU_SOLUTION(2, 1, ck::half_t, float);
         REG_CPU_SOLUTION(2, 2, ck::half_t, float);
