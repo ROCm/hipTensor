@@ -74,8 +74,7 @@ namespace
         using hiptensor::Logger;
         auto& logger = Logger::instance();
         char  msg[2048];
-        if(!handle || !alpha || !A || !descA || !modeA || !beta || !C || !descC || !modeC || !D
-           || !descD || !modeD)
+        if(!handle || !alpha || !A || !descA || !modeA || !beta || !C || !descC || !D || !descD)
         {
             auto errorCode         = HIPTENSOR_STATUS_NOT_INITIALIZED;
             auto printErrorMessage = [&logger, errorCode](const std::string& paramName) {
@@ -119,10 +118,6 @@ namespace
             {
                 printErrorMessage("descC");
             }
-            if(!modeC)
-            {
-                printErrorMessage("modeC");
-            }
             if(!D)
             {
                 printErrorMessage("D");
@@ -130,10 +125,6 @@ namespace
             if(!descD)
             {
                 printErrorMessage("descD");
-            }
-            if(!modeD)
-            {
-                printErrorMessage("modeD");
             }
             return errorCode;
         }

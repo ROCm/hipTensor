@@ -129,18 +129,24 @@ namespace hiptensor
             toCKArr(a_lengths, arrInLengths);
             toCKArr(a_strides.empty() ? hiptensor::stridesFromLengths(a_lengths) : a_strides,
                     arrInStrides);
-            // @todo
-            // toCKArr( a_strides.empty() ? hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR) : a_strides, arrInStrides);
-            toCKArr(c_lengths, arrOutLengths);
-            toCKArr(c_strides.empty() ? hiptensor::stridesFromLengths(c_lengths) : c_strides,
+
+            auto ckCLengths = c_lengths;
+            auto ckCStrides = c_strides;
+            if(ckCLengths.empty())
+            {
+                ckCLengths.push_back(1);
+                ckCStrides.push_back(
+                    1); // caller should guarantee that c_strides is empty if c_lengths is empty
+            }
+            toCKArr(ckCLengths, arrOutLengths);
+            toCKArr(ckCStrides.empty() ? hiptensor::stridesFromLengths(ckCLengths) : ckCStrides,
                     arrOutStrides);
-            // toCKArr( c_strides.empty() ? hiptensor::stridesFromLengths(c_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR) : c_strides, arrOutStrides);
             toCKArr(findReduceModes(a_modes, c_modes), reduceDims);
 
             auto [in_elementwise_op, acc_elementwise_op]
                 = reductionUnaryOperators(opReduce,
                                           hiptensor::elementsFromLengths(a_lengths)
-                                              / hiptensor::elementsFromLengths(c_lengths));
+                                              / hiptensor::elementsFromLengths(ckCLengths));
 
             Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(arrInLengths,
                                                                            arrInStrides,
