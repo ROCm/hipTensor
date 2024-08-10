@@ -239,7 +239,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
         snprintf(msg,
                  sizeof(msg),
-                 "Internal Error : No Kernels Found (%s)",
+                 "Internal Error : ReductionSolutionInstances is empty (%s)",
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorReduction", msg);
         return errorCode;
@@ -272,7 +272,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
         snprintf(msg,
                  sizeof(msg),
-                 "Internal Error : No Kernels Found (%s)",
+                 "Internal Error : querySolutions returns 0 kernel. (%s)",
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorReduction", msg);
         return errorCode;
@@ -354,7 +354,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
     snprintf(msg,
              sizeof(msg),
-             "Selected kernel is unable to solve the problem (%s)",
+             "No kernel is able to solve the problem (%s)",
              hiptensorGetErrorString(errorCode));
     logger->logError("hiptensorReduction", msg);
     return errorCode;

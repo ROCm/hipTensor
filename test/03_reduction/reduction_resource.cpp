@@ -84,8 +84,9 @@ namespace hiptensor
         mCurrentMatrixAElement = requiredElementCountA;
 
         // check buffer for C
-        auto requiredElementCountC = getProduct(outputSizes);
-        auto requiredMemorySizeC   = requiredElementCountC * hipDataTypeSize(dataType);
+        auto requiredElementCountC
+            = getProduct(outputSizes); // returns 1 for empty container which is correct
+        auto requiredMemorySizeC = requiredElementCountC * hipDataTypeSize(dataType);
         if(requiredMemorySizeC > mCurrentAllocByteC)
         {
             Base::reallocDeviceHostPair(mDeviceC, mHostC, requiredMemorySizeC);

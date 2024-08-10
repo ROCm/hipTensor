@@ -215,54 +215,58 @@ namespace hiptensor
                                                                           PropagateNan,
                                                                           OutputIndex>;
 
-        using ReduceOpInstance0 = ck::tensor_operation::device::DeviceReduceMultiBlock<
-            InDataType,
-            AccDataType,
-            OutDataType,
-            Rank,
-            NumReduceDim,
-            ReduceOperation,
-            InElementwiseOperation,
-            AccElementwiseOperation,
-            ck::InMemoryDataOperationEnum::Set,
-            PropagateNan,
-            OutputIndex,
-            false, // HaveIndexInputIfOutputIndex
-            256, // BlockSize
-            4, // MThreadClusterSize
-            64, // KThreadClusterSize
-            1, // MThreadSliceSize
-            1, // KThreadSliceSize
-            0, // InSrcVectorDim
-            1, // InSrceVectorSize
-            1>; // OutDstVectorSize
-        using ReduceOpInstance1 = ck::tensor_operation::device::DeviceReduceMultiBlock<
-            InDataType,
-            AccDataType,
-            OutDataType,
-            Rank,
-            NumReduceDim,
-            ReduceOperation,
-            InElementwiseOperation,
-            AccElementwiseOperation,
-            ck::InMemoryDataOperationEnum::Set,
-            PropagateNan,
-            OutputIndex,
-            false, // HaveIndexInputIfOutputIndex
-            256, // BlockSize
-            4, // MThreadClusterSize
-            64, // KThreadClusterSize
-            1, // MThreadSliceSize
-            1, // KThreadSliceSize
-            1, // InSrcVectorDim
-            1, // InSrceVectorSize
-            1>; // OutDstVectorSize
+        using ReduceOpInstance_InSrcVectorDim0
+            = ck::tensor_operation::device::DeviceReduceMultiBlock<
+                InDataType,
+                AccDataType,
+                OutDataType,
+                Rank,
+                NumReduceDim,
+                ReduceOperation,
+                InElementwiseOperation,
+                AccElementwiseOperation,
+                ck::InMemoryDataOperationEnum::Set,
+                PropagateNan,
+                OutputIndex,
+                false, // HaveIndexInputIfOutputIndex
+                256, // BlockSize
+                4, // MThreadClusterSize
+                64, // KThreadClusterSize
+                1, // MThreadSliceSize
+                1, // KThreadSliceSize
+                0, // InSrcVectorDim
+                1, // InSrceVectorSize
+                1>; // OutDstVectorSize
+        using ReduceOpInstance_InSrcVectorDim1
+            = ck::tensor_operation::device::DeviceReduceMultiBlock<
+                InDataType,
+                AccDataType,
+                OutDataType,
+                Rank,
+                NumReduceDim,
+                ReduceOperation,
+                InElementwiseOperation,
+                AccElementwiseOperation,
+                ck::InMemoryDataOperationEnum::Set,
+                PropagateNan,
+                OutputIndex,
+                false, // HaveIndexInputIfOutputIndex
+                256, // BlockSize
+                4, // MThreadClusterSize
+                64, // KThreadClusterSize
+                1, // MThreadSliceSize
+                1, // KThreadSliceSize
+                1, // InSrcVectorDim
+                1, // InSrceVectorSize
+                1>; // OutDstVectorSize
 
         std::vector<std::unique_ptr<ReductionSolution>> result;
         result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(
-            std::make_unique<ReduceOpInstance0>(ReduceOpInstance0{})));
+            std::make_unique<ReduceOpInstance_InSrcVectorDim0>(
+                ReduceOpInstance_InSrcVectorDim0{})));
         result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(
-            std::make_unique<ReduceOpInstance1>(ReduceOpInstance1{})));
+            std::make_unique<ReduceOpInstance_InSrcVectorDim1>(
+                ReduceOpInstance_InSrcVectorDim1{})));
         return result;
     }
 
