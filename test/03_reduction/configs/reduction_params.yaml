@@ -21,7 +21,7 @@ Lengths:
   - [ 23, 11]
 Operators:
   - HIPTENSOR_OP_ADD
-Reduced Dims:
+Output Dims:
   - [0, 1]
   - [1, 0]
 ...
