@@ -159,8 +159,9 @@ namespace hiptensor
                        << ", outputDims: " << outputDims << ", alpha: " << alpha
                        << ", beta: " << beta << ", opReduce: " << op << "]\n";
 
-                size_t elementsA = resource->getCurrentMatrixAElement();
-                size_t elementsC = resource->getCurrentMatrixCElement();
+                size_t elementsA = resource->getCurrentInputElementCount();
+                size_t elementsC = resource->getCurrentOutputElementCount();
+                size_t elementsD = resource->getCurrentOutputElementCount();
 
                 if(dataType == HIP_R_16BF)
                 {
@@ -174,9 +175,14 @@ namespace hiptensor
                         stream, (bfloat16_t*)resource->hostC().get(), elementsC);
                     stream << std::endl;
 
-                    stream << "Refenrence elements (" << elementsC << "):\n";
+                    stream << "Tensor D elements (" << elementsD << "):\n";
                     hiptensorPrintArrayElements<bfloat16_t>(
-                        stream, (bfloat16_t*)resource->hostReference().get(), elementsC);
+                        stream, (bfloat16_t*)resource->hostD().get(), elementsD);
+                    stream << std::endl;
+
+                    stream << "Refenrence elements (" << elementsD << "):\n";
+                    hiptensorPrintArrayElements<bfloat16_t>(
+                        stream, (bfloat16_t*)resource->hostReference().get(), elementsD);
                     stream << std::endl;
                 }
                 else if(dataType == HIP_R_16F)
@@ -191,9 +197,14 @@ namespace hiptensor
                         stream, (float16_t*)resource->hostC().get(), elementsC);
                     stream << std::endl;
 
-                    stream << "Refenrence elements (" << elementsC << "):\n";
+                    stream << "Tensor D elements (" << elementsD << "):\n";
                     hiptensorPrintArrayElements<float16_t>(
-                        stream, (float16_t*)resource->hostReference().get(), elementsC);
+                        stream, (float16_t*)resource->hostD().get(), elementsD);
+                    stream << std::endl;
+
+                    stream << "Refenrence elements (" << elementsD << "):\n";
+                    hiptensorPrintArrayElements<float16_t>(
+                        stream, (float16_t*)resource->hostReference().get(), elementsD);
                     stream << std::endl;
                 }
                 else if(dataType == HIP_R_32F)
@@ -208,9 +219,14 @@ namespace hiptensor
                         stream, (float32_t*)resource->hostC().get(), elementsC);
                     stream << std::endl;
 
-                    stream << "Refenrence elements (" << elementsC << "):\n";
+                    stream << "Tensor D elements (" << elementsD << "):\n";
                     hiptensorPrintArrayElements<float32_t>(
-                        stream, (float32_t*)resource->hostReference().get(), elementsC);
+                        stream, (float32_t*)resource->hostD().get(), elementsD);
+                    stream << std::endl;
+
+                    stream << "Refenrence elements (" << elementsD << "):\n";
+                    hiptensorPrintArrayElements<float32_t>(
+                        stream, (float32_t*)resource->hostReference().get(), elementsD);
                     stream << std::endl;
                 }
                 else if(dataType == HIP_R_64F)
@@ -225,9 +241,14 @@ namespace hiptensor
                         stream, (float64_t*)resource->hostC().get(), elementsC);
                     stream << std::endl;
 
-                    stream << "Refenrence elements (" << elementsC << "):\n";
+                    stream << "Tensor D elements (" << elementsD << "):\n";
                     hiptensorPrintArrayElements<float64_t>(
-                        stream, (float64_t*)resource->hostReference().get(), elementsC);
+                        stream, (float64_t*)resource->hostD().get(), elementsD);
+                    stream << std::endl;
+
+                    stream << "Refenrence elements (" << elementsD << "):\n";
+                    hiptensorPrintArrayElements<float64_t>(
+                        stream, (float64_t*)resource->hostReference().get(), elementsD);
                     stream << std::endl;
                 }
             }
@@ -263,9 +284,11 @@ namespace hiptensor
             {
                 modeC.push_back(modeA[dim]);
             }
+            std::vector<int> modeD(modeC);
 
             int                              nmodeA = modeA.size();
             int                              nmodeC = modeC.size();
+            int                              nmodeD = nmodeC;
             std::unordered_map<int, int64_t> extent;
             for(auto [modeIt, i] = std::tuple{modeA.begin(), 0}; modeIt != modeA.end();
                 ++modeIt, ++i)
@@ -279,6 +302,7 @@ namespace hiptensor
             std::vector<int64_t> extentC;
             for(auto mode : modeC)
                 extentC.push_back(extent[mode]);
+            std::vector<int64_t> extentD(extentC);
 
             hiptensorStatus_t  err;
             hiptensorHandle_t* handle;
@@ -302,6 +326,15 @@ namespace hiptensor
                                                                 acDataType,
                                                                 HIPTENSOR_OP_IDENTITY));
 
+            hiptensorTensorDescriptor_t descD;
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                                &descD,
+                                                                nmodeD,
+                                                                extentD.data(),
+                                                                NULL /* stride */,
+                                                                acDataType,
+                                                                HIPTENSOR_OP_IDENTITY));
+
             uint64_t worksize = 0;
             CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
                                                                      resource->deviceA().get(),
@@ -310,9 +343,9 @@ namespace hiptensor
                                                                      resource->deviceC().get(),
                                                                      &descC,
                                                                      modeC.data(),
-                                                                     resource->deviceC().get(),
-                                                                     &descC,
-                                                                     modeC.data(),
+                                                                     resource->deviceD().get(),
+                                                                     &descD,
+                                                                     modeD.data(),
                                                                      opReduce,
                                                                      computeDataType,
                                                                      &worksize));
@@ -339,28 +372,28 @@ namespace hiptensor
                                                      resource->deviceC().get(),
                                                      &descC,
                                                      modeC.data(),
-                                                     resource->deviceC().get(),
-                                                     &descC,
-                                                     modeC.data(),
+                                                     resource->deviceD().get(),
+                                                     &descD,
+                                                     modeD.data(),
                                                      opReduce,
                                                      computeDataType,
                                                      work,
                                                      worksize,
                                                      0 /* stream */));
 
-            resource->copyCToHost();
+            resource->copyOutputToHost();
 
             CHECK_HIPTENSOR_ERROR(hiptensorReductionReference(&alphaValue,
                                                               resource->hostA().get(),
                                                               &descA,
                                                               modeA.data(),
                                                               &betaValue,
-                                                              resource->hostReference().get(),
+                                                              resource->hostC().get(),
                                                               &descC,
                                                               modeC.data(),
                                                               resource->hostReference().get(),
-                                                              &descC,
-                                                              modeC.data(),
+                                                              &descD,
+                                                              modeD.data(),
                                                               opReduce,
                                                               computeDataType,
                                                               0 /* stream */));
@@ -370,43 +403,43 @@ namespace hiptensor
             {
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float16_t>(
-                        (float16_t*)resource->deviceC().get(),
+                        (float16_t*)resource->deviceD().get(),
                         (float16_t*)resource->deviceReference().get(),
-                        resource->getCurrentMatrixCElement(),
+                        resource->getCurrentOutputElementCount(),
                         computeDataType);
             }
             else if(acDataType == HIP_R_16BF)
             {
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<bfloat16_t>(
-                        (bfloat16_t*)resource->deviceC().get(),
+                        (bfloat16_t*)resource->deviceD().get(),
                         (bfloat16_t*)resource->deviceReference().get(),
-                        resource->getCurrentMatrixCElement(),
+                        resource->getCurrentOutputElementCount(),
                         computeDataType);
             }
             else if(acDataType == HIP_R_32F)
             {
-                auto reducedSize
-                    = resource->getCurrentMatrixAElement() / resource->getCurrentMatrixCElement();
+                auto reducedSize = resource->getCurrentInputElementCount()
+                                   / resource->getCurrentOutputElementCount();
                 double tolerance = reducedSize * getEpsilon(computeDataType);
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float32_t>(
-                        (float32_t*)resource->deviceC().get(),
+                        (float32_t*)resource->deviceD().get(),
                         (float32_t*)resource->deviceReference().get(),
-                        resource->getCurrentMatrixCElement(),
+                        resource->getCurrentOutputElementCount(),
                         computeDataType,
                         tolerance);
             }
             else if(acDataType == HIP_R_64F)
             {
-                auto reducedSize
-                    = resource->getCurrentMatrixAElement() / resource->getCurrentMatrixCElement();
+                auto reducedSize = resource->getCurrentInputElementCount()
+                                   / resource->getCurrentOutputElementCount();
                 double tolerance = reducedSize * getEpsilon(computeDataType);
                 std::tie(mValidationResult, mMaxRelativeError)
                     = compareEqualLaunchKernel<float64_t>(
-                        (float64_t*)resource->deviceC().get(),
+                        (float64_t*)resource->deviceD().get(),
                         (float64_t*)resource->deviceReference().get(),
-                        resource->getCurrentMatrixCElement(),
+                        resource->getCurrentOutputElementCount(),
                         computeDataType,
                         tolerance);
             }

@@ -76,6 +76,17 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         betaD = hiptensor::readVal<double>(beta, typeCompute);
     }
 
+    if(C && C != D)
+    {
+        // CK API can only process $D = alpha * reduce(A) + beta * D$
+        // Need to copy C to D if C != D
+        CHECK_HIP_ERROR(hipMemcpy(D,
+                                  C,
+                                  hiptensor::elementsFromLengths(descC->mLengths)
+                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                  hipMemcpyHostToHost));
+    }
+
     for(auto [_, pSolution] : solutionQ.solutions())
     {
         // Perform reduction with timing if LOG_LEVEL_PERF_TRACE

@@ -74,7 +74,7 @@ namespace
         using hiptensor::Logger;
         auto& logger = Logger::instance();
         char  msg[2048];
-        if(!handle || !alpha || !A || !descA || !modeA || !beta || !C || !descC || !D || !descD)
+        if(!handle || !alpha || !A || !descA || !modeA || !beta || !descC || !D || !descD)
         {
             auto errorCode         = HIPTENSOR_STATUS_NOT_INITIALIZED;
             auto printErrorMessage = [&logger, errorCode](const std::string& paramName) {
@@ -109,10 +109,6 @@ namespace
             if(!beta)
             {
                 printErrorMessage("beta");
-            }
-            if(!C)
-            {
-                printErrorMessage("C");
             }
             if(!descC)
             {
@@ -278,6 +274,17 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     if(beta != nullptr)
     {
         betaD = hiptensor::readVal<double>(beta, typeCompute);
+    }
+
+    if(C && C != D)
+    {
+        // CK API can only process $D = alpha * reduce(A) + beta * D$
+        // Need to copy C to D if C != D
+        CHECK_HIP_ERROR(hipMemcpy(D,
+                                  C,
+                                  hiptensor::elementsFromLengths(descC->mLengths)
+                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                  hipMemcpyDeviceToDevice));
     }
 
     for(auto [_, pSolution] : solutionQ.solutions())
