@@ -92,12 +92,11 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         // Perform reduction with timing if LOG_LEVEL_PERF_TRACE
         auto streamConfig        = StreamConfig{stream, false};
         auto [isSupported, time] = (*pSolution)(descA->mLengths,
-                                                // @todo pass stride from descA
-                                                {},
+                                                descA->mStrides,
                                                 {modeA, modeA + descA->mLengths.size()},
-                                                descC->mLengths,
-                                                {},
-                                                {modeC, modeC + descC->mLengths.size()},
+                                                descD->mLengths,
+                                                descD->mStrides,
+                                                {modeD, modeD + descD->mLengths.size()},
                                                 alphaD,
                                                 betaD,
                                                 A,

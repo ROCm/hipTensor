@@ -29,6 +29,7 @@
 #include "logger.hpp"
 #include "reduction/reduction_cpu_reference.hpp"
 #include "reduction_test.hpp"
+#include "util.hpp"
 #include "utils.hpp"
 #include "llvm/hiptensor_options.hpp"
 
@@ -279,30 +280,42 @@ namespace hiptensor
         {
             std::vector<int> modeA(lengths.size());
             std::iota(modeA.begin(), modeA.end(), 'a');
-            std::vector<int> modeC;
-            for(auto dim : outputDims)
-            {
-                modeC.push_back(modeA[dim]);
-            }
+            std::vector<int> modeC(outputDims.cbegin(), outputDims.cend());
+            std::transform(modeC.cbegin(), modeC.cend(), modeC.begin(), [&modeA](auto dim) {
+                return modeA[dim];
+            });
             std::vector<int> modeD(modeC);
 
-            int                              nmodeA = modeA.size();
-            int                              nmodeC = modeC.size();
-            int                              nmodeD = nmodeC;
-            std::unordered_map<int, int64_t> extent;
-            for(auto [modeIt, i] = std::tuple{modeA.begin(), 0}; modeIt != modeA.end();
-                ++modeIt, ++i)
-            {
-                extent[*modeIt] = lengths[i];
-            }
+            int nmodeA = modeA.size();
+            int nmodeC = modeC.size();
+            int nmodeD = nmodeC;
 
-            std::vector<int64_t> extentA;
-            for(auto mode : modeA)
-                extentA.push_back(extent[mode]);
-            std::vector<int64_t> extentC;
-            for(auto mode : modeC)
-                extentC.push_back(extent[mode]);
+            std::vector<int> sortedOutputDims(outputDims.cbegin(), outputDims.cend());
+            std::sort(sortedOutputDims.begin(), sortedOutputDims.end());
+
+            std::vector<int64_t> extentA(lengths.cbegin(), lengths.cend());
+            std::vector<int64_t> extentC(sortedOutputDims.cbegin(), sortedOutputDims.cend());
+            std::transform(extentC.cbegin(), extentC.cend(), extentC.begin(), [&lengths](auto dim) {
+                return lengths[dim];
+            });
             std::vector<int64_t> extentD(extentC);
+
+            std::vector<int64_t> strideD = hiptensor::stridesFromLengths(extentD);
+            if(!std::equal(outputDims.cbegin(), outputDims.cend(), sortedOutputDims.cbegin()))
+            {
+                std::unordered_map<int, int64_t> dimToStride;
+                int64_t                          stride = 1;
+                for(auto it = outputDims.crbegin(); it != outputDims.crend(); ++it)
+                {
+                    dimToStride[*it] = stride;
+                    stride *= lengths[*it];
+                }
+                std::transform(sortedOutputDims.cbegin(),
+                               sortedOutputDims.cend(),
+                               strideD.begin(),
+                               [&dimToStride](uint64_t dim) { return dimToStride[dim]; });
+            }
+            std::vector<int64_t> strideC = strideD;
 
             hiptensorStatus_t  err;
             hiptensorHandle_t* handle;
@@ -322,7 +335,7 @@ namespace hiptensor
                                                                 &descC,
                                                                 nmodeC,
                                                                 extentC.data(),
-                                                                NULL /* stride */,
+                                                                strideC.data(),
                                                                 acDataType,
                                                                 HIPTENSOR_OP_IDENTITY));
 
@@ -331,7 +344,7 @@ namespace hiptensor
                                                                 &descD,
                                                                 nmodeD,
                                                                 extentD.data(),
-                                                                NULL /* stride */,
+                                                                strideD.data(),
                                                                 acDataType,
                                                                 HIPTENSOR_OP_IDENTITY));
 

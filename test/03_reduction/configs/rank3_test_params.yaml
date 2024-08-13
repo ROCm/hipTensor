@@ -8,11 +8,9 @@ Tensor Data Types:
   - [ HIP_R_64F, HIP_R_64F]
   - [ HIP_R_32F, HIP_R_32F]
 Alphas:
-  - 1.0
   - 2.3
 Betas:
   - 0.0
-  - 1.0
   - 2.3
 Lengths:
   - [ 11, 8, 5]
@@ -24,9 +22,11 @@ Operators:
   - HIPTENSOR_OP_MAX
 Output Dims:
   - [0, 1]
+  - [0, 2]
   - [1, 2]
   - [0]
   - [1]
   - [2]
   - []
+  - [2, 1]
 ...

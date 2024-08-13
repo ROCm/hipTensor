@@ -51,7 +51,7 @@ namespace hiptensor
         }
 
         // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> strides(lengths.size(), 1);
+        std::vector<T> strides(lengths.size(), 1);
         if(!col_major)
         {
             strides.back() = 1;
