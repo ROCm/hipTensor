@@ -290,6 +290,19 @@ namespace hiptensor
             int nmodeC = modeC.size();
             int nmodeD = nmodeC;
 
+            // Requirement of lengths and strides of output
+            //
+            // For example, input lengths are [3, 5, 8], output dims are [2, 1]
+            //
+            // CK requires that lengths of output are [5, 8], i.e. lengths of sorted output dims
+            //
+            // Strides of output are generated in this way:
+            //   output dims are [2, 1]
+            //     ==> corresponding lengths are [8(2), 5(1)]
+            //     ==> strides are [5,(2) 1(1)]
+            //     ==> sorted strides are [1(1), 5(2)] // sort by dim
+            //
+            //  strides of output are [1, 5]
             std::vector<int> sortedOutputDims(outputDims.cbegin(), outputDims.cend());
             std::sort(sortedOutputDims.begin(), sortedOutputDims.end());
 
