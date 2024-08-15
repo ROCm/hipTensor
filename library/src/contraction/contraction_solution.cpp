@@ -246,16 +246,15 @@ namespace hiptensor
                      e_ms_ns_strides,
                      e_ms_ns_modes,
                      workspacePtr))
-
         {
             return {HIPTENSOR_STATUS_INTERNAL_ERROR, -1.0f};
         }
 
         if(this->workspaceSize() > workspaceSize)
         {
+            resetInvokerArgs();
             return {HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE, -1.0f};
         }
-
         auto time = mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
         resetInvokerArgs();
 

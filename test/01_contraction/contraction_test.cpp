@@ -193,13 +193,13 @@ namespace hiptensor
             }
 
             size_t elementsA  = std::accumulate(a_ms_ks_lengths.begin(),
-                                                a_ms_ks_lengths.end(),
-                                                size_t{1},
-                                                std::multiplies<size_t>());
+                                               a_ms_ks_lengths.end(),
+                                               size_t{1},
+                                               std::multiplies<size_t>());
             size_t elementsB  = std::accumulate(b_ns_ks_lengths.begin(),
-                                                b_ns_ks_lengths.end(),
-                                                size_t{1},
-                                                std::multiplies<size_t>());
+                                               b_ns_ks_lengths.end(),
+                                               size_t{1},
+                                               std::multiplies<size_t>());
             size_t elementsCD = std::accumulate(cd_ms_ns_lengths.begin(),
                                                 cd_ms_ns_lengths.end(),
                                                 size_t{1},
@@ -262,11 +262,13 @@ namespace hiptensor
             if(ADataType == HIP_R_16F && BDataType == HIP_R_16F && DDataType == HIP_R_16F)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<_Float16>((_Float16*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<_Float16>(
+                    (_Float16*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<_Float16>((_Float16*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_16F)
                 {
-                    fillLaunchKernel<_Float16>((_Float16*)resource->deviceC().get(), elementsCD, seed + 1);
+                    fillLaunchKernel<_Float16>(
+                        (_Float16*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
                                               elementsCD,
@@ -275,12 +277,14 @@ namespace hiptensor
             else if(ADataType == HIP_R_16BF && BDataType == HIP_R_16BF && DDataType == HIP_R_16BF)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceA().get(), elementsA, seed - 1);
-                fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceB().get(), elementsB, seed);
+                fillLaunchKernel<hip_bfloat16>(
+                    (hip_bfloat16*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<hip_bfloat16>(
+                    (hip_bfloat16*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_16BF)
                 {
-                    fillLaunchKernel<hip_bfloat16>((hip_bfloat16*)resource->deviceC().get(),
-                                                   elementsCD, seed + 1);
+                    fillLaunchKernel<hip_bfloat16>(
+                        (hip_bfloat16*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<hip_bfloat16>(
                     (hip_bfloat16*)resource->deviceD().get(),
@@ -294,7 +298,8 @@ namespace hiptensor
                 fillLaunchKernel<float>((float*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_32F)
                 {
-                    fillLaunchKernel<float>((float*)resource->deviceC().get(), elementsCD, seed + 1);
+                    fillLaunchKernel<float>(
+                        (float*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<float>((float*)resource->deviceD().get(),
                                            elementsCD,
@@ -307,7 +312,8 @@ namespace hiptensor
                 fillLaunchKernel<double>((double*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_R_64F)
                 {
-                    fillLaunchKernel<double>((double*)resource->deviceC().get(), elementsCD, seed + 1);
+                    fillLaunchKernel<double>(
+                        (double*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<double>((double*)resource->deviceD().get(),
                                             elementsCD,
@@ -316,14 +322,14 @@ namespace hiptensor
             else if(ADataType == HIP_C_32F && BDataType == HIP_C_32F && DDataType == HIP_C_32F)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceA().get(),
-                                                  elementsA, seed - 1);
-                fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceB().get(),
-                                                  elementsB, seed);
+                fillLaunchKernel<hipFloatComplex>(
+                    (hipFloatComplex*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<hipFloatComplex>(
+                    (hipFloatComplex*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_C_32F)
                 {
-                    fillLaunchKernel<hipFloatComplex>((hipFloatComplex*)resource->deviceC().get(),
-                                                      elementsCD, seed + 1);
+                    fillLaunchKernel<hipFloatComplex>(
+                        (hipFloatComplex*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<hipFloatComplex>(
                     (hipFloatComplex*)resource->deviceD().get(),
@@ -333,14 +339,14 @@ namespace hiptensor
             else if(ADataType == HIP_C_64F && BDataType == HIP_C_64F && DDataType == HIP_C_64F)
             {
                 // Initialize matrix data on device
-                fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceA().get(),
-                                                   elementsA, seed - 1);
-                fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceB().get(),
-                                                   elementsB, seed);
+                fillLaunchKernel<hipDoubleComplex>(
+                    (hipDoubleComplex*)resource->deviceA().get(), elementsA, seed - 1);
+                fillLaunchKernel<hipDoubleComplex>(
+                    (hipDoubleComplex*)resource->deviceB().get(), elementsB, seed);
                 if(CDataType == HIP_C_64F)
                 {
-                    fillLaunchKernel<hipDoubleComplex>((hipDoubleComplex*)resource->deviceC().get(),
-                                                       elementsCD, seed + 1);
+                    fillLaunchKernel<hipDoubleComplex>(
+                        (hipDoubleComplex*)resource->deviceC().get(), elementsCD, seed + 1);
                 }
                 fillValLaunchKernel<hipDoubleComplex>(
                     (hipDoubleComplex*)resource->deviceD().get(),
@@ -404,16 +410,24 @@ namespace hiptensor
         }
     }
 
-    void ContractionTest::reportResults(std::ostream& stream,
-                                        hipDataType   DDataType,
-                                        bool          omitSkipped,
-                                        bool          omitFailed,
-                                        bool          omitPassed) const
+    void ContractionTest::reportResults(std::ostream&          stream,
+                                        hipDataType            DDataType,
+                                        hiptensorComputeType_t computeType,
+                                        bool                   omitSkipped,
+                                        bool                   omitFailed,
+                                        bool                   omitPassed) const
     {
         // Conditionally print outputs
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
+            if(mPrintTypes)
+            {
+                ContractionTest::sAPILogBuff
+                    << "TypeA/B/C/D: " << hipTypeToString(DDataType)
+                    << ", ComputeType: " << computeTypeToString(computeType) << std::endl;
+            }
+
             stream << ContractionTest::sAPILogBuff.str();
 
             if(mPrintElements)
@@ -423,13 +437,13 @@ namespace hiptensor
                 int size = hipDataTypeSize(DDataType);
 
                 size_t elementsA  = std::accumulate(a_ms_ks.mLengths.begin(),
-                                                    a_ms_ks.mLengths.end(),
-                                                    size_t{1},
-                                                    std::multiplies<size_t>());
+                                                   a_ms_ks.mLengths.end(),
+                                                   size_t{1},
+                                                   std::multiplies<size_t>());
                 size_t elementsB  = std::accumulate(b_ns_ks.mLengths.begin(),
-                                                    b_ns_ks.mLengths.end(),
-                                                    size_t{1},
-                                                    std::multiplies<size_t>());
+                                                   b_ns_ks.mLengths.end(),
+                                                   size_t{1},
+                                                   std::multiplies<size_t>());
                 size_t elementsCD = std::accumulate(d_ms_ns.mLengths.begin(),
                                                     d_ms_ns.mLengths.end(),
                                                     size_t{1},
@@ -437,6 +451,8 @@ namespace hiptensor
 
                 auto D = resource->allocHost(elementsCD * size);
                 resource->copyData(D, resource->deviceD(), elementsCD * size);
+
+                auto& references = resource->hostD();
 
                 if(DDataType == HIP_R_16F)
                 {
@@ -457,6 +473,11 @@ namespace hiptensor
 
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<_Float16>(stream, (_Float16*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<_Float16>(
+                        stream, (_Float16*)references.get(), elementsCD);
                     stream << std::endl;
                 }
                 else if(DDataType == HIP_R_16BF)
@@ -480,6 +501,11 @@ namespace hiptensor
                     hiptensorPrintArrayElements<hip_bfloat16>(
                         stream, (hip_bfloat16*)D.get(), elementsCD);
                     stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<hip_bfloat16>(
+                        stream, (hip_bfloat16*)references.get(), elementsCD);
+                    stream << std::endl;
                 }
                 else if(DDataType == HIP_R_32F)
                 {
@@ -501,6 +527,11 @@ namespace hiptensor
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<float>(stream, (float*)D.get(), elementsCD);
                     stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<float>(
+                        stream, (float*)references.get(), elementsCD);
+                    stream << std::endl;
                 }
                 else if(DDataType == HIP_R_64F)
                 {
@@ -521,6 +552,11 @@ namespace hiptensor
 
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<double>(stream, (double*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)references.get(), elementsCD);
                     stream << std::endl;
                 }
                 else if(DDataType == HIP_C_32F)
@@ -544,6 +580,11 @@ namespace hiptensor
                     hiptensorPrintArrayElements<hipFloatComplex>(
                         stream, (hipFloatComplex*)D.get(), elementsCD);
                     stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<hipFloatComplex>(
+                        stream, (hipFloatComplex*)references.get(), elementsCD);
+                    stream << std::endl;
                 }
                 else if(DDataType == HIP_C_64F)
                 {
@@ -565,6 +606,11 @@ namespace hiptensor
                     stream << "Tensor D elements:\n";
                     hiptensorPrintArrayElements<hipDoubleComplex>(
                         stream, (hipDoubleComplex*)D.get(), elementsCD);
+                    stream << std::endl;
+
+                    stream << "Tensor reference elements:\n";
+                    hiptensorPrintArrayElements<hipDoubleComplex>(
+                        stream, (hipDoubleComplex*)references.get(), elementsCD);
                     stream << std::endl;
                 }
             }
@@ -660,22 +706,22 @@ namespace hiptensor
 
             // Compute tolerance based on compute type
             auto dimension = a_ms_ks.mLengths.size() / 2;
-            auto nelems_k = std::accumulate(a_ms_ks.mLengths.begin() + dimension,
+            auto nelems_k  = std::accumulate(a_ms_ks.mLengths.begin() + dimension,
                                             a_ms_ks.mLengths.end(),
                                             size_t{1},
                                             std::multiplies<size_t>());
 
-            auto eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
-                : HIPTENSOR_COMPUTE_32F);
+            auto   eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
+                                                                       : HIPTENSOR_COMPUTE_32F);
             double tolerance = 2 * nelems_k * eps;
 
             // use the same default tolerance value as CK
-            if (computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIP_R_16BF)
+            if(computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIP_R_16BF)
             {
                 const double epsilon = std::pow(2, -7);
                 tolerance += epsilon * 2;
             }
-            else if (computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIP_R_16F)
+            else if(computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIP_R_16F)
             {
                 const double epsilon = std::pow(2, -10);
                 tolerance += epsilon * 2;
@@ -728,6 +774,7 @@ namespace hiptensor
             {
                 reportResults(std::cout,
                               DDataType,
+                              computeType,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
@@ -737,6 +784,7 @@ namespace hiptensor
             {
                 reportResults(loggingOptions->ostream().fstream(),
                               DDataType,
+                              computeType,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());

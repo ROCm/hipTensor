@@ -159,7 +159,7 @@ typedef enum
     //! Log selection messages
     HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE = 8,
     //! Log a trace of API calls
-    HIPTENSOR_LOG_LEVEL_API_TRACE = 16
+    HIPTENSOR_LOG_LEVEL_API_TRACE = 16,
 
 } hiptensorLogLevel_t;
 
