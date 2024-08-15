@@ -57,7 +57,7 @@ namespace hiptensor
             LOG_LEVEL_PERF_TRACE       = 2,
             LOG_LEVEL_PERF_HINT        = 4,
             LOG_LEVEL_HEURISTICS_TRACE = 8,
-            LOG_LEVEL_API_TRACE        = 16
+            LOG_LEVEL_API_TRACE        = 16,
         };
 
         // For static initialization

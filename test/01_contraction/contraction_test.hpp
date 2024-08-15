@@ -95,11 +95,12 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream& stream,
-                           hipDataType   DDataType,
-                           bool          omitSkipped,
-                           bool          omitFailed,
-                           bool          omitPassed) const;
+        void reportResults(std::ostream&          stream,
+                           hipDataType            DDataType,
+                           hiptensorComputeType_t computeType,
+                           bool                   omitSkipped,
+                           bool                   omitFailed,
+                           bool                   omitPassed) const;
 
     protected:
         // Workspace items
@@ -117,6 +118,7 @@ namespace hiptensor
         bool     mRunFlag          = true;
         bool     mValidationResult = false;
         bool     mPrintElements    = false;
+        bool     mPrintTypes       = false;
         double   mMaxRelativeError;
 
         // Output buffer

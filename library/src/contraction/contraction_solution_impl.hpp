@@ -194,7 +194,12 @@ namespace hiptensor
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
 
-            return mValid;
+            if(!Base::mValid)
+            {
+                resetArgs();
+            }
+
+            return Base::mValid;
         }
     };
 
@@ -323,6 +328,11 @@ namespace hiptensor
 
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());
+
+            if(!Base::mValid)
+            {
+                resetArgs();
+            }
 
             return Base::mValid;
         }
