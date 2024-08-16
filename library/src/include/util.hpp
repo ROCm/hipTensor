@@ -68,6 +68,7 @@ namespace hiptensor
         return strides;
     }
 
+    // Get count of element of a tensor. Note that the count is 1 if the rank of tensor is 0.
     template <typename T>
     static inline T elementsFromLengths(std::vector<T> const& lengths)
     {

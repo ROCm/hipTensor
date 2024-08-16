@@ -199,7 +199,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     else
     {
         // Re-construct strides from lengths, assuming packed.
-        if(lens != nullptr)
+        if(numModes > 0)
         {
             auto lensVector = std::vector<std::size_t>(lens, lens + numModes);
             *desc = {dataType, lensVector, hiptensor::stridesFromLengths(lensVector), unaryOp};
