@@ -33,6 +33,33 @@
 #include "utils.hpp"
 #include "llvm/hiptensor_options.hpp"
 
+namespace
+{
+
+    template <typename T>
+    void printReductionTestInputOutput(std::ostream&                 stream,
+                                       hiptensor::ReductionResource* resource,
+                                       size_t                        elementsA,
+                                       size_t                        elementsC,
+                                       size_t                        elementsD)
+    {
+        stream << "Tensor A elements (" << elementsA << "):\n";
+        hiptensorPrintArrayElements<T>(stream, (T*)resource->hostA().get(), elementsA);
+        stream << std::endl;
+
+        stream << "Tensor C elements (" << elementsC << "):\n";
+        hiptensorPrintArrayElements<T>(stream, (T*)resource->hostC().get(), elementsC);
+        stream << std::endl;
+
+        stream << "Tensor D elements (" << elementsD << "):\n";
+        hiptensorPrintArrayElements<T>(stream, (T*)resource->hostD().get(), elementsD);
+        stream << std::endl;
+
+        stream << "Refenrence elements (" << elementsD << "):\n";
+        hiptensorPrintArrayElements<T>(stream, (T*)resource->hostReference().get(), elementsD);
+        stream << std::endl;
+    }
+}
 namespace hiptensor
 {
     /*static*/ std::stringstream ReductionTest::sAPILogBuff = std::stringstream();
@@ -162,95 +189,27 @@ namespace hiptensor
 
                 size_t elementsA = resource->getCurrentInputElementCount();
                 size_t elementsC = resource->getCurrentOutputElementCount();
-                size_t elementsD = resource->getCurrentOutputElementCount();
+                size_t elementsD = elementsC;
 
                 if(dataType == HIP_R_16BF)
                 {
-                    stream << "Tensor A elements (" << elementsA << "):\n";
-                    hiptensorPrintArrayElements<bfloat16_t>(
-                        stream, (bfloat16_t*)resource->hostA().get(), elementsA);
-                    stream << std::endl;
-
-                    stream << "Tensor C elements (" << elementsC << "):\n";
-                    hiptensorPrintArrayElements<bfloat16_t>(
-                        stream, (bfloat16_t*)resource->hostC().get(), elementsC);
-                    stream << std::endl;
-
-                    stream << "Tensor D elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<bfloat16_t>(
-                        stream, (bfloat16_t*)resource->hostD().get(), elementsD);
-                    stream << std::endl;
-
-                    stream << "Refenrence elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<bfloat16_t>(
-                        stream, (bfloat16_t*)resource->hostReference().get(), elementsD);
-                    stream << std::endl;
+                    printReductionTestInputOutput<bfloat16_t>(
+                        stream, resource, elementsA, elementsC, elementsD);
                 }
                 else if(dataType == HIP_R_16F)
                 {
-                    stream << "Tensor A elements (" << elementsA << "):\n";
-                    hiptensorPrintArrayElements<float16_t>(
-                        stream, (float16_t*)resource->hostA().get(), elementsA);
-                    stream << std::endl;
-
-                    stream << "Tensor C elements (" << elementsC << "):\n";
-                    hiptensorPrintArrayElements<float16_t>(
-                        stream, (float16_t*)resource->hostC().get(), elementsC);
-                    stream << std::endl;
-
-                    stream << "Tensor D elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<float16_t>(
-                        stream, (float16_t*)resource->hostD().get(), elementsD);
-                    stream << std::endl;
-
-                    stream << "Refenrence elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<float16_t>(
-                        stream, (float16_t*)resource->hostReference().get(), elementsD);
-                    stream << std::endl;
+                    printReductionTestInputOutput<float16_t>(
+                        stream, resource, elementsA, elementsC, elementsD);
                 }
                 else if(dataType == HIP_R_32F)
                 {
-                    stream << "Tensor A elements (" << elementsA << "):\n";
-                    hiptensorPrintArrayElements<float32_t>(
-                        stream, (float32_t*)resource->hostA().get(), elementsA);
-                    stream << std::endl;
-
-                    stream << "Tensor C elements (" << elementsC << "):\n";
-                    hiptensorPrintArrayElements<float32_t>(
-                        stream, (float32_t*)resource->hostC().get(), elementsC);
-                    stream << std::endl;
-
-                    stream << "Tensor D elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<float32_t>(
-                        stream, (float32_t*)resource->hostD().get(), elementsD);
-                    stream << std::endl;
-
-                    stream << "Refenrence elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<float32_t>(
-                        stream, (float32_t*)resource->hostReference().get(), elementsD);
-                    stream << std::endl;
+                    printReductionTestInputOutput<float32_t>(
+                        stream, resource, elementsA, elementsC, elementsD);
                 }
                 else if(dataType == HIP_R_64F)
                 {
-                    stream << "Tensor A elements (" << elementsA << "):\n";
-                    hiptensorPrintArrayElements<float64_t>(
-                        stream, (float64_t*)resource->hostA().get(), elementsA);
-                    stream << std::endl;
-
-                    stream << "Tensor C elements (" << elementsC << "):\n";
-                    hiptensorPrintArrayElements<float64_t>(
-                        stream, (float64_t*)resource->hostC().get(), elementsC);
-                    stream << std::endl;
-
-                    stream << "Tensor D elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<float64_t>(
-                        stream, (float64_t*)resource->hostD().get(), elementsD);
-                    stream << std::endl;
-
-                    stream << "Refenrence elements (" << elementsD << "):\n";
-                    hiptensorPrintArrayElements<float64_t>(
-                        stream, (float64_t*)resource->hostReference().get(), elementsD);
-                    stream << std::endl;
+                    printReductionTestInputOutput<float64_t>(
+                        stream, resource, elementsA, elementsC, elementsD);
                 }
             }
         }
@@ -375,16 +334,9 @@ namespace hiptensor
                                                                      opReduce,
                                                                      computeDataType,
                                                                      &worksize));
-            void* work = nullptr;
-            if(worksize > 0)
-            {
-                if(hipSuccess != hipMalloc(&work, worksize))
-                {
-                    work     = nullptr;
-                    worksize = 0;
-                }
-            }
+            resource->setupWorkspace(worksize);
 
+            void*  work = resource->deviceWorkspace().get();
             double alphaValue{};
             double betaValue{};
             writeVal(&alphaValue, computeDataType, {computeDataType, alpha});

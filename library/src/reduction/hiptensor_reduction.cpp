@@ -24,6 +24,7 @@
  *
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
+#include <set>
 #include <unordered_set>
 
 #include "handle.hpp"
@@ -143,6 +144,22 @@ namespace
                      sizeof(msg),
                      "Unsupported Data Type Error : The combination of data types of A, C and D "
                      "and compute type is not supported. (%s)",
+                     hiptensorGetErrorString(errorCode));
+            logger->logError("hiptensorReduction", msg);
+            return errorCode;
+        }
+
+        auto modeSetA = std::set(modeA, modeA + descA->mLengths.size());
+        auto modeSetC = std::set(modeC, modeC + descC->mLengths.size());
+        if(descA->mLengths.size() < descC->mLengths.size() || !(*descC == *descD)
+           || !std::includes(
+               modeA, modeA + descA->mLengths.size(), modeC, modeC + descC->mLengths.size()))
+        {
+            auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+            snprintf(msg,
+                     sizeof(msg),
+                     "Unsupported Data Error : The descriptor of C and D should be same and "
+                     " modes of C should be subset of modes A. (%s)",
                      hiptensorGetErrorString(errorCode));
             logger->logError("hiptensorReduction", msg);
             return errorCode;

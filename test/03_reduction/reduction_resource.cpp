@@ -123,6 +123,11 @@ namespace hiptensor
         copyData(hostReference(), hostD(), getCurrentOutputMemorySize());
     }
 
+    void ReductionResource::setupWorkspace(uint64_t workspaceSize)
+    {
+        reallocDevice(mDeviceWorkspace, workspaceSize);
+    }
+
     void ReductionResource::reset()
     {
         Base::reallocDeviceHostPair(mDeviceA, mHostA, 0);
@@ -258,6 +263,11 @@ namespace hiptensor
     auto ReductionResource::deviceReference() -> DevicePtrT&
     {
         return mDeviceReference;
+    }
+
+    auto ReductionResource::deviceWorkspace() -> DevicePtrT&
+    {
+        return mDeviceWorkspace;
     }
 } // namespace hiptensor
 

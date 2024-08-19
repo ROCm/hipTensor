@@ -75,6 +75,7 @@ namespace hiptensor
         void setupStorage(ProblemDims const& dimSizes,
                           ProblemDims const& outputSizes,
                           hipDataType        dataType);
+        void setupWorkspace(uint64_t workspaceSize);
         void fillRand(HostPtrT&   hostBuf,
                       DevicePtrT& deviceBuf,
                       hipDataType dataType,
@@ -97,6 +98,7 @@ namespace hiptensor
         DevicePtrT& deviceC();
         DevicePtrT& deviceD();
         DevicePtrT& deviceReference();
+        DevicePtrT& deviceWorkspace();
 
         size_t getCurrentInputElementCount() const;
         size_t getCurrentInputMemorySize() const;
@@ -105,8 +107,16 @@ namespace hiptensor
         void   reset() final;
 
     protected:
-        DevicePtrT mDeviceA, mDeviceC, mDeviceD, mDeviceReference;
-        HostPtrT   mHostA, mHostC, mHostD, mHostReference;
+        DevicePtrT mDeviceA;
+        DevicePtrT mDeviceC;
+        DevicePtrT mDeviceD;
+        DevicePtrT mDeviceReference;
+        DevicePtrT mDeviceWorkspace;
+
+        HostPtrT mHostA;
+        HostPtrT mHostC;
+        HostPtrT mHostD;
+        HostPtrT mHostReference;
 
         hipDataType mCurrentDataType; /**< Type size of element of A/C */
 
