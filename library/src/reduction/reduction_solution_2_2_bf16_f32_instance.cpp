@@ -32,39 +32,7 @@ namespace hiptensor
 {
     void ReductionSolutionInstances::genReductionSolution2x2BF16F32Instances()
     {
-
         // add entries to mSolutionQuery
-        registerSolutions(enumerateReductionSolutions<ck::bhalf_t,
-                                                      float,
-                                                      ck::bhalf_t,
-                                                      2,
-                                                      2,
-                                                      HIPTENSOR_OP_ADD,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
-        registerSolutions(enumerateReductionSolutions<ck::bhalf_t,
-                                                      float,
-                                                      ck::bhalf_t,
-                                                      2,
-                                                      2,
-                                                      HIPTENSOR_OP_MUL,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
-        registerSolutions(enumerateReductionSolutions<ck::bhalf_t,
-                                                      float,
-                                                      ck::bhalf_t,
-                                                      2,
-                                                      2,
-                                                      HIPTENSOR_OP_MIN,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
-        registerSolutions(enumerateReductionSolutions<ck::bhalf_t,
-                                                      float,
-                                                      ck::bhalf_t,
-                                                      2,
-                                                      2,
-                                                      HIPTENSOR_OP_MAX,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
+        REG_REDUCTION_SOLUTION(2, 2, ck::bhalf_t, float);
     }
 } // namespace hiptensor

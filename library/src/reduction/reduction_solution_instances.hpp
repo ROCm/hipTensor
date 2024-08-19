@@ -32,6 +32,40 @@
 #include "reduction_solution_registry.hpp"
 #include "singleton.hpp"
 
+#define REG_REDUCTION_SOLUTION(dim_count, reduced_dim_count, type, computeType) \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_ADD,             \
+                                                  true,                         \
+                                                  false>());                    \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_MUL,             \
+                                                  true,                         \
+                                                  false>());                    \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_MIN,             \
+                                                  true,                         \
+                                                  false>());                    \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_MAX,             \
+                                                  true,                         \
+                                                  false>());
+
 namespace hiptensor
 {
     class ReductionSolutionInstances : public ReductionSolutionRegistry,
