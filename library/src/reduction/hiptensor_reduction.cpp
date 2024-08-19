@@ -153,7 +153,7 @@ namespace
         auto modeSetC = std::set(modeC, modeC + descC->mLengths.size());
         if(descA->mLengths.size() < descC->mLengths.size() || !(*descC == *descD)
            || !std::includes(
-               modeA, modeA + descA->mLengths.size(), modeC, modeC + descC->mLengths.size()))
+               modeSetA.cbegin(), modeSetA.cend(), modeSetC.cbegin(), modeSetC.cend()))
         {
             auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
             snprintf(msg,
