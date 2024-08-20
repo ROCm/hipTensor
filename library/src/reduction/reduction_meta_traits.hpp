@@ -28,6 +28,7 @@
 #define HIPTENSOR_REDUCTION_META_TRAITS_HPP
 
 #include <device_reduce.hpp>
+#include <hiptensor/internal/types.hpp>
 
 #include "ck/tensor_operation/gpu/device/impl/device_reduce_multiblock.hpp"
 #include "meta_traits.hpp"
@@ -61,9 +62,23 @@ namespace hiptensor
         constexpr static bool        TensorPropagateNan = PropagateNan;
         constexpr static bool        TensorOutputIndex  = OutputIndex;
 
-        using TensorInDataType       = InDataType;
-        using TensorAccDataType      = AccDataType;
-        using TensorOutDataType      = OutDataType;
+        /*
+         * CK does not use hip_bfloat16, instead it use ushort(ck::bhalf_t) for cuda bhalf_t type.
+         * What we want here is that we can use ck::bhalf_t with ck instances and use hip_bfloat16
+         * with hiptensor classes.
+         *
+         * When creating a solution, ck::bhalf_t was passed in to create ck instance.
+         * When registering the solution, MetaTraits will returen hip_bfloat16 to create key.
+         */
+        using TensorInDataType       = std::conditional_t<std::is_same_v<InDataType, ck::bhalf_t>,
+                                                    hiptensor::bfloat16_t,
+                                                    InDataType>;
+        using TensorAccDataType      = std::conditional_t<std::is_same_v<AccDataType, ck::bhalf_t>,
+                                                     hiptensor::bfloat16_t,
+                                                     AccDataType>;
+        using TensorOutDataType      = std::conditional_t<std::is_same_v<OutDataType, ck::bhalf_t>,
+                                                     hiptensor::bfloat16_t,
+                                                     OutDataType>;
         using TensorReduceOperation  = ReduceOperation;
         using TensorInElementwiseOp  = InElementwiseOp;
         using TensorAccElementwiseOp = AccElementwiseOp;

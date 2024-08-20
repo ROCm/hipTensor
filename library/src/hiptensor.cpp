@@ -151,18 +151,17 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
-    if((lens == nullptr)
+    if((lens == nullptr && strides != nullptr)
        || ((dataType != HIP_R_16F) && (dataType != HIP_R_16BF) && (dataType != HIP_R_32F)
-           && (dataType != HIP_R_64F) && (dataType != HIP_C_32F)
-           && (dataType != HIP_C_64F))
+           && (dataType != HIP_R_64F) && (dataType != HIP_C_32F) && (dataType != HIP_C_64F))
        || ((unaryOp != HIPTENSOR_OP_IDENTITY) && (unaryOp != HIPTENSOR_OP_SQRT)))
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        if(lens == nullptr)
+        if(lens == nullptr && strides != nullptr)
         {
             snprintf(msg,
                      sizeof(msg),
-                     "Tensor Initialization Error : lens = nullptr (%s)",
+                     "Tensor Initialization Error : lens = nullptr and strides != nullptr (%s)",
                      hiptensorGetErrorString(errorCode));
         }
         else if((unaryOp != HIPTENSOR_OP_IDENTITY) && (unaryOp != HIPTENSOR_OP_SQRT))
@@ -200,10 +199,15 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     else
     {
         // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> l(lens, lens + numModes);
-        std::vector<std::size_t> s = hiptensor::stridesFromLengths(l);
-
-        *desc = {dataType, l, s, unaryOp};
+        if(numModes > 0)
+        {
+            auto lensVector = std::vector<std::size_t>(lens, lens + numModes);
+            *desc = {dataType, lensVector, hiptensor::stridesFromLengths(lensVector), unaryOp};
+        }
+        else
+        {
+            *desc = {dataType, std::vector<std::size_t>(), std::vector<std::size_t>(), unaryOp};
+        }
     }
 
     return HIPTENSOR_STATUS_SUCCESS;

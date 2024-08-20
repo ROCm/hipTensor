@@ -48,15 +48,22 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
     auto ADataType    = descA->mType;
     auto DDataType    = descD->mType;
 
+    auto internalTypeCompute = typeCompute;
+    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    {
+        // CK does not support f16 or bf16 as compute type
+        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+    }
+
     auto& instances = hiptensor::ReductionCpuReferenceInstances::instance();
     auto  solutionQ = instances->querySolutions(ADataType,
-                                               typeCompute,
+                                               internalTypeCompute,
                                                DDataType,
                                                rankA,
                                                numReduceDim,
                                                opReduce,
-                                               true, // @TODO hardcode
-                                               false); // @TODO hardcode
+                                               true, // propagateNan
+                                               false); // outputIndex
 
     double alphaD;
     if(alpha != nullptr)
@@ -69,17 +76,27 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         betaD = hiptensor::readVal<double>(beta, typeCompute);
     }
 
+    if(C && C != D)
+    {
+        // CK API can only process $D = alpha * reduce(A) + beta * D$
+        // Need to copy C to D if C != D
+        CHECK_HIP_ERROR(hipMemcpy(D,
+                                  C,
+                                  hiptensor::elementsFromLengths(descC->mLengths)
+                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                  hipMemcpyHostToHost));
+    }
+
     for(auto [_, pSolution] : solutionQ.solutions())
     {
         // Perform reduction with timing if LOG_LEVEL_PERF_TRACE
         auto streamConfig        = StreamConfig{stream, false};
         auto [isSupported, time] = (*pSolution)(descA->mLengths,
-                                                // @todo pass stride from descA
-                                                {},
+                                                descA->mStrides,
                                                 {modeA, modeA + descA->mLengths.size()},
-                                                descC->mLengths,
-                                                {},
-                                                {modeC, modeC + descC->mLengths.size()},
+                                                descD->mLengths,
+                                                descD->mStrides,
+                                                {modeD, modeD + descD->mLengths.size()},
                                                 alphaD,
                                                 betaD,
                                                 A,

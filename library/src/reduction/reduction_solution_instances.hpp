@@ -32,6 +32,40 @@
 #include "reduction_solution_registry.hpp"
 #include "singleton.hpp"
 
+#define REG_REDUCTION_SOLUTION(dim_count, reduced_dim_count, type, computeType) \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_ADD,             \
+                                                  true,                         \
+                                                  false>());                    \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_MUL,             \
+                                                  true,                         \
+                                                  false>());                    \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_MIN,             \
+                                                  true,                         \
+                                                  false>());                    \
+    registerSolutions(enumerateReductionSolutions<type,                         \
+                                                  computeType,                  \
+                                                  type,                         \
+                                                  dim_count,                    \
+                                                  reduced_dim_count,            \
+                                                  HIPTENSOR_OP_MAX,             \
+                                                  true,                         \
+                                                  false>());
+
 namespace hiptensor
 {
     class ReductionSolutionInstances : public ReductionSolutionRegistry,
@@ -52,8 +86,50 @@ namespace hiptensor
         ReductionSolutionInstances& operator=(ReductionSolutionInstances const&) = delete;
         ReductionSolutionInstances& operator=(ReductionSolutionInstances&&)      = delete;
 
-        // void genReductionSolutionF16F16Instances();
-        // void genReductionSolutionBf16Bf16Instances();
+        void genReductionSolution1x1BF16F32Instances();
+        void genReductionSolution2x1BF16F32Instances();
+        void genReductionSolution2x2BF16F32Instances();
+        void genReductionSolution3x1BF16F32Instances();
+        void genReductionSolution3x2BF16F32Instances();
+        void genReductionSolution3x3BF16F32Instances();
+        void genReductionSolution4x1BF16F32Instances();
+        void genReductionSolution4x2BF16F32Instances();
+        void genReductionSolution4x3BF16F32Instances();
+        void genReductionSolution4x4BF16F32Instances();
+        void genReductionSolution5x1BF16F32Instances();
+        void genReductionSolution5x2BF16F32Instances();
+        void genReductionSolution5x3BF16F32Instances();
+        void genReductionSolution5x4BF16F32Instances();
+        void genReductionSolution5x5BF16F32Instances();
+        void genReductionSolution6x1BF16F32Instances();
+        void genReductionSolution6x2BF16F32Instances();
+        void genReductionSolution6x3BF16F32Instances();
+        void genReductionSolution6x4BF16F32Instances();
+        void genReductionSolution6x5BF16F32Instances();
+        void genReductionSolution6x6BF16F32Instances();
+
+        void genReductionSolution1x1F16F32Instances();
+        void genReductionSolution2x1F16F32Instances();
+        void genReductionSolution2x2F16F32Instances();
+        void genReductionSolution3x1F16F32Instances();
+        void genReductionSolution3x2F16F32Instances();
+        void genReductionSolution3x3F16F32Instances();
+        void genReductionSolution4x1F16F32Instances();
+        void genReductionSolution4x2F16F32Instances();
+        void genReductionSolution4x3F16F32Instances();
+        void genReductionSolution4x4F16F32Instances();
+        void genReductionSolution5x1F16F32Instances();
+        void genReductionSolution5x2F16F32Instances();
+        void genReductionSolution5x3F16F32Instances();
+        void genReductionSolution5x4F16F32Instances();
+        void genReductionSolution5x5F16F32Instances();
+        void genReductionSolution6x1F16F32Instances();
+        void genReductionSolution6x2F16F32Instances();
+        void genReductionSolution6x3F16F32Instances();
+        void genReductionSolution6x4F16F32Instances();
+        void genReductionSolution6x5F16F32Instances();
+        void genReductionSolution6x6F16F32Instances();
+
         void genReductionSolution1x1F32F32Instances();
         void genReductionSolution2x1F32F32Instances();
         void genReductionSolution2x2F32F32Instances();
@@ -75,6 +151,7 @@ namespace hiptensor
         void genReductionSolution6x4F32F32Instances();
         void genReductionSolution6x5F32F32Instances();
         void genReductionSolution6x6F32F32Instances();
+
         void genReductionSolution1x1F64F64Instances();
         void genReductionSolution2x1F64F64Instances();
         void genReductionSolution2x2F64F64Instances();

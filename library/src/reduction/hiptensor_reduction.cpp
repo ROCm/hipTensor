@@ -24,6 +24,7 @@
  *
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
+#include <set>
 #include <unordered_set>
 
 #include "handle.hpp"
@@ -74,8 +75,7 @@ namespace
         using hiptensor::Logger;
         auto& logger = Logger::instance();
         char  msg[2048];
-        if(!handle || !alpha || !A || !descA || !modeA || !beta || !C || !descC || !modeC || !D
-           || !descD || !modeD)
+        if(!handle || !alpha || !A || !descA || !modeA || !beta || !descC || !D || !descD)
         {
             auto errorCode         = HIPTENSOR_STATUS_NOT_INITIALIZED;
             auto printErrorMessage = [&logger, errorCode](const std::string& paramName) {
@@ -111,17 +111,9 @@ namespace
             {
                 printErrorMessage("beta");
             }
-            if(!C)
-            {
-                printErrorMessage("C");
-            }
             if(!descC)
             {
                 printErrorMessage("descC");
-            }
-            if(!modeC)
-            {
-                printErrorMessage("modeC");
             }
             if(!D)
             {
@@ -130,10 +122,6 @@ namespace
             if(!descD)
             {
                 printErrorMessage("descD");
-            }
-            if(!modeD)
-            {
-                printErrorMessage("modeD");
             }
             return errorCode;
         }
@@ -156,6 +144,22 @@ namespace
                      sizeof(msg),
                      "Unsupported Data Type Error : The combination of data types of A, C and D "
                      "and compute type is not supported. (%s)",
+                     hiptensorGetErrorString(errorCode));
+            logger->logError("hiptensorReduction", msg);
+            return errorCode;
+        }
+
+        auto modeSetA = std::set(modeA, modeA + descA->mLengths.size());
+        auto modeSetC = std::set(modeC, modeC + descC->mLengths.size());
+        if(descA->mLengths.size() < descC->mLengths.size() || !(*descC == *descD)
+           || !std::includes(
+               modeSetA.cbegin(), modeSetA.cend(), modeSetC.cbegin(), modeSetC.cend()))
+        {
+            auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+            snprintf(msg,
+                     sizeof(msg),
+                     "Unsupported Data Error : The descriptor of C and D should be same and "
+                     " modes of C should be subset of modes A. (%s)",
                      hiptensorGetErrorString(errorCode));
             logger->logError("hiptensorReduction", msg);
             return errorCode;
@@ -239,7 +243,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
         snprintf(msg,
                  sizeof(msg),
-                 "Internal Error : No Kernels Found (%s)",
+                 "Internal Error : ReductionSolutionInstances is empty (%s)",
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorReduction", msg);
         return errorCode;
@@ -250,9 +254,16 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     auto ADataType    = descA->mType;
     auto DDataType    = descD->mType;
 
+    auto internalTypeCompute = typeCompute;
+    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    {
+        // CK does not support f16 or bf16 as compute type
+        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+    }
+
     // Query reduction solutions for the correct reduction operation and type
     auto solutionQ = instances->querySolutions(ADataType,
-                                               typeCompute,
+                                               internalTypeCompute,
                                                DDataType,
                                                rankA,
                                                numReduceDim,
@@ -265,7 +276,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
         snprintf(msg,
                  sizeof(msg),
-                 "Internal Error : No Kernels Found (%s)",
+                 "Internal Error : querySolutions returns 0 kernel. (%s)",
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorReduction", msg);
         return errorCode;
@@ -282,6 +293,17 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         betaD = hiptensor::readVal<double>(beta, typeCompute);
     }
 
+    if(C && C != D)
+    {
+        // CK API can only process $D = alpha * reduce(A) + beta * D$
+        // Need to copy C to D if C != D
+        CHECK_HIP_ERROR(hipMemcpy(D,
+                                  C,
+                                  hiptensor::elementsFromLengths(descC->mLengths)
+                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                  hipMemcpyDeviceToDevice));
+    }
+
     for(auto [_, pSolution] : solutionQ.solutions())
     {
         // Perform reduction with timing if LOG_LEVEL_PERF_TRACE
@@ -296,11 +318,11 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
             }:
         StreamConfig{stream, false};
         auto [isSupported, time] = (*pSolution)(descA->mLengths,
-                                                {},
+                                                descA->mStrides,
                                                 {modeA, modeA + descA->mLengths.size()},
-                                                descC->mLengths,
-                                                {},
-                                                {modeC, modeC + descC->mLengths.size()},
+                                                descD->mLengths,
+                                                descD->mStrides,
+                                                {modeD, modeD + descD->mLengths.size()},
                                                 alphaD,
                                                 betaD,
                                                 A,
@@ -347,7 +369,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
     snprintf(msg,
              sizeof(msg),
-             "Selected kernel is unable to solve the problem (%s)",
+             "No kernel is able to solve the problem (%s)",
              hiptensorGetErrorString(errorCode));
     logger->logError("hiptensorReduction", msg);
     return errorCode;

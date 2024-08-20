@@ -38,13 +38,15 @@ namespace hiptensor
         : HipResource()
         , mDeviceA(Base::allocDevice(0))
         , mDeviceC(Base::allocDevice(0))
+        , mDeviceD(Base::allocDevice(0))
         , mHostA(Base::allocHost(0))
         , mHostC(Base::allocHost(0))
+        , mHostD(Base::allocHost(0))
         , mCurrentDataType(HIP_R_32F)
-        , mCurrentMatrixAElement(0)
-        , mCurrentAllocByteA(0)
-        , mCurrentMatrixCElement(0)
-        , mCurrentAllocByteC(0)
+        , mCurrentInputElementCount(0)
+        , mCurrentInputAllocByte(0)
+        , mCurrentOutputElementCount(0)
+        , mCurrentOutputAllocByte(0)
     {
     }
 
@@ -52,13 +54,15 @@ namespace hiptensor
         : HipResource()
         , mDeviceA(std::move(rhs.mDeviceA))
         , mDeviceC(std::move(rhs.mDeviceC))
+        , mDeviceD(std::move(rhs.mDeviceD))
         , mHostA(std::move(rhs.mHostA))
         , mHostC(std::move(rhs.mHostC))
+        , mHostD(std::move(rhs.mHostD))
         , mCurrentDataType(rhs.mCurrentDataType)
-        , mCurrentMatrixAElement(rhs.mCurrentMatrixAElement)
-        , mCurrentAllocByteA(rhs.mCurrentAllocByteA)
-        , mCurrentMatrixCElement(rhs.mCurrentMatrixCElement)
-        , mCurrentAllocByteC(rhs.mCurrentAllocByteC)
+        , mCurrentInputElementCount(rhs.mCurrentInputElementCount)
+        , mCurrentInputAllocByte(rhs.mCurrentInputAllocByte)
+        , mCurrentOutputElementCount(rhs.mCurrentOutputElementCount)
+        , mCurrentOutputAllocByte(rhs.mCurrentOutputAllocByte)
     {
     }
 
@@ -67,115 +71,158 @@ namespace hiptensor
                                          hipDataType        dataType)
     {
         // check buffer for A
-        auto requiredElementCountA = getProduct(dimSizes);
-        auto requiredMemorySizeA   = requiredElementCountA * hipDataTypeSize(dataType);
+        auto requiredInputElementCount = getProduct(dimSizes);
+        auto requiredInputMemorySize   = requiredInputElementCount * hipDataTypeSize(dataType);
 
         bool needFillDataA = false;
-        if(requiredMemorySizeA > mCurrentAllocByteA)
+        if(requiredInputMemorySize > mCurrentInputAllocByte)
         {
-            Base::reallocDeviceHostPair(mDeviceA, mHostA, requiredMemorySizeA);
-            mCurrentAllocByteA = requiredMemorySizeA;
-            needFillDataA      = true;
+            Base::reallocDeviceHostPair(mDeviceA, mHostA, requiredInputMemorySize);
+            mCurrentInputAllocByte = requiredInputMemorySize;
+            needFillDataA          = true;
         }
-        if(mCurrentDataType != dataType || mCurrentMatrixAElement < requiredElementCountA)
+        if(mCurrentDataType != dataType || mCurrentInputElementCount < requiredInputElementCount)
         {
             needFillDataA = true;
         }
-        mCurrentMatrixAElement = requiredElementCountA;
+        mCurrentInputElementCount = requiredInputElementCount;
 
         // check buffer for C
-        auto requiredElementCountC = getProduct(outputSizes);
-        auto requiredMemorySizeC   = requiredElementCountC * hipDataTypeSize(dataType);
-        auto needFillDataC         = false;
-        if(requiredMemorySizeC > mCurrentAllocByteC)
+        bool needFillDataC = false;
+        auto requiredOutputElementCount
+            = getProduct(outputSizes); // returns 1 for empty container which is correct
+        auto requiredOutputMemorySize = requiredOutputElementCount * hipDataTypeSize(dataType);
+        if(requiredOutputMemorySize > mCurrentOutputAllocByte)
         {
-            Base::reallocDeviceHostPair(mDeviceC, mHostC, requiredMemorySizeC);
-            Base::reallocDeviceHostPair(mDeviceReference, mHostReference, requiredMemorySizeC);
-            mCurrentAllocByteC = requiredMemorySizeC;
-            needFillDataC      = true;
+            Base::reallocDeviceHostPair(mDeviceC, mHostC, requiredOutputMemorySize);
+            Base::reallocDeviceHostPair(mDeviceD, mHostD, requiredOutputMemorySize);
+            Base::reallocDeviceHostPair(mDeviceReference, mHostReference, requiredOutputMemorySize);
+            mCurrentOutputAllocByte = requiredOutputMemorySize;
+            needFillDataC           = true;
         }
-        if(mCurrentDataType != dataType || mCurrentMatrixCElement < requiredElementCountC)
+        if(mCurrentDataType != dataType || mCurrentOutputElementCount < requiredOutputElementCount)
         {
             needFillDataC = true;
         }
-        mCurrentMatrixCElement = requiredElementCountC;
+        mCurrentOutputElementCount = requiredOutputElementCount;
 
         mCurrentDataType = dataType;
 
+        const uint32_t seedA = 17;
+        const uint32_t seedC = 19;
         if(needFillDataA)
         {
-            fillRand(hostA(), deviceA(), getCurrentMatrixAMemorySize());
+            fillRand(hostA(), deviceA(), dataType, getCurrentInputElementCount(), seedA);
         }
 
         if(needFillDataC)
         {
-            fillRand(hostC(), deviceC(), getCurrentMatrixCMemorySize());
+            fillRand(hostC(), deviceC(), dataType, getCurrentOutputElementCount(), seedC);
         }
+        fillConstant(hostD(), deviceD(), dataType, getCurrentOutputElementCount(), 0);
+        copyData(hostReference(), hostD(), getCurrentOutputMemorySize());
+    }
+
+    void ReductionResource::setupWorkspace(uint64_t workspaceSize)
+    {
+        reallocDevice(mDeviceWorkspace, workspaceSize);
     }
 
     void ReductionResource::reset()
     {
         Base::reallocDeviceHostPair(mDeviceA, mHostA, 0);
         Base::reallocDeviceHostPair(mDeviceC, mHostC, 0);
+        Base::reallocDeviceHostPair(mDeviceD, mHostD, 0);
         Base::reallocDeviceHostPair(mDeviceReference, mHostReference, 0);
-        mCurrentDataType       = HIP_R_32F;
-        mCurrentMatrixAElement = 0;
-        mCurrentAllocByteA     = 0;
-        mCurrentMatrixCElement = 0;
-        mCurrentAllocByteC     = 0;
+        mCurrentDataType           = HIP_R_32F;
+        mCurrentInputElementCount  = 0;
+        mCurrentInputAllocByte     = 0;
+        mCurrentOutputElementCount = 0;
+        mCurrentOutputAllocByte    = 0;
     }
 
-    void ReductionResource::fillRand(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount)
+    void ReductionResource::fillRand(HostPtrT&   hostBuf,
+                                     DevicePtrT& deviceBuf,
+                                     hipDataType dataType,
+                                     size_t      elementCount,
+                                     uint32_t    seed)
     {
-        uint32_t seed = static_cast<uint32_t>(256);
-
-        if(mCurrentDataType == HIP_R_16F)
+        if(dataType == HIP_R_16F)
         {
             fillLaunchKernel<float16_t>((float16_t*)deviceBuf.get(), elementCount, seed);
         }
-        else if(mCurrentDataType == HIP_R_16BF)
+        else if(dataType == HIP_R_16BF)
         {
             fillLaunchKernel<bfloat16_t>((bfloat16_t*)deviceBuf.get(), elementCount, seed);
         }
-        else if(mCurrentDataType == HIP_R_32F)
+        else if(dataType == HIP_R_32F)
         {
             fillLaunchKernel<float32_t>((float32_t*)deviceBuf.get(), elementCount, seed);
         }
-        else if(mCurrentDataType == HIP_R_64F)
+        else if(dataType == HIP_R_64F)
         {
             fillLaunchKernel<float64_t>((float64_t*)deviceBuf.get(), elementCount, seed);
         }
-        Base::copyData(hostBuf, deviceBuf, elementCount);
+        Base::copyData(hostBuf, deviceBuf, elementCount * hipDataTypeSize(dataType));
     }
 
-    void ReductionResource::copyCToHost()
+    void ReductionResource::fillConstant(HostPtrT&   hostBuf,
+                                         DevicePtrT& deviceBuf,
+                                         hipDataType dataType,
+                                         size_t      elementCount,
+                                         double      value)
     {
-        Base::copyData(hostC(), deviceC(), getCurrentMatrixCMemorySize());
+        if(dataType == HIP_R_16F)
+        {
+            fillValLaunchKernel<float16_t>(
+                (float16_t*)deviceBuf.get(), elementCount, (float16_t)value);
+        }
+        else if(dataType == HIP_R_16BF)
+        {
+            fillValLaunchKernel<bfloat16_t>(
+                (bfloat16_t*)deviceBuf.get(), elementCount, (bfloat16_t)value);
+        }
+        else if(dataType == HIP_R_32F)
+        {
+            fillValLaunchKernel<float32_t>(
+                (float32_t*)deviceBuf.get(), elementCount, (float32_t)value);
+        }
+        else if(dataType == HIP_R_64F)
+        {
+            fillValLaunchKernel<float64_t>(
+                (float64_t*)deviceBuf.get(), elementCount, (float64_t)value);
+        }
+        Base::copyData(hostBuf, deviceBuf, elementCount * hipDataTypeSize(dataType));
+    }
+
+    void ReductionResource::copyOutputToHost()
+    {
+        Base::copyData(hostD(), deviceD(), getCurrentOutputMemorySize());
     }
 
     void ReductionResource::copyReferenceToDevice()
     {
-        Base::copyData(deviceReference(), hostReference(), getCurrentMatrixCMemorySize());
+        Base::copyData(deviceReference(), hostReference(), getCurrentOutputMemorySize());
     }
 
-    size_t ReductionResource::getCurrentMatrixAElement() const
+    size_t ReductionResource::getCurrentInputElementCount() const
     {
-        return mCurrentMatrixAElement;
+        return mCurrentInputElementCount;
     }
 
-    size_t ReductionResource::getCurrentMatrixAMemorySize() const
+    size_t ReductionResource::getCurrentInputMemorySize() const
     {
-        return mCurrentMatrixAElement * hipDataTypeSize(mCurrentDataType);
+        return mCurrentInputElementCount * hipDataTypeSize(mCurrentDataType);
     }
 
-    size_t ReductionResource::getCurrentMatrixCElement() const
+    size_t ReductionResource::getCurrentOutputElementCount() const
     {
-        return mCurrentMatrixCElement;
+        return mCurrentOutputElementCount;
     }
 
-    size_t ReductionResource::getCurrentMatrixCMemorySize() const
+    size_t ReductionResource::getCurrentOutputMemorySize() const
     {
-        return mCurrentMatrixCElement * hipDataTypeSize(mCurrentDataType);
+        return mCurrentOutputElementCount * hipDataTypeSize(mCurrentDataType);
     }
 
     auto ReductionResource::hostA() -> HostPtrT&
@@ -186,6 +233,11 @@ namespace hiptensor
     auto ReductionResource::hostC() -> HostPtrT&
     {
         return mHostC;
+    }
+
+    auto ReductionResource::hostD() -> HostPtrT&
+    {
+        return mHostD;
     }
 
     auto ReductionResource::hostReference() -> HostPtrT&
@@ -203,9 +255,19 @@ namespace hiptensor
         return mDeviceC;
     }
 
+    auto ReductionResource::deviceD() -> DevicePtrT&
+    {
+        return mDeviceD;
+    }
+
     auto ReductionResource::deviceReference() -> DevicePtrT&
     {
         return mDeviceReference;
+    }
+
+    auto ReductionResource::deviceWorkspace() -> DevicePtrT&
+    {
+        return mDeviceWorkspace;
     }
 } // namespace hiptensor
 

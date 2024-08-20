@@ -75,35 +75,56 @@ namespace hiptensor
         void setupStorage(ProblemDims const& dimSizes,
                           ProblemDims const& outputSizes,
                           hipDataType        dataType);
-        void fillRand(HostPtrT& hostBuf, DevicePtrT& deviceBuf, size_t elementCount);
-        void copyCToHost();
+        void setupWorkspace(uint64_t workspaceSize);
+        void fillRand(HostPtrT&   hostBuf,
+                      DevicePtrT& deviceBuf,
+                      hipDataType dataType,
+                      size_t      elementCount,
+                      uint32_t    seed);
+        void fillConstant(HostPtrT&   hostBuf,
+                          DevicePtrT& deviceBuf,
+                          hipDataType dataType,
+                          size_t      elementCount,
+                          double      value);
+        void copyOutputToHost();
         void copyReferenceToDevice();
 
         HostPtrT& hostA();
         HostPtrT& hostC();
+        HostPtrT& hostD();
         HostPtrT& hostReference();
 
         DevicePtrT& deviceA();
         DevicePtrT& deviceC();
+        DevicePtrT& deviceD();
         DevicePtrT& deviceReference();
+        DevicePtrT& deviceWorkspace();
 
-        size_t getCurrentMatrixAElement() const;
-        size_t getCurrentMatrixAMemorySize() const;
-        size_t getCurrentMatrixCElement() const;
-        size_t getCurrentMatrixCMemorySize() const;
+        size_t getCurrentInputElementCount() const;
+        size_t getCurrentInputMemorySize() const;
+        size_t getCurrentOutputElementCount() const;
+        size_t getCurrentOutputMemorySize() const;
         void   reset() final;
 
     protected:
-        DevicePtrT mDeviceA, mDeviceC, mDeviceReference;
-        HostPtrT   mHostA, mHostC, mHostReference;
+        DevicePtrT mDeviceA;
+        DevicePtrT mDeviceC;
+        DevicePtrT mDeviceD;
+        DevicePtrT mDeviceReference;
+        DevicePtrT mDeviceWorkspace;
+
+        HostPtrT mHostA;
+        HostPtrT mHostC;
+        HostPtrT mHostD;
+        HostPtrT mHostReference;
 
         hipDataType mCurrentDataType; /**< Type size of element of A/C */
 
-        size_t mCurrentMatrixAElement; /**< Element count of A */
-        size_t mCurrentAllocByteA; /**< Allocated size of memory */
+        size_t mCurrentInputElementCount; /**< Element count of A */
+        size_t mCurrentInputAllocByte; /**< Allocated size of memory */
 
-        size_t mCurrentMatrixCElement; /**< Element count of C */
-        size_t mCurrentAllocByteC; /**< Allocated size of memory */
+        size_t mCurrentOutputElementCount; /**< Element count of C */
+        size_t mCurrentOutputAllocByte; /**< Allocated size of memory */
     };
 
 } // namespace hiptensor

@@ -43,7 +43,7 @@ namespace hiptensor
     using ReductionTestParams_t = std::tuple<typename ReductionTestParams::TestTypesT,
                                              typename ReductionTestParams::LogLevelT,
                                              typename ReductionTestParams::LengthsT,
-                                             typename ReductionTestParams::ReducedDimsT,
+                                             typename ReductionTestParams::OutputDimsT,
                                              typename ReductionTestParams::AlphaT,
                                              typename ReductionTestParams::BetaT,
                                              typename ReductionTestParams::OperatorT>;

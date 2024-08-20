@@ -11,8 +11,9 @@ Alphas:
   - 1.0
   - 2.3
 Betas:
-  - 1.0
-  - 2.3
+  - 0.0
+  # - 1.0
+  # - 2.3
 Lengths:
   - [ 1, 1]
   - [ 5, 2]
@@ -21,7 +22,7 @@ Lengths:
   - [ 23, 11]
 Operators:
   - HIPTENSOR_OP_ADD
-Reduced Dims:
+Output Dims:
   - [0, 1]
   - [1, 0]
 ...

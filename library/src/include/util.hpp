@@ -51,7 +51,7 @@ namespace hiptensor
         }
 
         // Re-construct strides from lengths, assuming packed.
-        std::vector<std::size_t> strides(lengths.size(), 1);
+        std::vector<T> strides(lengths.size(), 1);
         if(!col_major)
         {
             strides.back() = 1;
@@ -68,6 +68,7 @@ namespace hiptensor
         return strides;
     }
 
+    // Get count of element of a tensor. Note that the count is 1 if the rank of tensor is 0.
     template <typename T>
     static inline T elementsFromLengths(std::vector<T> const& lengths)
     {

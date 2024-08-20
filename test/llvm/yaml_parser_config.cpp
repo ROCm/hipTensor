@@ -374,7 +374,7 @@ namespace llvm
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
                 io.mapRequired("Lengths", doc.problemLengths());
-                io.mapRequired("Reduced Dims", doc.reducedDims());
+                io.mapRequired("Output Dims", doc.outputDims());
                 io.mapRequired("Operators", (doc.operators()));
             }
 
@@ -396,9 +396,9 @@ namespace llvm
                     return "Error: Empty Betas";
                 }
 
-                if(doc.reducedDims().size() == 0)
+                if(doc.outputDims().size() == 0)
                 {
-                    return "Error: Empty Reduced Dims";
+                    return "Error: Empty Output Dims";
                 }
 
                 if(doc.operators().size() == 0)
