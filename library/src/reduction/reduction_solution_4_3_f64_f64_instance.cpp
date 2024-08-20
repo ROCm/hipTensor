@@ -33,37 +33,6 @@ namespace hiptensor
     void ReductionSolutionInstances::genReductionSolution4x3F64F64Instances()
     {
         // add entries to mSolutionQuery
-        registerSolutions(enumerateReductionSolutions<hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      4,
-                                                      3,
-                                                      HIPTENSOR_OP_ADD,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
-        registerSolutions(enumerateReductionSolutions<hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      4,
-                                                      3,
-                                                      HIPTENSOR_OP_MUL,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
-        registerSolutions(enumerateReductionSolutions<hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      4,
-                                                      3,
-                                                      HIPTENSOR_OP_MIN,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
-        registerSolutions(enumerateReductionSolutions<hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      hiptensor::float64_t,
-                                                      4,
-                                                      3,
-                                                      HIPTENSOR_OP_MAX,
-                                                      true, // PropagateNan,
-                                                      false>()); // OutputIndex,
+        REG_REDUCTION_SOLUTION(4, 3, double, double);
     }
 } // namespace hiptensor

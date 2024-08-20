@@ -37,10 +37,50 @@ namespace hiptensor
     {
 
         // add entries to mSolutionQuery
+        genReductionSolution1x1BF16F32Instances();
+        genReductionSolution2x1BF16F32Instances();
+        genReductionSolution2x2BF16F32Instances();
+        genReductionSolution3x1BF16F32Instances();
+        genReductionSolution3x2BF16F32Instances();
+        genReductionSolution3x3BF16F32Instances();
+        genReductionSolution4x1BF16F32Instances();
+        genReductionSolution4x2BF16F32Instances();
+        genReductionSolution4x3BF16F32Instances();
+        genReductionSolution4x4BF16F32Instances();
+        genReductionSolution5x1BF16F32Instances();
+        genReductionSolution5x2BF16F32Instances();
+        genReductionSolution5x3BF16F32Instances();
+        genReductionSolution5x4BF16F32Instances();
+        genReductionSolution5x5BF16F32Instances();
+        genReductionSolution6x1BF16F32Instances();
+        genReductionSolution6x2BF16F32Instances();
+        genReductionSolution6x3BF16F32Instances();
+        genReductionSolution6x4BF16F32Instances();
+        genReductionSolution6x5BF16F32Instances();
+        genReductionSolution6x6BF16F32Instances();
 
-        // @todo Add all reference instances. How to stop the explosion of number of instances? Wait for CK
-        // genReductionSolutionF16F16Instances();
-        // genReductionSolutionBf16Bf16Instances();
+        genReductionSolution1x1F16F32Instances();
+        genReductionSolution2x1F16F32Instances();
+        genReductionSolution2x2F16F32Instances();
+        genReductionSolution3x1F16F32Instances();
+        genReductionSolution3x2F16F32Instances();
+        genReductionSolution3x3F16F32Instances();
+        genReductionSolution4x1F16F32Instances();
+        genReductionSolution4x2F16F32Instances();
+        genReductionSolution4x3F16F32Instances();
+        genReductionSolution4x4F16F32Instances();
+        genReductionSolution5x1F16F32Instances();
+        genReductionSolution5x2F16F32Instances();
+        genReductionSolution5x3F16F32Instances();
+        genReductionSolution5x4F16F32Instances();
+        genReductionSolution5x5F16F32Instances();
+        genReductionSolution6x1F16F32Instances();
+        genReductionSolution6x2F16F32Instances();
+        genReductionSolution6x3F16F32Instances();
+        genReductionSolution6x4F16F32Instances();
+        genReductionSolution6x5F16F32Instances();
+        genReductionSolution6x6F16F32Instances();
+
         genReductionSolution1x1F32F32Instances();
         genReductionSolution2x1F32F32Instances();
         genReductionSolution2x2F32F32Instances();
@@ -62,6 +102,7 @@ namespace hiptensor
         genReductionSolution6x4F32F32Instances();
         genReductionSolution6x5F32F32Instances();
         genReductionSolution6x6F32F32Instances();
+
         genReductionSolution1x1F64F64Instances();
         genReductionSolution2x1F64F64Instances();
         genReductionSolution2x2F64F64Instances();

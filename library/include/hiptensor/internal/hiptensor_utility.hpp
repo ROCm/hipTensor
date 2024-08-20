@@ -27,9 +27,9 @@
 #define HIPTENSOR_UTILITY_INTERNAL_HPP
 
 #include <fstream>
+#include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>
 #include <iostream>
-#include <hip/hip_complex.h>
 
 #include "../hiptensor_types.hpp"
 #include "types_ext.hpp"
@@ -129,6 +129,13 @@ void hiptensorPrintElementsToFile(std::ofstream& fs, F* output, size_t size, std
         }
     }
     return;
+}
+
+bool inline operator==(const hiptensorTensorDescriptor_t& lhs,
+                       const hiptensorTensorDescriptor_t& rhs)
+{
+    return lhs.mType == rhs.mType && lhs.mLengths == rhs.mLengths && lhs.mStrides == rhs.mStrides
+           && lhs.mUnaryOp == rhs.mUnaryOp;
 }
 
 namespace std
