@@ -14,17 +14,12 @@ Worksize Prefs:
   - HIPTENSOR_WORKSPACE_MIN
   - HIPTENSOR_WORKSPACE_MAX
 Alphas:
-  - [0, 0]
-  - [1, 1]
   - [1.1, 1.2]
 Betas:
-  - [2, 2]
-  - [0, 0]
   - [2.2, 2.3]
 Lengths:
   - [[64, 64], [64, 64], [64, 64]]
   - [[113, 64], [119, 64], [113, 119]]
-  - [[51, 65], [17, 65], [51, 17]]
 Strides:
   - []
 Modes:

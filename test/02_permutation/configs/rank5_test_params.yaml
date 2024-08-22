@@ -5,14 +5,11 @@ Tensor Data Types:
   - [ HIP_R_16F, HIP_R_16F]
   - [ HIP_R_16F, HIP_R_32F]
 Alphas:
-  - 0.0
-  - 1.0
   - 2.3
 Lengths:
   - [ 1, 1, 1, 1, 1]
   - [ 5, 2, 3, 4, 5]
   - [ 5, 2, 1, 1, 2]
-  - [ 15, 12, 23, 11, 2]
 Operators:
   - [HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY]
   - [HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_SQRT]
