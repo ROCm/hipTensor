@@ -110,6 +110,10 @@ namespace hiptensor
 
     std::string computeTypeToString(hiptensorComputeType_t computeType);
     std::string hipTypeToString(hipDataType hipType);
+    std::string opTypeToString(hiptensorOperator_t opType);
+    std::string algoTypeToString(hiptensorAlgo_t algoType);
+    std::string opTypeToString(hiptensorOperator_t opType);
+    std::string workSizePrefToString(hiptensorWorksizePreference_t workSize);
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);

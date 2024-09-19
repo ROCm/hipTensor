@@ -1,4 +1,4 @@
-/*******************************************************************************
+library/src/data_types.cpp/*******************************************************************************
  *
  * MIT License
  *
@@ -350,6 +350,111 @@ namespace hiptensor
             return "HIP_TYPE_NONE";
         }
     }
+
+    std::string opTypeToString(hiptensorOperator_t opType)
+    {
+        if(opType == HIPTENSOR_OP_IDENTITY)
+        {
+            return "HIPTENSOR_OP_IDENTITY";
+        }
+        else if(opType == HIPTENSOR_OP_SQRT)
+        {
+            return "HIPTENSOR_OP_SQRT";
+        }
+        else if(opType == HIPTENSOR_OP_ADD)
+        {
+            return "HIPTENSOR_OP_ADD";
+        }
+        else if(opType == HIPTENSOR_OP_MUL)
+        {
+            return "HIPTENSOR_OP_MUL";
+        }
+        else if(opType == HIPTENSOR_OP_MAX)
+        {
+            return "HIPTENSOR_OP_MAX";
+        }
+        else if(opType == HIPTENSOR_OP_MIN)
+        {
+            return "HIPTENSOR_OP_MIN";
+        }
+        else
+        {
+            return "HIPTENSOR_OP_UNKNOWN";
+        }
+    }
+
+    std::string algoTypeToString(hiptensorAlgo_t algoType)
+    {
+        if(algoType == HIPTENSOR_ALGO_ACTOR_CRITIC)
+        {
+            return "HIPTENSOR_ALGO_ACTOR_CRITIC";
+        }
+        else if(algoType == HIPTENSOR_ALGO_DEFAULT)
+        {
+            return "HIPTENSOR_ALGO_DEFAULT";
+        }
+        else if(algoType == HIPTENSOR_ALGO_DEFAULT_PATIENT)
+        {
+            return "HIPTENSOR_ALGO_DEFAULT_PATIENT";
+        }
+        else
+        {
+            return "HIPTENSOR_ALGO_UNKNOWN";
+        }
+    }
+
+    std::string logLevelToString(hiptensorLogLevel_t logLevel)
+    {
+        if(logLevel == HIPTENSOR_LOG_LEVEL_OFF)
+        {
+            return "HIPTENSOR_LOG_LEVEL_OFF";
+        }
+        else if(logLevel == HIPTENSOR_LOG_LEVEL_ERROR)
+        {
+            return "HIPTENSOR_LOG_LEVEL_ERROR";
+        }
+        else if(logLevel == HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+        {
+            return "HIPTENSOR_LOG_LEVEL_PERF_TRACE";
+        }
+        else if(logLevel == HIPTENSOR_LOG_LEVEL_PERF_HINT)
+        {
+            return "HIPTENSOR_LOG_LEVEL_PERF_HINT";
+        }
+        else if(logLevel == HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE)
+        {
+            return "HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE";
+        }
+        else if(logLevel == HIPTENSOR_LOG_LEVEL_API_TRACE)
+        {
+            return "HIPTENSOR_LOG_LEVEL_API_TRACE";
+        }
+        else
+        {
+            return "HIPTENSOR_LOG_LEVEL_UNKNOWN";
+        }
+    }
+
+    std::string workSizePrefToString(hiptensorWorksizePreference_t workSize)
+    {
+        if(workSize == HIPTENSOR_WORKSPACE_MIN)
+        {
+            return "HIPTENSOR_WORKSPACE_MIN";
+        }
+        else if(workSize == HIPTENSOR_WORKSPACE_RECOMMENDED)
+        {
+            return "HIPTENSOR_WORKSPACE_RECOMMENDED";
+        }
+        else if(workSize == HIPTENSOR_WORKSPACE_MAX)
+        {
+            return "HIPTENSOR_WORKSPACE_MAX";
+        }
+        else
+        {
+            return "HIPTENSOR_WORKSPACE_UNKNOWN";
+        }
+    }
+
 } // namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
