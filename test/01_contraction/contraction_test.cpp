@@ -864,10 +864,7 @@ namespace hiptensor
                 tolerance += epsilon * 2;
             }
 
-            size_t elementsCD = std::accumulate(d_ms_ns.mLengths.begin(),
-                                                d_ms_ns.mLengths.end(),
-                                                size_t{1},
-                                                std::multiplies<size_t>());
+            size_t elementsCD = sizeD / hipDataTypeSize(ADataType);
 
             if(DDataType == HIP_R_16F)
             {

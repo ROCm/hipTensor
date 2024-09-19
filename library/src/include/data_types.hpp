@@ -112,7 +112,7 @@ namespace hiptensor
     std::string hipTypeToString(hipDataType hipType);
     std::string opTypeToString(hiptensorOperator_t opType);
     std::string algoTypeToString(hiptensorAlgo_t algoType);
-    std::string opTypeToString(hiptensorOperator_t opType);
+    std::string logLevelToString(hiptensorLogLevel_t);
     std::string workSizePrefToString(hiptensorWorksizePreference_t workSize);
 } // namespace hiptensor
 
