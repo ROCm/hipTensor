@@ -100,7 +100,8 @@ namespace hiptensor
                 return 0;
             }
 
-            static_assert(Traits::TensorRank >= Traits::TensorNumReduceDim, "TensorRank must be greater than or equal to TensorNumReduceDim");
+            static_assert(Traits::TensorRank >= Traits::TensorNumReduceDim,
+                          "TensorRank must be greater than or equal to TensorNumReduceDim");
             constexpr ck::index_t OutputDim
                 = (Traits::TensorRank - Traits::TensorNumReduceDim)
                       ? (Traits::TensorRank - Traits::TensorNumReduceDim)
@@ -128,18 +129,24 @@ namespace hiptensor
             toCKArr(a_lengths, arrInLengths);
             toCKArr(a_strides.empty() ? hiptensor::stridesFromLengths(a_lengths) : a_strides,
                     arrInStrides);
-            // @todo
-            // toCKArr( a_strides.empty() ? hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR) : a_strides, arrInStrides);
-            toCKArr(c_lengths, arrOutLengths);
-            toCKArr(c_strides.empty() ? hiptensor::stridesFromLengths(c_lengths) : c_strides,
+
+            auto ckCLengths = c_lengths;
+            auto ckCStrides = c_strides;
+            if(ckCLengths.empty())
+            {
+                ckCLengths.push_back(1);
+                ckCStrides.push_back(
+                    1); // caller should guarantee that c_strides is empty if c_lengths is empty
+            }
+            toCKArr(ckCLengths, arrOutLengths);
+            toCKArr(ckCStrides.empty() ? hiptensor::stridesFromLengths(ckCLengths) : ckCStrides,
                     arrOutStrides);
-            // toCKArr( c_strides.empty() ? hiptensor::stridesFromLengths(c_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR) : c_strides, arrOutStrides);
             toCKArr(findReduceModes(a_modes, c_modes), reduceDims);
 
             auto [in_elementwise_op, acc_elementwise_op]
                 = reductionUnaryOperators(opReduce,
                                           hiptensor::elementsFromLengths(a_lengths)
-                                              / hiptensor::elementsFromLengths(c_lengths));
+                                              / hiptensor::elementsFromLengths(ckCLengths));
 
             Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(arrInLengths,
                                                                            arrInStrides,
@@ -214,24 +221,58 @@ namespace hiptensor
                                                                           PropagateNan,
                                                                           OutputIndex>;
 
-        std::vector<DeviceOpPtr> opPtrs;
-        ck::tensor_operation::device::instance::add_device_reduce_instance_blockwise<
-            InDataType,
-            AccDataType,
-            OutDataType,
-            Rank,
-            NumReduceDim,
-            ReduceOperation,
-            InElementwiseOperation,
-            AccElementwiseOperation,
-            PropagateNan,
-            OutputIndex>(opPtrs);
+        using ReduceOpInstance_InSrcVectorDim0
+            = ck::tensor_operation::device::DeviceReduceMultiBlock<
+                InDataType,
+                AccDataType,
+                OutDataType,
+                Rank,
+                NumReduceDim,
+                ReduceOperation,
+                InElementwiseOperation,
+                AccElementwiseOperation,
+                ck::InMemoryDataOperationEnum::Set,
+                PropagateNan,
+                OutputIndex,
+                false, // HaveIndexInputIfOutputIndex
+                256, // BlockSize
+                4, // MThreadClusterSize
+                64, // KThreadClusterSize
+                1, // MThreadSliceSize
+                1, // KThreadSliceSize
+                0, // InSrcVectorDim
+                1, // InSrceVectorSize
+                1>; // OutDstVectorSize
+        using ReduceOpInstance_InSrcVectorDim1
+            = ck::tensor_operation::device::DeviceReduceMultiBlock<
+                InDataType,
+                AccDataType,
+                OutDataType,
+                Rank,
+                NumReduceDim,
+                ReduceOperation,
+                InElementwiseOperation,
+                AccElementwiseOperation,
+                ck::InMemoryDataOperationEnum::Set,
+                PropagateNan,
+                OutputIndex,
+                false, // HaveIndexInputIfOutputIndex
+                256, // BlockSize
+                4, // MThreadClusterSize
+                64, // KThreadClusterSize
+                1, // MThreadSliceSize
+                1, // KThreadSliceSize
+                1, // InSrcVectorDim
+                1, // InSrceVectorSize
+                1>; // OutDstVectorSize
 
         std::vector<std::unique_ptr<ReductionSolution>> result;
-        for(auto& opPtr : opPtrs)
-        {
-            result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(std::move(opPtr)));
-        }
+        result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(
+            std::make_unique<ReduceOpInstance_InSrcVectorDim0>(
+                ReduceOpInstance_InSrcVectorDim0{})));
+        result.push_back(std::make_unique<ReductionSolutionImpl<DeviceOp>>(
+            std::make_unique<ReduceOpInstance_InSrcVectorDim1>(
+                ReduceOpInstance_InSrcVectorDim1{})));
         return result;
     }
 

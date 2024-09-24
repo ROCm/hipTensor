@@ -40,13 +40,13 @@ namespace hiptensor
 
     struct ReductionTestParams
     {
-        using TestTypesT   = std::vector<hipDataType>;
-        using LogLevelT    = hiptensorLogLevel_t;
-        using LengthsT     = std::vector<std::size_t>;
-        using AlphaT       = double;
-        using BetaT        = double;
-        using ReducedDimsT = std::vector<std::size_t>;
-        using OperatorT    = hiptensorOperator_t;
+        using TestTypesT  = std::vector<hipDataType>;
+        using LogLevelT   = hiptensorLogLevel_t;
+        using LengthsT    = std::vector<std::size_t>;
+        using AlphaT      = double;
+        using BetaT       = double;
+        using OutputDimsT = std::vector<std::size_t>;
+        using OperatorT   = hiptensorOperator_t;
 
     public:
         std::vector<TestTypesT>& dataTypes()
@@ -69,9 +69,9 @@ namespace hiptensor
             return mOperators;
         }
 
-        std::vector<ReducedDimsT>& reducedDims()
+        std::vector<OutputDimsT>& outputDims()
         {
-            return mReducedDims;
+            return mOutputDims;
         }
 
         std::vector<AlphaT>& alphas()
@@ -92,18 +92,18 @@ namespace hiptensor
                       << "Operators: " << mOperators << "\n"
                       << "Alphas: " << mAlphas << "\n"
                       << "Betas: " << mBetas << "\n"
-                      << "ReducedDims: " << mReducedDims << "\n";
+                      << "OutputDims: " << mOutputDims << "\n";
         }
 
     private:
         //Data types of input and output tensors
-        std::vector<TestTypesT>   mDataTypes;
-        LogLevelT                 mLogLevelMask;
-        std::vector<LengthsT>     mProblemLengths;
-        std::vector<AlphaT>       mAlphas;
-        std::vector<BetaT>        mBetas;
-        std::vector<OperatorT>    mOperators;
-        std::vector<ReducedDimsT> mReducedDims;
+        std::vector<TestTypesT>  mDataTypes;
+        LogLevelT                mLogLevelMask;
+        std::vector<LengthsT>    mProblemLengths;
+        std::vector<AlphaT>      mAlphas;
+        std::vector<BetaT>       mBetas;
+        std::vector<OperatorT>   mOperators;
+        std::vector<OutputDimsT> mOutputDims;
     };
 
 } // namespace hiptensor

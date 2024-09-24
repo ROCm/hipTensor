@@ -34,6 +34,11 @@ set (ReductionTestSources ${ReductionCommonSources}
 set (ReductionConfig ${CMAKE_CURRENT_SOURCE_DIR}/configs/reduction_params.yaml)
 add_hiptensor_test(reduction_cpu_impl_test ${ReductionConfig} ${ReductionTestSources})
 
+set (ReductionRank1TestSources ${ReductionCommonSources}
+                                 ${CMAKE_CURRENT_SOURCE_DIR}/rank1_reduction_test.cpp)
+set (ReductionRank1TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank1_test_params.yaml)
+add_hiptensor_test(rank1_reduction_test ${ReductionRank1TestConfig}  ${ReductionRank1TestSources})
+
 set (ReductionRank2TestSources ${ReductionCommonSources}
                                  ${CMAKE_CURRENT_SOURCE_DIR}/rank2_reduction_test.cpp)
 set (ReductionRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank2_test_params.yaml)
