@@ -40,7 +40,9 @@ namespace hiptensor
 
     struct ReductionTestParams
     {
-        using TestTypesT  = std::vector<hipDataType>;
+        using DataTypesT = std::vector<hipDataType>;
+
+        using TestT       = hiptensorTest_t;
         using LogLevelT   = hiptensorLogLevel_t;
         using LengthsT    = std::vector<std::size_t>;
         using AlphaT      = double;
@@ -49,7 +51,12 @@ namespace hiptensor
         using OperatorT   = hiptensorOperator_t;
 
     public:
-        std::vector<TestTypesT>& dataTypes()
+        std::vector<TestT>& testTypes()
+        {
+            return mTestTypes;
+        }
+
+        std::vector<DataTypesT>& dataTypes()
         {
             return mDataTypes;
         }
@@ -97,7 +104,8 @@ namespace hiptensor
 
     private:
         //Data types of input and output tensors
-        std::vector<TestTypesT>  mDataTypes;
+        std::vector<DataTypesT>  mDataTypes;
+        std::vector<TestT>       mTestTypes;
         LogLevelT                mLogLevelMask;
         std::vector<LengthsT>    mProblemLengths;
         std::vector<AlphaT>      mAlphas;

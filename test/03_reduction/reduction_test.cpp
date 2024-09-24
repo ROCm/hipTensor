@@ -114,13 +114,14 @@ namespace hiptensor
         sAPILogBuff.str(std::string());
 
         auto param      = Base::GetParam();
-        auto testType   = std::get<0>(param);
+        auto dataTypes  = std::get<0>(param);
         auto logLevel   = std::get<1>(param);
         auto lengths    = std::get<2>(param);
         auto outputDims = std::get<3>(param);
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
         auto op         = std::get<6>(param);
+        auto testType   = std::get<7>(param);
 
         EXPECT_TRUE((lengths.size() > 0) && (lengths.size() <= 6));
         EXPECT_TRUE((outputDims.size() >= 0) && (outputDims.size() < 6));
@@ -128,9 +129,9 @@ namespace hiptensor
         EXPECT_TRUE((op == HIPTENSOR_OP_ADD) || (op == HIPTENSOR_OP_MUL) || (op == HIPTENSOR_OP_MAX)
                     || (op == HIPTENSOR_OP_MIN));
 
-        EXPECT_EQ(testType.size(), 2); // HIP_R_16F or HIP_R_32F
-        auto acDataType      = testType[0];
-        auto computeDataType = convertToComputeType(testType[1]);
+        EXPECT_EQ(dataTypes.size(), 2); // HIP_R_16F or HIP_R_32F
+        auto acDataType      = dataTypes[0];
+        auto computeDataType = convertToComputeType(dataTypes[1]);
         EXPECT_TRUE((acDataType == HIP_R_16F && computeDataType == HIPTENSOR_COMPUTE_16F)
                     || (acDataType == HIP_R_16F && computeDataType == HIPTENSOR_COMPUTE_32F)
                     || (acDataType == HIP_R_16BF && computeDataType == HIPTENSOR_COMPUTE_16BF)
@@ -159,11 +160,12 @@ namespace hiptensor
         }
     }
 
-    void ReductionTest::reportResults(std::ostream& stream,
-                                      hipDataType   dataType,
-                                      bool          omitSkipped,
-                                      bool          omitFailed,
-                                      bool          omitPassed) const
+    void ReductionTest::reportResults(std::ostream&   stream,
+                                      hiptensorTest_t testType,
+                                      hipDataType     dataType,
+                                      bool            omitSkipped,
+                                      bool            omitFailed,
+                                      bool            omitPassed) const
     {
         // Conditionally print outputs
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
@@ -176,14 +178,14 @@ namespace hiptensor
                 auto resource = getResource();
 
                 auto param      = Base::GetParam();
-                auto testType   = std::get<0>(param);
+                auto dataTypes  = std::get<0>(param);
                 auto logLevel   = std::get<1>(param);
                 auto lengths    = std::get<2>(param);
                 auto outputDims = std::get<3>(param);
                 auto alpha      = std::get<4>(param);
                 auto beta       = std::get<5>(param);
                 auto op         = std::get<6>(param);
-                stream << "Input [type: " << testType << ", lengths: " << lengths
+                stream << "Input [type: " << dataTypes << ", lengths: " << lengths
                        << ", outputDims: " << outputDims << ", alpha: " << alpha
                        << ", beta: " << beta << ", opReduce: " << op << "]\n";
 
@@ -218,16 +220,17 @@ namespace hiptensor
     void ReductionTest::RunKernel()
     {
         auto param      = Base::GetParam();
-        auto testType   = std::get<0>(param);
+        auto dataTypes  = std::get<0>(param);
         auto logLevel   = std::get<1>(param);
         auto lengths    = std::get<2>(param);
         auto outputDims = std::get<3>(param);
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
         auto opReduce   = std::get<6>(param);
+        auto testType   = std::get<7>(param);
 
-        auto acDataType      = testType[0];
-        auto computeDataType = convertToComputeType(testType[1]);
+        auto acDataType      = dataTypes[0];
+        auto computeDataType = convertToComputeType(dataTypes[1]);
 
         if(!mRunFlag)
         {
@@ -359,94 +362,98 @@ namespace hiptensor
                                                      worksize,
                                                      0 /* stream */));
 
-            resource->copyOutputToHost();
+            if(testType == HIPTENSOR_TEST_VALIDATION)
+            {
+                resource->copyOutputToHost();
 
-            CHECK_HIPTENSOR_ERROR(hiptensorReductionReference(&alphaValue,
-                                                              resource->hostA().get(),
-                                                              &descA,
-                                                              modeA.data(),
-                                                              &betaValue,
-                                                              resource->hostC().get(),
-                                                              &descC,
-                                                              modeC.data(),
-                                                              resource->hostReference().get(),
-                                                              &descD,
-                                                              modeD.data(),
-                                                              opReduce,
-                                                              computeDataType,
-                                                              0 /* stream */));
-            resource->copyReferenceToDevice();
+                CHECK_HIPTENSOR_ERROR(hiptensorReductionReference(&alphaValue,
+                                                                  resource->hostA().get(),
+                                                                  &descA,
+                                                                  modeA.data(),
+                                                                  &betaValue,
+                                                                  resource->hostC().get(),
+                                                                  &descC,
+                                                                  modeC.data(),
+                                                                  resource->hostReference().get(),
+                                                                  &descD,
+                                                                  modeD.data(),
+                                                                  opReduce,
+                                                                  computeDataType,
+                                                                  0 /* stream */));
+                resource->copyReferenceToDevice();
 
-            if(acDataType == HIP_R_16F)
+                if(acDataType == HIP_R_16F)
+                {
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<float16_t>(
+                            (float16_t*)resource->deviceD().get(),
+                            (float16_t*)resource->deviceReference().get(),
+                            resource->getCurrentOutputElementCount(),
+                            computeDataType);
+                }
+                else if(acDataType == HIP_R_16BF)
+                {
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<bfloat16_t>(
+                            (bfloat16_t*)resource->deviceD().get(),
+                            (bfloat16_t*)resource->deviceReference().get(),
+                            resource->getCurrentOutputElementCount(),
+                            computeDataType);
+                }
+                else if(acDataType == HIP_R_32F)
+                {
+                    auto reducedSize = resource->getCurrentInputElementCount()
+                                       / resource->getCurrentOutputElementCount();
+                    double tolerance = reducedSize * getEpsilon(computeDataType);
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<float32_t>(
+                            (float32_t*)resource->deviceD().get(),
+                            (float32_t*)resource->deviceReference().get(),
+                            resource->getCurrentOutputElementCount(),
+                            computeDataType,
+                            tolerance);
+                }
+                else if(acDataType == HIP_R_64F)
+                {
+                    auto reducedSize = resource->getCurrentInputElementCount()
+                                       / resource->getCurrentOutputElementCount();
+                    double tolerance = reducedSize * getEpsilon(computeDataType);
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<float64_t>(
+                            (float64_t*)resource->deviceD().get(),
+                            (float64_t*)resource->deviceReference().get(),
+                            resource->getCurrentOutputElementCount(),
+                            computeDataType,
+                            tolerance);
+                }
+
+                EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
+            } // if (testType == HIPTENSOR_TEST_VALIDATION)
+
+            using Options        = hiptensor::HiptensorOptions;
+            auto& loggingOptions = Options::instance();
+
+            if(!loggingOptions->omitCout())
             {
-                std::tie(mValidationResult, mMaxRelativeError)
-                    = compareEqualLaunchKernel<float16_t>(
-                        (float16_t*)resource->deviceD().get(),
-                        (float16_t*)resource->deviceReference().get(),
-                        resource->getCurrentOutputElementCount(),
-                        computeDataType);
+                reportResults(std::cout,
+                              testType,
+                              acDataType,
+                              loggingOptions->omitSkipped(),
+                              loggingOptions->omitFailed(),
+                              loggingOptions->omitPassed());
             }
-            else if(acDataType == HIP_R_16BF)
+
+            if(loggingOptions->ostream().isOpen())
             {
-                std::tie(mValidationResult, mMaxRelativeError)
-                    = compareEqualLaunchKernel<bfloat16_t>(
-                        (bfloat16_t*)resource->deviceD().get(),
-                        (bfloat16_t*)resource->deviceReference().get(),
-                        resource->getCurrentOutputElementCount(),
-                        computeDataType);
-            }
-            else if(acDataType == HIP_R_32F)
-            {
-                auto reducedSize = resource->getCurrentInputElementCount()
-                                   / resource->getCurrentOutputElementCount();
-                double tolerance = reducedSize * getEpsilon(computeDataType);
-                std::tie(mValidationResult, mMaxRelativeError)
-                    = compareEqualLaunchKernel<float32_t>(
-                        (float32_t*)resource->deviceD().get(),
-                        (float32_t*)resource->deviceReference().get(),
-                        resource->getCurrentOutputElementCount(),
-                        computeDataType,
-                        tolerance);
-            }
-            else if(acDataType == HIP_R_64F)
-            {
-                auto reducedSize = resource->getCurrentInputElementCount()
-                                   / resource->getCurrentOutputElementCount();
-                double tolerance = reducedSize * getEpsilon(computeDataType);
-                std::tie(mValidationResult, mMaxRelativeError)
-                    = compareEqualLaunchKernel<float64_t>(
-                        (float64_t*)resource->deviceD().get(),
-                        (float64_t*)resource->deviceReference().get(),
-                        resource->getCurrentOutputElementCount(),
-                        computeDataType,
-                        tolerance);
+                reportResults(loggingOptions->ostream().fstream(),
+                              testType,
+                              acDataType,
+                              loggingOptions->omitSkipped(),
+                              loggingOptions->omitFailed(),
+                              loggingOptions->omitPassed());
             }
         }
 
-        EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
+        void ReductionTest::TearDown() {}
 
-        using Options        = hiptensor::HiptensorOptions;
-        auto& loggingOptions = Options::instance();
-
-        if(!loggingOptions->omitCout())
-        {
-            reportResults(std::cout,
-                          acDataType,
-                          loggingOptions->omitSkipped(),
-                          loggingOptions->omitFailed(),
-                          loggingOptions->omitPassed());
-        }
-
-        if(loggingOptions->ostream().isOpen())
-        {
-            reportResults(loggingOptions->ostream().fstream(),
-                          acDataType,
-                          loggingOptions->omitSkipped(),
-                          loggingOptions->omitFailed(),
-                          loggingOptions->omitPassed());
-        }
-    }
-
-    void ReductionTest::TearDown() {}
-
-} // namespace hiptensor
+    } // namespace hiptensor

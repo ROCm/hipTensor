@@ -31,6 +31,7 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "permutation_resource.hpp"
 #include "permutation_test_params.hpp"
 
@@ -40,12 +41,13 @@ namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
-    using PermutationTestParams_t = std::tuple<typename PermutationTestParams::TestTypesT,
+    using PermutationTestParams_t = std::tuple<typename PermutationTestParams::DataTypesT,
                                                typename PermutationTestParams::LogLevelT,
                                                typename PermutationTestParams::LengthsT,
                                                typename PermutationTestParams::PermutedDimsT,
                                                typename PermutationTestParams::AlphaT,
-                                               typename PermutationTestParams::OperatorT>;
+                                               typename PermutationTestParams::OperatorT,
+                                               typename PermutationTestParams::TestT>;
     class PermutationTest : public ::testing::TestWithParam<PermutationTestParams_t>
     {
     protected: // Types

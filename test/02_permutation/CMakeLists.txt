@@ -37,29 +37,49 @@ set (PermutationTestSources ${PermutationCommonSources}
 # Rank 2 tests
 set (PermutationRank2TestSources ${PermutationCommonSources}
                                  ${CMAKE_CURRENT_SOURCE_DIR}/rank2_permutation_test.cpp)
-set (PermutationRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank2_test_params.yaml)
-add_hiptensor_test(rank2_permutation_test ${PermutationRank2TestConfig}  ${PermutationRank2TestSources})
+set (PermutationRank2TestConfigValidate  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank2_test_params.yaml)
+set (PermutationRank2TestConfigBench  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bench/rank2_test_params.yaml)
+set (PermutationRank2TestConfigExtended  ${CMAKE_CURRENT_SOURCE_DIR}/configs/extended/rank2_test_params.yaml)
+add_hiptensor_test(rank2_permutation_test-validate ${PermutationRank2TestConfigValidate}  ${PermutationRank2TestSources})
+add_hiptensor_test(rank2_permutation_test-bench ${PermutationRank2TestConfigBench}  ${PermutationRank2TestSources})
+add_hiptensor_test(rank2_permutation_test-extended ${PermutationRank2TestConfigExtended}  ${PermutationRank2TestSources})
 
 # Rank 3 tests
 set (PermutationRank3TestSources ${PermutationCommonSources}
                                  ${CMAKE_CURRENT_SOURCE_DIR}/rank3_permutation_test.cpp)
-set (PermutationRank3TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank3_test_params.yaml)
-add_hiptensor_test(rank3_permutation_test ${PermutationRank3TestConfig}  ${PermutationRank3TestSources})
+set (PermutationRank3TestConfigValidate  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank3_test_params.yaml)
+set (PermutationRank3TestConfigBench  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bench/rank3_test_params.yaml)
+set (PermutationRank3TestConfigExtended  ${CMAKE_CURRENT_SOURCE_DIR}/configs/extended/rank3_test_params.yaml)
+add_hiptensor_test(rank3_permutation_test-validate ${PermutationRank3TestConfigValidate}  ${PermutationRank3TestSources})
+add_hiptensor_test(rank3_permutation_test-bench ${PermutationRank3TestConfigBench}  ${PermutationRank3TestSources})
+add_hiptensor_test(rank3_permutation_test-extended ${PermutationRank3TestConfigExtended}  ${PermutationRank3TestSources})
 
 # Rank 4 tests
 set (PermutationRank4TestSources ${PermutationCommonSources}
                                  ${CMAKE_CURRENT_SOURCE_DIR}/rank4_permutation_test.cpp)
-set (PermutationRank4TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank4_test_params.yaml)
-add_hiptensor_test(rank4_permutation_test ${PermutationRank4TestConfig}  ${PermutationRank4TestSources})
+set (PermutationRank4TestConfigValidate  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank4_test_params.yaml)
+set (PermutationRank4TestConfigBench ${CMAKE_CURRENT_SOURCE_DIR}/configs/bench/rank4_test_params.yaml)
+set (PermutationRank4TestConfigExtended  ${CMAKE_CURRENT_SOURCE_DIR}/configs/extended/rank4_test_params.yaml)
+add_hiptensor_test(rank4_permutation_test-validate ${PermutationRank4TestConfigValidate}  ${PermutationRank4TestSources})
+add_hiptensor_test(rank4_permutation_test-bench ${PermutationRank4TestConfigBench}  ${PermutationRank4TestSources})
+add_hiptensor_test(rank4_permutation_test-extended ${PermutationRank4TestConfigExtended}  ${PermutationRank4TestSources})
 
 # Rank 5 tests
 set (PermutationRank5TestSources ${PermutationCommonSources}
                                  ${CMAKE_CURRENT_SOURCE_DIR}/rank5_permutation_test.cpp)
-set (PermutationRank5TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank5_test_params.yaml)
-add_hiptensor_test(rank5_permutation_test ${PermutationRank5TestConfig}  ${PermutationRank5TestSources})
+set (PermutationRank5TestConfigValidate  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank5_test_params.yaml)
+set (PermutationRank5TestConfigBench  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bench/rank5_test_params.yaml)
+set (PermutationRank5TestConfigExtended  ${CMAKE_CURRENT_SOURCE_DIR}/configs/extended/rank5_test_params.yaml)
+add_hiptensor_test(rank5_permutation_test-validate ${PermutationRank5TestConfigValidate}  ${PermutationRank5TestSources})
+add_hiptensor_test(rank5_permutation_test-bench ${PermutationRank5TestConfigBench}  ${PermutationRank5TestSources})
+add_hiptensor_test(rank5_permutation_test-extended ${PermutationRank5TestConfigExtended}  ${PermutationRank5TestSources})
 
 # Rank 6 tests
 set (PermutationRank6TestSources ${PermutationCommonSources}
                                  ${CMAKE_CURRENT_SOURCE_DIR}/rank6_permutation_test.cpp)
-set (PermutationRank6TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/rank6_test_params.yaml)
-add_hiptensor_test(rank6_permutation_test ${PermutationRank6TestConfig}  ${PermutationRank6TestSources})
+set (PermutationRank6TestConfigValidate  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank6_test_params.yaml)
+set (PermutationRank6TestConfigBench ${CMAKE_CURRENT_SOURCE_DIR}/configs/bench/rank6_test_params.yaml)
+set (PermutationRank6TestConfigExtended ${CMAKE_CURRENT_SOURCE_DIR}/configs/extended/rank6_test_params.yaml)
+add_hiptensor_test(rank6_permutation_test-validate ${PermutationRank6TestConfigValidate}  ${PermutationRank6TestSources})
+add_hiptensor_test(rank6_permutation_test-bench ${PermutationRank6TestConfigBench}  ${PermutationRank6TestSources})
+add_hiptensor_test(rank6_permutation_test-extended ${PermutationRank6TestConfigExtended}  ${PermutationRank6TestSources})

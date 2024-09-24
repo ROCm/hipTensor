@@ -33,6 +33,7 @@
 #include "01_contraction/contraction_test_params.hpp"
 #include "02_permutation/permutation_test_params.hpp"
 #include "03_reduction/reduction_test_params.hpp"
+#include "common.hpp"
 #include "yaml_parser_impl.hpp"
 
 // Fwd declare NoneType
@@ -49,6 +50,8 @@ namespace hiptensor
 //     ///
 //     struct ContractionTestParams
 //     {
+//         using TestT = hiptensor::hiptensorTest_t;
+
 //         using TestDataTypeT = std::vector<hipDataType>;
 
 //         using AlgorithmT = hiptensorAlgo_t;
@@ -88,6 +91,7 @@ LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 // - val1
 // ...
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
+LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensor::hiptensorTest_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
@@ -124,6 +128,18 @@ namespace llvm
                 io.enumCase(value, "HIP_C_32F", HIP_C_32F);
                 io.enumCase(value, "HIP_C_64F", HIP_C_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
+            }
+        };
+
+        template <>
+        struct ScalarEnumerationTraits<hiptensor::hiptensorTest_t>
+        {
+            static void enumeration(IO& io, hiptensor::hiptensorTest_t& value)
+            {
+                io.enumCase(
+                    value, "HIPTENSOR_TEST_VALIDATION", hiptensor::HIPTENSOR_TEST_VALIDATION);
+                io.enumCase(value, "HIPTENSOR_TEST_BENCH", hiptensor::HIPTENSOR_TEST_BENCH);
+                io.enumCase(value, "HIPTENSOR_TEST_EXTENDED", hiptensor::HIPTENSOR_TEST_EXTENDED);
             }
         };
 
@@ -239,6 +255,7 @@ namespace llvm
 
                 // Sequences of combinatorial fields
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
+                io.mapRequired("Test Type", doc.testTypes());
                 io.mapRequired("Algorithm Types", doc.algorithms());
                 io.mapRequired("Operators", doc.operators());
                 io.mapRequired("Worksize Prefs", doc.workSizePrefrences());
@@ -270,6 +287,11 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
+                if(doc.testTypes().size() == 0)
+                {
+                    return "Error: Empty Test Type(s)";
+                }
+
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";
@@ -324,6 +346,7 @@ namespace llvm
                 io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
+                io.mapRequired("Test Type", doc.testTypes());
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Lengths", doc.problemLengths());
@@ -334,6 +357,11 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::PermutationTestParams& doc)
             {
+                if(doc.testTypes().size() == 0)
+                {
+                    return "Error: Empty Test Type(s)";
+                }
+
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";
@@ -370,6 +398,7 @@ namespace llvm
                 io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
+                io.mapRequired("Test Type", doc.testTypes());
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
@@ -381,6 +410,11 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ReductionTestParams& doc)
             {
+                if(doc.testTypes().size() == 0)
+                {
+                    return "Error: Empty Test Type(s)";
+                }
+
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";

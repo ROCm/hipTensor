@@ -80,7 +80,8 @@ auto inline load_combined_config_params()
                               ::testing::ValuesIn(testParams.problemStrides()),
                               ::testing::ValuesIn(testParams.problemModes()),
                               ::testing::ValuesIn(testParams.alphas()),
-                              ::testing::ValuesIn(testParams.betas()));
+                              ::testing::ValuesIn(testParams.betas()),
+                              ::testing::ValuesIn(testParams.testTypes()));
 }
 
 auto inline load_sequence_config_params()

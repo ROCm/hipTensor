@@ -33,6 +33,7 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -40,8 +41,9 @@ namespace hiptensor
 
     struct ContractionTestParams
     {
-        using TestTypesT = std::vector<hipDataType>;
+        using DataTypesT = std::vector<hipDataType>;
 
+        using TestT         = hiptensorTest_t;
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;
         using WorkSizePrefT = hiptensorWorksizePreference_t;
@@ -54,7 +56,12 @@ namespace hiptensor
         using BetaT    = std::vector<double>;
 
     public:
-        std::vector<TestTypesT>& dataTypes()
+        std::vector<TestT>& testTypes()
+        {
+            return mTestTypes;
+        }
+
+        std::vector<DataTypesT>& dataTypes()
         {
             return mDataTypes;
         }
@@ -106,7 +113,8 @@ namespace hiptensor
 
         void printParams()
         {
-            std::cout << "DataTypes: " << mDataTypes << std::endl
+            std::cout << "TestTypes: " << mTestTypes << std::endl
+                      << "DataTypes: " << mDataTypes << std::endl
                       << "Algorithms: " << mAlgorithms << std::endl
                       << "Operators: " << mOperators << std::endl
                       << "WorkSizePrefs: " << mWorkSizePrefs << std::endl
@@ -120,7 +128,8 @@ namespace hiptensor
 
     private:
         //Data types of input and output tensors
-        std::vector<TestTypesT>    mDataTypes;
+        std::vector<TestT>         mTestTypes;
+        std::vector<DataTypesT>    mDataTypes;
         std::vector<AlgorithmT>    mAlgorithms;
         std::vector<OperatorT>     mOperators;
         std::vector<WorkSizePrefT> mWorkSizePrefs;

@@ -45,7 +45,8 @@ namespace hiptensor
     static constexpr hipDataType NONE_TYPE = (hipDataType)31;
     struct ContractionTestParams
     {
-        using TestTypesT = std::vector<hipDataType>;
+        using DataTypesT = std::vector<hipDataType>;
+        using TestT      = std::vector<hiptensorTest_t>;
 
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;
@@ -59,7 +60,8 @@ namespace hiptensor
         using BetaT    = std::vector<double>;
 
         //Data types of input and output tensors
-        std::vector<TestTypesT>    mDataTypes;
+        std::vector<DataTypesT>    mDataTypes;
+        std::vector<TestT>         mTestTypes;
         std::vector<AlgorithmT>    mAlgorithms;
         std::vector<OperatorT>     mOperators;
         std::vector<WorkSizePrefT> mWorkSizePrefs;
@@ -78,6 +80,7 @@ int main(int argc, char* argv[])
 {
     auto yee          = hiptensor::ContractionTestParams{};
     yee.mLogLevelMask = (hiptensorLogLevel_t)(HIPTENSOR_LOG_LEVEL_OFF);
+    yee.mTestTypes    = {HIPTENSOR_TEST_VALIDATION, HIPTENSOR_TEST_BENCH, HIPTENSOR_TEST_EXTENDED};
     yee.mDataTypes    = {
         // clang-format off
                 {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F, HIP_R_32F}, // scale F32

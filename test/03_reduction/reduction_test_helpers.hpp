@@ -72,7 +72,8 @@ auto inline load_config_helper()
                               ::testing::ValuesIn(testParams.outputDims()),
                               ::testing::ValuesIn(testParams.alphas()),
                               ::testing::ValuesIn(testParams.betas()),
-                              ::testing::ValuesIn(testParams.operators()));
+                              ::testing::ValuesIn(testParams.operators()),
+                              ::testing::ValuesIn(testParams.testTypes()));
 }
 
 #endif // HIPTENSOR_REDUCTION_TEST_HELPERS_HPP

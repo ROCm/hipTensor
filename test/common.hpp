@@ -46,6 +46,18 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipFree(ptr));
         }
     };
+
+    //! @brief testing context
+    typedef enum
+    {
+        //! Validation test
+        HIPTENSOR_TEST_VALIDATION = 0,
+        //! Benchmark test
+        HIPTENSOR_TEST_BENCH = 1,
+        //! Extended benchark test
+        HIPTENSOR_TEST_EXTENDED = 2,
+
+    } hiptensorTest_t;
 } // namespace hiptensor
 
 #endif // HIPTENSOR_TEST_COMMON_HPP

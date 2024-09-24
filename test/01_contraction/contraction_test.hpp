@@ -31,6 +31,7 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "contraction_resource.hpp"
 #include "contraction_test_params.hpp"
 
@@ -44,7 +45,7 @@ namespace hiptensor
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
     class ContractionTest
-        : public ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestTypesT,
+        : public ::testing::TestWithParam<std::tuple<typename ContractionTestParams::DataTypesT,
                                                      typename ContractionTestParams::AlgorithmT,
                                                      typename ContractionTestParams::OperatorT,
                                                      typename ContractionTestParams::WorkSizePrefT,
@@ -53,11 +54,12 @@ namespace hiptensor
                                                      typename ContractionTestParams::StridesT,
                                                      typename ContractionTestParams::ModesT,
                                                      typename ContractionTestParams::AlphaT,
-                                                     typename ContractionTestParams::BetaT>>
+                                                     typename ContractionTestParams::BetaT,
+                                                     typename ContractionTestParams::TestT>>
     {
     protected: // Types
         using Base
-            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestTypesT,
+            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::DataTypesT,
                                                   typename ContractionTestParams::AlgorithmT,
                                                   typename ContractionTestParams::OperatorT,
                                                   typename ContractionTestParams::WorkSizePrefT,
@@ -66,7 +68,8 @@ namespace hiptensor
                                                   typename ContractionTestParams::StridesT,
                                                   typename ContractionTestParams::ModesT,
                                                   typename ContractionTestParams::AlphaT,
-                                                  typename ContractionTestParams::BetaT>>;
+                                                  typename ContractionTestParams::BetaT,
+                                                  typename ContractionTestParams::TestT>>;
 
         // Shared access to Contraction storage
         using DataStorage = ContractionResource;
@@ -96,6 +99,7 @@ namespace hiptensor
         void RunKernel();
 
         void reportResults(std::ostream&          stream,
+                           hiptensorTest_t        testType,
                            hipDataType            DDataType,
                            hiptensorComputeType_t computeType,
                            bool                   omitSkipped,

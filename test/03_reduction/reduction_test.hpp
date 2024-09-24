@@ -31,6 +31,7 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "reduction_resource.hpp"
 #include "reduction_test_params.hpp"
 
@@ -40,13 +41,14 @@ namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
-    using ReductionTestParams_t = std::tuple<typename ReductionTestParams::TestTypesT,
+    using ReductionTestParams_t = std::tuple<typename ReductionTestParams::DataTypesT,
                                              typename ReductionTestParams::LogLevelT,
                                              typename ReductionTestParams::LengthsT,
                                              typename ReductionTestParams::OutputDimsT,
                                              typename ReductionTestParams::AlphaT,
                                              typename ReductionTestParams::BetaT,
-                                             typename ReductionTestParams::OperatorT>;
+                                             typename ReductionTestParams::OperatorT,
+                                             typename ReductionTestParams::TestT>;
     class ReductionTest : public ::testing::TestWithParam<ReductionTestParams_t>
     {
     protected: // Types
