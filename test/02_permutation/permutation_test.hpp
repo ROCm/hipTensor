@@ -80,11 +80,12 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream& stream,
-                           hipDataType   DDataType,
-                           bool          omitSkipped,
-                           bool          omitFailed,
-                           bool          omitPassed) const;
+        void reportResults(std::ostream&   stream,
+                           hiptensorTest_t testType,
+                           hipDataType     DDataType,
+                           bool            omitSkipped,
+                           bool            omitFailed,
+                           bool            omitPassed) const;
 
     protected:
         // Workspace items

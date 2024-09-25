@@ -99,6 +99,7 @@ auto inline load_sequence_config_params()
     auto problemModes   = testParams.problemModes();
     auto alphas         = testParams.alphas();
     auto betas          = testParams.betas();
+    auto testTypes      = testParams.testTypes();
 
     std::vector<size_t> lengths   = {dataTypes.size(),
                                      algorithms.size(),
@@ -109,7 +110,8 @@ auto inline load_sequence_config_params()
                                      problemStrides.size(),
                                      problemModes.size(),
                                      alphas.size(),
-                                     betas.size()};
+                                     betas.size(),
+                                     testTypes.size()};
     auto                maxLength = *std::max_element(lengths.begin(), lengths.end());
 
     dataTypes.resize(maxLength, dataTypes.back());
@@ -122,6 +124,7 @@ auto inline load_sequence_config_params()
     problemModes.resize(maxLength, problemModes.back());
     alphas.resize(maxLength, alphas.back());
     betas.resize(maxLength, betas.back());
+    testTypes.resize(maxLength, testTypes.back());
 
     using ParamsTuple = decltype(std::make_tuple(dataTypes.front(),
                                                  algorithms.front(),
@@ -132,7 +135,8 @@ auto inline load_sequence_config_params()
                                                  problemStrides.front(),
                                                  problemModes.front(),
                                                  alphas.front(),
-                                                 betas.front()));
+                                                 betas.front(),
+                                                 testTypes.front()));
 
     std::vector<ParamsTuple> paramsSequence;
     for(int i = 0; i < maxLength; i++)
@@ -146,7 +150,8 @@ auto inline load_sequence_config_params()
                                                  problemStrides[i],
                                                  problemModes[i],
                                                  alphas[i],
-                                                 betas[i]));
+                                                 betas[i],
+                                                 testTypes[i]));
     }
 
     return ::testing::ValuesIn(paramsSequence);

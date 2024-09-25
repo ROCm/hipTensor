@@ -453,7 +453,7 @@ namespace hiptensor
                               loggingOptions->omitPassed());
             }
         }
+    }
+    void ReductionTest::TearDown() {}
 
-        void ReductionTest::TearDown() {}
-
-    } // namespace hiptensor
+} // namespace hiptensor
