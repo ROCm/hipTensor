@@ -254,8 +254,8 @@ namespace llvm
                 io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
-                io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Test Type", doc.testTypes());
+                io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Algorithm Types", doc.algorithms());
                 io.mapRequired("Operators", doc.operators());
                 io.mapRequired("Worksize Prefs", doc.workSizePrefrences());

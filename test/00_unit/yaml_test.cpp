@@ -60,8 +60,8 @@ namespace hiptensor
         using BetaT    = std::vector<double>;
 
         //Data types of input and output tensors
-        std::vector<DataTypesT>    mDataTypes;
         std::vector<TestT>         mTestTypes;
+        std::vector<DataTypesT>    mDataTypes;
         std::vector<AlgorithmT>    mAlgorithms;
         std::vector<OperatorT>     mOperators;
         std::vector<WorkSizePrefT> mWorkSizePrefs;

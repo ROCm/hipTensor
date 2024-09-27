@@ -302,10 +302,9 @@ namespace hiptensor
                             resource->getCurrentMatrixElement(),
                             convertToComputeType(computeDataType));
                 }
-            }
-
-            EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-        } // if (testType == HIPTENSOR_TEST_VALIDATION)
+                EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
+            } // if (testType == HIPTENSOR_TEST_VALIDATION)
+        }
 
         using Options        = hiptensor::HiptensorOptions;
         auto& loggingOptions = Options::instance();
