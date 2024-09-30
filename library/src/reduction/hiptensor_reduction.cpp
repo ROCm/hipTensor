@@ -149,8 +149,8 @@ namespace
             return errorCode;
         }
 
-        auto modeSetA = std::set(modeA, modeA + descA->mLengths.size());
-        auto modeSetC = std::set(modeC, modeC + descC->mLengths.size());
+        auto modeSetA = std::set<int32_t>(modeA, modeA + descA->mLengths.size());
+        auto modeSetC = std::set<int32_t>(modeC, modeC + descC->mLengths.size());
         if(descA->mLengths.size() < descC->mLengths.size() || !(*descC == *descD)
            || !std::includes(
                modeSetA.cbegin(), modeSetA.cend(), modeSetC.cbegin(), modeSetC.cend()))
