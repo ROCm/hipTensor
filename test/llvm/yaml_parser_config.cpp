@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,6 @@ namespace hiptensor
 //     ///
 //     struct ContractionTestParams
 //     {
-//         using TestT = hiptensor::hiptensorTest_t;
 
 //         using TestDataTypeT = std::vector<hipDataType>;
 
@@ -91,7 +90,6 @@ LLVM_YAML_STRONG_TYPEDEF(double, BetaT);
 // - val1
 // ...
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
-LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensor::hiptensorTest_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
@@ -128,18 +126,6 @@ namespace llvm
                 io.enumCase(value, "HIP_C_32F", HIP_C_32F);
                 io.enumCase(value, "HIP_C_64F", HIP_C_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
-            }
-        };
-
-        template <>
-        struct ScalarEnumerationTraits<hiptensor::hiptensorTest_t>
-        {
-            static void enumeration(IO& io, hiptensor::hiptensorTest_t& value)
-            {
-                io.enumCase(
-                    value, "HIPTENSOR_TEST_VALIDATION", hiptensor::HIPTENSOR_TEST_VALIDATION);
-                io.enumCase(value, "HIPTENSOR_TEST_BENCH", hiptensor::HIPTENSOR_TEST_BENCH);
-                io.enumCase(value, "HIPTENSOR_TEST_EXTENDED", hiptensor::HIPTENSOR_TEST_EXTENDED);
             }
         };
 

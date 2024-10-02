@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,17 +47,6 @@ namespace hiptensor
         }
     };
 
-    //! @brief testing context
-    typedef enum
-    {
-        //! Validation test
-        HIPTENSOR_TEST_VALIDATION = 0,
-        //! Benchmark test
-        HIPTENSOR_TEST_BENCH = 1,
-        //! Extended benchark test
-        HIPTENSOR_TEST_EXTENDED = 2,
-
-    } hiptensorTest_t;
 } // namespace hiptensor
 
 #endif // HIPTENSOR_TEST_COMMON_HPP

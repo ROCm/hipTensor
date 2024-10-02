@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,7 @@ namespace hiptensor
                                              typename ReductionTestParams::OutputDimsT,
                                              typename ReductionTestParams::AlphaT,
                                              typename ReductionTestParams::BetaT,
-                                             typename ReductionTestParams::OperatorT,
-                                             typename ReductionTestParams::TestT>;
+                                             typename ReductionTestParams::OperatorT>;
     class ReductionTest : public ::testing::TestWithParam<ReductionTestParams_t>
     {
     protected: // Types
@@ -81,12 +80,11 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream&   stream,
-                           hiptensorTest_t testType,
-                           hipDataType     DDataType,
-                           bool            omitSkipped,
-                           bool            omitFailed,
-                           bool            omitPassed) const;
+        void reportResults(std::ostream& stream,
+                           hipDataType   DDataType,
+                           bool          omitSkipped,
+                           bool          omitFailed,
+                           bool          omitPassed) const;
 
     protected:
         // Workspace items

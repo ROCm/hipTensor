@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,12 +119,11 @@ namespace hiptensor
         }
     }
 
-    void PermutationTest::reportResults(std::ostream&   stream,
-                                        hiptensorTest_t testType,
-                                        hipDataType     dataType,
-                                        bool            omitSkipped,
-                                        bool            omitFailed,
-                                        bool            omitPassed) const
+    void PermutationTest::reportResults(std::ostream& stream,
+                                        hipDataType   dataType,
+                                        bool          omitSkipped,
+                                        bool          omitFailed,
+                                        bool          omitPassed) const
     {
         // Conditionally print outputs
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)

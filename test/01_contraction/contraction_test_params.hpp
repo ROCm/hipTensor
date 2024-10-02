@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,6 @@ namespace hiptensor
     {
         using DataTypesT = std::vector<hipDataType>;
 
-        using TestT         = hiptensorTest_t;
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;
         using WorkSizePrefT = hiptensorWorksizePreference_t;
@@ -56,11 +55,6 @@ namespace hiptensor
         using BetaT    = std::vector<double>;
 
     public:
-        std::vector<TestT>& testTypes()
-        {
-            return mTestTypes;
-        }
-
         std::vector<DataTypesT>& dataTypes()
         {
             return mDataTypes;
@@ -113,8 +107,7 @@ namespace hiptensor
 
         void printParams()
         {
-            std::cout << "TestTypes: " << mTestTypes << std::endl
-                      << "DataTypes: " << mDataTypes << std::endl
+            std::cout << "DataTypes: " << mDataTypes << std::endl
                       << "Algorithms: " << mAlgorithms << std::endl
                       << "Operators: " << mOperators << std::endl
                       << "WorkSizePrefs: " << mWorkSizePrefs << std::endl
@@ -128,7 +121,6 @@ namespace hiptensor
 
     private:
         //Data types of input and output tensors
-        std::vector<TestT>         mTestTypes;
         std::vector<DataTypesT>    mDataTypes;
         std::vector<AlgorithmT>    mAlgorithms;
         std::vector<OperatorT>     mOperators;

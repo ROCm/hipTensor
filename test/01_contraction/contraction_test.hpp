@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,8 +54,7 @@ namespace hiptensor
                                                      typename ContractionTestParams::StridesT,
                                                      typename ContractionTestParams::ModesT,
                                                      typename ContractionTestParams::AlphaT,
-                                                     typename ContractionTestParams::BetaT,
-                                                     typename ContractionTestParams::TestT>>
+                                                     typename ContractionTestParams::BetaT>>
     {
     protected: // Types
         using Base
@@ -68,8 +67,7 @@ namespace hiptensor
                                                   typename ContractionTestParams::StridesT,
                                                   typename ContractionTestParams::ModesT,
                                                   typename ContractionTestParams::AlphaT,
-                                                  typename ContractionTestParams::BetaT,
-                                                  typename ContractionTestParams::TestT>>;
+                                                  typename ContractionTestParams::BetaT>>;
 
         // Shared access to Contraction storage
         using DataStorage = ContractionResource;
@@ -99,7 +97,6 @@ namespace hiptensor
         void RunKernel();
 
         void reportResults(std::ostream&          stream,
-                           hiptensorTest_t        testType,
                            hipDataType            DDataType,
                            hiptensorComputeType_t computeType,
                            bool                   omitSkipped,

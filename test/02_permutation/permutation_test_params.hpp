@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,6 @@ namespace hiptensor
     {
         using DataTypesT = std::vector<hipDataType>;
 
-        using TestT         = hiptensorTest_t;
         using LogLevelT     = hiptensorLogLevel_t;
         using LengthsT      = std::vector<std::size_t>;
         using AlphaT        = double;
@@ -50,11 +49,6 @@ namespace hiptensor
         using OperatorT     = std::vector<hiptensorOperator_t>;
 
     public:
-        std::vector<TestT>& testTypes()
-        {
-            return mTestTypes;
-        }
-
         std::vector<DataTypesT>& dataTypes()
         {
             return mDataTypes;
@@ -97,7 +91,6 @@ namespace hiptensor
 
     private:
         //Data types of input and output tensors
-        std::vector<TestT>         mTestTypes;
         std::vector<DataTypesT>    mDataTypes;
         LogLevelT                  mLogLevelMask;
         std::vector<LengthsT>      mProblemLengths;
