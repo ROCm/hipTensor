@@ -121,7 +121,6 @@ namespace hiptensor
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
         auto op         = std::get<6>(param);
-        auto testType   = std::get<7>(param);
 
         EXPECT_TRUE((lengths.size() > 0) && (lengths.size() <= 6));
         EXPECT_TRUE((outputDims.size() >= 0) && (outputDims.size() < 6));
@@ -226,7 +225,6 @@ namespace hiptensor
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
         auto opReduce   = std::get<6>(param);
-        auto testType   = std::get<7>(param);
 
         auto acDataType      = dataTypes[0];
         auto computeDataType = convertToComputeType(dataTypes[1]);
@@ -361,7 +359,9 @@ namespace hiptensor
                                                      worksize,
                                                      0 /* stream */));
 
-            if(testType == HIPTENSOR_TEST_VALIDATION)
+            auto testOptions = HiptensorOptions::instance();
+
+            if(testOptions.performValidation())
             {
                 resource->copyOutputToHost();
 
@@ -427,7 +427,7 @@ namespace hiptensor
                 }
 
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-            } // if (testType == HIPTENSOR_TEST_VALIDATION)
+            } // if (testOptions.performValidation())
 
             using Options        = hiptensor::HiptensorOptions;
             auto& loggingOptions = Options::instance();
@@ -435,7 +435,6 @@ namespace hiptensor
             if(!loggingOptions->omitCout())
             {
                 reportResults(std::cout,
-                              testType,
                               acDataType,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
@@ -445,7 +444,6 @@ namespace hiptensor
             if(loggingOptions->ostream().isOpen())
             {
                 reportResults(loggingOptions->ostream().fstream(),
-                              testType,
                               acDataType,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),

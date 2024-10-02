@@ -91,7 +91,6 @@ namespace hiptensor
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
         auto operators    = std::get<5>(param);
-        auto testType     = std::get<6>(param);
 
         EXPECT_TRUE((lengths.size() > 1) && (lengths.size() <= 6));
         EXPECT_TRUE((permutedDims.size() > 1) && (permutedDims.size() <= 6));
@@ -175,7 +174,6 @@ namespace hiptensor
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
         auto operators    = std::get<5>(param);
-        auto testType     = std::get<6>(param);
 
         auto abDataType      = dataTypes[0];
         auto computeDataType = dataTypes[1];
@@ -252,8 +250,9 @@ namespace hiptensor
                                                        modeB.data(),
                                                        computeDataType,
                                                        0 /* stream */));
+            auto testOptions = HiptensorOptions::instance();
 
-            if(testType == HIPTENSOR_TEST_VALIDATION)
+            if(testOptions.performValidation())
             {
                 resource->copyBToHost();
 
@@ -302,7 +301,7 @@ namespace hiptensor
                             convertToComputeType(computeDataType));
                 }
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-            } // if (testType == HIPTENSOR_TEST_VALIDATION)
+            } // if (testOptions.performValidation())
         }
 
         using Options        = hiptensor::HiptensorOptions;
@@ -311,7 +310,6 @@ namespace hiptensor
         if(!loggingOptions->omitCout())
         {
             reportResults(std::cout,
-                          testType,
                           abDataType,
                           loggingOptions->omitSkipped(),
                           loggingOptions->omitFailed(),
@@ -321,7 +319,6 @@ namespace hiptensor
         if(loggingOptions->ostream().isOpen())
         {
             reportResults(loggingOptions->ostream().fstream(),
-                          testType,
                           abDataType,
                           loggingOptions->omitSkipped(),
                           loggingOptions->omitFailed(),

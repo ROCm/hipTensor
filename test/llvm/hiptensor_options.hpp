@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,14 +51,20 @@ namespace hiptensor
 
         void parseOptions(int argc, char** argv);
         void setOmits(int mask);
+        void setValidation(std::string val);
 
         HiptensorOStream& ostream();
 
-        bool        omitSkipped();
-        bool        omitFailed();
-        bool        omitPassed();
-        bool        omitCout();
-        bool        usingDefaultConfig();
+        bool omitSkipped();
+        bool omitFailed();
+        bool omitPassed();
+        bool omitCout();
+        bool usingDefaultConfig();
+        bool performValidation();
+
+        uint32_t hotRuns();
+        uint32_t coldRuns();
+
         std::string inputFilename();
         std::string outputFilename();
 
@@ -67,6 +73,9 @@ namespace hiptensor
 
         bool mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
         bool mUsingDefaultParams;
+        bool mValidate;
+
+        uint32_t mHotRuns, mColdRuns;
 
         std::string mInputFilename, mOutputFilename;
     };

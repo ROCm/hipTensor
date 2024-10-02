@@ -101,7 +101,6 @@ namespace hiptensor
         auto modes        = std::get<7>(param);
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
-        auto testType     = std::get<10>(param);
 
         EXPECT_EQ(dataTypes.size(), 5);
 
@@ -631,7 +630,6 @@ namespace hiptensor
         auto modes        = std::get<7>(param);
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
-        auto testType     = std::get<10>(param);
 
         if(mRunFlag)
         {
@@ -671,7 +669,10 @@ namespace hiptensor
                                                        workspace,
                                                        worksize,
                                                        0 /* stream */));
-            if(testType == HIPTENSOR_TEST_VALIDATION)
+
+            auto testOptions = HiptensorOptions::instance();
+
+            if(testOptions.performValidation())
             {
                 CHECK_HIPTENSOR_ERROR(hiptensorContractionReference(&plan,
                                                                     (void*)&alphaBuf,
@@ -769,7 +770,7 @@ namespace hiptensor
                 }
 
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-            } // if (testType == HIPTENSOR_TEST_VALIDATION)
+            } // if (testOptions.performValidation())
 
             using Options        = hiptensor::HiptensorOptions;
             auto& loggingOptions = Options::instance();
@@ -777,7 +778,6 @@ namespace hiptensor
             if(!loggingOptions->omitCout())
             {
                 reportResults(std::cout,
-                              testType,
                               DDataType,
                               computeType,
                               loggingOptions->omitSkipped(),
@@ -788,7 +788,6 @@ namespace hiptensor
             if(loggingOptions->ostream().isOpen())
             {
                 reportResults(loggingOptions->ostream().fstream(),
-                              testType,
                               DDataType,
                               computeType,
                               loggingOptions->omitSkipped(),

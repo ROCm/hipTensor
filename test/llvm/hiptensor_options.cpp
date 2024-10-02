@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,22 @@ llvm::cl::opt<std::string> hiptensorOutputFilename("o",
                                                    llvm::cl::desc("Specify output filename"),
                                                    llvm::cl::value_desc("filename"),
                                                    llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<std::string>
+    hiptensorValidationOption("v",
+                              llvm::cl::desc("Specify whether to perform validation"),
+                              llvm::cl::value_desc("ON/OFF"),
+                              llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<int32_t>
+                       hiptensorHotRuns("hot_runs",
+                     llvm::cl::desc("Specify number of benchmark runs to include in the timing"),
+                     llvm::cl::value_desc("integer number"),
+                     llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<int32_t> hiptensorColdRuns(
+    "cold_runs",
+    llvm::cl::desc(
+        "Specify number of benchmark runs to exclude from timing, but to warm up frequency"),
+    llvm::cl::value_desc("integer number"),
+    llvm::cl::cat(HiptensorCategory));
 
 llvm::cl::opt<int32_t>
     hiptensorOmitMask("omit",
@@ -57,6 +73,9 @@ namespace hiptensor
         , mOmitPassed(false)
         , mOmitCout(false)
         , mUsingDefaultParams(true)
+        , mValidate(true)
+        , mHotRuns(1)
+        , mColdRuns(0)
         , mInputFilename("")
         , mOutputFilename("")
     {
@@ -77,6 +96,11 @@ namespace hiptensor
         mOutputFilename = hiptensorOutputFilename;
 
         setOmits(hiptensorOmitMask);
+
+        setValidation(hiptensorValidationOption);
+
+        mHotRuns  = hiptensorHotRuns;
+        mColdRuns = hiptensorColdRuns;
 
         // Load testing params from YAML file if present
         if(!mInputFilename.empty())
@@ -101,6 +125,18 @@ namespace hiptensor
             mOmitPassed = true;
         if(mask & 8)
             mOmitCout = true;
+    }
+
+    void HiptensorOptions::setValidation(std::string val)
+    {
+        if(val.compare("ON") == 0)
+        {
+            mValidate = true;
+        }
+        else if(val.compare("OFF") == 0)
+        {
+            mValidate = false;
+        }
     }
 
     HiptensorOStream& HiptensorOptions::ostream()
@@ -131,6 +167,21 @@ namespace hiptensor
     bool HiptensorOptions::usingDefaultConfig()
     {
         return mUsingDefaultParams;
+    }
+
+    bool HiptensorOptions::performValidation()
+    {
+        return mValidate;
+    }
+
+    uint32_t HiptensorOptions::hotRuns()
+    {
+        return mHotRuns;
+    }
+
+    uint32_t HiptensorOptions::coldRuns()
+    {
+        return mColdRuns;
     }
 
     std::string HiptensorOptions::inputFilename()

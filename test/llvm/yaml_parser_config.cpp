@@ -240,7 +240,6 @@ namespace llvm
                 io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
-                io.mapRequired("Test Type", doc.testTypes());
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Algorithm Types", doc.algorithms());
                 io.mapRequired("Operators", doc.operators());
@@ -273,10 +272,6 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
-                if(doc.testTypes().size() == 0)
-                {
-                    return "Error: Empty Test Type(s)";
-                }
 
                 if(doc.problemLengths().size() == 0)
                 {
@@ -332,7 +327,6 @@ namespace llvm
                 io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
-                io.mapRequired("Test Type", doc.testTypes());
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Lengths", doc.problemLengths());
@@ -343,10 +337,6 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::PermutationTestParams& doc)
             {
-                if(doc.testTypes().size() == 0)
-                {
-                    return "Error: Empty Test Type(s)";
-                }
 
                 if(doc.problemLengths().size() == 0)
                 {
@@ -384,7 +374,6 @@ namespace llvm
                 io.mapRequired("Log Level", doc.logLevelMask());
 
                 // Sequences of combinatorial fields
-                io.mapRequired("Test Type", doc.testTypes());
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
@@ -396,10 +385,6 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ReductionTestParams& doc)
             {
-                if(doc.testTypes().size() == 0)
-                {
-                    return "Error: Empty Test Type(s)";
-                }
 
                 if(doc.problemLengths().size() == 0)
                 {

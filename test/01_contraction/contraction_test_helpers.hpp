@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -80,8 +80,7 @@ auto inline load_combined_config_params()
                               ::testing::ValuesIn(testParams.problemStrides()),
                               ::testing::ValuesIn(testParams.problemModes()),
                               ::testing::ValuesIn(testParams.alphas()),
-                              ::testing::ValuesIn(testParams.betas()),
-                              ::testing::ValuesIn(testParams.testTypes()));
+                              ::testing::ValuesIn(testParams.betas()));
 }
 
 auto inline load_sequence_config_params()
@@ -99,7 +98,6 @@ auto inline load_sequence_config_params()
     auto problemModes   = testParams.problemModes();
     auto alphas         = testParams.alphas();
     auto betas          = testParams.betas();
-    auto testTypes      = testParams.testTypes();
 
     std::vector<size_t> lengths   = {dataTypes.size(),
                                      algorithms.size(),
@@ -110,8 +108,7 @@ auto inline load_sequence_config_params()
                                      problemStrides.size(),
                                      problemModes.size(),
                                      alphas.size(),
-                                     betas.size(),
-                                     testTypes.size()};
+                                     betas.size()};
     auto                maxLength = *std::max_element(lengths.begin(), lengths.end());
 
     dataTypes.resize(maxLength, dataTypes.back());
@@ -124,7 +121,6 @@ auto inline load_sequence_config_params()
     problemModes.resize(maxLength, problemModes.back());
     alphas.resize(maxLength, alphas.back());
     betas.resize(maxLength, betas.back());
-    testTypes.resize(maxLength, testTypes.back());
 
     using ParamsTuple = decltype(std::make_tuple(dataTypes.front(),
                                                  algorithms.front(),
@@ -135,8 +131,7 @@ auto inline load_sequence_config_params()
                                                  problemStrides.front(),
                                                  problemModes.front(),
                                                  alphas.front(),
-                                                 betas.front(),
-                                                 testTypes.front()));
+                                                 betas.front()));
 
     std::vector<ParamsTuple> paramsSequence;
     for(int i = 0; i < maxLength; i++)
@@ -150,8 +145,7 @@ auto inline load_sequence_config_params()
                                                  problemStrides[i],
                                                  problemModes[i],
                                                  alphas[i],
-                                                 betas[i],
-                                                 testTypes[i]));
+                                                 betas[i]));
     }
 
     return ::testing::ValuesIn(paramsSequence);

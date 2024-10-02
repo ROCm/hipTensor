@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,8 +71,7 @@ auto inline load_config_helper()
                               ::testing::ValuesIn(testParams.problemLengths()),
                               ::testing::ValuesIn(testParams.permutedDims()),
                               ::testing::ValuesIn(testParams.alphas()),
-                              ::testing::ValuesIn(testParams.operators()),
-                              ::testing::ValuesIn(testParams.testTypes()));
+                              ::testing::ValuesIn(testParams.operators()));
 }
 
 #endif // HIPTENSOR_PERMUTATION_TEST_HELPERS_HPP
