@@ -30,105 +30,105 @@
 # Bilinear M1N1K1 tests
 set (BilinearContractionTestSources ${ContractionCommonSources}
         ${CMAKE_CURRENT_SOURCE_DIR}/bilinear_contraction_test.cpp)
-set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params_rank1.yaml)
+set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/bilinear_test_params_rank1.yaml)
 add_hiptensor_test(bilinear_contraction_test_m1n1k1 ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
 # Bilinear M2N2K2 tests
-set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params_rank2.yaml)
+set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/bilinear_test_params_rank2.yaml)
 add_hiptensor_test(bilinear_contraction_test_m2n2k2 ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
 # Bilinear M3N3K3 tests
-set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params_rank3.yaml)
+set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/bilinear_test_params_rank3.yaml)
 add_hiptensor_test(bilinear_contraction_test_m3n3k3 ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
 # Bilinear M4N4K4 tests
-set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params_rank4.yaml)
+set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/bilinear_test_params_rank4.yaml)
 add_hiptensor_test(bilinear_contraction_test_m4n4k4 ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
 # Bilinear M5N5K5 tests
-set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params_rank5.yaml)
+set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/bilinear_test_params_rank5.yaml)
 add_hiptensor_test(bilinear_contraction_test_m5n5k5 ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
 # Bilinear M6N6K6 tests
-set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/bilinear_test_params_rank6.yaml)
+set (BilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/bilinear_test_params_rank6.yaml)
 add_hiptensor_test(bilinear_contraction_test_m6n6k6 ${BilinearContractionTestConfig}  ${BilinearContractionTestSources})
 
 # Complex Bilinear M1N1K1 tests
 set (ComplexBilinearContractionTestSources ${ContractionCommonSources}
 ${CMAKE_CURRENT_SOURCE_DIR}/complex_bilinear_contraction_test.cpp)
-set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params_rank1.yaml)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_bilinear_test_params_rank1.yaml)
 add_hiptensor_test(complex_bilinear_contraction_test_m1n1k1 ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
 
 # Complex Bilinear M2N2K2 tests
-set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params_rank2.yaml)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_bilinear_test_params_rank2.yaml)
 add_hiptensor_test(complex_bilinear_contraction_test_m2n2k2 ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
 
 # Complex Bilinear M3N3K3 tests
-set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params_rank3.yaml)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_bilinear_test_params_rank3.yaml)
 add_hiptensor_test(complex_bilinear_contraction_test_m3n3k3 ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
 
 # Complex Bilinear M4N4K4 tests
-set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params_rank4.yaml)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_bilinear_test_params_rank4.yaml)
 add_hiptensor_test(complex_bilinear_contraction_test_m4n4k4 ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
 
 # Complex Bilinear M5N5K5 tests
-set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params_rank5.yaml)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_bilinear_test_params_rank5.yaml)
 add_hiptensor_test(complex_bilinear_contraction_test_m5n5k5 ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
 
 # Complex Bilinear M6N6K6 tests
-set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_bilinear_test_params_rank6.yaml)
+set (ComplexBilinearContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_bilinear_test_params_rank6.yaml)
 add_hiptensor_test(complex_bilinear_contraction_test_m6n6k6 ${ComplexBilinearContractionTestConfig}  ${ComplexBilinearContractionTestSources})
 
 # Scale M2N2K2 tests
 set (ScaleContractionTestSources ${ContractionCommonSources}
      ${CMAKE_CURRENT_SOURCE_DIR}/scale_contraction_test.cpp)
-set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params_rank1.yaml)
+set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/scale_test_params_rank1.yaml)
 add_hiptensor_test(scale_contraction_test_m1n1k1 ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
 # Scale M2N2K2 tests
-set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params_rank2.yaml)
+set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/scale_test_params_rank2.yaml)
 add_hiptensor_test(scale_contraction_test_m2n2k2 ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
 # Scale M3N3K3 tests
-set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params_rank3.yaml)
+set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/scale_test_params_rank3.yaml)
 add_hiptensor_test(scale_contraction_test_m3n3k3 ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
 # Scale M4N4K4 tests
-set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params_rank4.yaml)
+set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/scale_test_params_rank4.yaml)
 add_hiptensor_test(scale_contraction_test_m4n4k4 ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
 # Scale M5N5K5 tests
-set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params_rank5.yaml)
+set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/scale_test_params_rank5.yaml)
 add_hiptensor_test(scale_contraction_test_m5n5k5 ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
 # Scale M6N6K6 tests
-set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/scale_test_params_rank6.yaml)
+set (ScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/scale_test_params_rank6.yaml)
 add_hiptensor_test(scale_contraction_test_m6n6k6 ${ScaleContractionTestConfig} ${ScaleContractionTestSources})
 
 # Complex Scale M1N1K1 tests
 set (ComplexScaleContractionTestSources ${ContractionCommonSources}
 ${CMAKE_CURRENT_SOURCE_DIR}/complex_scale_contraction_test.cpp)
-set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank1.yaml)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_scale_test_params_rank1.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m1n1k1 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
 
 # Complex Scale M2N2K2 tests
-set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank2.yaml)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_scale_test_params_rank2.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m2n2k2 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
 
 # Complex Scale M3N3K3 tests
-set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank3.yaml)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_scale_test_params_rank3.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m3n3k3 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
 
 # Complex Scale M4N4K4 tests
-set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank4.yaml)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_scale_test_params_rank4.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m4n4k4 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
 
 # Complex Scale M5N5K5 tests
-set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank5.yaml)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_scale_test_params_rank5.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m5n5k5 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
 
 # Complex Scale M6N6K6 tests
-set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/complex_scale_test_params_rank6.yaml)
+set (ComplexScaleContractionTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/complex_scale_test_params_rank6.yaml)
 add_hiptensor_test(complex_scale_contraction_test_m6n6k6 ${ComplexScaleContractionTestConfig}  ${ComplexScaleContractionTestSources})
 
 

@@ -26,11 +26,11 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
+#include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "permutation/permutation_cpu_reference.hpp"
 #include "permutation_test.hpp"
 #include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
 
 namespace hiptensor
 {
@@ -250,9 +250,9 @@ namespace hiptensor
                                                        modeB.data(),
                                                        computeDataType,
                                                        0 /* stream */));
-            auto testOptions = HiptensorOptions::instance();
+            auto& testOptions = HiptensorOptions::instance();
 
-            if(testOptions.performValidation())
+            if(testOptions->performValidation())
             {
                 resource->copyBToHost();
 
@@ -301,7 +301,7 @@ namespace hiptensor
                             convertToComputeType(computeDataType));
                 }
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-            } // if (testOptions.performValidation())
+            } // if (testOptions->performValidation())
         }
 
         using Options        = hiptensor::HiptensorOptions;

@@ -26,12 +26,12 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
+#include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "reduction/reduction_cpu_reference.hpp"
 #include "reduction_test.hpp"
 #include "util.hpp"
 #include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
 
 namespace
 {
@@ -359,9 +359,9 @@ namespace hiptensor
                                                      worksize,
                                                      0 /* stream */));
 
-            auto testOptions = HiptensorOptions::instance();
+            auto& testOptions = HiptensorOptions::instance();
 
-            if(testOptions.performValidation())
+            if(testOptions->performValidation())
             {
                 resource->copyOutputToHost();
 
@@ -427,7 +427,7 @@ namespace hiptensor
                 }
 
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-            } // if (testOptions.performValidation())
+            } // if (testOptions->performValidation())
 
             using Options        = hiptensor::HiptensorOptions;
             auto& loggingOptions = Options::instance();

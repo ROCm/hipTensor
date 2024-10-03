@@ -29,7 +29,7 @@
 
 #include <gtest/gtest.h>
 
-#include "llvm/hiptensor_options.hpp"
+#include "hiptensor_options.hpp"
 #include "llvm/yaml_parser.hpp"
 
 #ifdef HIPTENSOR_TEST_YAML_INCLUDE

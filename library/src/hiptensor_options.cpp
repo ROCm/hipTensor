@@ -24,45 +24,8 @@
  *
  *******************************************************************************/
 
-#include <llvm/Support/CommandLine.h>
-
 #include "hiptensor_options.hpp"
 #include <hiptensor/hiptensor-version.hpp>
-
-// Get input/output file names
-llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
-                                           "Options for hipTensor testing framework");
-llvm::cl::opt<std::string> hiptensorInputFilename("y",
-                                                  llvm::cl::desc("Specify input YAML filename"),
-                                                  llvm::cl::value_desc("filename"),
-                                                  llvm::cl::cat(HiptensorCategory));
-llvm::cl::opt<std::string> hiptensorOutputFilename("o",
-                                                   llvm::cl::desc("Specify output filename"),
-                                                   llvm::cl::value_desc("filename"),
-                                                   llvm::cl::cat(HiptensorCategory));
-llvm::cl::opt<std::string>
-    hiptensorValidationOption("v",
-                              llvm::cl::desc("Specify whether to perform validation"),
-                              llvm::cl::value_desc("ON/OFF"),
-                              llvm::cl::cat(HiptensorCategory));
-llvm::cl::opt<int32_t>
-                       hiptensorHotRuns("hot_runs",
-                     llvm::cl::desc("Specify number of benchmark runs to include in the timing"),
-                     llvm::cl::value_desc("integer number"),
-                     llvm::cl::cat(HiptensorCategory));
-llvm::cl::opt<int32_t> hiptensorColdRuns(
-    "cold_runs",
-    llvm::cl::desc(
-        "Specify number of benchmark runs to exclude from timing, but to warm up frequency"),
-    llvm::cl::value_desc("integer number"),
-    llvm::cl::cat(HiptensorCategory));
-
-llvm::cl::opt<int32_t>
-    hiptensorOmitMask("omit",
-                      llvm::cl::desc("Output verbosity omission\n 0x1 - Skipped Result\n 0x2 - "
-                                     "Failed Result\n 0x4 - Passed Result\n 0x8 - Cout Messages"),
-                      llvm::cl::value_desc("Bitmask [3:0]"),
-                      llvm::cl::cat(HiptensorCategory));
 
 namespace hiptensor
 {
@@ -81,38 +44,9 @@ namespace hiptensor
     {
     }
 
-    void HiptensorOptions::parseOptions(int argc, char** argv)
+    void HiptensorOptions::setOstream(std::string file)
     {
-        // Setup LLVM command line parser
-        llvm::cl::SetVersionPrinter([](llvm::raw_ostream& os) {
-            os << "hipTensor version: " << std::to_string(hiptensorGetVersion()) << "\n";
-        });
-
-        llvm::cl::HideUnrelatedOptions(HiptensorCategory);
-        llvm::cl::ParseCommandLineOptions(argc, argv);
-
-        // set I/O files if present
-        mInputFilename  = hiptensorInputFilename;
-        mOutputFilename = hiptensorOutputFilename;
-
-        setOmits(hiptensorOmitMask);
-
-        setValidation(hiptensorValidationOption);
-
-        mHotRuns  = hiptensorHotRuns;
-        mColdRuns = hiptensorColdRuns;
-
-        // Load testing params from YAML file if present
-        if(!mInputFilename.empty())
-        {
-            mUsingDefaultParams = false;
-        }
-
-        // Initialize output stream
-        if(!mOutputFilename.empty())
-        {
-            mOstream.initializeStream(mOutputFilename);
-        }
+        mOstream.initializeStream(file);
     }
 
     void HiptensorOptions::setOmits(int mask)
@@ -127,6 +61,11 @@ namespace hiptensor
             mOmitCout = true;
     }
 
+    void HiptensorOptions::setDefaultParams(bool val)
+    {
+        mUsingDefaultParams = val;
+    }
+
     void HiptensorOptions::setValidation(std::string val)
     {
         if(val.compare("ON") == 0)
@@ -137,6 +76,26 @@ namespace hiptensor
         {
             mValidate = false;
         }
+    }
+
+    void HiptensorOptions::setHotRuns(int runs)
+    {
+        mHotRuns = runs;
+    }
+
+    void HiptensorOptions::setColdRuns(int runs)
+    {
+        mColdRuns = runs;
+    }
+
+    void HiptensorOptions::setInputFilename(std::string file)
+    {
+        mInputFilename = file;
+    }
+
+    void HiptensorOptions::setOutputFilename(std::string file)
+    {
+        mOutputFilename = file;
     }
 
     HiptensorOStream& HiptensorOptions::ostream()
@@ -174,12 +133,12 @@ namespace hiptensor
         return mValidate;
     }
 
-    uint32_t HiptensorOptions::hotRuns()
+    int32_t HiptensorOptions::hotRuns()
     {
         return mHotRuns;
     }
 
-    uint32_t HiptensorOptions::coldRuns()
+    int32_t HiptensorOptions::coldRuns()
     {
         return mColdRuns;
     }

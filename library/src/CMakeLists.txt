@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -80,6 +80,7 @@ set(HIPTENSOR_CORE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/data_types.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hip_device.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/handle.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options.cpp
 )
 
 add_hiptensor_component(hiptensor_core ${HIPTENSOR_CORE_SOURCES})

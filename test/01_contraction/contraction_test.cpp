@@ -26,7 +26,7 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
-#include "llvm/hiptensor_options.hpp"
+#include "hiptensor_options.hpp"
 
 #include "contraction/contraction_cpu_reference.hpp"
 #include "contraction_test.hpp"
@@ -670,9 +670,9 @@ namespace hiptensor
                                                        worksize,
                                                        0 /* stream */));
 
-            auto testOptions = HiptensorOptions::instance();
+            auto& testOptions = HiptensorOptions::instance();
 
-            if(testOptions.performValidation())
+            if(testOptions->performValidation())
             {
                 CHECK_HIPTENSOR_ERROR(hiptensorContractionReference(&plan,
                                                                     (void*)&alphaBuf,
@@ -770,7 +770,7 @@ namespace hiptensor
                 }
 
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
-            } // if (testOptions.performValidation())
+            } // if (testOptions->performValidation())
 
             using Options        = hiptensor::HiptensorOptions;
             auto& loggingOptions = Options::instance();

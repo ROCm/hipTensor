@@ -49,9 +49,14 @@ namespace hiptensor
         HiptensorOptions(HiptensorOptions&&) = default;
         ~HiptensorOptions()                  = default;
 
-        void parseOptions(int argc, char** argv);
+        void setOstream(std::string file);
         void setOmits(int mask);
+        void setDefaultParams(bool val);
         void setValidation(std::string val);
+        void setHotRuns(int runs);
+        void setColdRuns(int runs);
+        void setInputFilename(std::string file);
+        void setOutputFilename(std::string file);
 
         HiptensorOStream& ostream();
 
@@ -62,8 +67,8 @@ namespace hiptensor
         bool usingDefaultConfig();
         bool performValidation();
 
-        uint32_t hotRuns();
-        uint32_t coldRuns();
+        int32_t hotRuns();
+        int32_t coldRuns();
 
         std::string inputFilename();
         std::string outputFilename();
@@ -75,7 +80,7 @@ namespace hiptensor
         bool mUsingDefaultParams;
         bool mValidate;
 
-        uint32_t mHotRuns, mColdRuns;
+        int32_t mHotRuns, mColdRuns;
 
         std::string mInputFilename, mOutputFilename;
     };
