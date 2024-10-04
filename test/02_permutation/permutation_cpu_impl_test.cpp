@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,11 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
+#include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "permutation/permutation_cpu_reference.hpp"
 #include "permutation_test.hpp"
 #include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
 
 template <typename floatTypeA, typename floatTypeB, typename floatTypeCompute>
 auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeCompute)

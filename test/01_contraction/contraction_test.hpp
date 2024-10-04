@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "contraction_resource.hpp"
 #include "contraction_test_params.hpp"
 
@@ -44,7 +45,7 @@ namespace hiptensor
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
     class ContractionTest
-        : public ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestTypesT,
+        : public ::testing::TestWithParam<std::tuple<typename ContractionTestParams::DataTypesT,
                                                      typename ContractionTestParams::AlgorithmT,
                                                      typename ContractionTestParams::OperatorT,
                                                      typename ContractionTestParams::WorkSizePrefT,
@@ -57,7 +58,7 @@ namespace hiptensor
     {
     protected: // Types
         using Base
-            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::TestTypesT,
+            = ::testing::TestWithParam<std::tuple<typename ContractionTestParams::DataTypesT,
                                                   typename ContractionTestParams::AlgorithmT,
                                                   typename ContractionTestParams::OperatorT,
                                                   typename ContractionTestParams::WorkSizePrefT,

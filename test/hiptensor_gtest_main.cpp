@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,95 @@
  * SOFTWARE.
  *
  *******************************************************************************/
+#include "hiptensor_options.hpp"
 #include "utils.hpp"
-#include "llvm/hiptensor_options.hpp"
 
 #include <gtest/gtest.h>
+
+#include <llvm/Support/CommandLine.h>
+
+#include "hiptensor_options.hpp"
+#include <hiptensor/hiptensor-version.hpp>
+
+// Get input/output file names
+llvm::cl::OptionCategory   HiptensorCategory("hipTensor Options",
+                                           "Options for hipTensor testing framework");
+llvm::cl::opt<std::string> hiptensorInputFilename("y",
+                                                  llvm::cl::desc("Specify input YAML filename"),
+                                                  llvm::cl::value_desc("filename"),
+                                                  llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<std::string> hiptensorOutputFilename("o",
+                                                   llvm::cl::desc("Specify output filename"),
+                                                   llvm::cl::value_desc("filename"),
+                                                   llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<std::string>
+    hiptensorValidationOption("v",
+                              llvm::cl::desc("Specify whether to perform validation"),
+                              llvm::cl::value_desc("ON/OFF"),
+                              llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<int32_t>
+    hiptensorHotRuns("hot_runs",
+                     llvm::cl::desc("Specify number of benchmark runs to include in the timing"),
+                     llvm::cl::value_desc("integer number"),
+                     llvm::cl::init(1),
+                     llvm::cl::cat(HiptensorCategory));
+
+llvm::cl::opt<int32_t> hiptensorColdRuns(
+    "cold_runs",
+    llvm::cl::desc(
+        "Specify number of benchmark runs to exclude from timing, but to warm up frequency"),
+    llvm::cl::value_desc("integer number"),
+    llvm::cl::init(0),
+    llvm::cl::cat(HiptensorCategory));
+
+llvm::cl::opt<int32_t>
+    hiptensorOmitMask("omit",
+                      llvm::cl::desc("Output verbosity omission\n 0x1 - Skipped Result\n 0x2 - "
+                                     "Failed Result\n 0x4 - Passed Result\n 0x8 - Cout Messages"),
+                      llvm::cl::value_desc("Bitmask [3:0]"),
+                      llvm::cl::cat(HiptensorCategory));
+
+void parseOptions(int argc, char** argv)
+{
+    using Options = hiptensor::HiptensorOptions;
+    auto& options = Options::instance();
+
+    // Setup LLVM command line parser
+    llvm::cl::SetVersionPrinter([](llvm::raw_ostream& os) {
+        os << "hipTensor version: " << std::to_string(hiptensorGetVersion()) << "\n";
+    });
+
+    llvm::cl::HideUnrelatedOptions(HiptensorCategory);
+    llvm::cl::ParseCommandLineOptions(argc, argv);
+
+    // set I/O files if present
+    options->setInputFilename(hiptensorInputFilename);
+    options->setOutputFilename(hiptensorOutputFilename);
+
+    options->setOmits(hiptensorOmitMask);
+
+    options->setValidation(hiptensorValidationOption);
+
+    options->setHotRuns(hiptensorHotRuns);
+    options->setColdRuns(hiptensorColdRuns);
+
+    // Load testing params from YAML file if present
+    if(!options->inputFilename().empty())
+    {
+        options->setDefaultParams(false);
+    }
+
+    // Initialize output stream
+    if(!options->outputFilename().empty())
+    {
+        options->setOstream(options->outputFilename());
+    }
+}
 
 int main(int argc, char** argv)
 {
     // Parse hiptensor test options
-    using Options     = hiptensor::HiptensorOptions;
-    auto& testOptions = Options::instance();
-    testOptions->parseOptions(argc, argv);
+    parseOptions(argc, argv);
 
     // Initialize Google Tests
     testing::InitGoogleTest(&argc, argv);
