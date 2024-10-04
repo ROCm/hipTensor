@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -40,7 +41,7 @@ namespace hiptensor
 
     struct ContractionTestParams
     {
-        using TestTypesT = std::vector<hipDataType>;
+        using DataTypesT = std::vector<hipDataType>;
 
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;
@@ -54,7 +55,7 @@ namespace hiptensor
         using BetaT    = std::vector<double>;
 
     public:
-        std::vector<TestTypesT>& dataTypes()
+        std::vector<DataTypesT>& dataTypes()
         {
             return mDataTypes;
         }
@@ -120,7 +121,7 @@ namespace hiptensor
 
     private:
         //Data types of input and output tensors
-        std::vector<TestTypesT>    mDataTypes;
+        std::vector<DataTypesT>    mDataTypes;
         std::vector<AlgorithmT>    mAlgorithms;
         std::vector<OperatorT>     mOperators;
         std::vector<WorkSizePrefT> mWorkSizePrefs;
