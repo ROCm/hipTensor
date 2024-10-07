@@ -72,6 +72,69 @@ namespace hiptensor
         mRunFlag          = true;
         mValidationResult = false;
         mMaxRelativeError = 0.0;
+
+        mElapsedTimeMs = mTotalGFlops = mMeasuredTFlopsPerSec = mTotalBytes = 0.0;
+    }
+
+    std::ostream& PermutationTest::printHeader(std::ostream& stream /* = std::cout */) const
+    {
+        return stream << "TypeIn, TypeCompute, "
+                      << "Operators             , LogLevel, "
+                      << "Lengths, PermutedOrder, "
+                      << "Alpha, elapsedMs, "
+                      << "Problem Size(GFlops), "
+                      << "TFlops/s, "
+                      << "TotalBytes, "
+                      << "Result" << std::endl;
+    }
+
+    std::ostream& PermutationTest::printKernel(std::ostream& stream) const
+    {
+        auto param        = Base::GetParam();
+        auto testType     = std::get<0>(param);
+        auto logLevel     = std::get<1>(param);
+        auto lengths      = std::get<2>(param);
+        auto permutedDims = std::get<3>(param);
+        auto alpha        = std::get<4>(param);
+        auto operators    = std::get<5>(param);
+
+        stream << hipTypeToString(testType[0]) << ", " << computeTypeToString(convertToComputeType(testType[1])) << ", " << opTypeToString(operators[0]) << ", "
+               << opTypeToString(operators[1]) << ", " << logLevelToString(logLevel) << ", [";
+
+        for(int i = 0; i < lengths.size(); i++) {
+                stream << lengths[i] << ", ";
+        }
+        stream << "], [";
+
+        if(!permutedDims.empty()) {
+          for(int i = 0; i < permutedDims.size(); i++) {
+                stream << permutedDims[i] << ", ";
+          }
+        }
+        stream << "], " << alpha << ", ";
+
+        if(!mRunFlag)
+        {
+            stream << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "SKIPPED" << std::endl;
+        }
+        else
+        {
+
+            stream << mElapsedTimeMs << ", " << mTotalGFlops << ", " << mMeasuredTFlopsPerSec
+                   << ", " << mTotalBytes << ", "
+                   <<((bool)mValidationResult ? "PASSED" : "FAILED")
+                   << std::endl;
+        }
+
+        return stream;
     }
 
     PermutationResource* PermutationTest::getResource() const
@@ -120,15 +183,23 @@ namespace hiptensor
 
     void PermutationTest::reportResults(std::ostream& stream,
                                         hipDataType   dataType,
+                                        bool          omitHeader,
                                         bool          omitSkipped,
                                         bool          omitFailed,
                                         bool          omitPassed) const
     {
+        if(!omitHeader)
+        {
+            printHeader(stream);
+        }
+
         // Conditionally print outputs
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
             stream << PermutationTest::sAPILogBuff.str();
+
+            printKernel(stream);
 
             if(mPrintElements)
             {
@@ -240,6 +311,12 @@ namespace hiptensor
             {
                 *(reinterpret_cast<float*>(&alphaValue)) = static_cast<float>(alpha);
             }
+
+            hipEvent_t startEvent, stopEvent;
+            CHECK_HIP_ERROR(hipEventCreate(&startEvent));
+            CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
+            CHECK_HIP_ERROR(hipEventRecord(startEvent));
+
             CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
                                                        &alphaValue,
                                                        resource->deviceA().get(),
@@ -250,6 +327,35 @@ namespace hiptensor
                                                        modeB.data(),
                                                        computeDataType,
                                                        0 /* stream */));
+
+            CHECK_HIP_ERROR(hipEventRecord(stopEvent));
+            CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
+
+            auto timeMs = 0.0f;
+            CHECK_HIP_ERROR(hipEventElapsedTime(&timeMs, startEvent, stopEvent));
+
+            size_t sizeA = std::accumulate(extentA.begin(),
+                                           extentA.end(),
+                                           hipDataTypeSize(abDataType),
+                                           std::multiplies<size_t>());
+
+            size_t sizeB = std::accumulate(extentB.begin(),
+                                           extentB.end(),
+                                           hipDataTypeSize(abDataType),
+                                           std::multiplies<size_t>());
+
+            mElapsedTimeMs        = float64_t(timeMs);
+            mTotalGFlops          = 2.0 * ((sizeA * sizeB) / hipDataTypeSize(abDataType));
+            mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
+
+            mTotalBytes = sizeA + sizeB;
+            mTotalBytes /= (1e9 * mElapsedTimeMs);
+
+            CHECK_HIP_ERROR(hipEventDestroy(startEvent));
+            CHECK_HIP_ERROR(hipEventDestroy(stopEvent));
+
+            resource->copyBToHost();
+
             auto& testOptions = HiptensorOptions::instance();
 
             if(testOptions->performValidation())
@@ -311,6 +417,7 @@ namespace hiptensor
         {
             reportResults(std::cout,
                           abDataType,
+                          false,
                           loggingOptions->omitSkipped(),
                           loggingOptions->omitFailed(),
                           loggingOptions->omitPassed());
@@ -320,6 +427,7 @@ namespace hiptensor
         {
             reportResults(loggingOptions->ostream().fstream(),
                           abDataType,
+                          false,
                           loggingOptions->omitSkipped(),
                           loggingOptions->omitFailed(),
                           loggingOptions->omitPassed());

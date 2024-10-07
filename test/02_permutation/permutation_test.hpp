@@ -71,6 +71,9 @@ namespace hiptensor
         bool checkSizes() const;
         void reset();
 
+        std::ostream& printHeader(std::ostream& stream) const;
+        std::ostream& printKernel(std::ostream& stream) const;
+
         PermutationResource* getResource() const;
 
         void SetUp() final;
@@ -81,6 +84,7 @@ namespace hiptensor
 
         void reportResults(std::ostream& stream,
                            hipDataType   DDataType,
+                           bool          omitHeader,
                            bool          omitSkipped,
                            bool          omitFailed,
                            bool          omitPassed) const;
@@ -100,6 +104,9 @@ namespace hiptensor
 
         // Output buffer
         static std::stringstream sAPILogBuff;
+
+        // Performance
+        float64_t mElapsedTimeMs, mTotalGFlops, mMeasuredTFlopsPerSec, mTotalBytes;
     };
 
 } // namespace hiptensor

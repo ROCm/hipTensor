@@ -78,11 +78,100 @@ namespace hiptensor
         mRunFlag          = true;
         mValidationResult = false;
         mMaxRelativeError = 0.0;
+
+        mElapsedTimeMs = mTotalGFlops = mMeasuredTFlopsPerSec = mTotalBytes = 0.0;
     }
 
     ContractionResource* ContractionTest::getResource() const
     {
         return DataStorage::instance().get();
+    }
+
+    std::ostream& ContractionTest::printHeader(std::ostream& stream /* = std::cout */) const
+    {
+        return stream << "TypeA, TypeB, TypeC, "
+                      << "TypeD, TypeCompute, "
+                      << "Algorithm, Operator, "
+                      << "WorkSizePreference, LogLevel, "
+                      << "Lengths, Strides, Modes, Alpha,"
+                      << "Beta, elapsedMs, "
+                      << "Problem Size(GFlops), "
+                      << "TFlops/s, "
+                      << "TotalBytes, "
+                      << "Result" << std::endl;
+    }
+
+    std::ostream& ContractionTest::printKernel(std::ostream& stream) const
+    {
+        auto param        = Base::GetParam();
+        auto testType     = std::get<0>(param);
+        auto algorithm    = std::get<1>(param);
+        auto operatorType = std::get<2>(param);
+        auto workSizePref = std::get<3>(param);
+        auto logLevel     = std::get<4>(param);
+        auto lengths      = std::get<5>(param);
+        auto strides      = std::get<6>(param);
+        auto modes        = std::get<7>(param);
+        auto alpha        = std::get<8>(param);
+        auto beta         = std::get<9>(param);
+
+        stream << hipTypeToString(testType[0]) << ", " << hipTypeToString(testType[1]) << ", " << hipTypeToString(testType[2]) << ", "
+               << hipTypeToString(testType[3]) << ", " << computeTypeToString(convertToComputeType(testType[4])) << ", " << algoTypeToString(algorithm) << ", "
+               << opTypeToString(operatorType) << ", " << workSizePrefToString(workSizePref) << ", " << logLevelToString(logLevel) << ", [";
+
+        for(int i = 0; i < lengths.size(); i++) {
+            stream << "[" ;
+            for(int j = 0; j < lengths[i].size(); j++) {
+                stream << lengths[i][j] << ", ";
+            }
+            stream << "], ";
+        }
+        stream << "], [";
+
+        if(!strides.empty()) {
+          for(int i = 0; i < strides.size(); i++) {
+            stream << "[" ;
+            for(int j = 0; j < strides[i].size(); j++) {
+                stream << strides[i][j] << ", ";
+            }
+            stream << "], ";
+          }
+        }
+        stream << "], [";
+
+        if(!modes.empty()) {
+          for(int i = 0; i < modes.size(); i++) {
+            stream << "[" ;
+            for(int j = 0; j < modes[i].size(); j++) {
+                stream << modes[i][j] << ", ";
+            }
+            stream << "],";
+          }
+        }
+        stream << "], " << alpha << "," << beta << ", ";
+
+        if(!mRunFlag)
+        {
+            stream << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "SKIPPED" << std::endl;
+        }
+        else
+        {
+
+            stream << mElapsedTimeMs << ", " << mTotalGFlops << ", " << mMeasuredTFlopsPerSec
+                   << ", " << mTotalBytes << ", "
+                   <<((bool)mValidationResult ? "PASSED" : "FAILED")
+                   << std::endl;
+        }
+
+        return stream;
     }
 
     void ContractionTest::SetUp()
@@ -413,20 +502,21 @@ namespace hiptensor
     void ContractionTest::reportResults(std::ostream&          stream,
                                         hipDataType            DDataType,
                                         hiptensorComputeType_t computeType,
+                                        bool                   omitHeader,
                                         bool                   omitSkipped,
                                         bool                   omitFailed,
                                         bool                   omitPassed) const
     {
+        if(!omitHeader)
+        {
+            printHeader(stream);
+        }
+
         // Conditionally print outputs
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
-            if(mPrintTypes)
-            {
-                ContractionTest::sAPILogBuff
-                    << "TypeA/B/C/D: " << hipTypeToString(DDataType)
-                    << ", ComputeType: " << computeTypeToString(computeType) << std::endl;
-            }
+            printKernel(stream);
 
             stream << ContractionTest::sAPILogBuff.str();
 
@@ -658,6 +748,11 @@ namespace hiptensor
 
             auto resource = getResource();
 
+            hipEvent_t startEvent, stopEvent;
+            CHECK_HIP_ERROR(hipEventCreate(&startEvent));
+            CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
+            CHECK_HIP_ERROR(hipEventRecord(startEvent));
+
             CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
                                                        &plan,
                                                        (void*)&alphaBuf,
@@ -669,6 +764,54 @@ namespace hiptensor
                                                        workspace,
                                                        worksize,
                                                        0 /* stream */));
+
+            CHECK_HIP_ERROR(hipEventRecord(stopEvent));
+            CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
+
+            auto timeMs = 0.0f;
+            CHECK_HIP_ERROR(hipEventElapsedTime(&timeMs, startEvent, stopEvent));
+
+            size_t totalLength = std::accumulate(d_ms_ns.mLengths.begin(),
+                                                 d_ms_ns.mLengths.end(),
+                                                 size_t(1),
+                                                 std::multiplies<size_t>());
+
+            uint32_t hops = desc.mTensorMode[2].size() / 2;
+            auto iter = std::find(desc.mTensorMode[0].cbegin(), desc.mTensorMode[0].cend(), desc.mTensorMode[2][desc.mTensorMode[2].size() - 1]);
+            if(iter != desc.mTensorMode[0].cend())
+            {
+                auto offset = std::distance(desc.mTensorMode[0].cbegin(), iter);
+                totalLength *= std::accumulate(a_ms_ks.mLengths.begin() + offset,
+                                               a_ms_ks.mLengths.begin() + offset + hops,
+                                               size_t(1),
+                                               std::multiplies<size_t>());
+            }
+
+            mElapsedTimeMs        = float64_t(timeMs);
+            mTotalGFlops          = 2.0 * totalLength;
+            mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
+
+            size_t sizeA = std::accumulate(a_ms_ks.mLengths.begin(),
+                                           a_ms_ks.mLengths.end(),
+                                           hipDataTypeSize(ADataType),
+                                           std::multiplies<size_t>());
+
+            size_t sizeB = std::accumulate(b_ns_ks.mLengths.begin(),
+                                           b_ns_ks.mLengths.end(),
+                                           hipDataTypeSize(BDataType),
+                                           std::multiplies<size_t>());
+
+            size_t sizeD = std::accumulate(d_ms_ns.mLengths.begin(),
+                                           d_ms_ns.mLengths.end(),
+                                           hipDataTypeSize(DDataType),
+                                           std::multiplies<size_t>());
+
+            mTotalBytes = sizeA + sizeB + sizeD;
+            mTotalBytes += (betaBuf.mReal != 0.0) ? sizeD : 0;
+            mTotalBytes /= (1e9 * mElapsedTimeMs);
+
+            CHECK_HIP_ERROR(hipEventDestroy(startEvent));
+            CHECK_HIP_ERROR(hipEventDestroy(stopEvent));
 
             auto& testOptions = HiptensorOptions::instance();
 
@@ -699,12 +842,7 @@ namespace hiptensor
                                                                     DDataType,
                                                                     workspace));
 
-                size_t elementsCD = std::accumulate(d_ms_ns.mLengths.begin(),
-                                                    d_ms_ns.mLengths.end(),
-                                                    size_t{1},
-                                                    std::multiplies<size_t>());
 
-                int  sizeD     = elementsCD * hipDataTypeSize(DDataType);
                 auto reference = resource->allocDevice(sizeD);
                 resource->copyData(reference, resource->hostD(), sizeD);
 
@@ -714,6 +852,47 @@ namespace hiptensor
                                                 a_ms_ks.mLengths.end(),
                                                 size_t{1},
                                                 std::multiplies<size_t>());
+
+
+                size_t elementsCD = sizeD / hipDataTypeSize(ADataType);
+
+                if(DDataType == HIP_R_16F)
+                {
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
+                                                             (_Float16*)reference.get(),
+                                                             elementsCD,
+                                                             computeType,
+                                                             tolerance);
+                }
+                else if(DDataType == HIP_R_16BF)
+                {
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<hip_bfloat16>(
+                            (hip_bfloat16*)resource->deviceD().get(),
+                            (hip_bfloat16*)reference.get(),
+                            elementsCD,
+                            computeType,
+                            tolerance);
+                }
+                else if(DDataType == HIP_R_32F || DDataType == HIP_C_32F)
+                {
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<float>((float*)resource->deviceD().get(),
+                                                          (float*)reference.get(),
+                                                          elementsCD,
+                                                          computeType,
+                                                          tolerance);
+                }
+                else if(DDataType == HIP_R_64F || DDataType == HIP_C_64F)
+                {
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<double>((double*)resource->deviceD().get(),
+                                                           (double*)reference.get(),
+                                                           elementsCD,
+                                                           computeType,
+                                                           tolerance);
+                }
 
                 auto   eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
                                                                            : HIPTENSOR_COMPUTE_32F);
@@ -780,6 +959,7 @@ namespace hiptensor
                 reportResults(std::cout,
                               DDataType,
                               computeType,
+                              false,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
@@ -790,6 +970,7 @@ namespace hiptensor
                 reportResults(loggingOptions->ostream().fstream(),
                               DDataType,
                               computeType,
+                              false,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
