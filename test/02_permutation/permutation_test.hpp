@@ -102,6 +102,8 @@ namespace hiptensor
         bool     mPrintElements    = false;
         double   mMaxRelativeError;
 
+        static bool mHeaderPrinted;
+
         // Output buffer
         static std::stringstream sAPILogBuff;
 

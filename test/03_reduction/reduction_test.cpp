@@ -62,7 +62,8 @@ namespace
 }
 namespace hiptensor
 {
-    /*static*/ std::stringstream ReductionTest::sAPILogBuff = std::stringstream();
+    /*static*/ bool              ReductionTest::mHeaderPrinted = false;
+    /*static*/ std::stringstream ReductionTest::sAPILogBuff    = std::stringstream();
 
     static void logMessage(int32_t logLevel, const char* funcName /*=""*/, const char* msg /*=""*/)
     {
@@ -112,14 +113,9 @@ namespace hiptensor
 
     std::ostream& ReductionTest::printHeader(std::ostream& stream /* = std::cout */) const
     {
-        return stream << "TypeIn, TypeCompute, "
-                      << "Operator, LogLevel, "
-                      << "Lengths, ReOrder, "
-                      << "Alpha, Beta, elapsedMs, "
-                      << "Problem Size(GFlops), "
-                      << "TFlops/s, "
-                      << "TotalBytes, "
-                      << "Result" << std::endl;
+        return stream << "TypeIn, TypeCompute, " << "Operator, LogLevel, " << "Lengths, ReOrder, "
+                      << "Alpha, Beta, elapsedMs, " << "Problem Size(GFlops), " << "TFlops/s, "
+                      << "TotalBytes, " << "Result" << std::endl;
     }
 
     std::ostream& ReductionTest::printKernel(std::ostream& stream) const
@@ -133,39 +129,54 @@ namespace hiptensor
         auto beta       = std::get<5>(param);
         auto op         = std::get<6>(param);
 
-        stream << hipTypeToString(testType[0]) << ", " << computeTypeToString(convertToComputeType(testType[1])) << ", " << opTypeToString(op) << ", " << logLevelToString(logLevel) << ", [";
+        stream << hipTypeToString(testType[0]) << ", "
+               << computeTypeToString(convertToComputeType(testType[1])) << ", "
+               << opTypeToString(op) << ", " << logLevelToString(logLevel) << ", [";
 
-        for(int i = 0; i < lengths.size(); i++) {
-                stream << lengths[i] << ", ";
+        for(int i = 0; i < lengths.size(); i++)
+        {
+            if(i != 0)
+            {
+                stream << ", ";
+            }
+            stream << lengths[i];
         }
         stream << "], [";
 
-        if(!outputDims.empty()) {
-          for(int i = 0; i < outputDims.size(); i++) {
-                stream << outputDims[i] << ", ";
-          }
+        if(!outputDims.empty())
+        {
+            for(int i = 0; i < outputDims.size(); i++)
+            {
+                if(i != 0)
+                {
+                    stream << ", ";
+                }
+                stream << outputDims[i];
+            }
         }
         stream << "], " << alpha << ", " << beta << ", ";
 
         if(!mRunFlag)
         {
-            stream << "n/a"
-                   << ", "
-                   << "n/a"
-                   << ", "
-                   << "n/a"
-                   << ", "
-                   << "n/a"
-                   << ", "
-                   << "SKIPPED" << std::endl;
+            stream << "n/a" << ", " << "n/a" << ", " << "n/a" << ", " << "n/a" << ", " << "SKIPPED"
+                   << std::endl;
         }
         else
         {
 
             stream << mElapsedTimeMs << ", " << mTotalGFlops << ", " << mMeasuredTFlopsPerSec
-                   << ", " << mTotalBytes << ", "
-                   <<((bool)mValidationResult ? "PASSED" : "FAILED")
-                   << std::endl;
+                   << ", " << mTotalBytes << ", ";
+
+            auto& testOptions = HiptensorOptions::instance();
+
+            if(testOptions->performValidation())
+            {
+                stream << ((bool)mValidationResult ? "PASSED" : "FAILED") << std::endl;
+            }
+            else
+            {
+                stream << "BENCH" << std::endl;
+            }
         }
 
         return stream;
@@ -541,6 +552,7 @@ namespace hiptensor
             {
                 reportResults(std::cout,
                               acDataType,
+                              mHeaderPrinted,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
@@ -550,9 +562,16 @@ namespace hiptensor
             {
                 reportResults(loggingOptions->ostream().fstream(),
                               acDataType,
+                              mHeaderPrinted,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
+            }
+
+            // Print the header only once
+            if(!mHeaderPrinted)
+            {
+                mHeaderPrinted = true;
             }
         }
     }
