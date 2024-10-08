@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -573,6 +573,9 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 
     auto elapsedTimeMs = 0.0f;
     CHECK_HIP_ERROR(hipEventElapsedTime(&elapsedTimeMs, startEvent, stopEvent));
+
+    CHECK_HIP_ERROR(hipEventDestroy(startEvent));
+    CHECK_HIP_ERROR(hipEventDestroy(stopEvent));
 
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
