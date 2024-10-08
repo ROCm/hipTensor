@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,13 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include "hiptensor_options.hpp"
-#include "utils.hpp"
 
-#include <gtest/gtest.h>
+#ifndef HIPTENSOR_COMMAND_LINE_PARSER_IMPL_HPP
+#define HIPTENSOR_COMMAND_LINE_PARSER_IMPL_HPP
 
-#include "llvm/command_line_parser.hpp"
-
-int main(int argc, char** argv)
+namespace hiptensor
 {
-    // Parse hiptensor test options
-    hiptensor::parseOptions(argc, argv);
-
-    // Initialize Google Tests
-    testing::InitGoogleTest(&argc, argv);
-
-    // Run the tests
-    int status = RUN_ALL_TESTS();
-
-    return status;
+    void parseOptions(int argc, char** argv);
 }
+
+#endif // HIPTENSOR_COMMAND_LINE_PARSER_IMPL_HPP

@@ -77,7 +77,8 @@ set(HIPTENSOR_LLVM_INCLUDES ${LLVM_INCLUDE_DIRS}
                             )
 
 # Sources for this static object
-set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_config.cpp)
+set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_config.cpp
+                           ${CMAKE_CURRENT_SOURCE_DIR}/command_line_parser.cpp)
 
 # Create hiptensor_llvm object target
 # All LLVM resources are private to this object.
