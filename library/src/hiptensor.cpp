@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -201,8 +201,10 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         // Re-construct strides from lengths, assuming packed.
         if(numModes > 0)
         {
-            auto lensVector = std::vector<std::size_t>(lens, lens + numModes);
-            *desc = {dataType, lensVector, hiptensor::stridesFromLengths(lensVector), unaryOp};
+            auto                     lensVector = std::vector<std::size_t>(lens, lens + numModes);
+            std::vector<std::size_t> stridesVector
+                = hiptensor::stridesFromLengths(l, HIPTENSOR_DATA_LAYOUT_COL_MAJOR);
+            *desc = {dataType, lensVector, stridesVector, unaryOp};
         }
         else
         {
