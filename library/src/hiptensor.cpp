@@ -203,7 +203,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         {
             auto                     lensVector = std::vector<std::size_t>(lens, lens + numModes);
             std::vector<std::size_t> stridesVector
-                = hiptensor::stridesFromLengths(l, HIPTENSOR_DATA_LAYOUT_COL_MAJOR);
+                = hiptensor::stridesFromLengths(lensVector, HIPTENSOR_DATA_LAYOUT_COL_MAJOR);
             *desc = {dataType, lensVector, stridesVector, unaryOp};
         }
         else
