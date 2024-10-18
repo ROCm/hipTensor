@@ -10,6 +10,7 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * Added CPU reference for tensor reductions
 * Added unit tests for tensor reductions
 * Added documentation for tensor reductions
+* Added support for environment variable HIPTENSOR_DEFAULT_STRIDES_ROW_MAJOR to use row-major convention when calculating default strides
 
 ### Changes
 
@@ -17,12 +18,14 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * ASAN library builds now use -mcmodel=large to accommodate larger lib size
 * Updated permute backend to accommodate changes to element-wise ops implementation
 * Updated validation acceptance criteria to match CK backend tests
+* Default strides calculations now follow column-major convention
 
 ### Fixes
 
 * Fixed a bug in randomized tensor input data generation
 * Various documentation formatting updates and fixes
 * Split kernel instances to improve build times
+* Fixed small memory leak by properly destroying HIP event objects in tests
 
 ## hipTensor 1.3.0 for ROCm 6.2.0
 
