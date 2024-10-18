@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,12 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
+#include "logger.hpp"
 #include "permutation_solution.hpp"
 #include "permutation_solution_instances.hpp"
 #include "permutation_solution_registry.hpp"
-#include "logger.hpp"
+
+#include "hiptensor_options.hpp"
 
 inline auto toPermutationSolutionVec(
     std::unordered_map<std::size_t, hiptensor::PermutationSolution*> const& map)
@@ -172,20 +174,15 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     // Extract the solutions to the candidates vector.
     auto candidates = toPermutationSolutionVec(solnQ.solutions());
 
-    int  nDims              = descA->mLengths.size();
-    auto ADataType          = descA->mType;
-    auto BDataType          = descB->mType;
-    auto AOp                = descA->mUnaryOp;
-    auto BOp                = descB->mUnaryOp;
+    int  nDims     = descA->mLengths.size();
+    auto ADataType = descA->mType;
+    auto BDataType = descB->mType;
+    auto AOp       = descA->mUnaryOp;
+    auto BOp       = descB->mUnaryOp;
 
     // Query permutation solutions for the correct permutation operation and type
-    auto solutionQ = hiptensor::PermutationSolutionRegistry::Query{candidates}
-                                                            .query(nDims,
-                                                                   ADataType,
-                                                                   BDataType,
-                                                                   AOp,
-                                                                   BOp,
-                                                                   hiptensor::PermutationOpId_t::SCALE);
+    auto solutionQ = hiptensor::PermutationSolutionRegistry::Query{candidates}.query(
+        nDims, ADataType, BDataType, AOp, BOp, hiptensor::PermutationOpId_t::SCALE);
 
     if(solutionQ.solutionCount() == 0)
     {
@@ -204,8 +201,8 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     bool canRun = false;
     for(int i = 0; i < candidates.size(); i++)
     {
-        hiptensor::PermutationSolution *pSolution = candidates[i];
-        canRun = pSolution->initArgs(alpha,
+        hiptensor::PermutationSolution* pSolution = candidates[i];
+        canRun                                    = pSolution->initArgs(alpha,
                                      A,
                                      B,
                                      descA->mLengths,
@@ -221,21 +218,24 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
             // Perform permutation with timing if LOG_LEVEL_PERF_TRACE
             if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
             {
+                using hiptensor::HiptensorOptions;
+                auto& options = HiptensorOptions::instance();
+
                 auto time = (*pSolution)(StreamConfig{
                     stream, // stream id
                     true, // time_kernel
                     0, // log_level
-                    0, // cold_niters
-                    1, // nrepeat
+                    options->coldRuns(), // cold_niters
+                    options->hotRuns(), // nrepeat
                 });
                 if(time < 0)
                 {
                     return HIPTENSOR_STATUS_CK_ERROR;
                 }
 
-                int n             = pSolution->problemDim();
-                auto flops        = std::size_t(2) * n;
-                auto bytes        = pSolution->problemBytes();
+                int  n     = pSolution->problemDim();
+                auto flops = std::size_t(2) * n;
+                auto bytes = pSolution->problemBytes();
 
                 hiptensor::PerfMetrics metrics = {
                     pSolution->uid(), // id
@@ -247,13 +247,13 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 
                 // log perf metrics (not name/id)
                 snprintf(msg,
-                        sizeof(msg),
-                        "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
-                        metrics.mKernelUid,
-                        metrics.mKernelName.c_str(),
-                        metrics.mAvgTimeMs,
-                        metrics.mTflops,
-                        metrics.mBandwidth);
+                         sizeof(msg),
+                         "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops, %0.3f GB/s",
+                         metrics.mKernelUid,
+                         metrics.mKernelName.c_str(),
+                         metrics.mAvgTimeMs,
+                         metrics.mTflops,
+                         metrics.mBandwidth);
                 logger->logPerformanceTrace("hiptensorPermutation", msg);
             }
             // Perform permutation without timing
@@ -271,9 +271,9 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 
     auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
     snprintf(msg,
-                sizeof(msg),
-                "Selected kernel is unable to solve the problem (%s)",
-                hiptensorGetErrorString(errorCode));
+             sizeof(msg),
+             "Selected kernel is unable to solve the problem (%s)",
+             hiptensorGetErrorString(errorCode));
     logger->logError("hiptensorPermutation", msg);
     return errorCode;
 }

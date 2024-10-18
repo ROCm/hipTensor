@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@
 #include "handle.hpp"
 #include "hip_device.hpp"
 #include "logger.hpp"
+
+#include "hiptensor_options.hpp"
 
 // Convert between vectors of void ptrs stored in opaque API objects
 // to vectors of ContractionSolution ptrs with simple cast.
@@ -747,6 +749,9 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
     if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
     {
+        using hiptensor::HiptensorOptions;
+        auto& options = HiptensorOptions::instance();
+
         std::tie(errorCode, time) = (*cSolution)(alpha,
                                                  A,
                                                  B,
@@ -771,8 +776,8 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
                                                      stream, // stream id
                                                      true, // time_kernel
                                                      0, // log_level
-                                                     0, // cold_niters
-                                                     1, // nrepeat
+                                                     options->coldRuns(), // cold_niters
+                                                     options->hotRuns(), // nrepeat
                                                  });
 
         if(errorCode == HIPTENSOR_STATUS_SUCCESS)

@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -78,7 +78,7 @@ set(HIPTENSOR_LLVM_INCLUDES ${LLVM_INCLUDE_DIRS}
 
 # Sources for this static object
 set(HIPTENSOR_LLVM_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/yaml_parser_config.cpp
-                           ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options.cpp)
+                           ${CMAKE_CURRENT_SOURCE_DIR}/command_line_parser.cpp)
 
 # Create hiptensor_llvm object target
 # All LLVM resources are private to this object.

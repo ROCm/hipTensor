@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@
 #include "01_contraction/contraction_test_params.hpp"
 #include "02_permutation/permutation_test_params.hpp"
 #include "03_reduction/reduction_test_params.hpp"
+#include "common.hpp"
 #include "yaml_parser_impl.hpp"
 
 // Fwd declare NoneType
@@ -49,6 +50,7 @@ namespace hiptensor
 //     ///
 //     struct ContractionTestParams
 //     {
+
 //         using TestDataTypeT = std::vector<hipDataType>;
 
 //         using AlgorithmT = hiptensorAlgo_t;
@@ -270,6 +272,7 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
+
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";
@@ -334,6 +337,7 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::PermutationTestParams& doc)
             {
+
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";
@@ -381,6 +385,7 @@ namespace llvm
             // Additional validation for input / output of the config
             static std::string validate(IO& io, hiptensor::ReductionTestParams& doc)
             {
+
                 if(doc.problemLengths().size() == 0)
                 {
                     return "Error: Empty Lengths";

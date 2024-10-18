@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,6 +48,8 @@
 #include "reduction_solution.hpp"
 #include "reduction_solution_instances.hpp"
 #include "reduction_solution_registry.hpp"
+
+#include "hiptensor_options.hpp"
 
 using namespace ck;
 using namespace ck::tensor_operation::device;
@@ -306,6 +308,9 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
 
     for(auto [_, pSolution] : solutionQ.solutions())
     {
+        using hiptensor::HiptensorOptions;
+        auto& options = HiptensorOptions::instance();
+
         // Perform reduction with timing if LOG_LEVEL_PERF_TRACE
         auto streamConfig =
             (logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE) ?
@@ -313,8 +318,8 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
                 stream, // stream id
                 true, // time_kernel
                 0, // log_level
-                0, // cold_niters
-                1, // nrepeat
+                options->coldRuns(), // cold_niters
+                options->hotRuns(), // nrepeat
             }:
         StreamConfig{stream, false};
         auto [isSupported, time] = (*pSolution)(descA->mLengths,
