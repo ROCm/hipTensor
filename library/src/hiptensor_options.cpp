@@ -53,12 +53,23 @@ namespace hiptensor
     {
         if(mask & 1)
             mOmitSkipped = true;
+        else
+            mOmitSkipped = false;
+
         if(mask & 2)
             mOmitFailed = true;
+        else
+            mOmitFailed = false;
+
         if(mask & 4)
             mOmitPassed = true;
+        else
+            mOmitPassed = false;
+
         if(mask & 8)
             mOmitCout = true;
+        else
+            mOmitCout = false;
     }
 
     void HiptensorOptions::setDefaultParams(bool val)
@@ -68,11 +79,12 @@ namespace hiptensor
 
     void HiptensorOptions::setValidation(std::string val)
     {
-        if(val.compare("ON") == 0)
+        auto caps = std::toupper(val);
+        if(caps.compare("ON") == 0)
         {
             mValidate = true;
         }
-        else if(val.compare("OFF") == 0)
+        else if(caps.compare("OFF") == 0)
         {
             mValidate = false;
         }
@@ -88,12 +100,12 @@ namespace hiptensor
         mColdRuns = runs;
     }
 
-    void HiptensorOptions::setInputFilename(std::string file)
+    void HiptensorOptions::setInputYAMLFilename(std::string file)
     {
         mInputFilename = file;
     }
 
-    void HiptensorOptions::setOutputFilename(std::string file)
+    void HiptensorOptions::setOutputStreamFilename(std::string file)
     {
         mOutputFilename = file;
     }

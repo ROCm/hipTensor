@@ -84,8 +84,8 @@ namespace hiptensor
         llvm::cl::ParseCommandLineOptions(argc, argv);
 
         // set I/O files if present
-        options->setInputFilename(hiptensorInputFilename);
-        options->setOutputFilename(hiptensorOutputFilename);
+        options->setInputYAMLFilename(hiptensorInputFilename);
+        options->setOutputStreamFilename(hiptensorOutputFilename);
 
         options->setOmits(hiptensorOmitMask);
 

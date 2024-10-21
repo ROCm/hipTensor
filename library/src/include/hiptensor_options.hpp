@@ -55,8 +55,8 @@ namespace hiptensor
         void setValidation(std::string val);
         void setHotRuns(int runs);
         void setColdRuns(int runs);
-        void setInputFilename(std::string file);
-        void setOutputFilename(std::string file);
+        void setInputYAMLFilename(std::string file);
+        void setOutputStreamFilename(std::string file);
 
         HiptensorOStream& ostream();
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (C) 2022-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2022-2025 Advanced Micro Devices, Inc. All rights reserved.
 
 set -eux
 
@@ -8,7 +8,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 output_dir=hiptensor-benchmarks
 build_dir=../../build/bin/
-config_dir=../../test/03_reduction/configs
+config_dir=../../test/03_reduction/configs/bench
 
 cold_runs=1
 hot_runs=5
