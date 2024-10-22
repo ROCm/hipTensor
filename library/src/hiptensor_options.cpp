@@ -52,24 +52,40 @@ namespace hiptensor
     void HiptensorOptions::setOmits(int mask)
     {
         if(mask & 1)
+        {
             mOmitSkipped = true;
+        }
         else
+        {
             mOmitSkipped = false;
+        }
 
         if(mask & 2)
+        {
             mOmitFailed = true;
+        }
         else
+        {
             mOmitFailed = false;
+        }
 
         if(mask & 4)
+        {
             mOmitPassed = true;
+        }
         else
+        {
             mOmitPassed = false;
+        }
 
         if(mask & 8)
+        {
             mOmitCout = true;
+        }
         else
+        {
             mOmitCout = false;
+        }
     }
 
     void HiptensorOptions::setDefaultParams(bool val)
