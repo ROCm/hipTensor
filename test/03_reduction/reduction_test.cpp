@@ -464,7 +464,7 @@ namespace hiptensor
                                             std::multiplies<size_t>());
 
             mElapsedTimeMs        = float64_t(timeMs);
-            mTotalGFlops          = sizeA / hipDataTypeSize(acDataType));
+            mTotalGFlops          = sizeA / hipDataTypeSize(acDataType);
             mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
 
             mTotalBytes = sizeA + sizeCD;
