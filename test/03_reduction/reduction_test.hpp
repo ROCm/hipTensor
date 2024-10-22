@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "common.hpp"
 #include "reduction_resource.hpp"
 #include "reduction_test_params.hpp"
 
@@ -40,7 +41,7 @@ namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
-    using ReductionTestParams_t = std::tuple<typename ReductionTestParams::TestTypesT,
+    using ReductionTestParams_t = std::tuple<typename ReductionTestParams::DataTypesT,
                                              typename ReductionTestParams::LogLevelT,
                                              typename ReductionTestParams::LengthsT,
                                              typename ReductionTestParams::OutputDimsT,
@@ -73,6 +74,9 @@ namespace hiptensor
 
         ReductionResource* getResource() const;
 
+        std::ostream& printHeader(std::ostream& stream) const;
+        std::ostream& printKernel(std::ostream& stream) const;
+
         void SetUp() final;
         void TearDown() final;
 
@@ -81,6 +85,7 @@ namespace hiptensor
 
         void reportResults(std::ostream& stream,
                            hipDataType   DDataType,
+                           bool          omitHeader,
                            bool          omitSkipped,
                            bool          omitFailed,
                            bool          omitPassed) const;
@@ -98,8 +103,13 @@ namespace hiptensor
         bool     mPrintElements    = false;
         double   mMaxRelativeError;
 
+        static bool mHeaderPrinted;
+
         // Output buffer
         static std::stringstream sAPILogBuff;
+
+        // Performance
+        float64_t mElapsedTimeMs, mTotalGFlops, mMeasuredTFlopsPerSec, mTotalBytes;
     };
 
 } // namespace hiptensor
