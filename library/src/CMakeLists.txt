@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
  #
  ###############################################################################
 
-find_package( composable_kernel 1.0.0 REQUIRED PATHS /opt/rocm /opt/rocm/ck $ENV{CK_DIR}/lib/cmake COMPONENTS device_contraction_operations device_reduction_operations device_other_operations)
+find_package( composable_kernel 1.0.0 REQUIRED PATHS $ENV{CK_DIR}/lib/cmake /opt/rocm /opt/rocm/ck COMPONENTS device_contraction_operations device_reduction_operations device_other_operations)
 rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -80,6 +80,7 @@ set(HIPTENSOR_CORE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/data_types.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hip_device.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/handle.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options.cpp
 )
 
 add_hiptensor_component(hiptensor_core ${HIPTENSOR_CORE_SOURCES})
