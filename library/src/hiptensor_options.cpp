@@ -79,12 +79,12 @@ namespace hiptensor
 
     void HiptensorOptions::setValidation(std::string val)
     {
-        auto caps = std::toupper(val);
-        if(caps.compare("ON") == 0)
+        std::transform(val.begin(), val.end(), val.begin(), ::toupper);
+        if(val.compare("ON") == 0)
         {
             mValidate = true;
         }
-        else if(caps.compare("OFF") == 0)
+        else if(val.compare("OFF") == 0)
         {
             mValidate = false;
         }
