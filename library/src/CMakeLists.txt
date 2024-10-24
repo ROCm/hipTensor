@@ -46,6 +46,11 @@ function(add_hiptensor_component COMPONENT_NAME COMPONENT_SOURCES)
     target_link_options(${COMPONENT_NAME} PRIVATE ${CLANG_DRIVER_MODE})
     set_target_properties(${COMPONENT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(${COMPONENT_NAME} PRIVATE hip::device)
+    # Use offload compress flag if it is supported
+    if(BUILD_OFFLOAD_COMPRESS AND CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
+        target_compile_options(${COMPONENT_NAME} PRIVATE "--offload-compress" )
+    endif()
+
     if(HIPTENSOR_BUILD_COMPRESSED_DBG)
         target_compile_options(${COMPONENT_NAME} PRIVATE
             "$<$<CONFIG:Debug>:-gz>"
@@ -101,6 +106,11 @@ add_library(hiptensor::hiptensor ALIAS hiptensor)
 # Add driver mode to both cxx and link flags
 target_compile_options(hiptensor PRIVATE ${CMAKE_CXX_FLAGS} ${CLANG_DRIVER_MODE})
 target_link_options(hiptensor PRIVATE ${CLANG_DRIVER_MODE})
+
+# Use offload compress flag if it is supported
+if(BUILD_OFFLOAD_COMPRESS AND CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
+    target_compile_options(hiptensor PRIVATE "--offload-compress" )
+endif()
 
 # Compressed debug symbols flags
 if(HIPTENSOR_BUILD_COMPRESSED_DBG)

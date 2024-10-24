@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -67,6 +67,16 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
   option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON)
   option( HIPTENSOR_DATA_LAYOUT_COL_MAJOR "Set hiptensor data layout to column major" ON )
+  option(BUILD_OFFLOAD_COMPRESS "Build hiptensor with offload compression" ON)
+endif()
+
+# Check if offload compression is supported
+include(CheckCXXCompilerFlag)
+if (BUILD_OFFLOAD_COMPRESS)
+  check_cxx_compiler_flag("--offload-compress" CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
+  if (NOT CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
+    message( STATUS "WARNING: BUILD_OFFLOAD_COMPRESS=ON but flag not supported by compiler. Ignoring option." )
+  endif()
 endif()
 
 # Setup output paths
