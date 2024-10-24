@@ -30,7 +30,7 @@ Optional:
 
 ## Build with CMake
 
-For more detailed information, please refer to the [hipTensor installation guide](https://rocm.docs.amd.com/projects/hipTensor/en/latest/installation.html).
+For more detailed information, please refer to the [hipTensor installation guide](https://rocm.docs.amd.com/projects/hipTensor/en/latest/install/installation.html).
 
 ### Project options
 
@@ -74,4 +74,4 @@ The latest official documentation for hipTensor is available at:
 
 ## Contributing to the hipTensor Library
 
-Community collaboration is encouraged! If you are considering contributing, please follow the [hipTensor Contribution Guide](https://github.com/ROCm/hipTensor/CONTRIBUTING.md) to get started.
+Community collaboration is encouraged! If you are considering contributing, please follow the [hipTensor Contribution Guide](https://rocm.docs.amd.com/projects/hipTensor/en/latest/contribution/contributors-guide.html) to get started.
