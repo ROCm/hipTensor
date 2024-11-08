@@ -72,14 +72,14 @@ auto reduceWithCpu(hipDataType typeA, hipDataType typeC, hiptensorComputeType_t 
 
 #if HIPTENSOR_DATA_LAYOUT_COL_MAJOR
     std::vector<floatTypeC> referenceArray
+        = {128.1,  398.1,  668.1,  938.1,  1208.1, 1478.1, 1748.1, 2018.1,
+           2288.1, 2558.1, 2828.1, 3098.1, 3368.1, 3638.1, 3908.1, 4178.1,
+           4448.1, 4718.1, 4988.1, 5258.1, 5528.1, 5798.1, 6068.1, 6338.1};
+#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+    std::vector<floatTypeC> referenceArray
         = {3026.1, 3044.1, 3062.1, 3080.1, 3098.1, 3116.1, 3134.1, 3152.1,
            3170.1, 3188.1, 3206.1, 3224.1, 3242.1, 3260.1, 3278.1, 3296.1,
            3314.1, 3332.1, 3350.1, 3368.1, 3386.1, 3404.1, 3422.1, 3440.1};
-#else // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
-    std::vector<floatTypeC> referenceArray
-        = {115.5f,  1600.5f, 3085.5f, 4570.5f, 363.f,  1848.f, 3333.f, 4818.f,
-           610.5f,  2095.5f, 3580.5f, 5065.5f, 858.f,  2343.f, 3828.f, 5313.f,
-           1105.5f, 2590.5f, 4075.5f, 5560.5f, 1353.f, 2838.f, 4323.f, 5808.f};
 #endif // HIPTENSOR_DATA_LAYOUT_COL_MAJOR
 
     hiptensorHandle_t* handle;

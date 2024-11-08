@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -223,44 +223,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 2317674114976786230ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 2317674114976786230ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 2317674114976786230ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 12241437837959333440ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 12241437837959333440ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 11152060091307708334ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 2317674114976786230ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 2317674114976786230ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 2317674114976786230ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 12241437837959333440ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 11152060091307708334ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -304,53 +334,83 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 872672380373754190ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 872672380373754190ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 16476891743625221381ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 16476891743625221381ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 16476891743625221381ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 16476891743625221381ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 58303249112943560ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            // if (d1 == 1 || (d2 == 1 && (a_ms_ks_lengths[3] == 1 || b_ns_ks_lengths[3] == 1)))
-            {
-                unique_id = 58303249112943560ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 2303552229010777601ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 58303249112943560ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 58303249112943560ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 58303249112943560ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 2303552229010777601ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 58303249112943560ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                // if (rank == 1 || (rank == 1 && (a_ms_ks_lengths[3] == 1 || b_ns_ks_lengths[3] == 1)))
+                {
+                    unique_id = 58303249112943560ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 2303552229010777601ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 58303249112943560ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 58303249112943560ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 58303249112943560ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 2303552229010777601ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -394,44 +454,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 9967477699864925937ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 14071475272156866885ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 14071475272156866885ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 15452087623356707112ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 15452087623356707112ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 8307633941691601884ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 9967477699864925937ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 14071475272156866885ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 14071475272156866885ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 15452087623356707112ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 8307633941691601884ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -475,52 +565,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 9344798352708026060ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 9344798352708026060ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 9344798352708026060ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 9344798352708026060ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 9344798352708026060ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 9344798352708026060ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 16299024124514902126ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 378062791888302715ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 76527422265261696ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 378062791888302715ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 378062791888302715ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 378062791888302715ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 378062791888302715ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 16299024124514902126ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 378062791888302715ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 76527422265261696ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 378062791888302715ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 378062791888302715ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 378062791888302715ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 378062791888302715ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -559,44 +679,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 17141562253969597117ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 13825918879176996502ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 13825918879176996502ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 17141562253969597117ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 17141562253969597117ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 17141562253969597117ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 17141562253969597117ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 6384780398804323250ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 17141562253969597117ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 6384780398804323250ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -635,52 +785,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 11208787066124811014ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 11208787066124811014ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 14522095938220523368ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 14522095938220523368ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 14522095938220523368ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 14522095938220523368ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 8251132190088736039ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 2897979232477761524ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 2897979232477761524ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 2897979232477761524ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 2897979232477761524ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 2897979232477761524ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 2897979232477761524ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 8251132190088736039ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 2897979232477761524ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 2897979232477761524ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 2897979232477761524ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 2897979232477761524ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 2897979232477761524ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 2897979232477761524ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -719,44 +899,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 4373449368168185126ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 13613206280884761703ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 13613206280884761703ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 13613206280884761703ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 4373449368168185126ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 4373449368168185126ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 4373449368168185126ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 4373449368168185126ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 2008216990064456310ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 4373449368168185126ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 13613206280884761703ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 15116758930810193332ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 4373449368168185126ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 4373449368168185126ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 2008216990064456310ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 4373449368168185126ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 13613206280884761703ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 15116758930810193332ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -800,52 +1010,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 15864809842584901464ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 8067958629699904967ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 15864809842584901464ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 6775599605174985174ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 6775599605174985174ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 5326563676026437938ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 8067958629699904967ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 8116863550692548667ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 8116863550692548667ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 8116863550692548667ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 8116863550692548667ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 8116863550692548667ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 8116863550692548667ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 8067958629699904967ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 8116863550692548667ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 8116863550692548667ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 8116863550692548667ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 8116863550692548667ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 8116863550692548667ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 8116863550692548667ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -884,44 +1124,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 5794367356792942822ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 17939389824758640014ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 10640128726648594287ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 5794367356792942822ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 5794367356792942822ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 13933081369664111675ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 17939389824758640014ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 10640128726648594287ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 5794367356792942822ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 13933081369664111675ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -960,52 +1230,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 2224053047801499357ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 3431382583157381293ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 5422513160360085353ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 3431382583157381293ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 3431382583157381293ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 14915761978535949477ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 14915761978535949477ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 14915761978535949477ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 14915761978535949477ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 14915761978535949477ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 14915761978535949477ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 14915761978535949477ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 14915761978535949477ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1044,45 +1344,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 18207091374964962208ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 16870758234615651290ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 14901158961446820896ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 16870758234615651290ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 8188562791036959263ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 16870758234615651290ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 16870758234615651290ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 16948282955506101335ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 16870758234615651290ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 15355329505248522280ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 14642257549075851915ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 14642257549075851915ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 18207091374964962208ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 16948282955506101335ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 16870758234615651290ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 15355329505248522280ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 14642257549075851915ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 14642257549075851915ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1121,52 +1450,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 12057130050439892271ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 13038089902448627981ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 12057130050439892271ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 11269655469469274301ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 11269655469469274301ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 12057130050439892271ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 11269655469469274301ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 2143493311543532856ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 2143493311543532856ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 2143493311543532856ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 2143493311543532856ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 2143493311543532856ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 2143493311543532856ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 11269655469469274301ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 2143493311543532856ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 2143493311543532856ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 2143493311543532856ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 2143493311543532856ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 2143493311543532856ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 2143493311543532856ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1205,45 +1564,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 3879892272436099392ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 6406117030749216765ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 8021137963958390646ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 3248584345341330494ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 3879892272436099392ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 3879892272436099392ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 7950787545240972863ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 8021137963958390646ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 3248584345341330494ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 3879892272436099392ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 7950787545240972863ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1282,52 +1670,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 4041813994497895944ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 4041813994497895944ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 4041813994497895944ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 4041813994497895944ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 4041813994497895944ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 7591632339673577634ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 2054609181761357786ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 14145390177844245465ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 14145390177844245465ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 14145390177844245465ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 14145390177844245465ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 14145390177844245465ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 14145390177844245465ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 2054609181761357786ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 14145390177844245465ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 14145390177844245465ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 14145390177844245465ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 14145390177844245465ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 14145390177844245465ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 14145390177844245465ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1371,45 +1789,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 1688099565795560288ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 4348837698146370003ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 1688099565795560288ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 1688099565795560288ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 1688099565795560288ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 4363356859752806590ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 4348837698146370003ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 1688099565795560288ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 4363356859752806590ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1453,52 +1900,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 15330878641001915472ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 11537900932066889768ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 8338926107119209426ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 11537900932066889768ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 11537900932066889768ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 11537900932066889768ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 11537900932066889768ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 15330878641001915472ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 11537900932066889768ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 8338926107119209426ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 11537900932066889768ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 11537900932066889768ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 11537900932066889768ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 11537900932066889768ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1542,45 +2019,74 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            // m1n1k1
-            if(d1 == 1)
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
             {
-                unique_id = 10254320286859648634ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
             }
-            // m2n2k2
-            else if(d2 == 1)
+            else
             {
-                unique_id = 15705829219230515535ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 12959721676360111684ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 10254320286859648634ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 10254320286859648634ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 10254320286859648634ull;
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 10254320286859648634ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 15705829219230515535ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 12959721676360111684ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 10254320286859648634ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 10254320286859648634ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 10254320286859648634ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())
@@ -1624,52 +2130,82 @@ namespace hiptensor
                          std::vector<int32_t> const&                             e_ms_ns_modes,
                          const uint64_t                                          workspaceSize)
         {
-            int d1 = a_ms_ks_strides[1];
-            int d2 = a_ms_ks_strides[3];
-            int d3 = a_ms_ks_strides[5];
-            int d4 = a_ms_ks_strides[7];
-            int d5 = a_ms_ks_strides[9];
-            int d6 = a_ms_ks_strides[11];
-
+            auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
-                        || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
+            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            {
+                // m1n1k1
+                if(rank == 1)
+                {
+                    unique_id = 1322366267556764247ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 1322366267556764247ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 1322366267556764247ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 1322366267556764247ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 1322366267556764247ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 1322366267556764247ull;
+                }
+            }
+            else
+            {
+                bool dim1 = std::count(a_ms_ks_lengths.cbegin(), a_ms_ks_lengths.cend(), 1)
+                            || std::count(b_ns_ks_lengths.cbegin(), b_ns_ks_lengths.cend(), 1);
 
-            // rank2 dim1 case
-            if(d2 == 1 && dim1)
-            {
-                unique_id = 14051358583041094215ull;
-            }
-            // m1n1k1
-            else if(d1 == 1)
-            {
-                unique_id = 8503926755447648324ull;
-            }
-            // m2n2k2
-            else if(d2 == 1)
-            {
-                unique_id = 8503926755447648324ull;
-            }
-            // m3n3k3
-            else if(d3 == 1)
-            {
-                unique_id = 8503926755447648324ull;
-            }
-            // m4n4k4
-            else if(d4 == 1)
-            {
-                unique_id = 8503926755447648324ull;
-            }
-            // m5n5k5
-            else if(d5 == 1)
-            {
-                unique_id = 8503926755447648324ull;
-            }
-            // m6n6k6
-            else if(d6 == 1)
-            {
-                unique_id = 8503926755447648324ull;
+                // rank2 dim1 case
+                if(rank == 2 && dim1)
+                {
+                    unique_id = 14051358583041094215ull;
+                }
+                // m1n1k1
+                else if(rank == 1)
+                {
+                    unique_id = 8503926755447648324ull;
+                }
+                // m2n2k2
+                else if(rank == 2)
+                {
+                    unique_id = 8503926755447648324ull;
+                }
+                // m3n3k3
+                else if(rank == 3)
+                {
+                    unique_id = 8503926755447648324ull;
+                }
+                // m4n4k4
+                else if(rank == 4)
+                {
+                    unique_id = 8503926755447648324ull;
+                }
+                // m5n5k5
+                else if(rank == 5)
+                {
+                    unique_id = 8503926755447648324ull;
+                }
+                // m6n6k6
+                else if(rank == 6)
+                {
+                    unique_id = 8503926755447648324ull;
+                }
             }
 
             if(auto candidate = candidates.find(unique_id); candidate != candidates.end())

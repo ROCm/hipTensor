@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ namespace hiptensor
 
     template <typename T>
     static inline std::vector<T> stridesFromLengths(std::vector<T> const& lengths,
-                                                    bool                  col_major = false)
+                                                    bool                  col_major = true)
     {
         if(lengths.empty())
         {
@@ -73,6 +73,21 @@ namespace hiptensor
     static inline T elementsFromLengths(std::vector<T> const& lengths)
     {
         return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
+    }
+
+    // Get the rank of a tensor based on its strides
+    // Ex: a_ms_ks_lengths = [5, 6, 3, 4]
+    //     a_ms_ks_strides = [1, 5, 30, 90] (col major)
+    //                     = [72, 12, 4, 1] (row major)
+    //                rank = 2
+    //
+    // Ex: a_ms_ks_lengths = [5, 6, 3, 1, 4, 3, 4, 2]
+    //     a_ms_ks_strides = [1, 5, 30, 90, 90, 180, 540, 2160] (col major)
+    //                     = [1728, 288, 96, 96, 24, 8, 2, 1]   (row major)
+    //                rank = 4
+    static inline uint32_t getRank(std::vector<std::size_t> const& a_ms_ks_strides)
+    {
+        return a_ms_ks_strides.size() / 2;
     }
 } // namespace hiptensor
 

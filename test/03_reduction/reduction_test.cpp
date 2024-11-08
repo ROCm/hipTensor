@@ -354,16 +354,30 @@ namespace hiptensor
             });
             std::vector<int64_t> extentD(extentC);
 
-            std::vector<int64_t> strideD = hiptensor::stridesFromLengths(extentD);
+            std::vector<int64_t> strideD
+                = hiptensor::stridesFromLengths(extentD, HIPTENSOR_DATA_LAYOUT_COL_MAJOR);
             if(!std::equal(outputDims.cbegin(), outputDims.cend(), sortedOutputDims.cbegin()))
             {
                 std::unordered_map<int, int64_t> dimToStride;
                 int64_t                          stride = 1;
-                for(auto it = outputDims.crbegin(); it != outputDims.crend(); ++it)
+
+                if(!HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
                 {
-                    dimToStride[*it] = stride;
-                    stride *= lengths[*it];
+                    for(auto it = outputDims.crbegin(); it != outputDims.crend(); ++it)
+                    {
+                        dimToStride[*it] = stride;
+                        stride *= lengths[*it];
+                    }
                 }
+                else
+                {
+                    for(auto it = outputDims.cbegin(); it != outputDims.cend(); ++it)
+                    {
+                        dimToStride[*it] = stride;
+                        stride *= lengths[*it];
+                    }
+                }
+
                 std::transform(sortedOutputDims.cbegin(),
                                sortedOutputDims.cend(),
                                strideD.begin(),
