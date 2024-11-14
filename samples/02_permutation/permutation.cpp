@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@
 
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/internal/hiptensor_utility.hpp>
+#include <hiptensor_options.hpp>
 
 #include "common.hpp"
 
@@ -57,16 +58,15 @@ int main()
       B_{w, h, c, n} = 1.0 *  \textsl{IDENTITY}(A_{c, n, h, w})
      **********************/
 
-    std::vector<int> modeA{'w', 'h', 'c', 'n'};
-    std::vector<int> modeC{'c', 'n', 'h', 'w'};
+    std::vector<int> modeA{'w', 'h', 'c'};
+    std::vector<int> modeC{'c', 'w', 'h'};
     int              nmodeA = modeA.size();
     int              nmodeC = modeC.size();
 
     std::unordered_map<int, int64_t> extent;
-    extent['h'] = 32;
-    extent['w'] = 33;
-    extent['c'] = 34;
-    extent['n'] = 35;
+    extent['h'] = 512;
+    extent['w'] = 512;
+    extent['c'] = 512;
 
     std::vector<int64_t> extentA;
     for(auto mode : modeA)
@@ -117,6 +117,10 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
         handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, HIPTENSOR_OP_IDENTITY));
 
+    using hiptensor::HiptensorOptions;
+    auto& options = HiptensorOptions::instance();
+    options->setColdRuns(5);
+    options->setHotRuns(50);
     const floatTypeCompute one = 1.0f;
     CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
                                                &one,

@@ -152,9 +152,13 @@ namespace hiptensor
             // Fill problem metrics
             Base::mDim = Traits::NDim;
 
+            // Size count
+            Base::mSize
+                = std::accumulate(abLengths.cbegin(), abLengths.cend(), 1, std::multiplies{});
+
             // Byte count
-            Base::mBytes = sizeof(typename Traits::InDataT) * Base::mDim
-                           + sizeof(typename Traits::OutDataT) * Base::mDim;
+            Base::mBytes = (sizeof(typename Traits::InDataT) + sizeof(typename Traits::OutDataT))
+                           * Base::mSize;
 
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());

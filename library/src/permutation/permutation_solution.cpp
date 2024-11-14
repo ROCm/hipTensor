@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ namespace hiptensor
         std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
         std::unique_ptr<PermutationSolutionParams>&&                  params)
         : mDim(0)
+        , mSize(0)
         , mBytes(0)
         , mValid(false)
         , mDeviceOp(std::move(deviceOp))
@@ -42,6 +43,7 @@ namespace hiptensor
 
     PermutationSolution::PermutationSolution(PermutationSolution&& other)
         : mDim(other.mDim)
+        , mSize(other.mSize)
         , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
@@ -57,6 +59,7 @@ namespace hiptensor
         {
             mDim = other.mDim;
 
+            mSize  = other.mSize;
             mBytes = other.mBytes;
             mValid = other.mValid;
 
@@ -142,6 +145,11 @@ namespace hiptensor
         return mDim;
     }
 
+    ck::index_t PermutationSolution::problemSize() const
+    {
+        return mSize;
+    }
+
     ck::index_t PermutationSolution::problemBytes() const
     {
         return mBytes;
@@ -167,6 +175,7 @@ namespace hiptensor
     void PermutationSolution::resetArgs()
     {
         mDim   = 0;
+        mSize  = 0;
         mBytes = 0;
 
         mInvokerArgPtr.reset(nullptr);

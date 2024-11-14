@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,7 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
         target_include_directories(${BINARY_NAME} PRIVATE
                                 ${CMAKE_CURRENT_SOURCE_DIR}
                                 ${PROJECT_SOURCE_DIR}/samples
+                                ${PROJECT_SOURCE_DIR}/library/src/include/
                                 ${PROJECT_SOURCE_DIR}/library/include)
 
         # Build this sample under custom target

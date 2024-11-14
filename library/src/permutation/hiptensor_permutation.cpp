@@ -208,8 +208,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                     return HIPTENSOR_STATUS_CK_ERROR;
                 }
 
-                int  n     = pSolution->problemDim();
-                auto flops = std::size_t(2) * n;
+                auto flops = std::size_t(2) * pSolution->problemSize();
                 auto bytes = pSolution->problemBytes();
 
                 hiptensor::PerfMetrics metrics = {
