@@ -51,18 +51,15 @@ namespace hiptensor
             if(upper.compare("ON") == 0)
             {
                 mColMajorStrides = true;
-                std::cout << "COL_MAJOR = ON, " << mColMajorStrides << "\n\n";
             }
             else if(upper.compare("OFF") == 0)
             {
                 mColMajorStrides = false;
-                std::cout << "COL_MAJOR = OFF, " << mColMajorStrides << "\n\n";
             }
         }
         else
         {
             mColMajorStrides = HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR;
-            std::cout << "No env var found\n\n";
         }
     }
 
