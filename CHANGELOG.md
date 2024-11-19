@@ -17,6 +17,7 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * ASAN library builds now use -mcmodel=large to accommodate larger lib size
 * Updated permute backend to accommodate changes to element-wise ops implementation
 * Updated validation acceptance criteria to match CK backend tests
+* Renamed CMake option HIPTENSOR_DATA_LAYOUT_COL_MAJOR -> HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR
 
 ### Fixes
 
