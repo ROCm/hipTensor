@@ -41,7 +41,29 @@ namespace hiptensor
         , mColdRuns(0)
         , mInputFilename("")
         , mOutputFilename("")
+        , mColMajorStrides(true)
     {
+        // Override HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR with environment variable if present
+        if(const char* stride_env = std::getenv("HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR"))
+        {
+            std::string upper = stride_env;
+            std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+            if(upper.compare("ON") == 0)
+            {
+                mColMajorStrides = true;
+                std::cout << "COL_MAJOR = ON, " << mColMajorStrides << "\n\n";
+            }
+            else if(upper.compare("OFF") == 0)
+            {
+                mColMajorStrides = false;
+                std::cout << "COL_MAJOR = OFF, " << mColMajorStrides << "\n\n";
+            }
+        }
+        else
+        {
+            mColMajorStrides = HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR;
+            std::cout << "No env var found\n\n";
+        }
     }
 
     void HiptensorOptions::setOstream(std::string file)
@@ -179,6 +201,11 @@ namespace hiptensor
     std::string HiptensorOptions::outputFilename()
     {
         return mOutputFilename;
+    }
+
+    bool HiptensorOptions::isColMajorStrides()
+    {
+        return mColMajorStrides;
     }
 
 } // namespace hiptensor

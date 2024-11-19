@@ -33,6 +33,7 @@
 #endif
 
 #include "contraction_selection.hpp"
+#include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "performance.hpp"
 #include "util.hpp"
@@ -226,7 +227,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -337,7 +339,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -457,7 +460,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -568,7 +572,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -682,7 +687,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -788,7 +794,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -902,7 +909,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1013,7 +1021,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1127,7 +1136,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1233,7 +1243,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1347,7 +1358,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1453,7 +1465,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1567,7 +1580,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1673,7 +1687,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1792,7 +1807,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -1903,7 +1919,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -2022,7 +2039,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)
@@ -2133,7 +2151,8 @@ namespace hiptensor
             auto   rank      = getRank(a_ms_ks_strides);
             size_t unique_id = 0;
 
-            if(HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+            auto& options = HiptensorOptions::instance();
+            if(options->isColMajorStrides())
             {
                 // m1n1k1
                 if(rank == 1)

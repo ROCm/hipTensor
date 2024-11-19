@@ -32,6 +32,8 @@
 
 #include "hash.hpp"
 
+#include "hiptensor_options.hpp"
+
 #include "ck/ck.hpp"
 #include "ck/library/reference_tensor_operation/cpu/reference_reduce.hpp"
 #include "ck/library/tensor_operation_instance/gpu/reduce/device_reduce_instance_blockwise.hpp"
@@ -128,8 +130,10 @@ namespace hiptensor
                       return reduceModes;
                   };
             toCKArr(a_lengths, arrInLengths);
+
+            auto& options = HiptensorOptions::instance();
             toCKArr(a_strides.empty()
-                        ? hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+                        ? hiptensor::stridesFromLengths(a_lengths, options->isColMajorStrides())
                         : a_strides,
                     arrInStrides);
 
@@ -143,7 +147,7 @@ namespace hiptensor
             }
             toCKArr(ckCLengths, arrOutLengths);
             toCKArr(ckCStrides.empty()
-                        ? hiptensor::stridesFromLengths(ckCLengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+                        ? hiptensor::stridesFromLengths(ckCLengths, options->isColMajorStrides())
                         : ckCStrides,
                     arrOutStrides);
             toCKArr(findReduceModes(a_modes, c_modes), reduceDims);
