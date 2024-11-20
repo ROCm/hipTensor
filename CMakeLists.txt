@@ -66,7 +66,7 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
   option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON)
-  option( HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR "Set hiptensor data layout to column major" ON )
+  option( HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR "Set hiptensor default strides to column major" ON )
   option(BUILD_OFFLOAD_COMPRESS "Build hiptensor with offload compression" ON)
 endif()
 

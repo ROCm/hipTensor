@@ -41,7 +41,7 @@ namespace hiptensor
         , mColdRuns(0)
         , mInputFilename("")
         , mOutputFilename("")
-        , mColMajorStrides(true)
+        , mColMajorStrides(HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR)
     {
         // Override HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR with environment variable if present
         if(const char* stride_env = std::getenv("HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR"))
@@ -56,10 +56,6 @@ namespace hiptensor
             {
                 mColMajorStrides = false;
             }
-        }
-        else
-        {
-            mColMajorStrides = HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR;
         }
     }
 
