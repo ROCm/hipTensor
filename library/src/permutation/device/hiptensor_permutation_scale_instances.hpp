@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,17 @@
 #ifndef HIPTENSOR_PERMUTATION_SCALE_INSTANCES_HPP
 #define HIPTENSOR_PERMUTATION_SCALE_INSTANCES_HPP
 
-#include "permutation_scale_2d_instances.hpp"
-#include "permutation_scale_3d_instances.hpp"
-#include "permutation_scale_4d_instances.hpp"
-#include "permutation_scale_5d_instances.hpp"
-#include "permutation_scale_6d_instances.hpp"
+// Stdlib includes
+#include <cstdlib>
+#include <memory>
+#include <vector>
+
+// CK includes
+#include <add_device_operation_instance.hpp>
+#include <ck.hpp>
+#include <ck/tensor_operation/gpu/device/device_elementwise.hpp>
+#include <combined_element_wise_operation.hpp>
+#include <device_elementwise_dynamic_vector_dims_impl.hpp>
 
 namespace ck
 {
@@ -41,9 +47,6 @@ namespace ck
         {
             namespace instance
             {
-                using F16 = ck::half_t;
-                using F32 = float;
-
                 template <typename InDataTypeTuple,
                           typename OutDataTypeTuple,
                           typename ElementwiseOperation,
@@ -62,84 +65,51 @@ namespace ck
                     static auto GetInstances()
                     {
                         std::vector<std::unique_ptr<DeviceOp>> op_ptrs;
-                        if constexpr(NumDim == 1)
-                        {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
-                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
-                            {
-                                add_device_permute_scale_1d_f32_instances(op_ptrs);
-                            }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
-                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
-                            {
-                                add_device_permute_scale_1d_f16_instances(op_ptrs);
-                            }
-                        }
-                        else if constexpr(NumDim == 2)
-                        {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
-                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
-                            {
-                                add_device_permute_scale_2d_f32_instances(op_ptrs);
-                            }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
-                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
-                            {
-                                add_device_permute_scale_2d_f16_instances(op_ptrs);
-                            }
-                        }
-                        else if constexpr(NumDim == 3)
-                        {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
-                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
-                            {
-                                add_device_permute_scale_3d_f32_instances(op_ptrs);
-                            }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
-                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
-                            {
-                                add_device_permute_scale_3d_f16_instances(op_ptrs);
-                            }
-                        }
-                        else if constexpr(NumDim == 4)
-                        {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
-                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
-                            {
-                                add_device_permute_scale_4d_f32_instances(op_ptrs);
-                            }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
-                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
-                            {
-                                add_device_permute_scale_4d_f16_instances(op_ptrs);
-                            }
-                        }
-                        else if constexpr(NumDim == 5)
-                        {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
-                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
-                            {
-                                add_device_permute_scale_5d_f32_instances(op_ptrs);
-                            }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
-                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
-                            {
-                                add_device_permute_scale_5d_f16_instances(op_ptrs);
-                            }
-                        }
-                        else if constexpr(NumDim == 6)
-                        {
-                            if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F32>>
-                                         && is_same_v<OutDataTypeTuple, ck::Tuple<F32>>)
-                            {
-                                add_device_permute_scale_6d_f32_instances(op_ptrs);
-                            }
-                            else if constexpr(is_same_v<InDataTypeTuple, ck::Tuple<F16>>
-                                              && is_same_v<OutDataTypeTuple, ck::Tuple<F16>>)
-                            {
-                                add_device_permute_scale_6d_f16_instances(op_ptrs);
-                            }
-                        }
+                        // clang-format off
+                        using device_permute_scale_instances =
+                            std::tuple <
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 64,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 128, 32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 32,  128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 64,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 32,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 16,  128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 128, 16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  32,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  16,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  64,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,  32,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,  16,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 128, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 256, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256,  64, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 128, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  64, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  32, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 256, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   64, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   32, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  128, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   64, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   32, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+
+
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
+                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>
+                                >;
+                        // clang-format on
+                        add_device_operation_instances(op_ptrs, device_permute_scale_instances{});
                         return op_ptrs;
                     }
                 };
