@@ -39,6 +39,8 @@
 #include <combined_element_wise_operation.hpp>
 #include <device_elementwise_dynamic_vector_dims_impl.hpp>
 
+#include "instance_params.hpp"
+
 namespace ck
 {
     namespace tensor_operation
@@ -62,55 +64,89 @@ namespace ck
                                                        ElementwiseOperation,
                                                        NumDim>;
 
+                    template <index_t BlockSize,
+                              index_t M0PerBlock,
+                              index_t M1PerBlock,
+                              index_t M0PerThread,
+                              index_t M1PerThread,
+                              typename ThreadClusterArrangeOrder,
+                              typename InScalarPerVectorSeq,
+                              typename OutScalarPerVectorSeq,
+                              typename Container>
+                    static void addInstance(Container& container)
+                    {
+                        container.insert(
+                            {DeviceElementwiseParams<InDataTypeTuple,
+                                                     OutDataTypeTuple,
+                                                     ElementwiseOperation,
+                                                     NumDim,
+                                                     BlockSize,
+                                                     M0PerBlock,
+                                                     M1PerBlock,
+                                                     M0PerThread,
+                                                     M1PerThread,
+                                                     ThreadClusterArrangeOrder,
+                                                     InScalarPerVectorSeq,
+                                                     OutScalarPerVectorSeq>::id(),
+                             std::make_unique<DeviceElementwiseImpl<InDataTypeTuple,
+                                                                    OutDataTypeTuple,
+                                                                    ElementwiseOperation,
+                                                                    NumDim,
+                                                                    BlockSize,
+                                                                    M0PerBlock,
+                                                                    M1PerBlock,
+                                                                    M0PerThread,
+                                                                    M1PerThread,
+                                                                    ThreadClusterArrangeOrder,
+                                                                    InScalarPerVectorSeq,
+                                                                    OutScalarPerVectorSeq>>()});
+                    }
                     static auto GetInstances()
                     {
-                        std::vector<std::unique_ptr<DeviceOp>> op_ptrs;
+                        std::unordered_map<std::size_t, std::unique_ptr<DeviceOp>> opPtrs;
                         // clang-format off
-                        using device_permute_scale_instances =
-                            std::tuple <
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 64,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 128, 32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 32,  128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 64,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 32,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 16,  128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 128, 16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  32,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  16,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  64,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,  32,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,  16,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>,
+                        addInstance<256, 64, 64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<256, 64,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<256, 128, 32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<256, 32,  128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<128, 64,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<128, 32,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<128, 16,  128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<128, 128, 16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<64,  32,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<64,  16,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<64,  64,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<32,  32,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<32,  16,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
 
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 128, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 256, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256,  64, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 128, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  64, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  32, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 256, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   64, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   32, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,  128, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   64, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   32, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>,
+                        addInstance<256, 128, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<256, 256, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<256,  64, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<128, 128, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<128,  64, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<128,  32, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<128, 256, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<64,   64, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<64,   32, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<64,  128, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<32,   64, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
+                        addInstance<32,   32, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
 
 
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>,
-                            DeviceElementwiseImpl<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation,  NumDim, 32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>
-                                >;
+                        addInstance<256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
                         // clang-format on
-                        add_device_operation_instances(op_ptrs, device_permute_scale_instances{});
-                        return op_ptrs;
+                        return opPtrs;
                     }
                 };
 

@@ -183,10 +183,10 @@ namespace hiptensor
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<PermutationOp>;
 
         std::vector<std::unique_ptr<PermutationSolution>> result;
-        for(auto& opPtr : Factory::GetInstances())
+        for(auto& item : Factory::GetInstances())
         {
             result.push_back(
-                std::make_unique<PermutationSolutionImpl<PermutationOp>>(std::move(opPtr)));
+                std::make_unique<PermutationSolutionImpl<PermutationOp>>(std::move(item.second)));
         }
         return result;
     }
