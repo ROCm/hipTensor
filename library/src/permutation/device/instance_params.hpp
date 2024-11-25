@@ -26,6 +26,7 @@
 #ifndef INSTANCE_PARAMS_HPP
 #define INSTANCE_PARAMS_HPP
 
+#include "../permutation_types.hpp"
 #include "data_types.hpp"
 #include "hash.hpp"
 
@@ -33,42 +34,28 @@ namespace ck::tensor_operation::device::instance
 {
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename ElementwiseOperation,
+              typename Aop,
+              typename Bop,
+              typename Scale,
               index_t NumDim,
-              index_t BlockSize,
-              index_t M0PerBlock,
-              index_t M1PerBlock,
-              index_t M0PerThread,
-              index_t M1PerThread,
-              typename ThreadClusterArrangeOrder,
-              typename InScalarPerVectorSeq,
-              typename OutScalarPerVectorSeq>
+              index_t BlockSize                  = 0,
+              index_t M0PerBlock                 = 0,
+              index_t M1PerBlock                 = 0,
+              index_t M0PerThread                = 0,
+              index_t M1PerThread                = 0,
+              typename ThreadClusterArrangeOrder = ck::Sequence<0, 0>,
+              typename InScalarPerVectorSeq      = ck::Sequence<0>,
+              typename OutScalarPerVectorSeq     = ck::Sequence<0>>
     struct DeviceElementwiseParams
     {
-        // using InDataTypeTuple = InDataTypeTuple;
-        // using OutDataTypeTuple = OutDataTypeTuple;
-        // using ElementwiseOperation = ElementwiseOperation;
-        // using ThreadClusterArrangeOrder = ThreadClusterArrangeOrder;
-        // using InScalarPerVectorSeq = InScalarPerVectorSeq;
-        // using OutScalarPerVectorSeq = OutScalarPerVectorSeq;
-        // ck::index_t getNumDim() const {return NumDim;}
-        // ck::index_t getBlockSize() const{return BlockSize;}
-        // ck::index_t getM0PerBlock() const{return M0PerBlock;}
-        // ck::index_t getM1PerBlock() const{return M1PerBlock;}
-        // ck::index_t getM0PerThread() const{return M0PerThread;}
-        // ck::index_t getM1PerThread() const{return M1PerThread;}
-
-        static std::vector<std::size_t> queryIdsWithAllInOutScalarPerVectorSeq()
-        {
-            std::vector<std::size_t> ids;
-            return ids;
-        }
-        static std::size_t id()
+        static hiptensor::Uid hashCode()
         {
             return hiptensor::Hash{}(
                 hiptensor::HipDataType_v<typename ck::tuple_element_t<0, InDataTypeTuple>>,
                 hiptensor::HipDataType_v<typename ck::tuple_element_t<0, OutDataTypeTuple>>,
-                typeid(ElementwiseOperation).hash_code(),
+                hiptensor::ElementWiseOperatorType_v<Aop>,
+                hiptensor::ElementWiseOperatorType_v<Bop>,
+                hiptensor::PermutationOperatorType_v<Scale>,
                 NumDim,
                 BlockSize,
                 M0PerBlock,
@@ -81,5 +68,26 @@ namespace ck::tensor_operation::device::instance
                 OutScalarPerVectorSeq::At(0));
         }
     };
+
+    // Ck requires that the length of fastest changing dimonsion must be multiple times of InScalarPerVectorSeq
+    // and OutScalarPerVectorSeq. So `getHashCodesWithAllInOutScalarPerVectorSeq` always return a vector of hash code
+    // which represent In/OutScalarPerVectorSeq from 16 to 0.
+    // The caller should test the returned hash code in order since instance with In/OutScalarPerVectorSeq of 16
+    //  has the best performance on average and instance with In/OutScalarPerVectorSeq of 1 can handle inputs of
+    // all shapes which is the last resort.
+    std::vector<hiptensor::Uid> getHashCodesWithAllInOutScalarPerVectorSeq(
+        hipDataType                  typeIn,
+        hipDataType                  typeOut,
+        hiptensorOperator_t          aOp,
+        hiptensorOperator_t          bOp,
+        hiptensor::PermutationOpId_t scale,
+        index_t                      numDim,
+        index_t                      blockSize,
+        index_t                      m0PerBlock,
+        index_t                      m1PerBlock,
+        index_t                      m0PerThread,
+        index_t                      m1PerThread,
+        std::pair<index_t, index_t>  threadClusterArrangeOrder);
+
 }
 #endif //  INSTANCE_PARAMS_HPP

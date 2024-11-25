@@ -24,47 +24,27 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_TYPES_HPP
-#define HIPTENSOR_PERMUTATION_TYPES_HPP
+#ifndef PERMUTATION_INSTANCE_SELECTION_HPP
+#define PERMUTATION_INSTANCE_SELECTION_HPP
 
-#include <ostream>
+#include "data_types.hpp"
+#include "permutation_types.hpp"
 
 namespace hiptensor
 {
-    using Uid = std::size_t;
-    /**
-     * \brief This enum decides the over the operation based on the inputs.
-     * \details This enum decides the operation based on the in puts passed in the
-     * hipTensorPermutationGetWorkspaceSize
-     */
-    enum struct PermutationOpId_t : int32_t
-    {
-        SCALE = 0,
-        UNKNOWN,
-    };
-
-    // Map type to runtime hiptensorOperator_t
-    template <typename OpId>
-    struct ElementWiseOperatorType;
-
-    template <typename OpId>
-    static constexpr auto ElementWiseOperatorType_v = ElementWiseOperatorType<OpId>::value;
-
-    // Map type to runtime PermutationOpId_t
-    template <typename OpId>
-    struct PermutationOperatorType;
-
-    template <typename OpId>
-    static constexpr auto PermutationOperatorType_v = PermutationOperatorType<OpId>::value;
-
+    std::tuple<ck::index_t,
+               ck::index_t,
+               ck::index_t,
+               ck::index_t,
+               ck::index_t,
+               std::pair<ck::index_t, ck::index_t>>
+        selectInstanceParams(std::vector<Uid> const&      lengths,
+                             hipDataType                  typeIn,
+                             hipDataType                  typeOut,
+                             hiptensorOperator_t          aOp,
+                             hiptensorOperator_t          bOp,
+                             hiptensor::PermutationOpId_t scale,
+                             ck::index_t                  numDim);
 } // namespace hiptensor
 
-namespace std
-{
-    ostream& operator<<(ostream& os, hiptensor::PermutationOpId_t const&);
-
-} // namespace std
-
-#include "permutation_types_impl.hpp"
-
-#endif // HIPTENSOR_PERMUTATION_TYPES_HPP
+#endif // PERMUTATION_INSTANCE_SELECTION_HPP

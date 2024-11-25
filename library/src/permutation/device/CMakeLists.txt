@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,7 @@
 
  set(CK_PERMUTATION_INSTANCE_SOURCES
      ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation_scale_instances.hpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_2d_instances.hpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_3d_instances.hpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_4d_instances.hpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_5d_instances.hpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_scale_6d_instances.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instance_params.cpp
      )
 
 add_hiptensor_component(hiptensor_permutation_instances ${CK_PERMUTATION_INSTANCE_SOURCES})

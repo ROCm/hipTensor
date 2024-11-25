@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -121,11 +121,15 @@ namespace hiptensor
                 {
                     auto nextIndex = [&indices, &arg]() -> bool {
                         int N = indices.size();
-                        for (int i = N - 1; i >= 0; --i) {
-                            if (indices[i] < arg.mLengths[i] - 1) {
+                        for(int i = N - 1; i >= 0; --i)
+                        {
+                            if(indices[i] < arg.mLengths[i] - 1)
+                            {
                                 ++indices[i];
                                 return true;
-                            } else {
+                            }
+                            else
+                            {
                                 indices[i] = 0;
                             }
                         }
@@ -133,9 +137,9 @@ namespace hiptensor
                     };
 
                     auto bOffset = std::inner_product(
-                         indices.rbegin(), indices.rend(), std::rbegin(arg.mOutStrides[0]), 0);
+                        indices.rbegin(), indices.rend(), std::rbegin(arg.mOutStrides[0]), 0);
                     auto aOffset = std::inner_product(
-                         indices.rbegin(), indices.rend(), std::rbegin(arg.mInStrides[0]), 0);
+                        indices.rbegin(), indices.rend(), std::rbegin(arg.mInStrides[0]), 0);
                     nextIndex();
 
                     // Perform sequence of unary, scale operations on input
@@ -255,8 +259,11 @@ namespace hiptensor
         auto solution = std::make_unique<PermutationSolutionImpl<ReferenceOp>>(
             std::make_unique<ReferenceOp>());
 
-        auto result = std::vector<std::unique_ptr<PermutationSolution>>();
-        result.push_back(std::move(solution));
+        auto hashCode = ck::tensor_operation::device::instance::
+            DeviceElementwiseParams<InDataTypeTuple, OutDataTypeTuple, Aop, Bop, Scale, NumDim>::
+                hashCode();
+        auto result = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();
+        result.insert({hashCode, std::move(solution)});
 
         return result;
     }

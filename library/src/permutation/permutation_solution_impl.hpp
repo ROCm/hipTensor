@@ -171,7 +171,7 @@ namespace hiptensor
               typename Bop,
               typename Scale,
               ck::index_t NumDim>
-    std::vector<std::unique_ptr<hiptensor::PermutationSolution>> enumeratePermutationSolutions()
+    auto enumeratePermutationSolutions()
     {
         using PermutationOp = ck::tensor_operation::device::DeviceElementwise<
             InDataTypeTuple,
@@ -182,11 +182,12 @@ namespace hiptensor
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<PermutationOp>;
 
-        std::vector<std::unique_ptr<PermutationSolution>> result;
+        std::unordered_map<Uid, std::unique_ptr<PermutationSolution>> result;
         for(auto& item : Factory::GetInstances())
         {
-            result.push_back(
-                std::make_unique<PermutationSolutionImpl<PermutationOp>>(std::move(item.second)));
+            result.insert(
+                {item.first,
+                 std::make_unique<PermutationSolutionImpl<PermutationOp>>(std::move(item.second))});
         }
         return result;
     }

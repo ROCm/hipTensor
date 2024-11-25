@@ -24,47 +24,25 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_TYPES_HPP
-#define HIPTENSOR_PERMUTATION_TYPES_HPP
-
-#include <ostream>
+#include "permutation_instance_selection.hpp"
 
 namespace hiptensor
 {
-    using Uid = std::size_t;
-    /**
-     * \brief This enum decides the over the operation based on the inputs.
-     * \details This enum decides the operation based on the in puts passed in the
-     * hipTensorPermutationGetWorkspaceSize
-     */
-    enum struct PermutationOpId_t : int32_t
+    std::tuple<ck::index_t,
+               ck::index_t,
+               ck::index_t,
+               ck::index_t,
+               ck::index_t,
+               std::pair<ck::index_t, ck::index_t>>
+        selectInstanceParams(std::vector<Uid> const&      lengths,
+                             hipDataType                  typeIn,
+                             hipDataType                  typeOut,
+                             hiptensorOperator_t          aOp,
+                             hiptensorOperator_t          bOp,
+                             hiptensor::PermutationOpId_t scale,
+                             ck::index_t                  numDim)
     {
-        SCALE = 0,
-        UNKNOWN,
-    };
-
-    // Map type to runtime hiptensorOperator_t
-    template <typename OpId>
-    struct ElementWiseOperatorType;
-
-    template <typename OpId>
-    static constexpr auto ElementWiseOperatorType_v = ElementWiseOperatorType<OpId>::value;
-
-    // Map type to runtime PermutationOpId_t
-    template <typename OpId>
-    struct PermutationOperatorType;
-
-    template <typename OpId>
-    static constexpr auto PermutationOperatorType_v = PermutationOperatorType<OpId>::value;
-
+        // TODO lengths, outDims => blockSize ...
+        return make_tuple(256, 64, 64, 4, 4, std::make_pair(0, 1));
+    }
 } // namespace hiptensor
-
-namespace std
-{
-    ostream& operator<<(ostream& os, hiptensor::PermutationOpId_t const&);
-
-} // namespace std
-
-#include "permutation_types_impl.hpp"
-
-#endif // HIPTENSOR_PERMUTATION_TYPES_HPP

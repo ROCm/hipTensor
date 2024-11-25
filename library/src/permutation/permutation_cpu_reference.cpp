@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,41 +39,28 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
                                                 const hipDataType                  typeScalar,
                                                 const hipStream_t                  stream)
 {
-    const int32_t dim   = descA->mLengths.size();
-    auto& instances     = hiptensor::PermutationCpuReferenceInstances::instance();
-    auto  candidates    = instances->allSolutions().query(dim,
-                                                          descA->mType,
-                                                          descB->mType,
-                                                          descA->mUnaryOp,
-                                                          descB->mUnaryOp,
-                                                          hiptensor::PermutationOpId_t::SCALE);
+    const int32_t dim       = descA->mLengths.size();
+    auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
 
-    auto toPermutationSolutionVec = [](std::unordered_map<std::size_t,
-                                                          hiptensor::PermutationSolution*> const& map)
+    auto refCandidates = instances->query(descA->mType,
+                                          descB->mType,
+                                          descA->mUnaryOp,
+                                          descB->mUnaryOp,
+                                          hiptensor::PermutationOpId_t::SCALE,
+                                          dim);
+
+    for(auto refCandidate : refCandidates)
     {
-        auto result = std::vector<hiptensor::PermutationSolution*>(map.size());
-        transform(map.begin(), map.end(), result.begin(), [](auto p) { return p.second; });
-        return result;
-    };
-
-#if !NDEBUG
-    std::cout << "hiptensorPermutationReference: " << candidates.solutionCount() << " Kernels Found!!"<< std::endl;
-#endif
-
-    auto candidateSol = toPermutationSolutionVec(candidates.solutions());
-    for(int i = 0; i < candidateSol.size(); i++)
-    {
-        auto refCandidate = candidateSol[i];
         if(refCandidate->initArgs(alpha,
-                                    A,
-                                    B,
-                                    descA->mLengths,
-                                    descA->mStrides,
-                                    modeA,
-                                    descB->mLengths,
-                                    descB->mStrides,
-                                    modeB,
-                                    typeScalar))
+                                  A,
+                                  B,
+                                  descA->mLengths,
+                                  descA->mStrides,
+                                  modeA,
+                                  descB->mLengths,
+                                  descB->mStrides,
+                                  modeB,
+                                  typeScalar))
         {
             (*refCandidate)();
             return HIPTENSOR_STATUS_SUCCESS;

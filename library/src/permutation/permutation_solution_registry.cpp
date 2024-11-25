@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,315 +29,62 @@
 
 namespace hiptensor
 {
-    ////////////////////////////////////////////////
-    /// Class PermutationSolutionRegistry::Query ///
-    ////////////////////////////////////////////////
-
-    // @cond
-    PermutationSolutionRegistry::Query::Query(Query const& other)
-        : mAllSolutions(other.mAllSolutions)
-        , mSolutionHash(other.mSolutionHash)
-    {
-    }
-
-    PermutationSolutionRegistry::Query&
-        PermutationSolutionRegistry::Query::operator=(Query const& other)
-    {
-        if(&other != this)
-        {
-            mAllSolutions = other.mAllSolutions;
-            mSolutionHash = other.mSolutionHash;
-        }
-
-        return *this;
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(int32_t                dim,
-                                                  hipDataType            typeIn,
-                                                  hipDataType            typeOut,
-                                                  hiptensorOperator_t    opA,
-                                                  hiptensorOperator_t    opB,
-                                                  PermutationOpId_t      opScale) const
-    {
-        auto solutionHash = hashSolution(
-            dim, typeIn, typeOut, opA, opB, opScale);
-
-        if(auto solutions = mSolutionHash.find(solutionHash); solutions != mSolutionHash.end())
-        {
-            return Query(mSolutionHash.at(solutionHash));
-        }
-
-        return Query();
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(int32_t                dim,
-                                                  hipDataType            typeIn,
-                                                  hipDataType            typeOut,
-                                                  hiptensorOperator_t    opA,
-                                                  hiptensorOperator_t    opB,
-                                                  PermutationOpId_t      opScale,
-                                                  uint32_t               threadDim) const
-    {
-        auto solutionHash = hashSolution(
-            dim, typeIn, typeOut, opA, opB, opScale, threadDim);
-
-        if(auto solutions = mSolutionHash.find(solutionHash); solutions != mSolutionHash.end())
-        {
-            return Query(mSolutionHash.at(solutionHash));
-        }
-
-        return Query();
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(int32_t dim) const
-    {
-        return query(hashDim(dim));
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(hipDataType            typeIn,
-                                                  hipDataType            typeOut) const
-    {
-        return query(hashTypesInOut(typeIn, typeOut));
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(hiptensorOperator_t opA,
-                                                  hiptensorOperator_t opB) const
-    {
-        return query(hashElementOps(opA, opB));
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(PermutationOpId_t   opScale) const
-    {
-        return query(hashScaleOp(opScale));
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(uint32_t threadDim) const
-    {
-        return query(hashThreadDim(threadDim));
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::operator||(Query const& other) const
-    {
-        auto newQuery = *this;
-        newQuery.addSolutions(other.mAllSolutions);
-        return newQuery;
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::operator&&(Query const& other) const
-    {
-        auto newQuery = Query();
-
-        // Add only if both queries have the solution
-        for(auto& solutionPair : other.mAllSolutions)
-        {
-            if(auto solution = mAllSolutions.find(solutionPair.first);
-               solution != mAllSolutions.end())
-            {
-                newQuery.addSolution(solutionPair.second);
-            }
-        }
-
-        return newQuery;
-    }
-
-    std::unordered_map<PermutationSolutionRegistry::Query::Uid, PermutationSolution*> const&
-        PermutationSolutionRegistry::Query::solutions() const
-    {
-        return mAllSolutions;
-    }
-
-    uint32_t PermutationSolutionRegistry::Query::solutionCount() const
-    {
-        return mAllSolutions.size();
-    }
-
-    ///////////////
-    /// Private ///
-    ///////////////
-
-    PermutationSolutionRegistry::Query::Query(std::vector<PermutationSolution*> const& solutions)
-    {
-        addSolutions(solutions);
-    }
-
-    PermutationSolutionRegistry::Query
-        PermutationSolutionRegistry::Query::query(HashId queryHash) const
-    {
-        if(auto solutions = mSolutionHash.find(queryHash); solutions != mSolutionHash.end())
-        {
-            return Query(mSolutionHash.at(queryHash));
-        }
-
-        return Query();
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashSolution(int32_t                dim,
-                                                         hipDataType            typeIn,
-                                                         hipDataType            typeOut,
-                                                         hiptensorOperator_t    opA,
-                                                         hiptensorOperator_t    opB,
-                                                         PermutationOpId_t      opScale)
-    {
-        return Hash{}(dim, typeIn, typeOut, opA, opB, opScale, -1);
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashSolution(int32_t                dim,
-                                                         hipDataType            typeIn,
-                                                         hipDataType            typeOut,
-                                                         hiptensorOperator_t    opA,
-                                                         hiptensorOperator_t    opB,
-                                                         PermutationOpId_t      opScale,
-                                                         uint32_t               threadDim)
-    {
-        return Hash{}(dim, typeIn, typeOut, opA, opB, opScale, threadDim);
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashDim(int32_t dim)
-    {
-        return Hash{}(dim, -1, -1, -1, -1, -1, -1);
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashTypesInOut(hipDataType            typeIn,
-                                                           hipDataType            typeOut)
-    {
-        return Hash{}(-1, typeIn, typeOut, -1, -1, -1, -1);
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashElementOps(hiptensorOperator_t opA,
-                                                           hiptensorOperator_t opB)
-    {
-        return Hash{}(-1, -1, -1, opA, opB, -1, -1);
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashScaleOp(PermutationOpId_t      opScale)
-    {
-        return Hash{}(-1, -1, -1, -1, -1, opScale, -1);
-    }
-
-    /* static */
-    PermutationSolutionRegistry::Query::HashId
-        PermutationSolutionRegistry::Query::hashThreadDim(uint32_t threadDim)
-    {
-        return Hash{}(-1, -1, -1, -1, -1, -1, threadDim);
-    }
-
-    void PermutationSolutionRegistry::Query::addSolution(PermutationSolution* solution)
-    {
-        // Acquire unique ID and category ID per solution
-        auto  solutionUid = solution->uid();
-        auto& params      = solution->params();
-
-        if(auto const& result = mAllSolutions.emplace(std::make_pair(solutionUid, solution));
-           result.second == true)
-        {
-            auto solutionHash = hashSolution(params->dim(),
-                                             params->typeIn(),
-                                             params->typeOut(),
-                                             params->opA(),
-                                             params->opB(),
-                                             params->opScale());
-
-            auto fullSolutionHash = hashSolution(params->dim(),
-                                                 params->typeIn(),
-                                                 params->typeOut(),
-                                                 params->opA(),
-                                                 params->opB(),
-                                                 params->opScale(),
-                                                 solution->threadDim());
-
-            auto dimHash = hashDim(params->dim());
-
-            auto typesInOutHash = hashTypesInOut(params->typeIn(),
-                                                 params->typeOut());
-
-            auto elementOpsHash = hashElementOps(params->opA(),
-                                                 params->opB());
-
-            auto scaleOpHash = hashScaleOp(params->opScale());
-
-            auto threadDimHash = hashThreadDim(solution->threadDim());
-
-            // Hash permutation solutions into categories and then register
-            // into master list.
-            mAllSolutions[solutionUid] = solution;
-            mSolutionHash[solutionHash].push_back(solution);
-            mSolutionHash[fullSolutionHash].push_back(solution);
-            mSolutionHash[dimHash].push_back(solution);
-            mSolutionHash[typesInOutHash].push_back(solution);
-            mSolutionHash[elementOpsHash].push_back(solution);
-            mSolutionHash[scaleOpHash].push_back(solution);
-            mSolutionHash[threadDimHash].push_back(solution);
-        }
-        else
-        {
-#if !NDEBUG
-            std::cout << "Unique solution: " << solutionUid << " already exists!" << std::endl;
-#endif // !NDEBUG
-        }
-    }
-
-    void PermutationSolutionRegistry::Query::addSolutions(
-        std::vector<PermutationSolution*> const& solutions)
-    {
-        for(auto* soln : solutions)
-        {
-            addSolution(soln);
-        }
-    }
-
-    void PermutationSolutionRegistry::Query::addSolutions(
-        std::unordered_map<Uid, PermutationSolution*> const& solutions)
-    {
-        for(auto& solutionPair : solutions)
-        {
-            addSolution(solutionPair.second);
-        }
-    }
-
     /////////////////////////////////////////
     /// Class PermutationSolutionRegistry ///
     /////////////////////////////////////////
+    std::vector<PermutationSolution*> PermutationSolutionRegistry::query(
+        hipDataType                         typeIn,
+        hipDataType                         typeOut,
+        hiptensorOperator_t                 aOp,
+        hiptensorOperator_t                 bOp,
+        hiptensor::PermutationOpId_t        scale,
+        ck::index_t                         numDim,
+        ck::index_t                         blockSize,
+        ck::index_t                         m0PerBlock,
+        ck::index_t                         m1PerBlock,
+        ck::index_t                         m0PerThread,
+        ck::index_t                         m1PerThread,
+        std::pair<ck::index_t, ck::index_t> threadClusterArrangeOrder) const
+    {
+        auto hashCodes
+            = ck::tensor_operation::device::instance::getHashCodesWithAllInOutScalarPerVectorSeq(
+                typeIn,
+                typeOut,
+                aOp,
+                bOp,
+                scale,
+                numDim,
+                blockSize,
+                m0PerBlock,
+                m1PerBlock,
+                m0PerThread,
+                m1PerThread,
+                threadClusterArrangeOrder);
+        std::vector<PermutationSolution*> solutions;
+        for(auto hashCode : hashCodes)
+        {
+            if(auto solution = mAllSolutions.find(hashCode); solution != mAllSolutions.end())
+            {
+                solutions.push_back(solution->second.get());
+            }
+        }
+
+        return solutions;
+    }
 
     void PermutationSolutionRegistry::registerSolutions(
-        std::vector<std::unique_ptr<PermutationSolution>>&& solutions)
+        std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>&& solutions)
     {
         for(auto&& solution : solutions)
         {
             // Register with the query then take ownership
-            mSolutionQuery.addSolution(solution.get());
-            mSolutionStorage.push_back(std::move(solution));
+            mAllSolutions.insert(std::move(solution));
         }
-    }
-
-    PermutationSolutionRegistry::Query const& PermutationSolutionRegistry::allSolutions() const
-    {
-        return mSolutionQuery;
     }
 
     uint32_t PermutationSolutionRegistry::solutionCount() const
     {
-        return mSolutionStorage.size();
+        return mAllSolutions.size();
     }
     // @endcond
 

@@ -51,14 +51,19 @@ namespace ck
             {
                 template <typename InDataTypeTuple,
                           typename OutDataTypeTuple,
-                          typename ElementwiseOperation,
+                          typename Aop,
+                          typename Bop,
+                          typename Scale,
                           index_t NumDim>
                 struct DeviceOperationInstanceFactory<
-                    ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
-                                                                    OutDataTypeTuple,
-                                                                    ElementwiseOperation,
-                                                                    NumDim>>
+                    ck::tensor_operation::device::DeviceElementwise<
+                        InDataTypeTuple,
+                        OutDataTypeTuple,
+                        ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+                        NumDim>>
                 {
+                    using ElementwiseOperation
+                        = ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>;
                     using DeviceOp = DeviceElementwise<InDataTypeTuple,
                                                        OutDataTypeTuple,
                                                        ElementwiseOperation,
@@ -78,7 +83,9 @@ namespace ck
                         container.insert(
                             {DeviceElementwiseParams<InDataTypeTuple,
                                                      OutDataTypeTuple,
-                                                     ElementwiseOperation,
+                                                     Aop,
+                                                     Bop,
+                                                     Scale,
                                                      NumDim,
                                                      BlockSize,
                                                      M0PerBlock,
@@ -87,7 +94,7 @@ namespace ck
                                                      M1PerThread,
                                                      ThreadClusterArrangeOrder,
                                                      InScalarPerVectorSeq,
-                                                     OutScalarPerVectorSeq>::id(),
+                                                     OutScalarPerVectorSeq>::hashCode(),
                              std::make_unique<DeviceElementwiseImpl<InDataTypeTuple,
                                                                     OutDataTypeTuple,
                                                                     ElementwiseOperation,
@@ -103,48 +110,13 @@ namespace ck
                     }
                     static auto GetInstances()
                     {
-                        std::unordered_map<std::size_t, std::unique_ptr<DeviceOp>> opPtrs;
+                        std::unordered_map<hiptensor::Uid, std::unique_ptr<DeviceOp>> opPtrs;
                         // clang-format off
+                        addInstance<256, 64, 64, 4, 4, ck::Sequence<0, 1>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
+                        addInstance<256, 64, 64, 4, 4, ck::Sequence<0, 1>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+
                         addInstance<256, 64, 64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<256, 64,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<256, 128, 32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<256, 32,  128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<128, 64,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<128, 32,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<128, 16,  128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<128, 128, 16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<64,  32,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<64,  16,  64,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<64,  64,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<32,  32,  16,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-                        addInstance<32,  16,  32,  4, 4, ck::Sequence<1, 0>, ck::Sequence<4>, ck::Sequence<4>>(opPtrs);
-
-                        addInstance<256, 128, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<256, 256, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<256,  64, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<128, 128, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<128,  64, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<128,  32, 256, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<128, 256, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<64,   64, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<64,   32, 128, 8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<64,  128, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<32,   64, 32,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-                        addInstance<32,   32, 64,  8, 8, ck::Sequence<1, 0>, ck::Sequence<8>, ck::Sequence<8>>(opPtrs);
-
-
-                        addInstance<256,  64,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<256, 128,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<256,  32, 128, 4, 4,  ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<128,  64,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<128,  32,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<128,  16, 128, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<128, 128,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<64,   32,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<64,   16,  64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<64,   64,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<32,   32,  16, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
-                        addInstance<32,   16,  32, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
+                        addInstance<256, 64, 64, 4, 4, ck::Sequence<1, 0>, ck::Sequence<1>, ck::Sequence<1>>(opPtrs);
                         // clang-format on
                         return opPtrs;
                     }

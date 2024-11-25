@@ -131,14 +131,6 @@ namespace hiptensor
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;
     };
 
-    template <typename InDataTypeTuple,
-              typename OutDataTypeTuple,
-              typename Aop,
-              typename Bop,
-              typename Scale,
-              ck::index_t NumDim>
-    std::vector<std::unique_ptr<hiptensor::PermutationSolution>> enumeratePermutationSolutions();
-
 } // namespace hiptensor
 
 #include "permutation_solution_impl.hpp"

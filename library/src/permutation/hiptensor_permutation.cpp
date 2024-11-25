@@ -26,19 +26,12 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "logger.hpp"
+#include "permutation_instance_selection.hpp"
 #include "permutation_solution.hpp"
 #include "permutation_solution_instances.hpp"
 #include "permutation_solution_registry.hpp"
 
 #include "hiptensor_options.hpp"
-
-inline auto toPermutationSolutionVec(
-    std::unordered_map<std::size_t, hiptensor::PermutationSolution*> const& map)
-{
-    auto result = std::vector<hiptensor::PermutationSolution*>(map.size());
-    transform(map.begin(), map.end(), result.begin(), [](auto p) { return p.second; });
-    return result;
-}
 
 hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
                                        const void*                        alpha,
@@ -155,54 +148,36 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return errorCode;
     }
 
-    // For now, enumerate all known permutation kernels.
-    auto& instances = hiptensor::PermutationSolutionInstances::instance();
-    auto  solnQ     = instances->allSolutions();
-
-    if(solnQ.solutionCount() == 0)
-    {
-        // No kernels found!
-        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Internal Error : No Kernels Found (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
-        return errorCode;
-    }
-
-    // Extract the solutions to the candidates vector.
-    auto candidates = toPermutationSolutionVec(solnQ.solutions());
-
-    int  nDims     = descA->mLengths.size();
-    auto ADataType = descA->mType;
-    auto BDataType = descB->mType;
-    auto AOp       = descA->mUnaryOp;
-    auto BOp       = descB->mUnaryOp;
-
-    // Query permutation solutions for the correct permutation operation and type
-    auto solutionQ = hiptensor::PermutationSolutionRegistry::Query{candidates}.query(
-        nDims, ADataType, BDataType, AOp, BOp, hiptensor::PermutationOpId_t::SCALE);
-
-    if(solutionQ.solutionCount() == 0)
-    {
-        // No kernels found!
-        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Internal Error : No Kernels Found (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
-        return errorCode;
-    }
-
-    candidates = toPermutationSolutionVec(solutionQ.solutions());
+    int   nDims          = descA->mLengths.size();
+    auto  ADataType      = descA->mType;
+    auto  BDataType      = descB->mType;
+    auto  AOp            = descA->mUnaryOp;
+    auto  BOp            = descB->mUnaryOp;
+    auto& instances      = hiptensor::PermutationSolutionInstances::instance();
+    auto  instanceParams = selectInstanceParams(descA->mLengths,
+                                               ADataType,
+                                               BDataType,
+                                               AOp,
+                                               BOp,
+                                               hiptensor::PermutationOpId_t::SCALE,
+                                               nDims);
+    auto  solutions      = instances->query(ADataType,
+                                      BDataType,
+                                      AOp,
+                                      BOp,
+                                      hiptensor::PermutationOpId_t::SCALE,
+                                      nDims,
+                                      std::get<0>(instanceParams),
+                                      std::get<1>(instanceParams),
+                                      std::get<2>(instanceParams),
+                                      std::get<3>(instanceParams),
+                                      std::get<4>(instanceParams),
+                                      std::get<5>(instanceParams));
 
     bool canRun = false;
-    for(int i = 0; i < candidates.size(); i++)
+    for(auto pSolution : solutions)
     {
-        hiptensor::PermutationSolution* pSolution = candidates[i];
-        canRun                                    = pSolution->initArgs(alpha,
+        canRun = pSolution->initArgs(alpha,
                                      A,
                                      B,
                                      descA->mLengths,
