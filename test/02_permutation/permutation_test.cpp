@@ -79,10 +79,14 @@ namespace hiptensor
 
     std::ostream& PermutationTest::printHeader(std::ostream& stream /* = std::cout */) const
     {
-        return stream << "TypeIn, TypeCompute, " << "Operators             , LogLevel, "
-                      << "Lengths, PermutedOrder, " << "Alpha, elapsedMs, "
-                      << "Problem Size(GFlops), " << "TFlops/s, " << "TotalBytes, " << "Result"
-                      << std::endl;
+        return stream << "TypeIn, TypeCompute, "
+                      << "Operators             , LogLevel, "
+                      << "Lengths, PermutedOrder, "
+                      << "Alpha, elapsedMs, "
+                      << "Problem Size(GFlops), "
+                      << "TFlops/s, "
+                      << "TotalBytes, "
+                      << "Result" << std::endl;
     }
 
     std::ostream& PermutationTest::printKernel(std::ostream& stream) const
@@ -125,8 +129,15 @@ namespace hiptensor
 
         if(!mRunFlag)
         {
-            stream << "n/a" << ", " << "n/a" << ", " << "n/a" << ", " << "n/a" << ", " << "SKIPPED"
-                   << std::endl;
+            stream << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "SKIPPED" << std::endl;
         }
         else
         {
@@ -420,6 +431,8 @@ namespace hiptensor
                 }
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
             } // if (testOptions->performValidation())
+
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
         }
 
         using Options        = hiptensor::HiptensorOptions;
@@ -452,6 +465,12 @@ namespace hiptensor
         }
     }
 
-    void PermutationTest::TearDown() {}
+    void PermutationTest::TearDown()
+    {
+        if(mRunFlag)
+        {
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+        }
+    }
 
 } // namespace hiptensor

@@ -113,9 +113,14 @@ namespace hiptensor
 
     std::ostream& ReductionTest::printHeader(std::ostream& stream /* = std::cout */) const
     {
-        return stream << "TypeIn, TypeCompute, " << "Operator, LogLevel, " << "Lengths, ReOrder, "
-                      << "Alpha, Beta, elapsedMs, " << "Problem Size(GFlops), " << "TFlops/s, "
-                      << "TotalBytes, " << "Result" << std::endl;
+        return stream << "TypeIn, TypeCompute, "
+                      << "Operator, LogLevel, "
+                      << "Lengths, ReOrder, "
+                      << "Alpha, Beta, elapsedMs, "
+                      << "Problem Size(GFlops), "
+                      << "TFlops/s, "
+                      << "TotalBytes, "
+                      << "Result" << std::endl;
     }
 
     std::ostream& ReductionTest::printKernel(std::ostream& stream) const
@@ -158,8 +163,15 @@ namespace hiptensor
 
         if(!mRunFlag)
         {
-            stream << "n/a" << ", " << "n/a" << ", " << "n/a" << ", " << "n/a" << ", " << "SKIPPED"
-                   << std::endl;
+            stream << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "n/a"
+                   << ", "
+                   << "SKIPPED" << std::endl;
         }
         else
         {
@@ -589,6 +601,13 @@ namespace hiptensor
             }
         }
     }
-    void ReductionTest::TearDown() {}
+
+    void ReductionTest::TearDown()
+    {
+        if(mRunFlag)
+        {
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+        }
+    }
 
 } // namespace hiptensor

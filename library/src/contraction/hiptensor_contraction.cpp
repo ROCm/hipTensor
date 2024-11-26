@@ -576,6 +576,9 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     auto elapsedTimeMs = 0.0f;
     CHECK_HIP_ERROR(hipEventElapsedTime(&elapsedTimeMs, startEvent, stopEvent));
 
+    CHECK_HIP_ERROR(hipEventDestroy(startEvent));
+    CHECK_HIP_ERROR(hipEventDestroy(stopEvent));
+
     if(result != HIPTENSOR_STATUS_SUCCESS)
     {
         snprintf(msg,
