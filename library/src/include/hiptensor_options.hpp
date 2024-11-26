@@ -66,6 +66,7 @@ namespace hiptensor
         bool omitCout();
         bool usingDefaultConfig();
         bool performValidation();
+        bool isColMajorStrides();
 
         int32_t hotRuns();
         int32_t coldRuns();
@@ -79,6 +80,7 @@ namespace hiptensor
         bool mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
         bool mUsingDefaultParams;
         bool mValidate;
+        bool mColMajorStrides;
 
         int32_t mHotRuns, mColdRuns;
 

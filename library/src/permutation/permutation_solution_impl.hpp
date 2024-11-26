@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@
 #include <numeric>
 
 #include "hash.hpp"
+#include "hiptensor_options.hpp"
 #include "permutation_solution.hpp"
 
 namespace std
@@ -122,9 +123,10 @@ namespace hiptensor
                 modeAToIndex[modeA[i]] = i;
             }
 
-            toCKArr(hiptensor::stridesFromLengths(a_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR),
+            auto& options = HiptensorOptions::instance();
+            toCKArr(hiptensor::stridesFromLengths(a_lengths, options->isColMajorStrides()),
                     aStrides);
-            toCKArr(hiptensor::stridesFromLengths(b_lengths, HIPTENSOR_DATA_LAYOUT_COL_MAJOR),
+            toCKArr(hiptensor::stridesFromLengths(b_lengths, options->isColMajorStrides()),
                     bStrides);
             for(int i = 0; i < Traits::NDim; i++)
             {

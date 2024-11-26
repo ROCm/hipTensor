@@ -29,6 +29,7 @@
 
 #include "data_types.hpp"
 #include "handle.hpp"
+#include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "util.hpp"
 
@@ -201,9 +202,12 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
         // Re-construct strides from lengths, assuming packed.
         if(numModes > 0)
         {
+            using hiptensor::HiptensorOptions;
+            auto& options = HiptensorOptions::instance();
+
             auto                     lensVector = std::vector<std::size_t>(lens, lens + numModes);
             std::vector<std::size_t> stridesVector
-                = hiptensor::stridesFromLengths(lensVector, HIPTENSOR_DATA_LAYOUT_COL_MAJOR);
+                = hiptensor::stridesFromLengths(lensVector, options->isColMajorStrides());
             *desc = {dataType, lensVector, stridesVector, unaryOp};
         }
         else

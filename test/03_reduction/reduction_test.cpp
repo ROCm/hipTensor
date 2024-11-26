@@ -366,14 +366,16 @@ namespace hiptensor
             });
             std::vector<int64_t> extentD(extentC);
 
+            auto& options = HiptensorOptions::instance();
+
             std::vector<int64_t> strideD
-                = hiptensor::stridesFromLengths(extentD, HIPTENSOR_DATA_LAYOUT_COL_MAJOR);
+                = hiptensor::stridesFromLengths(extentD, options->isColMajorStrides());
             if(!std::equal(outputDims.cbegin(), outputDims.cend(), sortedOutputDims.cbegin()))
             {
                 std::unordered_map<int, int64_t> dimToStride;
                 int64_t                          stride = 1;
 
-                if(!HIPTENSOR_DATA_LAYOUT_COL_MAJOR)
+                if(!options->isColMajorStrides())
                 {
                     for(auto it = outputDims.crbegin(); it != outputDims.crend(); ++it)
                     {
