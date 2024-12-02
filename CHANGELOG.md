@@ -27,7 +27,6 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * Default strides calculations now follow column-major convention.
 * Various documentation formatting updates and fixes.
 
-
 ## hipTensor 1.3.0 for ROCm 6.2.0
 
 ### Additions
