@@ -160,7 +160,7 @@ Below are the project options available to build hipTensor library with or witho
         -   **Default Value**
     *   -   AMDGPU_TARGETS
         -   Build code for specific GPU target(s)
-        -   ``gfx908:xnack-``; ``gfx90a:xnack-``; ``gfx90a:xnack+``; ``gfx940``; ``gfx941``; ``gfx942``
+        -   ``gfx908``; ``gfx90a``; ``gfx942``
     *   -   HIPTENSOR_BUILD_TESTS
         -   Build Tests
         -   ON
@@ -184,7 +184,7 @@ Here are some example project configurations:
 +===================================+====================================================================================================================+
 |            Basic                  | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> .`                               |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
-|        Targeting gfx908           | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908:xnack-`|
+|        Targeting gfx908           | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908`       |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
 |          Debug build              | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`      |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
@@ -456,7 +456,7 @@ Build performance
 
 Depending on the resources available to the build machine and the build configuration selected, hipTensor build times can be on the order of an hour or more. Here are some things you can do to reduce build times:
 
-* Target a specific GPU (e.g., ``-D AMDGPU_TARGETS=gfx908:xnack-``)
+* Target a specific GPU (e.g., ``-D AMDGPU_TARGETS=gfx908``)
 * Use lots of threads (e.g., ``-j32``)
 * If they aren't needed, specify either ``HIPTENSOR_BUILD_TESTS`` or ``HIPTENSOR_BUILD_SAMPLES`` as OFF to disable client builds.
 * During the ``make`` command, build a specific target, e.g: ``logger_test``.
