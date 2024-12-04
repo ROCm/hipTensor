@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,7 @@
 #include <hiptensor/internal/types.hpp>
 
 #include "device/common.hpp"
+#include "hip_resource.hpp"
 
 #define HIPTENSOR_FREE_DEVICE(ptr)     \
     if(ptr != nullptr)                 \
@@ -168,14 +169,7 @@ __host__ static inline void fillLaunchKernel(DataType* data, uint32_t elementSiz
 {
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementSize, blockDim.x), 1, 1);
-    hipLaunchKernelGGL((fillKernel<DataType>),
-                       gridDim,
-                       blockDim,
-                       0,
-                       0,
-                       data,
-                       elementSize,
-                       seed);
+    hipLaunchKernelGGL((fillKernel<DataType>), gridDim, blockDim, 0, 0, data, elementSize, seed);
 }
 
 // fill kernel wrapper for 'elementSize' elements with a specific value
@@ -248,15 +242,17 @@ std::pair<bool, double> compareEqual(DDataType const*       deviceD,
     if(tolerance == 0.0)
     {
         // use the same default tolerance value as CK
-        if (computeType == HIPTENSOR_COMPUTE_16BF || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
+        if(computeType == HIPTENSOR_COMPUTE_16BF
+           || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
         {
             const double epsilon = std::pow(2, -7);
-            tolerance = epsilon * 2;
+            tolerance            = epsilon * 2;
         }
-        else if (computeType == HIPTENSOR_COMPUTE_16F || std::is_same_v<DDataType, hiptensor::float16_t>)
+        else if(computeType == HIPTENSOR_COMPUTE_16F
+                || std::is_same_v<DDataType, hiptensor::float16_t>)
         {
             const double epsilon = std::pow(2, -10);
-            tolerance = epsilon * 2;
+            tolerance            = epsilon * 2;
         }
         else
         {
@@ -289,13 +285,20 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
                                                  hiptensorComputeType_t computeType,
                                                  double                 tolerance = 0.0)
 {
+    static hiptensor::HipResource::DevicePtrT relativeErrorPtr;
+    static std::size_t                        relativeErrorSize = 0;
+
     auto blockDim = dim3(1024, 1, 1);
     auto gridDim  = dim3(ceilDiv(elementsD, blockDim.x), 1, 1);
 
-    double* d_relativeError;
-    double  maxRelativeError;
+    double maxRelativeError;
 
-    CHECK_HIP_ERROR(hipMalloc(&d_relativeError, elementsD * sizeof(double)));
+    std::size_t requiredErrorSize = elementsD * sizeof(double);
+    if(requiredErrorSize > relativeErrorSize)
+    {
+        hiptensor::HipResource::reallocDevice(relativeErrorPtr, requiredErrorSize);
+        relativeErrorSize = requiredErrorSize;
+    }
 
     hipEvent_t syncEvent;
     CHECK_HIP_ERROR(hipEventCreate(&syncEvent));
@@ -308,7 +311,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
                        0,
                        deviceD,
                        hostD,
-                       d_relativeError,
+                       static_cast<double*>(relativeErrorPtr.get()),
                        elementsD);
     CHECK_HIP_ERROR(hipEventRecord(syncEvent));
     CHECK_HIP_ERROR(hipEventSynchronize(syncEvent));
@@ -328,7 +331,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
                            blockDim,
                            0,
                            0,
-                           d_relativeError,
+                           static_cast<double*>(relativeErrorPtr.get()),
                            elements,
                            offset,
                            elementsD);
@@ -338,11 +341,10 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
         offset = offset * maxElements;
     }
 
-    CHECK_HIP_ERROR(
-        hipMemcpy(&maxRelativeError, d_relativeError, sizeof(double), hipMemcpyDeviceToHost));
-
-    // Free allocated device memory
-    CHECK_HIP_ERROR(hipFree(d_relativeError));
+    CHECK_HIP_ERROR(hipMemcpy(&maxRelativeError,
+                              static_cast<double*>(relativeErrorPtr.get()),
+                              sizeof(double),
+                              hipMemcpyDeviceToHost));
 
     bool retval = true;
     bool isNaN  = std::isnan(maxRelativeError);
@@ -353,22 +355,24 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
     if(tolerance == 0.0)
     {
         // use the same default tolerance value as CK
-        if (computeType == HIPTENSOR_COMPUTE_16BF || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
+        if(computeType == HIPTENSOR_COMPUTE_16BF
+           || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
         {
             const double epsilon = std::pow(2, -7);
-            tolerance = epsilon * 2;
+            tolerance            = epsilon * 2;
         }
-        else if (computeType == HIPTENSOR_COMPUTE_16F || std::is_same_v<DDataType, hiptensor::float16_t>)
+        else if(computeType == HIPTENSOR_COMPUTE_16F
+                || std::is_same_v<DDataType, hiptensor::float16_t>)
         {
             const double epsilon = std::pow(2, -10);
-            tolerance = epsilon * 2;
+            tolerance            = epsilon * 2;
         }
         else
         {
             tolerance = 1e-5;
         }
     }
-    
+
     if(isNaN)
     {
         retval           = false;
