@@ -2,6 +2,26 @@
 
 Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
+## (Unreleased) hipTensor 1.5.0 for ROCm 6.4.0
+
+### Added
+
+* Added benchmarking suites for contraction, permutation, and reduction. YAML files are categorized into bench and validation folders for organization
+* Added emulation test suites for contraction, permutation, and reduction
+* Support has been added for changing the default data layout using the `HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR` environment variable
+
+### Changed
+
+* Used `GPU_TARGETS` instead of `AMDGPU_TARGETS` in `cmakelists.txt`
+
+### Optimized
+
+* Optimized the hyper-parameter selection algorithm for permutation
+
+### Resolved issues
+
+* For CMake bug workaround, set `CMAKE_NO_BUILTIN_CHRPATH` when `BUILD_OFFLOAD_COMPRESS` is unset
+
 ## hipTensor 1.4.0 for ROCm 6.3.0
 
 ### Added

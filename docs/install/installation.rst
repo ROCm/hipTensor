@@ -76,12 +76,12 @@ hipTensor is designed to have minimal external dependencies such that it is ligh
 
 .. <!-- spellcheck-disable -->
 
-* Minimum ROCm version support is 6.0.
+* Minimum ROCm version support is 6.4.
 * Minimum cmake version support is 3.14.
 * Minimum ROCm-cmake version support is 0.8.0.
-* Minimum Composable Kernel version support is composable_kernel 1.1.0 for ROCm 6.0.2 (or ROCm package composablekernel-dev).
 * Minimum HIP runtime version support is 4.3.0 (or ROCm package ROCm hip-runtime-amd).
 * Minimum LLVM dev package version support is 7.0 (available as ROCm package rocm-llvm-dev).
+* Hiptensor leverages the amd-master branch of the composable kernel, a stable and widely adopted version for development.
 
 .. <!-- spellcheck-enable -->
 
@@ -92,7 +92,7 @@ hipTensor is designed to have minimal external dependencies such that it is ligh
 Download hipTensor
 ^^^^^^^^^^^^^^^^^^
 
-The hipTensor source code is available on `hipTensor Github <https://github.com/ROCmSoftwarePlatform/hipTensor>`_. hipTensor has a minimum ROCm support version 6.0.
+The hipTensor source code is available on `hipTensor Github <https://github.com/ROCmSoftwarePlatform/hipTensor>`_. hipTensor has a minimum ROCm support version 6.4.
 To check the ROCm Version on your system, use:
 
 ::
@@ -160,7 +160,7 @@ Below are the project options available to build hipTensor library with or witho
         -   **Default Value**
     *   -   AMDGPU_TARGETS
         -   Build code for specific GPU target(s)
-        -   ``gfx908:xnack-``; ``gfx90a:xnack-``; ``gfx90a:xnack+``; ``gfx940``; ``gfx941``; ``gfx942``
+        -   ``gfx908``; ``gfx90a``; ``gfx942``
     *   -   HIPTENSOR_BUILD_TESTS
         -   Build Tests
         -   ON
@@ -184,7 +184,7 @@ Here are some example project configurations:
 +===================================+====================================================================================================================+
 |            Basic                  | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> .`                               |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
-|        Targeting gfx908           | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908:xnack-`|
+|        Targeting gfx908           | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908`       |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
 |          Debug build              | :code:`CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`      |
 +-----------------------------------+--------------------------------------------------------------------------------------------------------------------+
@@ -306,6 +306,7 @@ Executable name                                  Description
 ``rank4_permutation_test``                       Permutation test with half and single precision datatypes of rank 4
 ``rank5_permutation_test``                       Permutation test with half and single precision datatypes of rank 5
 ``rank6_permutation_test``                       Permutation test with half and single precision datatypes of rank 6
+``rank1_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 1
 ``rank2_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 2
 ``rank3_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 3
 ``rank4_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 4
@@ -421,23 +422,41 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   +-----------------------------------------------------------------------------+
 |                                   |rank6_permutation_test                                                       |
 |                                   +-----------------------------------------------------------------------------+
-|                                   |rank2_reduction_test                                                       |
+|                                   |rank1_reduction_test                                                         |
 |                                   +-----------------------------------------------------------------------------+
-|                                   |rank3_reduction_test                                                       |
+|                                   |rank2_reduction_test                                                         |
 |                                   +-----------------------------------------------------------------------------+
-|                                   |rank4_reduction_test                                                       |
+|                                   |rank3_reduction_test                                                         |
 |                                   +-----------------------------------------------------------------------------+
-|                                   |rank5_reduction_test                                                       |
+|                                   |rank4_reduction_test                                                         |
 |                                   +-----------------------------------------------------------------------------+
-|                                   |rank6_reduction_test                                                       |
+|                                   |rank5_reduction_test                                                         |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank6_reduction_test                                                         |
 +-----------------------------------+-----------------------------------------------------------------------------+
+
+Benchmarking scripts
+^^^^^^^^^^^^^^^^^^^^
+
+Benchmarking scripts located at ``<project root>/scripts/performance/``
+
+.. tabularcolumns::
+   |\X{2}{4}|\X{2}{4}|
+
+================================================================== =====================================================================================================================================================================
+Script Name                                                        Description
+================================================================== =====================================================================================================================================================================
+``BenchmarkContraction.sh``                                        Benchmarking script for contraction
+``BenchmarkPermutation.sh``                                        Benchmarking script for permutation
+``BenchmarkReduction.sh``                                          Benchmarking script for reduction
+================================================================== =====================================================================================================================================================================
 
 Build performance
 ^^^^^^^^^^^^^^^^^
 
 Depending on the resources available to the build machine and the build configuration selected, hipTensor build times can be on the order of an hour or more. Here are some things you can do to reduce build times:
 
-* Target a specific GPU (e.g., ``-D AMDGPU_TARGETS=gfx908:xnack-``)
+* Target a specific GPU (e.g., ``-D AMDGPU_TARGETS=gfx908``)
 * Use lots of threads (e.g., ``-j32``)
 * If they aren't needed, specify either ``HIPTENSOR_BUILD_TESTS`` or ``HIPTENSOR_BUILD_SAMPLES`` as OFF to disable client builds.
 * During the ``make`` command, build a specific target, e.g: ``logger_test``.

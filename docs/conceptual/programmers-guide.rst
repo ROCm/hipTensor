@@ -137,6 +137,20 @@ The ``test`` directory contains the test codes for testing the following functio
 - ``03_conduction/rank*``: Testing harnesses for conduction of a particular rank.
 - ``03_conduction/configs``: YAML files with actual conduction testing parameters.
 
+``performance`` directory
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``scripts/performance`` directory contains the benchmarking scripts:
+
+- ``BenchmarkContraction.sh``: Benchmarking script for contraction
+- ``BenchmarkPermutation.sh``: Benchmarking script for permutation
+- ``BenchmarkReduction.sh``: Benchmarking script for reduction
+
+``emulation test`` script
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The emulation test script ``rtest.py`` is located within the project's root directory.
+
 Contributing
 ^^^^^^^^^^^^
 
