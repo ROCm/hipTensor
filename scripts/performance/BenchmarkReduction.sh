@@ -19,13 +19,15 @@ if [ -d "$build_dir" ]; then
     # setup output directory for benchmarks
     mkdir -p "$output_dir"
 
-    tests=("rank2_reduction_test"
+    tests=("rank1_reduction_test"
+           "rank2_reduction_test"
            "rank3_reduction_test"
            "rank4_reduction_test"
            "rank5_reduction_test"
            "rank6_reduction_test")
 
-    configs=("rank2_test_params.yaml"
+    configs=("rank1_test_params.yaml"
+             "rank2_test_params.yaml"
              "rank3_test_params.yaml"
              "rank4_test_params.yaml"
              "rank5_test_params.yaml"
