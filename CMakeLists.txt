@@ -70,15 +70,6 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option(BUILD_OFFLOAD_COMPRESS "Build hiptensor with offload compression" ON)
 endif()
 
-# Check if offload compression is supported
-include(CheckCXXCompilerFlag)
-if (BUILD_OFFLOAD_COMPRESS)
-  check_cxx_compiler_flag("--offload-compress" CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
-  if (NOT CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
-    message( STATUS "WARNING: BUILD_OFFLOAD_COMPRESS=ON but flag not supported by compiler. Ignoring option." )
-  endif()
-endif()
-
 # Setup output paths
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
@@ -106,25 +97,39 @@ else()
 endif()
 
 if (ADDRESS_SANITIZER_ENABLED)
-    set(CMAKE_NO_BUILTIN_CHRPATH ON)
-    rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
+    rocm_check_target_ids(DEFAULT_GPU_TARGETS
         TARGETS "gfx90a:xnack+;gfx942:xnack+" )
 else()
-    rocm_check_target_ids(DEFAULT_AMDGPU_TARGETS
+    rocm_check_target_ids(DEFAULT_GPU_TARGETS
         TARGETS "gfx908;gfx90a;gfx942" )
 endif()
 
-# Variable AMDGPU_TARGET must be a cached variable and must be specified before calling find_package(hip)
-# This is because hip-config.cmake sets --offload-arch via AMDGPU_TARGET cached variable __after__ setting
-# default cached variable AMDGPU_TARGET to "gfx900;gfx906;gfx908;gfx1100;gfx1101;gfx1102", where not all archs are compatible with MFMA instructions
+# Check if offload compression is supported
+include(CheckCXXCompilerFlag)
+if (BUILD_OFFLOAD_COMPRESS)
+  check_cxx_compiler_flag("--offload-compress" CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
+  if (NOT CXX_COMPILER_SUPPORTS_OFFLOAD_COMPRESS)
+    message( STATUS "WARNING: BUILD_OFFLOAD_COMPRESS=ON but flag not supported by compiler. Ignoring option." )
+    set(CMAKE_NO_BUILTIN_CHRPATH ON)
+  else()
+    set(CMAKE_NO_BUILTIN_CHRPATH OFF)
+  endif()
+endif()
+
+# Variable GPU_TARGET must be a cached variable and must be specified before calling find_package(hip)
+# This is because hip-config.cmake sets --offload-arch via GPU_TARGET cached variable __after__ setting
+# default cached variable GPU_TARGET to "gfx900;gfx906;gfx908;gfx1100;gfx1101;gfx1102", where not all archs are compatible with MFMA instructions
 #
 # By rule, once cached variable is set, it cannot be overridden unless we use the FORCE option
-if(AMDGPU_TARGETS)
-  set(AMDGPU_TARGETS "${AMDGPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
+if(GPU_TARGETS)
+  set(GPU_TARGETS "${GPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
+elseif(AMDGPU_TARGETS)
+  set(GPU_TARGETS "${AMDGPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
+  message(STATUS "WARNING: AMDGPU_TARGETS use is deprecated. Use GPU_TARGETS.")
 else()
-  set(AMDGPU_TARGETS "${DEFAULT_AMDGPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
+  set(GPU_TARGETS "${DEFAULT_GPU_TARGETS}" CACHE STRING "List of specific machine types for library to target")
 endif()
-message( VERBOSE "AMDGPU_TARGETS=${AMDGPU_TARGETS}")
+message( VERBOSE "GPU_TARGETS=${GPU_TARGETS}")
 
 if(HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR)
   add_compile_definitions(HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR=1)

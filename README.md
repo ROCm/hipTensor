@@ -36,7 +36,8 @@ For more detailed information, please refer to the [hipTensor installation guide
 
 | Option                              | Description                                         | Default Value                                                    |
 |-------------------------------------|-----------------------------------------------------|------------------------------------------------------------------|
-| AMDGPU_TARGETS                      | Build code for specific GPU target(s)               | gfx908;gfx90a;gfx940;gfx941;gfx942                               |
+| AMDGPU_TARGETS (Deprecated)         | Build code for specific GPU target(s)               | gfx908;gfx90a;gfx940;gfx941;gfx942                               |
+| GPU_TARGETS                         | Build code for specific GPU target(s)               | gfx908;gfx90a;gfx940;gfx941;gfx942                               |
 | HIPTENSOR_BUILD_TESTS               | Build Tests                                         | ON                                                               |
 | HIPTENSOR_BUILD_SAMPLES             | Build Samples                                       | ON                                                               |
 | HIPTENSOR_BUILD_COMPRESSED_DBG      | Enable compressed debug symbols                     | ON                                                               |
@@ -49,7 +50,7 @@ By default, the project is configured as Release mode. Here are some of the exam
 | Configuration                    | Command                                                                   |
 |----------------------------------|---------------------------------------------------------------------------|
 | Basic                            | `CC=hipcc CXX=hipcc cmake -B<build_dir> .`                                |
-| Targeting gfx908                 | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DAMDGPU_TARGETS=gfx908`        |
+| Targeting gfx908                 | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DGPU_TARGETS=gfx908:xnack-`    |
 | Debug build                      | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`       |
 | Build without tests (default on) | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF`    |
 

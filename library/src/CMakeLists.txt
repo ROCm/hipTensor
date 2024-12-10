@@ -40,7 +40,7 @@ function(add_hiptensor_component COMPONENT_NAME COMPONENT_SOURCES)
 
     # Build components as object files.
     # Make sure they have -fPIC and that they inherit the hip::device environment
-    # so that they build for all archs in AMDGPU_TARGETS
+    # so that they build for all archs in GPU_TARGETS
     add_library(${COMPONENT_NAME} OBJECT ${COMPONENT_SOURCES})
     target_compile_options(${COMPONENT_NAME} PRIVATE ${CLANG_DRIVER_MODE})
     target_link_options(${COMPONENT_NAME} PRIVATE ${CLANG_DRIVER_MODE})
