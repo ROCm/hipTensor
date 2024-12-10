@@ -340,6 +340,7 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
         CHECK_HIP_ERROR(hipEventSynchronize(syncEvent));
         offset = offset * maxElements;
     }
+    CHECK_HIP_ERROR(hipEventDestroy(syncEvent));
 
     CHECK_HIP_ERROR(hipMemcpy(&maxRelativeError,
                               static_cast<double*>(relativeErrorPtr.get()),
