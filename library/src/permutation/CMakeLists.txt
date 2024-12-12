@@ -30,22 +30,57 @@ get_target_property(composable_kernel_INCLUDES composable_kernel::device_other_o
 
 set(HIPTENSOR_PERMUTATION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank2_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank3_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank4_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank5_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank6_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_float_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_float_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_float_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_float_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_half_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_half_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_half_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank2_half_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_float_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_float_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_float_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_float_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_half_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_half_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_half_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank3_half_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_float_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_float_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_float_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_float_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_half_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_half_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_half_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_half_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_float_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_float_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_float_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_float_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_half_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_half_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_half_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_half_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_float_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_float_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_float_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_float_through_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_half_square_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_half_square_through_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_half_through_square_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_half_through_through_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank2_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank3_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank4_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank5_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_rank6_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_registry.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank2_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank3_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank4_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank5_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_rank6_instances.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_instance_selection.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/permutation_solution_registry.cpp
 )
 
 add_hiptensor_component(hiptensor_permutation ${HIPTENSOR_PERMUTATION_SOURCES})

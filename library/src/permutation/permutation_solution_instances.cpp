@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,45 @@ namespace hiptensor
 {
     PermutationSolutionInstances::PermutationSolutionInstances()
     {
-        PermutationSolution2DInstances();
-        PermutationSolution3DInstances();
-        PermutationSolution4DInstances();
-        PermutationSolution5DInstances();
-        PermutationSolution6DInstances();
+        PermutationSolution2DFloatSquareSquareInstances();
+        PermutationSolution2DFloatSquareThroughInstances();
+        PermutationSolution2DFloatThroughSquareInstances();
+        PermutationSolution2DFloatThroughThroughInstances();
+        PermutationSolution2DHalfSquareSquareInstances();
+        PermutationSolution2DHalfSquareThroughInstances();
+        PermutationSolution2DHalfThroughSquareInstances();
+        PermutationSolution2DHalfThroughThroughInstances();
+        PermutationSolution3DFloatSquareSquareInstances();
+        PermutationSolution3DFloatSquareThroughInstances();
+        PermutationSolution3DFloatThroughSquareInstances();
+        PermutationSolution3DFloatThroughThroughInstances();
+        PermutationSolution3DHalfSquareSquareInstances();
+        PermutationSolution3DHalfSquareThroughInstances();
+        PermutationSolution3DHalfThroughSquareInstances();
+        PermutationSolution3DHalfThroughThroughInstances();
+        PermutationSolution4DFloatSquareSquareInstances();
+        PermutationSolution4DFloatSquareThroughInstances();
+        PermutationSolution4DFloatThroughSquareInstances();
+        PermutationSolution4DFloatThroughThroughInstances();
+        PermutationSolution4DHalfSquareSquareInstances();
+        PermutationSolution4DHalfSquareThroughInstances();
+        PermutationSolution4DHalfThroughSquareInstances();
+        PermutationSolution4DHalfThroughThroughInstances();
+        PermutationSolution5DFloatSquareSquareInstances();
+        PermutationSolution5DFloatSquareThroughInstances();
+        PermutationSolution5DFloatThroughSquareInstances();
+        PermutationSolution5DFloatThroughThroughInstances();
+        PermutationSolution5DHalfSquareSquareInstances();
+        PermutationSolution5DHalfSquareThroughInstances();
+        PermutationSolution5DHalfThroughSquareInstances();
+        PermutationSolution5DHalfThroughThroughInstances();
+        PermutationSolution6DFloatSquareSquareInstances();
+        PermutationSolution6DFloatSquareThroughInstances();
+        PermutationSolution6DFloatThroughSquareInstances();
+        PermutationSolution6DFloatThroughThroughInstances();
+        PermutationSolution6DHalfSquareSquareInstances();
+        PermutationSolution6DHalfSquareThroughInstances();
+        PermutationSolution6DHalfThroughSquareInstances();
+        PermutationSolution6DHalfThroughThroughInstances();
     }
 } // namespace hiptensor

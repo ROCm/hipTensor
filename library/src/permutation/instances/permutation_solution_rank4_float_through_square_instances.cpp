@@ -24,19 +24,24 @@
  *
  *******************************************************************************/
 
-#include "permutation_instance_selection.hpp"
+#include "../permutation_solution.hpp"
+#include "../permutation_solution_instances.hpp"
+
+// Ensure access to
+#include "../device/hiptensor_permutation_scale_instances.hpp"
 
 namespace hiptensor
 {
-    InstanceHyperParams selectInstanceParams(std::vector<Uid> const&      lengths,
-                                             hipDataType                  typeIn,
-                                             hipDataType                  typeOut,
-                                             hiptensorOperator_t          aOp,
-                                             hiptensorOperator_t          bOp,
-                                             hiptensor::PermutationOpId_t scale,
-                                             ck::index_t                  numDim)
+    void PermutationSolutionInstances::PermutationSolution4DFloatThroughSquareInstances()
     {
-        // TODO lengths, outDims => blockSize ...
-        return make_tuple(256, 64, 64, 4, 4, std::make_pair(0, 1), 4, 4);
+        // Register all the solutions exactly once
+        // 4d Permutation
+        registerSolutions(
+            enumeratePermutationSolutions<ck::Tuple<float>,
+                                          ck::Tuple<float>,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::UnarySquare,
+                                          ck::tensor_operation::element_wise::Scale,
+                                          4>());
     }
 } // namespace hiptensor

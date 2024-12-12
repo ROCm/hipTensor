@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,22 @@
  *
  *******************************************************************************/
 
-#include "permutation_cpu_reference_instances.hpp"
-#include "permutation_cpu_reference_impl.hpp"
+#include "../permutation_cpu_reference_impl.hpp"
+#include "../permutation_cpu_reference_instances.hpp"
 
 namespace hiptensor
 {
-    void PermutationCpuReferenceInstances::PermutationCpuReference6DInstances()
+    void PermutationCpuReferenceInstances::PermutationCpuReference5DInstances()
     {
         // Register all the solutions exactly once
-        // 6d Permutation
+        // 5d Permutation
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float>,
                                         ck::Tuple<float>,
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float>,
@@ -47,7 +47,7 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float>,
@@ -55,7 +55,7 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float>,
@@ -63,7 +63,7 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
@@ -71,7 +71,7 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
@@ -79,20 +79,22 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
+
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
                                         ck::Tuple<ck::half_t>,
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::PassThrough,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
+
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
                                         ck::Tuple<ck::half_t>,
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::UnarySquare,
                                         ck::tensor_operation::element_wise::Scale,
-                                        6>());
+                                        5>());
     }
 } // namespace hiptensor
