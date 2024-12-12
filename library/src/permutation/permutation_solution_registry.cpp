@@ -32,34 +32,18 @@ namespace hiptensor
     /////////////////////////////////////////
     /// Class PermutationSolutionRegistry ///
     /////////////////////////////////////////
-    std::vector<PermutationSolution*> PermutationSolutionRegistry::query(
-        hipDataType                         typeIn,
-        hipDataType                         typeOut,
-        hiptensorOperator_t                 aOp,
-        hiptensorOperator_t                 bOp,
-        hiptensor::PermutationOpId_t        scale,
-        ck::index_t                         numDim,
-        ck::index_t                         blockSize,
-        ck::index_t                         m0PerBlock,
-        ck::index_t                         m1PerBlock,
-        ck::index_t                         m0PerThread,
-        ck::index_t                         m1PerThread,
-        std::pair<ck::index_t, ck::index_t> threadClusterArrangeOrder) const
+    std::vector<PermutationSolution*>
+        PermutationSolutionRegistry::query(hipDataType                  typeIn,
+                                           hipDataType                  typeOut,
+                                           hiptensorOperator_t          aOp,
+                                           hiptensorOperator_t          bOp,
+                                           hiptensor::PermutationOpId_t scale,
+                                           ck::index_t                  numDim,
+                                           InstanceHyperParams const&   hyperParams) const
     {
         auto hashCodes
             = ck::tensor_operation::device::instance::getHashCodesWithAllInOutScalarPerVectorSeq(
-                typeIn,
-                typeOut,
-                aOp,
-                bOp,
-                scale,
-                numDim,
-                blockSize,
-                m0PerBlock,
-                m1PerBlock,
-                m0PerThread,
-                m1PerThread,
-                threadClusterArrangeOrder);
+                typeIn, typeOut, aOp, bOp, scale, numDim, hyperParams);
         std::vector<PermutationSolution*> solutions;
         for(auto hashCode : hashCodes)
         {

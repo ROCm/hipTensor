@@ -76,18 +76,13 @@ namespace ck::tensor_operation::device::instance
     //  has the best performance on average and instance with In/OutScalarPerVectorSeq of 1 can handle inputs of
     // all shapes which is the last resort.
     std::vector<hiptensor::Uid> getHashCodesWithAllInOutScalarPerVectorSeq(
-        hipDataType                  typeIn,
-        hipDataType                  typeOut,
-        hiptensorOperator_t          aOp,
-        hiptensorOperator_t          bOp,
-        hiptensor::PermutationOpId_t scale,
-        index_t                      numDim,
-        index_t                      blockSize,
-        index_t                      m0PerBlock,
-        index_t                      m1PerBlock,
-        index_t                      m0PerThread,
-        index_t                      m1PerThread,
-        std::pair<index_t, index_t>  threadClusterArrangeOrder);
+        hipDataType                           typeIn,
+        hipDataType                           typeOut,
+        hiptensorOperator_t                   aOp,
+        hiptensorOperator_t                   bOp,
+        hiptensor::PermutationOpId_t          scale,
+        index_t                               numDim,
+        hiptensor::InstanceHyperParams const& hyperParams);
 
 }
 #endif //  INSTANCE_PARAMS_HPP

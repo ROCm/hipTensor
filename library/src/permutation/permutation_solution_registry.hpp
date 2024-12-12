@@ -57,20 +57,15 @@ namespace hiptensor
     public:
         virtual ~PermutationSolutionRegistry() = default;
 
-        std::vector<PermutationSolution*>
-                 query(hipDataType                         typeIn,
-                       hipDataType                         typeOut,
-                       hiptensorOperator_t                 aOp,
-                       hiptensorOperator_t                 bOp,
-                       hiptensor::PermutationOpId_t        scale,
-                       ck::index_t                         numDim,
-                       ck::index_t                         blockSize   = 0,
-                       ck::index_t                         m0PerBlock  = 0,
-                       ck::index_t                         m1PerBlock  = 0,
-                       ck::index_t                         m0PerThread = 0,
-                       ck::index_t                         m1PerThread = 0,
-                       std::pair<ck::index_t, ck::index_t> threadClusterArrangeOrder = {0, 0}) const;
-        uint32_t solutionCount() const;
+        std::vector<PermutationSolution*> query(hipDataType                  typeIn,
+                                                hipDataType                  typeOut,
+                                                hiptensorOperator_t          aOp,
+                                                hiptensorOperator_t          bOp,
+                                                hiptensor::PermutationOpId_t scale,
+                                                ck::index_t                  numDim,
+                                                InstanceHyperParams const&   hyperParams
+                                                = {0, 0, 0, 0, 0, {0, 0}, 0, 0}) const;
+        uint32_t                          solutionCount() const;
 
     private:
         std::unordered_map<Uid, std::unique_ptr<PermutationSolution>> mAllSolutions;

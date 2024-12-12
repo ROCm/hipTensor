@@ -29,18 +29,13 @@
 namespace ck::tensor_operation::device::instance
 {
     std::vector<hiptensor::Uid> getHashCodesWithAllInOutScalarPerVectorSeq(
-        hipDataType                  typeIn,
-        hipDataType                  typeOut,
-        hiptensorOperator_t          aOp,
-        hiptensorOperator_t          bOp,
-        hiptensor::PermutationOpId_t scale,
-        index_t                      numDim,
-        index_t                      blockSize,
-        index_t                      m0PerBlock,
-        index_t                      m1PerBlock,
-        index_t                      m0PerThread,
-        index_t                      m1PerThread,
-        std::pair<index_t, index_t>  threadClusterArrangeOrder)
+        hipDataType                           typeIn,
+        hipDataType                           typeOut,
+        hiptensorOperator_t                   aOp,
+        hiptensorOperator_t                   bOp,
+        hiptensor::PermutationOpId_t          scale,
+        index_t                               numDim,
+        hiptensor::InstanceHyperParams const& hyperParams)
     {
         std::vector<hiptensor::Uid> hashCodes;
 
@@ -49,24 +44,34 @@ namespace ck::tensor_operation::device::instance
         // - scalarPerVectorSeq is 0 when it is CPU reference instance.
         // - `hashCodes` may contain hash codes that not represent any instances. It is not a problem
         //      since these hash codes will be ignored.
-        auto scalarPerVectorSeqs = std::vector<index_t>{16, 8, 4, 2, 1, 0};
+        auto                        scalarPerVectorSeqs = std::vector<index_t>{16, 8, 4, 2, 1, 0};
+        index_t                     blockSize           = std::get<0>(hyperParams);
+        index_t                     m0PerBlock          = std::get<1>(hyperParams);
+        index_t                     m1PerBlock          = std::get<2>(hyperParams);
+        index_t                     m0PerThread         = std::get<3>(hyperParams);
+        index_t                     m1PerThread         = std::get<4>(hyperParams);
+        std::pair<index_t, index_t> threadClusterArrangeOrder = std::get<5>(hyperParams);
+        index_t                     inScalarPerVectorSeq      = std::get<6>(hyperParams);
         for(auto scalarPerVectorSeq : scalarPerVectorSeqs)
         {
-            hashCodes.push_back(hiptensor::Hash{}(typeIn,
-                                                  typeOut,
-                                                  aOp,
-                                                  bOp,
-                                                  scale,
-                                                  numDim,
-                                                  blockSize,
-                                                  m0PerBlock,
-                                                  m1PerBlock,
-                                                  m0PerThread,
-                                                  m1PerThread,
-                                                  threadClusterArrangeOrder.first,
-                                                  threadClusterArrangeOrder.second,
-                                                  scalarPerVectorSeq,
-                                                  scalarPerVectorSeq));
+            if(scalarPerVectorSeq <= inScalarPerVectorSeq)
+            {
+                hashCodes.push_back(hiptensor::Hash{}(typeIn,
+                                                      typeOut,
+                                                      aOp,
+                                                      bOp,
+                                                      scale,
+                                                      numDim,
+                                                      blockSize,
+                                                      m0PerBlock,
+                                                      m1PerBlock,
+                                                      m0PerThread,
+                                                      m1PerThread,
+                                                      threadClusterArrangeOrder.first,
+                                                      threadClusterArrangeOrder.second,
+                                                      scalarPerVectorSeq,
+                                                      scalarPerVectorSeq));
+            }
         }
         return hashCodes;
     }

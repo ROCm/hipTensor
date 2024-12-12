@@ -32,19 +32,13 @@
 
 namespace hiptensor
 {
-    std::tuple<ck::index_t,
-               ck::index_t,
-               ck::index_t,
-               ck::index_t,
-               ck::index_t,
-               std::pair<ck::index_t, ck::index_t>>
-        selectInstanceParams(std::vector<Uid> const&      lengths,
-                             hipDataType                  typeIn,
-                             hipDataType                  typeOut,
-                             hiptensorOperator_t          aOp,
-                             hiptensorOperator_t          bOp,
-                             hiptensor::PermutationOpId_t scale,
-                             ck::index_t                  numDim);
+    InstanceHyperParams selectInstanceParams(std::vector<Uid> const&      lengths,
+                                             hipDataType                  typeIn,
+                                             hipDataType                  typeOut,
+                                             hiptensorOperator_t          aOp,
+                                             hiptensorOperator_t          bOp,
+                                             hiptensor::PermutationOpId_t scale,
+                                             ck::index_t                  numDim);
 } // namespace hiptensor
 
 #endif // PERMUTATION_INSTANCE_SELECTION_HPP

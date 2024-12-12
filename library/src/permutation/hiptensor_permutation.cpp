@@ -161,18 +161,8 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                                BOp,
                                                hiptensor::PermutationOpId_t::SCALE,
                                                nDims);
-    auto  solutions      = instances->query(ADataType,
-                                      BDataType,
-                                      AOp,
-                                      BOp,
-                                      hiptensor::PermutationOpId_t::SCALE,
-                                      nDims,
-                                      std::get<0>(instanceParams),
-                                      std::get<1>(instanceParams),
-                                      std::get<2>(instanceParams),
-                                      std::get<3>(instanceParams),
-                                      std::get<4>(instanceParams),
-                                      std::get<5>(instanceParams));
+    auto  solutions      = instances->query(
+        ADataType, BDataType, AOp, BOp, hiptensor::PermutationOpId_t::SCALE, nDims, instanceParams);
 
     bool canRun = false;
     for(auto pSolution : solutions)

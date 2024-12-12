@@ -28,21 +28,16 @@
 
 namespace hiptensor
 {
-    std::tuple<ck::index_t,
-               ck::index_t,
-               ck::index_t,
-               ck::index_t,
-               ck::index_t,
-               std::pair<ck::index_t, ck::index_t>>
-        selectInstanceParams(std::vector<Uid> const&      lengths,
-                             hipDataType                  typeIn,
-                             hipDataType                  typeOut,
-                             hiptensorOperator_t          aOp,
-                             hiptensorOperator_t          bOp,
-                             hiptensor::PermutationOpId_t scale,
-                             ck::index_t                  numDim)
+    InstanceHyperParams selectInstanceParams(std::vector<Uid> const&      lengths,
+                                             hipDataType                  typeIn,
+                                             hipDataType                  typeOut,
+                                             hiptensorOperator_t          aOp,
+                                             hiptensorOperator_t          bOp,
+                                             hiptensor::PermutationOpId_t scale,
+                                             ck::index_t                  numDim)
     {
         // TODO lengths, outDims => blockSize ...
-        return make_tuple(256, 64, 64, 4, 4, std::make_pair(0, 1));
+        return make_tuple(256, 128, 128, 16, 16, std::make_pair(0, 1), 8, 8);
+        // return make_tuple(256, 64, 64, 4, 4, std::make_pair(0, 1));
     }
 } // namespace hiptensor

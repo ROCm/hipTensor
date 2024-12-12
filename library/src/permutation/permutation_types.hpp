@@ -27,6 +27,8 @@
 #ifndef HIPTENSOR_PERMUTATION_TYPES_HPP
 #define HIPTENSOR_PERMUTATION_TYPES_HPP
 
+#include <ck/ck.hpp>
+#include <ck/utility/sequence.hpp>
 #include <ostream>
 
 namespace hiptensor
@@ -57,6 +59,14 @@ namespace hiptensor
     template <typename OpId>
     static constexpr auto PermutationOperatorType_v = PermutationOperatorType<OpId>::value;
 
+    using InstanceHyperParams = std::tuple<ck::index_t,
+                                           ck::index_t,
+                                           ck::index_t,
+                                           ck::index_t,
+                                           ck::index_t,
+                                           std::pair<ck::index_t, ck::index_t>,
+                                           ck::index_t,
+                                           ck::index_t>;
 } // namespace hiptensor
 
 namespace std
