@@ -37,7 +37,6 @@
 
 namespace hiptensor
 {
-    // @cond
     class PermutationSolution;
 
     class PermutationSolutionRegistry
@@ -70,7 +69,6 @@ namespace hiptensor
     private:
         std::unordered_map<Uid, std::unique_ptr<PermutationSolution>> mAllSolutions;
     };
-    // @endcond
 
 } // namespace hiptensor
 

@@ -70,6 +70,5 @@ namespace hiptensor
     {
         return mAllSolutions.size();
     }
-    // @endcond
 
 } // namespace hiptensor
