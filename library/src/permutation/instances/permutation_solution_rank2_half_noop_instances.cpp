@@ -24,43 +24,24 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP
-#define HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP
+#include "../permutation_solution.hpp"
+#include "../permutation_solution_instances.hpp"
 
-// CK includes
-#include <combined_element_wise_operation.hpp>
-
-#include "permutation_types.hpp"
-#include <hiptensor/hiptensor_types.hpp>
+// Ensure access to
+#include "../device/hiptensor_permutation_scale_instances.hpp"
 
 namespace hiptensor
 {
-    // Specialize overrides for runtime ElementWiseOperatorType
-    template <>
-    struct ElementWiseOperatorType<ck::tensor_operation::element_wise::PassThrough>
+    void PermutationSolutionInstances::PermutationSolution2DHalfNoopInstances()
     {
-        static constexpr auto value = hiptensorOperator_t::HIPTENSOR_OP_IDENTITY;
-    };
-
-    template <>
-    struct ElementWiseOperatorType<ck::tensor_operation::element_wise::UnarySquare>
-    {
-        static constexpr auto value = hiptensorOperator_t::HIPTENSOR_OP_SQRT;
-    };
-
-    // Specialize overrides for runtime PermutationOperatorType
-    template <>
-    struct PermutationOperatorType<ck::tensor_operation::element_wise::Scale>
-    {
-        static constexpr auto value = PermutationOpId_t::SCALE;
-    };
-
-    template <>
-    struct PermutationOperatorType<ck::tensor_operation::element_wise::PassThrough>
-    {
-        static constexpr auto value = PermutationOpId_t::PASS_THROUGH;
-    };
-
+        // Register all the solutions exactly once
+        // 2d Permutation
+        registerSolutions(
+            enumeratePermutationSolutions<ck::Tuple<ck::half_t>,
+                                          ck::Tuple<ck::half_t>,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          2>());
+    }
 } // namespace hiptensor
-
-#endif // HIPTENSOR_PERMUTATION_TYPES_IMPL_HPP

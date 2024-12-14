@@ -41,7 +41,8 @@ namespace hiptensor
      */
     enum struct PermutationOpId_t : int32_t
     {
-        SCALE = 0,
+        SCALE,
+        PASS_THROUGH,
         UNKNOWN,
     };
 

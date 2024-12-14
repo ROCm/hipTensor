@@ -136,15 +136,32 @@ namespace hiptensor
             toCKArr(a_lengths, abLengths);
 
             // Initialize the argument pointer
-            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
-                abLengths,
-                {aStrides},
-                {bStridesCk},
-                {A},
-                {B},
-                typename Traits::CombinedOp{typename Traits::AOp{},
-                                            typename Traits::ScaleOp{alphaF},
-                                            typename Traits::BOp{}}));
+            if constexpr(std::is_same_v<typename Traits::ScaleOp,
+                                        ck::tensor_operation::element_wise::PassThrough>)
+            {
+                Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                    abLengths,
+                    {aStrides},
+                    {bStridesCk},
+                    {A},
+                    {B},
+                    typename Traits::CombinedOp{typename Traits::AOp{},
+                                                ck::tensor_operation::element_wise::PassThrough{},
+                                                typename Traits::BOp{}}));
+            }
+            else
+            {
+
+                Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                    abLengths,
+                    {aStrides},
+                    {bStridesCk},
+                    {A},
+                    {B},
+                    typename Traits::CombinedOp{typename Traits::AOp{},
+                                                typename Traits::ScaleOp{alphaF},
+                                                typename Traits::BOp{}}));
+            }
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());

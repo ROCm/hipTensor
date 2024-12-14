@@ -51,6 +51,51 @@ namespace ck
             {
                 template <typename InDataTypeTuple,
                           typename OutDataTypeTuple,
+                          typename ElementwiseOperation,
+                          index_t NumDim,
+                          index_t BlockSize,
+                          index_t M0PerBlock,
+                          index_t M1PerBlock,
+                          index_t M0PerThread,
+                          index_t M1PerThread,
+                          typename ThreadClusterArrangeOrder,
+                          typename InScalarPerVectorSeq,
+                          typename OutScalarPerVectorSeq>
+                struct HiptensorDeviceElementwiseImpl
+                    : public ck::tensor_operation::device::DeviceElementwiseImpl<
+                          InDataTypeTuple,
+                          OutDataTypeTuple,
+                          ElementwiseOperation,
+                          NumDim,
+                          BlockSize,
+                          M0PerBlock,
+                          M1PerBlock,
+                          M0PerThread,
+                          M1PerThread,
+                          ThreadClusterArrangeOrder,
+                          InScalarPerVectorSeq,
+                          OutScalarPerVectorSeq>
+                {
+
+                    std::string GetTypeString() const override
+                    {
+                        auto str = std::stringstream();
+                        str << NumDim << "_";
+                        str << BlockSize << "_";
+                        str << M0PerBlock << "_";
+                        str << M1PerBlock << "_";
+                        str << M0PerThread << "_";
+                        str << M1PerThread << "_";
+                        str << ThreadClusterArrangeOrder::At(0) << "_";
+                        str << ThreadClusterArrangeOrder::At(1) << "_";
+                        str << InScalarPerVectorSeq::At(0) << "_";
+                        str << OutScalarPerVectorSeq::At(0);
+                        return str.str();
+                    }
+                };
+
+                template <typename InDataTypeTuple,
+                          typename OutDataTypeTuple,
                           typename Aop,
                           typename Bop,
                           typename Scale,
@@ -95,18 +140,19 @@ namespace ck
                                                      ThreadClusterArrangeOrder,
                                                      InScalarPerVectorSeq,
                                                      OutScalarPerVectorSeq>::hashCode(),
-                             std::make_unique<DeviceElementwiseImpl<InDataTypeTuple,
-                                                                    OutDataTypeTuple,
-                                                                    ElementwiseOperation,
-                                                                    NumDim,
-                                                                    BlockSize,
-                                                                    M0PerBlock,
-                                                                    M1PerBlock,
-                                                                    M0PerThread,
-                                                                    M1PerThread,
-                                                                    ThreadClusterArrangeOrder,
-                                                                    InScalarPerVectorSeq,
-                                                                    OutScalarPerVectorSeq>>()});
+                             std::make_unique<
+                                 HiptensorDeviceElementwiseImpl<InDataTypeTuple,
+                                                                OutDataTypeTuple,
+                                                                ElementwiseOperation,
+                                                                NumDim,
+                                                                BlockSize,
+                                                                M0PerBlock,
+                                                                M1PerBlock,
+                                                                M0PerThread,
+                                                                M1PerThread,
+                                                                ThreadClusterArrangeOrder,
+                                                                InScalarPerVectorSeq,
+                                                                OutScalarPerVectorSeq>>()});
                     }
                     static auto GetInstances()
                     {

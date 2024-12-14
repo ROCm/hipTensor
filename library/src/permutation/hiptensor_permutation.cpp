@@ -161,8 +161,23 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                                BOp,
                                                hiptensor::PermutationOpId_t::SCALE,
                                                nDims);
-    auto  solutions      = instances->query(
-        ADataType, BDataType, AOp, BOp, hiptensor::PermutationOpId_t::SCALE, nDims, instanceParams);
+
+    float alphaF = 1.0F;
+    if(alpha != nullptr)
+    {
+        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
+    }
+    bool usePassThroughIfAlphaIsOne
+        = (alphaF == 1.0F && AOp == HIPTENSOR_OP_IDENTITY && BOp == HIPTENSOR_OP_IDENTITY);
+    auto solutions
+        = instances->query(ADataType,
+                           BDataType,
+                           AOp,
+                           BOp,
+                           usePassThroughIfAlphaIsOne ? hiptensor::PermutationOpId_t::PASS_THROUGH
+                                                      : hiptensor::PermutationOpId_t::SCALE,
+                           nDims,
+                           instanceParams);
 
     bool canRun = false;
     for(auto pSolution : solutions)
