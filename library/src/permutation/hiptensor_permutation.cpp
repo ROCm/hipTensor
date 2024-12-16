@@ -154,13 +154,8 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     auto  AOp            = descA->mUnaryOp;
     auto  BOp            = descB->mUnaryOp;
     auto& instances      = hiptensor::PermutationSolutionInstances::instance();
-    auto  instanceParams = selectInstanceParams(descA->mLengths,
-                                               ADataType,
-                                               BDataType,
-                                               AOp,
-                                               BOp,
-                                               hiptensor::PermutationOpId_t::SCALE,
-                                               nDims);
+    auto  instanceParams = hiptensor::selectInstanceParams(
+        descA->mLengths, {modeB, modeB + descB->mLengths.size()}, ADataType, BDataType, nDims);
 
     float alphaF = 1.0F;
     if(alpha != nullptr)
