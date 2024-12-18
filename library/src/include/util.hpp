@@ -89,6 +89,22 @@ namespace hiptensor
     {
         return a_ms_ks_strides.size() / 2;
     }
+
+    static std::vector<int32_t> findIndices(const std::vector<int32_t>& haystack,
+                                            const std::vector<int32_t>& needles)
+    {
+        std::vector<int32_t> indices;
+
+        for(auto needle : needles)
+        {
+            auto it = std::find(haystack.begin(), haystack.end(), needle);
+            if(it != haystack.end())
+            {
+                indices.push_back(std::distance(haystack.begin(), it));
+            }
+        }
+        return indices;
+    }
 } // namespace hiptensor
 
 #endif // HIPTENSOR_SRC_UTIL_HPP

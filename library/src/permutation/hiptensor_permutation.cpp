@@ -148,14 +148,16 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return errorCode;
     }
 
-    int   nDims          = descA->mLengths.size();
-    auto  ADataType      = descA->mType;
-    auto  BDataType      = descB->mType;
-    auto  AOp            = descA->mUnaryOp;
-    auto  BOp            = descB->mUnaryOp;
-    auto& instances      = hiptensor::PermutationSolutionInstances::instance();
-    auto  instanceParams = hiptensor::selectInstanceParams(
-        descA->mLengths, {modeB, modeB + descB->mLengths.size()}, ADataType, BDataType, nDims);
+    int   nDims      = descA->mLengths.size();
+    auto  ADataType  = descA->mType;
+    auto  BDataType  = descB->mType;
+    auto  AOp        = descA->mUnaryOp;
+    auto  BOp        = descB->mUnaryOp;
+    auto& instances  = hiptensor::PermutationSolutionInstances::instance();
+    auto  outputDims = hiptensor::findIndices({modeA, modeA + descA->mLengths.size()},
+                                              {modeB, modeB + descB->mLengths.size()});
+    auto  instanceParams
+        = hiptensor::selectInstanceParams(descA->mLengths, outputDims, ADataType, BDataType, nDims);
 
     float alphaF = 1.0F;
     if(alpha != nullptr)

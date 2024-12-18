@@ -38,41 +38,65 @@ namespace ck::tensor_operation::device::instance
         hiptensor::InstanceHyperParams const& hyperParams)
     {
         std::vector<hiptensor::Uid> hashCodes;
-
         // - IMPORTANT: keep the order of scalarPerVectorSeq from 16 to 0 so that the instance
         //      with greater scalarPerVectorSeq will be chose.
         // - scalarPerVectorSeq is 0 when it is CPU reference instance.
         // - `hashCodes` may contain hash codes that not represent any instances. It is not a problem
         //      since these hash codes will be ignored.
-        auto                        scalarPerVectorSeqs = std::vector<index_t>{16, 8, 4, 2, 1, 0};
-        index_t                     blockSize           = std::get<0>(hyperParams);
-        index_t                     m0PerBlock          = std::get<1>(hyperParams);
-        index_t                     m1PerBlock          = std::get<2>(hyperParams);
-        index_t                     m0PerThread         = std::get<3>(hyperParams);
-        index_t                     m1PerThread         = std::get<4>(hyperParams);
+        index_t                     blockSize                 = std::get<0>(hyperParams);
+        index_t                     m0PerBlock                = std::get<1>(hyperParams);
+        index_t                     m1PerBlock                = std::get<2>(hyperParams);
+        index_t                     m0PerThread               = std::get<3>(hyperParams);
+        index_t                     m1PerThread               = std::get<4>(hyperParams);
         std::pair<index_t, index_t> threadClusterArrangeOrder = std::get<5>(hyperParams);
         index_t                     inScalarPerVectorSeq      = std::get<6>(hyperParams);
-        for(auto scalarPerVectorSeq : scalarPerVectorSeqs)
-        {
-            if(scalarPerVectorSeq <= inScalarPerVectorSeq)
-            {
-                hashCodes.push_back(hiptensor::Hash{}(typeIn,
-                                                      typeOut,
-                                                      aOp,
-                                                      bOp,
-                                                      scale,
-                                                      numDim,
-                                                      blockSize,
-                                                      m0PerBlock,
-                                                      m1PerBlock,
-                                                      m0PerThread,
-                                                      m1PerThread,
-                                                      threadClusterArrangeOrder.first,
-                                                      threadClusterArrangeOrder.second,
-                                                      scalarPerVectorSeq,
-                                                      scalarPerVectorSeq));
+        hashCodes.push_back(hiptensor::Hash{}(typeIn,
+                                              typeOut,
+                                              aOp,
+                                              bOp,
+                                              scale,
+                                              numDim,
+                                              blockSize,
+                                              m0PerBlock,
+                                              m1PerBlock,
+                                              m0PerThread,
+                                              m1PerThread,
+                                              threadClusterArrangeOrder.first,
+                                              threadClusterArrangeOrder.second,
+                                              inScalarPerVectorSeq,
+                                              inScalarPerVectorSeq));
+        // clang-format off
+        if (numDim == 2) {
+            if (typeIn == HIP_R_16F) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 2 , 2));
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 1 , 1));
+            } else if (typeIn == HIP_R_32F) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
             }
+        } else if (numDim == 3) {
+            if (typeIn == HIP_R_16F) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 2 , 2));
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 1 , 1));
+            } else if (typeIn == HIP_R_32F) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
+            }
+        } else if (numDim == 4) {
+            if (typeIn == HIP_R_16F) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 2  , 2));
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 1  , 1));
+            } else if (typeIn == HIP_R_32F) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
+            }
+        } else if (numDim == 5 || numDim == 6) {
+            hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 4 , 4));
+            hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+            hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , aOp , bOp , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
         }
+        // clang-format on
+
         return hashCodes;
     }
 }
