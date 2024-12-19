@@ -2,7 +2,7 @@
  #
  # MIT License
  #
- # Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ # Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  #
  # Permission is hereby granted, free of charge, to any person obtaining a copy
  # of this software and associated documentation files (the "Software"), to deal
@@ -193,4 +193,32 @@ rocm_install(
     DESTINATION "${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}"
     COMPONENT tests
     RENAME "CTestTestfile.cmake"
+)
+
+rocm_install(DIRECTORY ${CMAKE_SOURCE_DIR}/scripts/performance/
+    DESTINATION bench/scripts
+    COMPONENT tests
+    FILE_PERMISSIONS
+        OWNER_READ OWNER_EXECUTE OWNER_WRITE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    DIRECTORY_PERMISSIONS
+        OWNER_READ OWNER_EXECUTE OWNER_WRITE
+        GROUP_READ GROUP_EXECUTE GROUP_WRITE
+        WORLD_READ WORLD_EXECUTE
+)
+
+rocm_install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/01_contraction/configs/bench/
+    DESTINATION bench/configs/01_contraction
+    COMPONENT tests
+)
+
+rocm_install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/02_permutation/configs/bench/
+    DESTINATION bench/configs/02_permutation
+    COMPONENT tests
+)
+
+rocm_install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/03_reduction/configs/bench/
+    DESTINATION bench/configs/03_reduction
+    COMPONENT tests
 )

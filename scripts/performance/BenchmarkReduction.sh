@@ -3,19 +3,39 @@
 
 set -eux
 
-# ensure this script is in the cwd
-cd "$(dirname "${BASH_SOURCE[0]}")"
+# Check if two arguments are provided
+if [ $# -ne 3 ]; then
+    echo "Usage: $0 <binary_dir> <config_dir> <output_dir>"
+    exit 1
+fi
 
-output_dir=hiptensor-benchmarks
-build_dir=../../build/bin/
-config_dir=../../test/03_reduction/configs/bench
+binary_dir="${1%/}/"
+config_dir="${2%/}/"
+
+# Check if the folders exist
+if [ -d "$binary_dir" ] && [ -d "$config_dir" ]; then
+    echo "Both folders exist:"
+    echo "$binary_dir"
+    echo "$config_dir"
+else
+    echo "One or both folders do not exist."
+    if [ ! -d "$binary_dir" ]; then
+        echo "$binary_dir does not exist."
+    fi
+    if [ ! -d "$config_dir" ]; then
+        echo "$config_dir does not exist."
+    fi
+fi
+
+
+output_dir="${3%/}/"
 
 cold_runs=1
 hot_runs=5
 
 validate=OFF
 
-if [ -d "$build_dir" ]; then
+if [ -d "$binary_dir" ]; then
     # setup output directory for benchmarks
     mkdir -p "$output_dir"
 
@@ -37,8 +57,8 @@ if [ -d "$build_dir" ]; then
 
     # run benchmarks
     for (( i=0; i<${arrayLength}; i++ )); do
-        if [[ -e $build_dir && ! -L $build_dir/${tests[$i]} ]]; then
-            $build_dir${tests[$i]} -y $config_dir/${configs[$i]} \
+        if [[ -e $binary_dir && ! -L $binary_dir/${tests[$i]} ]]; then
+            $binary_dir${tests[$i]} -y $config_dir/${configs[$i]} \
             -o $output_dir${tests[$i]}".csv" --cold_runs $cold_runs --hot_runs $hot_runs -v $validate
         fi
     done
