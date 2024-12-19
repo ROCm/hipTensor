@@ -26,7 +26,6 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "logger.hpp"
-#include "permutation_instance_selection.hpp"
 #include "permutation_solution.hpp"
 #include "permutation_solution_instances.hpp"
 #include "permutation_solution_registry.hpp"
@@ -148,33 +147,14 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return errorCode;
     }
 
-    int   nDims      = descA->mLengths.size();
-    auto  ADataType  = descA->mType;
-    auto  BDataType  = descB->mType;
-    auto  AOp        = descA->mUnaryOp;
-    auto  BOp        = descB->mUnaryOp;
-    auto& instances  = hiptensor::PermutationSolutionInstances::instance();
-    auto  outputDims = hiptensor::findIndices({modeA, modeA + descA->mLengths.size()},
-                                              {modeB, modeB + descB->mLengths.size()});
-    auto  instanceParams
-        = hiptensor::selectInstanceParams(descA->mLengths, outputDims, ADataType, BDataType, nDims);
-
-    float alphaF = 1.0F;
-    if(alpha != nullptr)
-    {
-        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
-    }
-    bool usePassThroughIfAlphaIsOne
-        = (alphaF == 1.0F && AOp == HIPTENSOR_OP_IDENTITY && BOp == HIPTENSOR_OP_IDENTITY);
-    auto solutions
-        = instances->query(ADataType,
-                           BDataType,
-                           AOp,
-                           BOp,
-                           usePassThroughIfAlphaIsOne ? hiptensor::PermutationOpId_t::PASS_THROUGH
-                                                      : hiptensor::PermutationOpId_t::SCALE,
-                           nDims,
-                           instanceParams);
+    auto& instances = hiptensor::PermutationSolutionInstances::instance();
+    auto  solutions = instances->query(alpha,
+                                      descA,
+                                      modeA,
+                                      descB,
+                                      modeB,
+                                      typeScalar,
+                                      hiptensor::PermutationInstanceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)

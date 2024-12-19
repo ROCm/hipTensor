@@ -69,20 +69,23 @@ namespace ck::tensor_operation::device::instance
         }
     };
 
-    // Ck requires that the length of fastest changing dimonsion must be multiple times of InScalarPerVectorSeq
-    // and OutScalarPerVectorSeq. So `getHashCodesWithAllInOutScalarPerVectorSeq` always return a vector of hash code
-    // which represent In/OutScalarPerVectorSeq from 16 to 0.
-    // The caller should test the returned hash code in order since instance with In/OutScalarPerVectorSeq of 16
-    //  has the best performance on average and instance with In/OutScalarPerVectorSeq of 1 can handle inputs of
-    // all shapes which is the last resort.
-    std::vector<hiptensor::Uid> getHashCodesWithAllInOutScalarPerVectorSeq(
-        hipDataType                           typeIn,
-        hipDataType                           typeOut,
-        hiptensorOperator_t                   aOp,
-        hiptensorOperator_t                   bOp,
-        hiptensor::PermutationOpId_t          scale,
-        index_t                               numDim,
-        hiptensor::InstanceHyperParams const& hyperParams);
+    // `getHashCodeOfBestPerfInstances` generates a hash code based on the arguments. This hash code represents
+    // the best perf instance. And it appends hash codes of 2 more instances which can handle the input tensors
+    // that cannot be handled by the best perf instance.
+    //
+    // Ck requires that the length of fastest changing dimonsion must be multiple times of `InScalarPerVectorSeq`
+    // and `OutScalarPerVectorSeq`. For example, `tensor.lengths[0] == 1777`, it cannot be handled by instance with
+    // `InScalarPerVectorSeq == 8`.
+
+    // The caller should test the returned hash code in order since earlier instances have better perf.
+    std::vector<hiptensor::Uid>
+        getHashCodeOfBestPerfInstances(hipDataType                           typeIn,
+                                       hipDataType                           typeOut,
+                                       hiptensorOperator_t                   aOp,
+                                       hiptensorOperator_t                   bOp,
+                                       hiptensor::PermutationOpId_t          scale,
+                                       index_t                               numDim,
+                                       hiptensor::InstanceHyperParams const& hyperParams);
 
 }
 #endif //  INSTANCE_PARAMS_HPP

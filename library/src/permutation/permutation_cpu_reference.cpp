@@ -42,12 +42,8 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
     const int32_t dim       = descA->mLengths.size();
     auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
 
-    auto refCandidates = instances->query(descA->mType,
-                                          descB->mType,
-                                          descA->mUnaryOp,
-                                          descB->mUnaryOp,
-                                          hiptensor::PermutationOpId_t::SCALE,
-                                          dim);
+    auto refCandidates = instances->query(
+        alpha, descA, modeA, descB, modeB, typeScalar, hiptensor::PermutationInstanceType_t::Host);
 
     for(auto refCandidate : refCandidates)
     {

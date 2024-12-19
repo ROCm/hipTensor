@@ -25,6 +25,7 @@
  *******************************************************************************/
 
 #include "permutation_solution_registry.hpp"
+#include "permutation_instance_selection.hpp"
 #include "permutation_solution.hpp"
 
 namespace hiptensor
@@ -33,17 +34,46 @@ namespace hiptensor
     /// Class PermutationSolutionRegistry ///
     /////////////////////////////////////////
     std::vector<PermutationSolution*>
-        PermutationSolutionRegistry::query(hipDataType                  typeIn,
-                                           hipDataType                  typeOut,
-                                           hiptensorOperator_t          aOp,
-                                           hiptensorOperator_t          bOp,
-                                           hiptensor::PermutationOpId_t scale,
-                                           ck::index_t                  numDim,
-                                           InstanceHyperParams const&   hyperParams) const
+        PermutationSolutionRegistry::query(const void*                        alpha,
+                                           const hiptensorTensorDescriptor_t* descA,
+                                           const int32_t                      modeA[],
+                                           const hiptensorTensorDescriptor_t* descB,
+                                           const int32_t                      modeB[],
+                                           const hipDataType                  typeScalar,
+                                           PermutationInstanceType_t          instanceType) const
     {
-        auto hashCodes
-            = ck::tensor_operation::device::instance::getHashCodesWithAllInOutScalarPerVectorSeq(
-                typeIn, typeOut, aOp, bOp, scale, numDim, hyperParams);
+        int  nDims      = descA->mLengths.size();
+        auto ADataType  = descA->mType;
+        auto BDataType  = descB->mType;
+        auto AOp        = descA->mUnaryOp;
+        auto BOp        = descB->mUnaryOp;
+        auto outputDims = hiptensor::findIndices({modeA, modeA + descA->mLengths.size()},
+                                                 {modeB, modeB + descB->mLengths.size()});
+        auto instanceParams
+            = instanceType == PermutationInstanceType_t::Device
+                  ? selectInstanceParams(descA->mLengths, outputDims, ADataType, BDataType, nDims)
+                  : InstanceHyperParams{0, 0, 0, 0, 0, {0, 0}, 0, 0};
+
+        float alphaValue = 1.0F;
+        if(alpha != nullptr)
+        {
+            alphaValue
+                = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
+        }
+
+        /// When AOp and BOp are both pass_through and alpha is 1.0. Permutation only moves data around.
+        /// Use PermutationOpId_t::PASS_THROUGH instead of PermutationOpId_t::SCALE in this case so that the performance is much better.
+        /// Some special noop instances are created for this case.
+        ///
+        /// Do not use PermutationOpId_t::PASS_THROUGH when instanceType is Host since no such special
+        /// instances have been created.
+        bool usePassThroughIfAlphaIsOne
+            = (alphaValue == 1.0F && AOp == HIPTENSOR_OP_IDENTITY && BOp == HIPTENSOR_OP_IDENTITY
+               && instanceType == PermutationInstanceType_t::Device);
+        auto scale     = usePassThroughIfAlphaIsOne ? hiptensor::PermutationOpId_t::PASS_THROUGH
+                                                    : hiptensor::PermutationOpId_t::SCALE;
+        auto hashCodes = ck::tensor_operation::device::instance::getHashCodeOfBestPerfInstances(
+            ADataType, BDataType, AOp, BOp, scale, nDims, instanceParams);
         std::vector<PermutationSolution*> solutions;
         for(auto hashCode : hashCodes)
         {

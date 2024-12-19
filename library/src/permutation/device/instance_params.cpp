@@ -28,18 +28,16 @@
 
 namespace ck::tensor_operation::device::instance
 {
-    std::vector<hiptensor::Uid> getHashCodesWithAllInOutScalarPerVectorSeq(
-        hipDataType                           typeIn,
-        hipDataType                           typeOut,
-        hiptensorOperator_t                   aOp,
-        hiptensorOperator_t                   bOp,
-        hiptensor::PermutationOpId_t          scale,
-        index_t                               numDim,
-        hiptensor::InstanceHyperParams const& hyperParams)
+    std::vector<hiptensor::Uid>
+        getHashCodeOfBestPerfInstances(hipDataType                           typeIn,
+                                       hipDataType                           typeOut,
+                                       hiptensorOperator_t                   aOp,
+                                       hiptensorOperator_t                   bOp,
+                                       hiptensor::PermutationOpId_t          scale,
+                                       index_t                               numDim,
+                                       hiptensor::InstanceHyperParams const& hyperParams)
     {
         std::vector<hiptensor::Uid> hashCodes;
-        // - IMPORTANT: keep the order of scalarPerVectorSeq from 16 to 0 so that the instance
-        //      with greater scalarPerVectorSeq will be chose.
         // - scalarPerVectorSeq is 0 when it is CPU reference instance.
         // - `hashCodes` may contain hash codes that not represent any instances. It is not a problem
         //      since these hash codes will be ignored.
@@ -65,6 +63,7 @@ namespace ck::tensor_operation::device::instance
                                               threadClusterArrangeOrder.second,
                                               inScalarPerVectorSeq,
                                               inScalarPerVectorSeq));
+        // instances below are safe net
         // clang-format off
         if (numDim == 2) {
             if (typeIn == HIP_R_16F) {
