@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "permutation_types.hpp"
 #include "data_types.hpp"
+#include "permutation_types.hpp"
 #include "singleton.hpp"
 
 namespace hiptensor
@@ -50,13 +50,13 @@ namespace hiptensor
         virtual int32_t dim() const = 0;
 
         // Map to hipDataType
-        virtual hipDataType            typeIn()  const      = 0;
-        virtual hipDataType            typeOut() const      = 0;
+        virtual hipDataType typeIn() const  = 0;
+        virtual hipDataType typeOut() const = 0;
 
         // Map to operators
-        virtual hiptensorOperator_t   opA() const   = 0;
-        virtual hiptensorOperator_t   opB()   const   = 0;
-        virtual PermutationOpId_t     opScale()   const   = 0;
+        virtual hiptensorOperator_t opA() const     = 0;
+        virtual hiptensorOperator_t opB() const     = 0;
+        virtual PermutationOpId_t   opScale() const = 0;
     };
 
 } // namespace hiptensor

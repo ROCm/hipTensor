@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,8 @@
 #include <element_wise_operation.hpp>
 
 // hiptensor includes
-#include "device/device_element_wise_operation_complex.hpp"
 #include "data_types.hpp"
+#include "device/device_element_wise_operation_complex.hpp"
 #include "meta_traits.hpp"
 
 #define MaxNumDimsM 6
@@ -56,22 +56,22 @@ namespace hiptensor
               typename BElementwiseOperation,
               typename CDEElementwiseOperation,
               typename ComputeDataType>
-    struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-        NumDimsM,
-        NumDimsN,
-        NumDimsK,
-        ADataType,
-        BDataType,
-        ck::Tuple<DsDataType>,
-        EDataType,
-        AElementwiseOperation,
-        BElementwiseOperation,
-        CDEElementwiseOperation,
-        ComputeDataType>,
-        std::enable_if_t<(std::is_same_v<CDEElementwiseOperation,
-                                         ck::tensor_operation::element_wise::Bilinear>) ||
-                         (std::is_same_v<CDEElementwiseOperation,
-                                         ck::tensor_operation::element_wise::BilinearComplex>)>>
+    struct MetaTraits<
+        ck::tensor_operation::device::DeviceContractionMultipleD<NumDimsM,
+                                                                 NumDimsN,
+                                                                 NumDimsK,
+                                                                 ADataType,
+                                                                 BDataType,
+                                                                 ck::Tuple<DsDataType>,
+                                                                 EDataType,
+                                                                 AElementwiseOperation,
+                                                                 BElementwiseOperation,
+                                                                 CDEElementwiseOperation,
+                                                                 ComputeDataType>,
+        std::enable_if_t<
+            (std::is_same_v<CDEElementwiseOperation, ck::tensor_operation::element_wise::Bilinear>)
+            || (std::is_same_v<CDEElementwiseOperation,
+                               ck::tensor_operation::element_wise::BilinearComplex>)>>
     {
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;
@@ -111,22 +111,22 @@ namespace hiptensor
               typename BElementwiseOperation,
               typename CDEElementwiseOperation,
               typename ComputeDataType>
-    struct MetaTraits<ck::tensor_operation::device::DeviceContractionMultipleD<
-        NumDimsM,
-        NumDimsN,
-        NumDimsK,
-        ADataType,
-        BDataType,
-        ck::Tuple<>,
-        EDataType,
-        AElementwiseOperation,
-        BElementwiseOperation,
-        CDEElementwiseOperation,
-        ComputeDataType>,
-        std::enable_if_t<(std::is_same_v<CDEElementwiseOperation,
-                                         ck::tensor_operation::element_wise::Scale>) ||
-                         (std::is_same_v<CDEElementwiseOperation,
-                                         ck::tensor_operation::element_wise::ScaleComplex>)>>
+    struct MetaTraits<
+        ck::tensor_operation::device::DeviceContractionMultipleD<NumDimsM,
+                                                                 NumDimsN,
+                                                                 NumDimsK,
+                                                                 ADataType,
+                                                                 BDataType,
+                                                                 ck::Tuple<>,
+                                                                 EDataType,
+                                                                 AElementwiseOperation,
+                                                                 BElementwiseOperation,
+                                                                 CDEElementwiseOperation,
+                                                                 ComputeDataType>,
+        std::enable_if_t<
+            (std::is_same_v<CDEElementwiseOperation, ck::tensor_operation::element_wise::Scale>)
+            || (std::is_same_v<CDEElementwiseOperation,
+                               ck::tensor_operation::element_wise::ScaleComplex>)>>
     {
         constexpr static ck::index_t DimsM = NumDimsM;
         constexpr static ck::index_t DimsN = NumDimsN;

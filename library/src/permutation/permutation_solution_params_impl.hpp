@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,25 +27,21 @@
 #ifndef HIPTENSOR_PERMUTATION_SOLUTION_PARAMS_IMPL_HPP
 #define HIPTENSOR_PERMUTATION_SOLUTION_PARAMS_IMPL_HPP
 
-#include "permutation_meta_traits.hpp"
-#include "permutation_solution_params.hpp"
 #include "data_types.hpp"
 #include "hash.hpp"
+#include "permutation_meta_traits.hpp"
+#include "permutation_solution_params.hpp"
 
 namespace std
 {
     template <>
     struct hash<hiptensor::PermutationSolutionParams>
     {
-        size_t operator()(hiptensor::PermutationSolutionParams const& s, size_t mPerThread) const noexcept
+        size_t operator()(hiptensor::PermutationSolutionParams const& s,
+                          size_t                                      mPerThread) const noexcept
         {
-            return hiptensor::Hash{}(s.dim(),
-                                     s.typeIn(),
-                                     s.typeOut(),
-                                     s.opA(),
-                                     s.opB(),
-                                     s.opScale(),
-                                     mPerThread);
+            return hiptensor::Hash{}(
+                s.dim(), s.typeIn(), s.typeOut(), s.opA(), s.opB(), s.opScale(), mPerThread);
         }
     };
 }
@@ -89,7 +85,7 @@ namespace hiptensor
             return ElementWiseOperatorType_v<typename MetaTraitsT::BOp>;
         }
 
-        PermutationOpId_t   opScale() const override
+        PermutationOpId_t opScale() const override
         {
             return PermutationOperatorType_v<typename MetaTraitsT::ScaleOp>;
         }

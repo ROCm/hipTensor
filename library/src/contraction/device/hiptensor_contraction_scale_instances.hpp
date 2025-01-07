@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -157,7 +157,7 @@ namespace ck
                                                                                PassThrough,
                                                                                ScaleComplex,
                                                                                CF64>>>& instances);
- 
+
                 // Contraction + Scale
                 template <index_t NumDimM,
                           index_t NumDimN,

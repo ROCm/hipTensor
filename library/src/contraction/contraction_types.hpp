@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,9 +38,9 @@ namespace hiptensor
      */
     enum struct ContractionOpId_t : int32_t
     {
-        SCALE    = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
-        BILINEAR = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
-        SCALE_COMPLEX = 2,
+        SCALE            = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
+        BILINEAR         = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
+        SCALE_COMPLEX    = 2,
         BILINEAR_COMPLEX = 3,
         UNKNOWN,
     };

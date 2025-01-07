@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,8 @@
 #include <contraction_scale.hpp>
 #include <element_wise_operation.hpp>
 
-#include "device/device_element_wise_operation_complex.hpp"
 #include "contraction_types.hpp"
+#include "device/device_element_wise_operation_complex.hpp"
 #include <hiptensor/hiptensor_types.hpp>
 
 namespace hiptensor
