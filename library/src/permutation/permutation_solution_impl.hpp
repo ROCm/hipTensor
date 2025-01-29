@@ -33,6 +33,7 @@
 #include "hash.hpp"
 #include "hiptensor_options.hpp"
 #include "permutation_solution.hpp"
+#include <hiptensor_unary_element_wise_operation.hpp>
 
 namespace std
 {
@@ -61,19 +62,22 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                     alpha,
-                      void const*                     A,
-                      void*                           B,
-                      std::vector<std::size_t> const& a_lengths,
-                      std::vector<std::size_t> const& a_strides,
-                      const int32_t                   modeA[],
-                      std::vector<std::size_t> const& b_lengths,
-                      std::vector<std::size_t> const& b_strides,
-                      const int32_t                   modeB[],
-                      const hipDataType               typeScalar) override
+        bool initArgs(void const*                        alpha,
+                      void const*                        A,
+                      const hiptensorTensorDescriptor_t* descA,
+                      const int32_t                      modeA[],
+                      void*                              B,
+                      const hiptensorTensorDescriptor_t* descB,
+                      const int32_t                      modeB[],
+                      const hipDataType                  typeScalar) override
         {
             using Base   = PermutationSolution;
             using Traits = MetaTraits<DeviceOp>;
+
+            std::vector<std::size_t> const& a_lengths = descA->mLengths;
+            std::vector<std::size_t> const& a_strides = descA->mStrides;
+            std::vector<std::size_t> const& b_lengths = descB->mLengths;
+            std::vector<std::size_t> const& b_strides = descB->mStrides;
 
             // Clear out the previous arguments
             resetArgs();
@@ -158,9 +162,9 @@ namespace hiptensor
                     {bStridesCk},
                     {A},
                     {B},
-                    typename Traits::CombinedOp{typename Traits::AOp{},
+                    typename Traits::CombinedOp{typename Traits::AOp{descA->mUnaryOp},
                                                 typename Traits::ScaleOp{alphaF},
-                                                typename Traits::BOp{}}));
+                                                typename Traits::BOp{descB->mUnaryOp}}));
             }
 
             // Initialize the invoker

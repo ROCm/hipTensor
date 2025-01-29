@@ -92,20 +92,17 @@ namespace hiptensor
         return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
-    float PermutationSolution::operator()(void const*                     alpha,
-                                          void const*                     A,
-                                          void*                           B,
-                                          std::vector<std::size_t> const& a_lengths,
-                                          std::vector<std::size_t> const& a_strides,
-                                          const int32_t                   modeA[],
-                                          std::vector<std::size_t> const& b_lengths,
-                                          std::vector<std::size_t> const& b_strides,
-                                          const int32_t                   modeB[],
-                                          const hipDataType               typeScalar,
-                                          StreamConfig const&             streamConfig)
+    float PermutationSolution::operator()(void const*                        alpha,
+                                          void const*                        A,
+                                          const hiptensorTensorDescriptor_t* descA,
+                                          const int32_t                      modeA[],
+                                          void*                              B,
+                                          const hiptensorTensorDescriptor_t* descB,
+                                          const int32_t                      modeB[],
+                                          const hipDataType                  typeScalar,
+                                          StreamConfig const&                streamConfig)
     {
-        if(!initArgs(
-               alpha, A, B, a_lengths, a_strides, modeA, b_lengths, b_strides, modeB, typeScalar))
+        if(!initArgs(alpha, A, descA, modeA, B, descB, modeB, typeScalar))
         {
 #if !NDEBUG
             std::cout << kernelName() << " does not support this problem" << std::endl;

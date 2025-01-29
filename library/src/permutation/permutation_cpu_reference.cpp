@@ -47,16 +47,7 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
 
     for(auto refCandidate : refCandidates)
     {
-        if(refCandidate->initArgs(alpha,
-                                  A,
-                                  B,
-                                  descA->mLengths,
-                                  descA->mStrides,
-                                  modeA,
-                                  descB->mLengths,
-                                  descB->mStrides,
-                                  modeB,
-                                  typeScalar))
+        if(refCandidate->initArgs(alpha, A, descA, modeA, B, descB, modeB, typeScalar))
         {
             (*refCandidate)();
             return HIPTENSOR_STATUS_SUCCESS;

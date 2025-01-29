@@ -361,6 +361,94 @@ namespace hiptensor
         {
             return "HIPTENSOR_OP_SQRT";
         }
+        else if(opType == HIPTENSOR_OP_RELU)
+        {
+            return "HIPTENSOR_OP_RELU";
+        }
+        else if(opType == HIPTENSOR_OP_CONJ)
+        {
+            return "HIPTENSOR_OP_CONJ";
+        }
+        else if(opType == HIPTENSOR_OP_RCP)
+        {
+            return "HIPTENSOR_OP_RCP";
+        }
+        else if(opType == HIPTENSOR_OP_SIGMOID)
+        {
+            return "HIPTENSOR_OP_SIGMOID";
+        }
+        else if(opType == HIPTENSOR_OP_TANH)
+        {
+            return "HIPTENSOR_OP_TANH";
+        }
+        else if(opType == HIPTENSOR_OP_EXP)
+        {
+            return "HIPTENSOR_OP_EXP";
+        }
+        else if(opType == HIPTENSOR_OP_LOG)
+        {
+            return "HIPTENSOR_OP_LOG";
+        }
+        else if(opType == HIPTENSOR_OP_ABS)
+        {
+            return "HIPTENSOR_OP_ABS";
+        }
+        else if(opType == HIPTENSOR_OP_NEG)
+        {
+            return "HIPTENSOR_OP_NEG";
+        }
+        else if(opType == HIPTENSOR_OP_SIN)
+        {
+            return "HIPTENSOR_OP_SIN";
+        }
+        else if(opType == HIPTENSOR_OP_COS)
+        {
+            return "HIPTENSOR_OP_COS";
+        }
+        else if(opType == HIPTENSOR_OP_TAN)
+        {
+            return "HIPTENSOR_OP_TAN";
+        }
+        else if(opType == HIPTENSOR_OP_SINH)
+        {
+            return "HIPTENSOR_OP_SINH";
+        }
+        else if(opType == HIPTENSOR_OP_COSH)
+        {
+            return "HIPTENSOR_OP_COSH";
+        }
+        else if(opType == HIPTENSOR_OP_ASIN)
+        {
+            return "HIPTENSOR_OP_ASIN";
+        }
+        else if(opType == HIPTENSOR_OP_ACOS)
+        {
+            return "HIPTENSOR_OP_ACOS";
+        }
+        else if(opType == HIPTENSOR_OP_ATAN)
+        {
+            return "HIPTENSOR_OP_ATAN";
+        }
+        else if(opType == HIPTENSOR_OP_ASINH)
+        {
+            return "HIPTENSOR_OP_ASINH";
+        }
+        else if(opType == HIPTENSOR_OP_ACOSH)
+        {
+            return "HIPTENSOR_OP_ACOSH";
+        }
+        else if(opType == HIPTENSOR_OP_ATANH)
+        {
+            return "HIPTENSOR_OP_ATANH";
+        }
+        else if(opType == HIPTENSOR_OP_CEIL)
+        {
+            return "HIPTENSOR_OP_CEIL";
+        }
+        else if(opType == HIPTENSOR_OP_FLOOR)
+        {
+            return "HIPTENSOR_OP_FLOOR";
+        }
         else if(opType == HIPTENSOR_OP_ADD)
         {
             return "HIPTENSOR_OP_ADD";
