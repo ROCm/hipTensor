@@ -62,22 +62,21 @@ namespace hiptensor
         {
         }
 
-        bool initArgs(void const*                        alpha,
-                      void const*                        A,
-                      const hiptensorTensorDescriptor_t* descA,
-                      const int32_t                      modeA[],
-                      void*                              B,
-                      const hiptensorTensorDescriptor_t* descB,
-                      const int32_t                      modeB[],
-                      const hipDataType                  typeScalar) override
+        bool initArgs(void const*                     alpha,
+                      void const*                     A,
+                      void*                           B,
+                      std::vector<std::size_t> const& a_lengths,
+                      std::vector<std::size_t> const& a_strides,
+                      hiptensorOperator_t             opA,
+                      const int32_t                   modeA[],
+                      std::vector<std::size_t> const& b_lengths,
+                      std::vector<std::size_t> const& b_strides,
+                      hiptensorOperator_t             opB,
+                      const int32_t                   modeB[],
+                      const hipDataType               typeScalar) override
         {
             using Base   = PermutationSolution;
             using Traits = MetaTraits<DeviceOp>;
-
-            std::vector<std::size_t> const& a_lengths = descA->mLengths;
-            std::vector<std::size_t> const& a_strides = descA->mStrides;
-            std::vector<std::size_t> const& b_lengths = descB->mLengths;
-            std::vector<std::size_t> const& b_strides = descB->mStrides;
 
             // Clear out the previous arguments
             resetArgs();
@@ -156,15 +155,19 @@ namespace hiptensor
             else
             {
 
+                // According to the definition of permutation \f$B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)}))\f$
+                // No operations can be applied to B so that the `opB` which is from descriptor B should be ignored.
                 Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
                     abLengths,
                     {aStrides},
                     {bStridesCk},
                     {A},
                     {B},
-                    typename Traits::CombinedOp{typename Traits::AOp{descA->mUnaryOp},
-                                                typename Traits::ScaleOp{alphaF},
-                                                typename Traits::BOp{descB->mUnaryOp}}));
+                    typename Traits::CombinedOp{
+                        typename Traits::AOp{opA},
+                        typename Traits::ScaleOp{alphaF},
+                        typename Traits::BOp{
+                            HIPTENSOR_OP_IDENTITY}})); // ignore opB since none operation should be applied on output
             }
 
             // Initialize the invoker

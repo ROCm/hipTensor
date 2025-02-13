@@ -46,7 +46,7 @@ __global__ void unary_op_kernel(const float* x, float* y, int size, hiptensorOpe
 
 float unaryOpOnDeviceTest(float x, hiptensorOperator_t op_type)
 {
-    const int array_size  = 64;
+    const int array_size  = 1;
     const int array_bytes = array_size * sizeof(float);
 
     // Host arrays
@@ -71,9 +71,6 @@ float unaryOpOnDeviceTest(float x, hiptensorOperator_t op_type)
 
     // Copy result back to host
     CHECK_HIP_ERROR(hipMemcpy(array_y, d_y, array_bytes, hipMemcpyDeviceToHost));
-
-    // Compare result with reference
-    // bool success = std::abs(array_c[0] - array_ref[0]) < 100 * std::numeric_limits<float>::epsilon();
 
     // Free device memory
     CHECK_HIP_ERROR(hipFree(d_x));

@@ -159,7 +159,18 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun = pSolution->initArgs(alpha, A, descA, modeA, B, descB, modeB, typeScalar);
+        canRun = pSolution->initArgs(alpha,
+                                     A,
+                                     B,
+                                     descA->mLengths,
+                                     descA->mStrides,
+                                     descA->mUnaryOp,
+                                     modeA,
+                                     descB->mLengths,
+                                     descB->mStrides,
+                                     descB->mUnaryOp,
+                                     modeB,
+                                     typeScalar);
 
         if(canRun)
         {
