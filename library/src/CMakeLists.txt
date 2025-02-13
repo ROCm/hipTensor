@@ -71,7 +71,7 @@ endif()
 add_subdirectory(contraction)
 # Generates hiptensor_permutation
 add_subdirectory(permutation)
-# Generates hiptensor_reduction and hiptensor_reduction_instances
+# Generates hiptensor_reduction
 add_subdirectory(reduction)
 
 # Core API code

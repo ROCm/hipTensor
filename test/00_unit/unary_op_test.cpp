@@ -125,7 +125,7 @@ TEST(UnaryOpTest, HostAndDeviceUnaryOpTest)
     EXPECT_FLOAT_EQ(y, ref);
 
     x   = 3.3F;
-    ref = 0.964428810727F; // y = 1 / (1 + e^3.3)
+    ref = 0.964428810727F; // y = 1 / (1 + e^-3.3)
     y   = unaryOpOnHostTest(x, HIPTENSOR_OP_SIGMOID);
     EXPECT_FLOAT_EQ(y, ref);
     y = unaryOpOnDeviceTest(x, HIPTENSOR_OP_SIGMOID);
