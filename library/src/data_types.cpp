@@ -168,42 +168,52 @@ namespace hiptensor
         case HIPTENSOR_COMPUTE_16F:
         {
             *(_Float16*)addr = value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_16BF:
         {
             *(hip_bfloat16*)addr = value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_32F:
         {
             *(float*)addr = value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_64F:
         {
             *(double*)addr = value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_8U:
         {
             *(uint8_t*)addr = (uint8_t)value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_8I:
         {
             *(int8_t*)addr = (int8_t)value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_32U:
         {
             *(uint32_t*)addr = (uint32_t)value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_32I:
         {
             *(int32_t*)addr = (int32_t)value.mReal;
+            return;
         }
         case HIPTENSOR_COMPUTE_C32F:
         {
             *(hipFloatComplex*)addr = hipComplexDoubleToFloat(value.mComplex);
+            return;
         }
         case HIPTENSOR_COMPUTE_C64F:
         {
             *(hipDoubleComplex*)addr = value.mComplex;
+            return;
         }
         default:
         {
