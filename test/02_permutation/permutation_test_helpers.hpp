@@ -159,7 +159,6 @@ void generate_lengths(std::vector<std::vector<size_t>>  ranges,
             }
         }
     }
-    std::cout << lengths << std::endl;
 }
 
 auto inline load_config_helper()

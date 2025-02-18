@@ -516,7 +516,7 @@ namespace std
                 os << vec[i];
             }
         }
-        os << " ]\n";
+        os << " ]";
 
         return os;
     }
