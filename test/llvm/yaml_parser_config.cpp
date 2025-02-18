@@ -62,6 +62,7 @@ namespace hiptensor
 //         using StridesT     = std::vector<std::size_t>;
 //         using AlphaT       = double;
 //         using BetaT        = double;
+//         using RangesT      = std::vector<std::size_t>;
 
 //         //Data types of input and output tensors
 //         std::vector<TestDataTypeT> mDataTypes;
@@ -288,9 +289,22 @@ namespace llvm
                 io.mapOptional("Betas",
                                (std::vector<std::vector<double>>&)(doc.betas()),
                                std::vector<std::vector<double>>(doc.alphas().size()));
-                io.mapRequired(
-                    "Lengths",
-                    (std::vector<std::vector<std::vector<size_t>>>&)doc.problemLengths());
+                io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
+
+                // If problem ranges are given then problem lengths are optional
+                if(doc.problemRanges().size() != 0)
+                {
+                    io.mapOptional(
+                        "Lengths",
+                        (std::vector<std::vector<std::vector<size_t>>>&)doc.problemLengths());
+                }
+                else
+                {
+                    io.mapRequired(
+                        "Lengths",
+                        (std::vector<std::vector<std::vector<size_t>>>&)doc.problemLengths());
+                }
+
                 io.mapRequired("Modes",
                                (std::vector<std::vector<std::vector<int32_t>>>&)doc.problemModes());
 
@@ -313,7 +327,7 @@ namespace llvm
             static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
 
-                if(doc.problemLengths().size() == 0)
+                if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
@@ -375,7 +389,15 @@ namespace llvm
                 io.mapOptional("Gammas",
                                (std::vector<GammaT>&)(doc.gammas()),
                                std::vector<GammaT>(doc.alphas().size()));
-                io.mapRequired("Lengths", doc.problemLengths());
+                io.mapOptional("Ranges", doc.problemRanges());
+                if(!doc.problemRanges().empty())
+                {
+                    io.mapOptional("Lengths", doc.problemLengths());
+                }
+                else
+                {
+                    io.mapRequired("Lengths", doc.problemLengths());
+                }
                 io.mapRequired("Permuted Dims", doc.permutedDims());
                 io.mapRequired("Operators", (doc.operators()));
             }
@@ -433,7 +455,15 @@ namespace llvm
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
-                io.mapRequired("Lengths", doc.problemLengths());
+                io.mapOptional("Ranges", doc.problemRanges());
+                if(!doc.problemRanges().empty())
+                {
+                    io.mapOptional("Lengths", doc.problemLengths());
+                }
+                else
+                {
+                    io.mapRequired("Lengths", doc.problemLengths());
+                }
                 io.mapRequired("Output Dims", doc.outputDims());
                 io.mapRequired("Operators", (doc.operators()));
             }
