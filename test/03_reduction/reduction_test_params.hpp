@@ -99,7 +99,8 @@ namespace hiptensor
                       << "Operators: " << mOperators << "\n"
                       << "Alphas: " << mAlphas << "\n"
                       << "Betas: " << mBetas << "\n"
-                      << "OutputDims: " << mOutputDims << "\n";
+                      << "OutputDims: " << mOutputDims << "\n"
+                      << "ProblemRanges: " << mProblemRanges << "\n";
         }
 
     private:

@@ -91,7 +91,7 @@ namespace hiptensor
         {
             return mGammas;
         }
-        
+
         std::vector<RangesT>& problemRanges()
         {
             return mProblemRanges;
@@ -106,7 +106,8 @@ namespace hiptensor
                       << "Alphas: " << mAlphas << "\n"
                       << "Betas: " << mBetas << "\n"
                       << "Gammas: " << mGammas << "\n"
-                      << "PermutedDims: " << mPermutedDims << "\n";
+                      << "PermutedDims: " << mPermutedDims << "\n"
+                      << "ProblemRanges: " << mProblemRanges << "\n";
         }
 
     private:

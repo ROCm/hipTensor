@@ -175,7 +175,7 @@ auto inline load_combined_config_params()
 {
     auto testParams = load_config_params();
 
-    // Create problemLengths if problemRanges are given instead
+    // Append sizes to problemLengths if problemRanges are given
     if(!testParams.problemRanges().empty())
     {
         uint32_t rank = testParams.problemModes()[0][0].size() / 2;
