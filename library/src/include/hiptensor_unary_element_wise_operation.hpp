@@ -37,29 +37,6 @@
 
 namespace ck
 {
-    namespace math
-    {
-        template <typename T>
-        inline __device__ T cos(T x)
-        {
-            return ck::type_convert<T>(::cosf(ck::type_convert<float>(x)));
-        };
-        template <>
-        inline __device__ float cos<float>(float x)
-        {
-            return ::cosf(x);
-        };
-        template <>
-        inline __device__ double cos<double>(double x)
-        {
-            return ::cos(x);
-        };
-        template <>
-        inline __device__ half_t cos<half_t>(half_t x)
-        {
-            return hcos(static_cast<__half>(x));
-        };
-    }
     namespace tensor_operation
     {
         namespace element_wise
