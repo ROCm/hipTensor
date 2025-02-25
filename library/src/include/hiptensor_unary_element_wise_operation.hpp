@@ -35,6 +35,32 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+namespace hiptensor {
+	namespace math
+	{
+		template <typename T>
+			inline __host__ __device__ T cos(T x)
+			{
+				return ck::type_convert<T>(::cosf(ck::type_convert<float>(x)));
+			};
+		template <>
+			inline __host__ __device__ float cos<float>(float x)
+			{
+				return ::cosf(x);
+			};
+		template <>
+			inline __host__ __device__ double cos<double>(double x)
+			{
+				return ::cos(x);
+			};
+		template <>
+			inline __host__ __device__ ck::half_t cos<ck::half_t>(ck::half_t x)
+			{
+				return hcos(static_cast<__half>(x));
+			};
+	}
+}
+
 namespace ck
 {
     namespace tensor_operation
@@ -93,7 +119,7 @@ namespace ck
             }
             __host__ __device__ static void hiptensor_cos(float& y, float const& x)
             {
-                y = ck::math::cos(x);
+                y = hiptensor::math::cos(x);
             }
             __host__ __device__ static void hiptensor_tan(float& y, float const& x)
             {
