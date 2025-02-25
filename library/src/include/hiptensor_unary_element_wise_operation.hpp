@@ -36,6 +36,10 @@
 #include <hiptensor/hiptensor_types.hpp>
 
 namespace hiptensor {
+	// This hiptensor::math::cos is a workaround for a CK missing function issue.
+	// CK has fixed the issue in develop branch, but it has not been made into all
+	// CI pipelines.
+	// TODO Remove hiptensor::math::cos when `__device__ ck::math::cos` is available in all pipelines.
 	namespace math
 	{
 		template <typename T>
