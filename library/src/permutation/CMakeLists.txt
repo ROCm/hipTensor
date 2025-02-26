@@ -32,6 +32,7 @@ set(HIPTENSOR_PERMUTATION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/device/hiptensor_permutation_scale_instances.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/device/instance_params.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_permutation.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_elementwise_binary.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank2_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank3_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_cpu_reference_rank4_instances.cpp

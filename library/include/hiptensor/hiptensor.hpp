@@ -97,6 +97,36 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                        const hipDataType                  typeScalar,
                                        const hipStream_t                  stream);
 
+//! \brief Element-wise tensor operation for two input tensors
+//!
+//! \details This function performs a element-wise tensor operation of the form:
+//! \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+//!
+//! @param[in] handle Opaque handle holding hipTensor's library context.
+//! @param[in] alpha Scaling factor for A (see equation above) of the type typeScalar. Pointer to the host memory. If alpha is zero, A is not read and the corresponding unary operator is not applied.
+//! @param[in] A Multi-mode tensor of type typeA with nmodeA modes. Pointer to the GPU-accessible memory.
+//! @param[in] descA A descriptor that holds the information about the data type, modes, and strides of A.
+//! @param[in] modeA Array (in host memory) of size descA->numModes that holds the names of the modes of A (e.g., if A_{a,b,c} => modeA = {'a','b','c'}). The modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor.
+//! @param[in] gamma Scaling factor for C (see equation above) of type typeScalar. Pointer to the host memory. If gamma is zero, C is not read and the corresponding unary operator is not applied.
+//! @param[in] C Multi-mode tensor of type typeC with nmodeC many modes. Pointer to the GPU-accessible memory.
+//! @param[in] descC The C descriptor that holds information about the data type, modes, and strides of C.
+//! @param[in] modeC Array (in host memory) of size descC->numModes that holds the names of the modes of C. The modeC[i] corresponds to extent[i] and stride[i] of the hiptensorInitTensorDescriptor.
+//! @param[out] D Multi-mode output tensor of type typeC with nmodeC modes that are ordered according to modeD. Pointer to the GPU-accessible memory. Notice that D may alias any input tensor if they share the same memory layout (i.e., same tensor descriptor).
+//! @param[in] descD The D descriptor that holds information about the data type, modes, and strides of D. Notice that we currently request descD and descC to be identical.
+//! @param[in] modeD Array (in host memory) of size descD->numModes that holds the names of the modes of D. The modeD[i] corresponds to extent[i] and stride[i] of the hiptensorInitTensorDescriptor.
+//! @param[in] opAC Element-wise binary operator (see \f$\Phi_{AC}\f$ above).
+//! @param[in] typeScalar Scalar type for the intermediate computation.
+//! @param[in] stream The stream.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
+		const void* alpha, const void* A, const hiptensorTensorDescriptor_t* descA, const int32_t modeA[],
+		const void* gamma, const void* C, const hiptensorTensorDescriptor_t* descC, const int32_t modeC[],
+		void* D, const hiptensorTensorDescriptor_t* descD, const int32_t modeD[],
+		hiptensorOperator_t opAC, hipDataType typeScalar, hipStream_t stream);
+
 //! @brief Computes the alignment requirement for a given pointer and descriptor.
 //! @param[in] handle Opaque handle holding hipTensor's library context.
 //! @param[in] ptr Pointer to the respective tensor data.
@@ -246,7 +276,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
 //! @param[out] workspace Scratchpad (device) memory; the workspace must be aligned to 128 bytes.
 //! @param[in] workspaceSize Please use hiptensorReductionGetWorkspaceSize() to query the required workspace.
 //!            While lower values, including zero, are valid, they may lead to grossly suboptimal performance.
-//! @param[in] stream The CUDA stream in which all the computation is performed.
+//! @param[in] stream The stream in which all the computation is performed.
 //! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if operation is not supported.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.

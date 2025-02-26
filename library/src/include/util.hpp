@@ -29,6 +29,8 @@
 
 #include <type_traits>
 #include <vector>
+#include <hiptensor/hiptensor.hpp>
+#include <logger.hpp>
 
 namespace hiptensor
 {
@@ -105,6 +107,25 @@ namespace hiptensor
         }
         return indices;
     }
+
+    inline void printErrorMessage (hiptensor::Logger & logger, hiptensorStatus_t errorCode, const std::string& paramName) {
+        char msg[512];
+        snprintf(msg,
+                sizeof(msg),
+                "Initialization Error : %s = nullptr (%s)",
+                paramName.c_str(),
+                hiptensorGetErrorString(errorCode));
+        logger.logError("hiptensorPermutation", msg);
+    };
+
+// define a macro since it can convert `paramName` to a string
+#define CheckApiParams(logger, errorCode, paramName) \
+    if(!paramName) \
+    { \
+        printErrorMessage(logger, errorCode, #paramName); \
+    }
+
+
 } // namespace hiptensor
 
 #endif // HIPTENSOR_SRC_UTIL_HPP
