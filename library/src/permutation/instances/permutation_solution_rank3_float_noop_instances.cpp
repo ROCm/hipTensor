@@ -39,9 +39,10 @@ namespace hiptensor
         registerSolutions(
             enumeratePermutationSolutions<ck::Tuple<float>,
                                           ck::Tuple<float>,
+            ck::tensor_operation::element_wise::UnaryCombinedOp<
                                           ck::tensor_operation::element_wise::PassThrough,
                                           ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough>,
                                           3>());
     }
 } // namespace hiptensor

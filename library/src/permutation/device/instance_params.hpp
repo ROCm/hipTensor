@@ -73,7 +73,7 @@ namespace ck::tensor_operation::device::instance
     template <
         typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename Scale,
+              hiptensor::PermutationOpId_t Scale,
               index_t NumDim,
               index_t BlockSize                  = 0,
               index_t M0PerBlock                 = 0,
@@ -90,7 +90,7 @@ namespace ck::tensor_operation::device::instance
             return hiptensor::Hash{}(
                 convertTypeTupleToHipDataTypeArray<InDataTypeTuple>(),
                 convertTypeTupleToHipDataTypeArray<OutDataTypeTuple>(),
-                hiptensor::PermutationOperatorType_v<Scale>,
+                Scale,
                 NumDim,
                 BlockSize,
                 M0PerBlock,

@@ -244,23 +244,28 @@ namespace hiptensor
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename Aop,
-              typename Bop,
-              typename Scale,
+              typename  ElementwiseOperation,
               ck::index_t NumDim>
     auto enumerateReferenceSolutions()
     {
         using ReferenceOp = ReferencePermutation<
             InDataTypeTuple,
             OutDataTypeTuple,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+            ElementwiseOperation,
             NumDim>;
 
         auto solution = std::make_unique<PermutationSolutionImpl<ReferenceOp>>(
             std::make_unique<ReferenceOp>());
 
+        constexpr hiptensor::PermutationOpId_t opType = std::is_same_v<ElementwiseOperation,
+            ck::tensor_operation::element_wise::UnaryCombinedOp<
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough,
+                                          ck::tensor_operation::element_wise::PassThrough>> ?
+                              hiptensor::PermutationOpId_t::PASS_THROUGH:
+                              hiptensor::PermutationOpId_t::SCALE;
         auto hashCode = ck::tensor_operation::device::instance::
-            DeviceElementwiseParams<InDataTypeTuple, OutDataTypeTuple, Scale, NumDim>::hashCode();
+            DeviceElementwiseParams<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>::hashCode();
         auto result = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();
         result.insert({hashCode, std::move(solution)});
 

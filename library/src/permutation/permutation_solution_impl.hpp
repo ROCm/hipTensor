@@ -195,16 +195,14 @@ namespace hiptensor
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename Aop,
-              typename Bop,
-              typename Scale,
+              typename ElementwiseOperation,
               ck::index_t NumDim>
     auto enumeratePermutationSolutions()
     {
         using PermutationOp = ck::tensor_operation::device::DeviceElementwise<
             InDataTypeTuple,
             OutDataTypeTuple,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+            ElementwiseOperation,
             NumDim>;
 
         using Factory

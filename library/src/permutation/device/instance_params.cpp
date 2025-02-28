@@ -46,7 +46,7 @@ namespace ck::tensor_operation::device::instance
         index_t                     m1PerThread               = std::get<4>(hyperParams);
         std::pair<index_t, index_t> threadClusterArrangeOrder = std::get<5>(hyperParams);
         index_t                     inScalarPerVectorSeq      = std::get<6>(hyperParams);
-// TODO use `DeviceElementwiseParams::hashCode`
+
         hashCodes.push_back(hiptensor::Hash{}(typeIn,
                                               typeOut,
                                               scale,
@@ -62,28 +62,28 @@ namespace ck::tensor_operation::device::instance
                                               inScalarPerVectorSeq));
         // instances below are safe net
         // clang-format off
-#if 0 //TODO why add various instances ??
+#if 1 //TODO why add various instances ??
         if (numDim == 2) {
-            if (typeIn == HIP_R_16F) {
+            if (typeIn[0] == HIP_R_16F) {
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 1 , 1));
-            } else if (typeIn == HIP_R_32F) {
+            } else if (typeIn[0] == HIP_R_32F) {
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
             }
         } else if (numDim == 3) {
-            if (typeIn == HIP_R_16F) {
+            if (typeIn[0] == HIP_R_16F) {
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 1 , 1));
-            } else if (typeIn == HIP_R_32F) {
+            } else if (typeIn[0] == HIP_R_32F) {
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
             }
         } else if (numDim == 4) {
-            if (typeIn == HIP_R_16F) {
+            if (typeIn[0] == HIP_R_16F) {
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 2  , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 1  , 1));
-            } else if (typeIn == HIP_R_32F) {
+            } else if (typeIn[0] == HIP_R_32F) {
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
             }
@@ -93,9 +93,6 @@ namespace ck::tensor_operation::device::instance
             hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
         }
 #endif
-		hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 4 , 4));
-		hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
-		hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
         // clang-format on
 
         return hashCodes;
