@@ -92,6 +92,7 @@ namespace hiptensor
         return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
+/*
     float PermutationSolution::operator()(void const*                     alpha,
                                           void const*                     A,
                                           void*                           B,
@@ -127,6 +128,7 @@ namespace hiptensor
 
         return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
+*/
 
     bool PermutationSolution::isValid() const
     {

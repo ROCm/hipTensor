@@ -62,22 +62,21 @@ namespace hiptensor
         PermutationSolution& operator=(PermutationSolution&& other);
 
         // Must specialize incoming arg handling
-        virtual bool initArgs(void const*                     alpha,
-                              void const*                     A,
-                              void*                           B,
-                              std::vector<std::size_t> const& a_lengths,
-                              std::vector<std::size_t> const& a_strides,
-                              hiptensorOperator_t             opA,
-                              const int32_t                   modeA[],
-                              std::vector<std::size_t> const& b_lengths,
-                              std::vector<std::size_t> const& b_strides,
-                              hiptensorOperator_t             opB,
-                              const int32_t                   modeB[],
-                              const hipDataType               typeScalar)
+		virtual bool initArgs( std::vector<float>                     const & scalarValues,
+				 std::vector<std::vector<std::size_t>> const & inLengthsArray,
+				 std::vector<std::vector<std::size_t>> const & inStridesArray,
+				 std::vector<std::vector<int32_t>> const & inModesArray,
+				 std::vector<std::vector<std::size_t>> const & outLengthsArray,
+				 std::vector<std::vector<std::size_t>> const & outStridesArray,
+				 std::vector<std::vector<int32_t>> const & outModesArray,
+				 std::vector<hiptensorOperator_t>             const & operators,
+				 std::vector<const void*> const & inBuffers,
+				 std::vector<void*> const & outBuffers)
             = 0;
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});
 
+/*
         float operator()(void const*                     alpha,
                          void const*                     A,
                          void*                           B,
@@ -91,6 +90,7 @@ namespace hiptensor
                          const int32_t                   modeB[],
                          const hipDataType               typeScalar,
                          StreamConfig const&             streamConfig = StreamConfig{});
+*/
 
         /// Accessors
 

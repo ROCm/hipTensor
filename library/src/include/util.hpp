@@ -118,6 +118,17 @@ namespace hiptensor
         logger.logError("hiptensorPermutation", msg);
     };
 
+    // static_for
+    template <size_t N, typename Func, size_t... I>
+        constexpr void static_for_impl(Func&& func, std::index_sequence<I...>) {
+            (func(std::integral_constant<size_t, I>{}), ...);
+        }
+
+    template <size_t N, typename Func>
+        constexpr void static_for(Func&& func) {
+            static_for_impl<N>(std::forward<Func>(func), std::make_index_sequence<N>{});
+        }
+
 // define a macro since it can convert `paramName` to a string
 #define CheckApiParams(logger, errorCode, paramName) \
     if(!paramName) \

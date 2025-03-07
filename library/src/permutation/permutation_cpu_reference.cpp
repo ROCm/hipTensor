@@ -42,23 +42,26 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
     const int32_t dim       = descA->mLengths.size();
     auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
 
+    float alphaF;
+    if(alpha != nullptr){
+        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
+    }
+
     auto refCandidates = instances->query(
         alpha, descA, modeA, descB, modeB, typeScalar, hiptensor::PermutationInstanceType_t::Host);
 
     for(auto refCandidate : refCandidates)
     {
-        if(refCandidate->initArgs(alpha,
-                                  A,
-                                  B,
-                                  descA->mLengths,
-                                  descA->mStrides,
-                                  descA->mUnaryOp,
-                                  modeA,
-                                  descB->mLengths,
-                                  descB->mStrides,
-                                  descB->mUnaryOp,
-                                  modeB,
-                                  typeScalar))
+        if(refCandidate->initArgs({alphaF},
+                                  {descA->mLengths},
+                                  {descA->mStrides},
+                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size())},
+                                  {descB->mLengths},
+                                  {descB->mStrides},
+                                  {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
+                                  {descA->mUnaryOp},
+                                  {A},
+                                  {B}))
         {
             (*refCandidate)();
             return HIPTENSOR_STATUS_SUCCESS;

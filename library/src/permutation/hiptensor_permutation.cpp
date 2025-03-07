@@ -156,21 +156,23 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                       typeScalar,
                                       hiptensor::PermutationInstanceType_t::Device);
 
+    float alphaF;
+    if(alpha != nullptr){
+        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
+    }
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun = pSolution->initArgs(alpha,
-                                     A,
-                                     B,
-                                     descA->mLengths,
-                                     descA->mStrides,
-                                     descA->mUnaryOp,
-                                     modeA,
-                                     descB->mLengths,
-                                     descB->mStrides,
-                                     descB->mUnaryOp,
-                                     modeB,
-                                     typeScalar);
+        canRun = pSolution->initArgs({alphaF},
+                                  {descA->mLengths},
+                                  {descA->mStrides},
+                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size())},
+                                  {descB->mLengths},
+                                  {descB->mStrides},
+                                  {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
+                                  {descA->mUnaryOp},
+                                  {A},
+                                  {B});
 
         if(canRun)
         {
