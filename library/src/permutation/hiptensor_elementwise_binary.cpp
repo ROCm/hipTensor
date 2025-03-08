@@ -101,66 +101,44 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
 			return errorCode;
 
 			}
-#if 0
-    if(descA->mType != HIP_R_16F && descA->mType != HIP_R_32F)
-    {
-        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Unsupported Data Type Error : The supported data types of A and B are HIP_R_16F "
-                 "and HIP_R_32F (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
-        return errorCode;
-    }
 
-    if(descA->mType != descB->mType)
-    {
-        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Mismatched Data Type Error : Data types of A and B are not the same. (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
-        return errorCode;
+    float alphaF;
+    if(alpha != nullptr){
+        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
-
-    if(typeScalar != HIP_R_16F && typeScalar != HIP_R_32F)
-    {
-        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Unsupported Data Type Error : The supported data types of alpha are HIP_R_16F "
-                 "and HIP_R_32F (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
-        return errorCode;
+    float gammaF;
+    if(gamma != nullptr){
+        gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
-    auto  solutions = instances->query(alpha,
-                                      descA,
-                                      modeA,
-                                      descB,
-                                      modeB,
-                                      typeScalar,
-                                      hiptensor::PermutationInstanceType_t::Device);
+    auto  solutions = instances->query({alphaF, gammaF},
+            descA->mLengths,
+            {descA->mType, descC->mType},
+            {descD->mType},
+            {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
+            {{modeD, modeD + descD->mLengths.size()}},
+            {descA->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
+            hiptensor::PermutationInstanceType_t::Device);
 
+#if 0
+    float alphaF;
+    if(alpha != nullptr){
+        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
+    }
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun = pSolution->initArgs(alpha,
-                                     A,
-                                     B,
-                                     descA->mLengths,
-                                     descA->mStrides,
-                                     descA->mUnaryOp,
-                                     modeA,
-                                     descB->mLengths,
-                                     descB->mStrides,
-                                     descB->mUnaryOp,
-                                     modeB,
-                                     typeScalar);
+        canRun = pSolution->initArgs({alphaF},
+                                  {descA->mLengths},
+                                  {descA->mStrides},
+                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size())},
+                                  {descB->mLengths},
+                                  {descB->mStrides},
+                                  {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
+                                  {descA->mUnaryOp},
+                                  {A},
+                                  {B});
 
         if(canRun)
         {

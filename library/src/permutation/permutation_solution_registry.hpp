@@ -56,13 +56,14 @@ namespace hiptensor
     public:
         virtual ~PermutationSolutionRegistry() = default;
 
-        std::vector<PermutationSolution*> query(const void*                        alpha,
-                                                const hiptensorTensorDescriptor_t* descA,
-                                                const int32_t                      modeA[],
-                                                const hiptensorTensorDescriptor_t* descB,
-                                                const int32_t                      modeB[],
-                                                const hipDataType                  typeScalar,
-                                                PermutationInstanceType_t instanceType) const;
+		std::vector<PermutationSolution*> query(std::vector<float> const & scalarValues,
+				std::vector<std::size_t> const & lengths,
+				std::vector<hipDataType>             const & inDataTypes,
+				std::vector<hipDataType>             const & outDataTypes,
+				std::vector<std::vector<int32_t>> const & inModesArray,
+				std::vector<std::vector<int32_t>> const & outModesArray,
+				std::vector<hiptensorOperator_t>             const & operators,
+				PermutationInstanceType_t          instanceType) const;
         uint32_t                          solutionCount() const;
 
     private:

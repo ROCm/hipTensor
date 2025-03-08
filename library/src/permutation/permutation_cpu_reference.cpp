@@ -47,8 +47,14 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
         alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
 
-    auto refCandidates = instances->query(
-        alpha, descA, modeA, descB, modeB, typeScalar, hiptensor::PermutationInstanceType_t::Host);
+    auto  refCandidates = instances->query({alphaF},
+            descA->mLengths,
+            {descA->mType},
+            {descB->mType},
+            {{modeA, modeA + descA->mLengths.size()}},
+            {{modeB, modeB + descB->mLengths.size()}},
+            {descA->mUnaryOp, descB->mUnaryOp},
+            hiptensor::PermutationInstanceType_t::Host);
 
     for(auto refCandidate : refCandidates)
     {

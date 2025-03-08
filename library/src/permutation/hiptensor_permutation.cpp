@@ -147,19 +147,21 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return errorCode;
     }
 
-    auto& instances = hiptensor::PermutationSolutionInstances::instance();
-    auto  solutions = instances->query(alpha,
-                                      descA,
-                                      modeA,
-                                      descB,
-                                      modeB,
-                                      typeScalar,
-                                      hiptensor::PermutationInstanceType_t::Device);
-
     float alphaF;
     if(alpha != nullptr){
         alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
+
+    auto& instances = hiptensor::PermutationSolutionInstances::instance();
+    auto  solutions = instances->query({alphaF},
+            descA->mLengths,
+            {descA->mType},
+            {descB->mType},
+            {{modeA, modeA + descA->mLengths.size()}},
+            {{modeB, modeB + descB->mLengths.size()}},
+            {descA->mUnaryOp, descB->mUnaryOp},
+            hiptensor::PermutationInstanceType_t::Device);
+
     bool canRun = false;
     for(auto pSolution : solutions)
     {
