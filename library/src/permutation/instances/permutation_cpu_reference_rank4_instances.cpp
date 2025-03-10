@@ -51,5 +51,23 @@ namespace hiptensor
                                         ck::tensor_operation::element_wise::Scale,
                                         ck::tensor_operation::element_wise::HiptensorUnaryOp>,
                                         4>());
+
+
+		using Scale  = ck::tensor_operation::element_wise::Scale;
+		using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+		using ScaleUnaryOp = ck::tensor_operation::element_wise::UnaryCombinedOp<UnaryOp, Scale>;
+		using BinaryAdd = ck::tensor_operation::element_wise::Add;
+		using BinaryAddScaleUnaryOp = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<BinaryAdd, ScaleUnaryOp, ScaleUnaryOp>;
+        registerSolutions(
+            enumerateReferenceSolutions<ck::Tuple<float, float>,
+                                        ck::Tuple<float>,
+										BinaryAddScaleUnaryOp,
+                                        4>());
+
+        registerSolutions(
+            enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t>,
+                                        ck::Tuple<ck::half_t>,
+										BinaryAddScaleUnaryOp,
+                                        4>());
     }
 } // namespace hiptensor

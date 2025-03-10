@@ -73,18 +73,10 @@ namespace hiptensor
               typename ElementOp,
               ck::index_t NumDim>
     struct ReferencePermutation
-        : public ck::tensor_operation::device::DeviceElementwiseImpl<InDataTypeTuple,
+        : public ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
                                                                      OutDataTypeTuple,
                                                                      ElementOp,
-                                                                     NumDim,
-                                                                     32,
-                                                                     16,
-                                                                     32,
-                                                                     4,
-                                                                     4,
-                                                                     ck::Sequence<1, 0>,
-                                                                     ck::Sequence<1>,
-                                                                     ck::Sequence<1>>
+                                                                     NumDim>
     {
         using BaseArgument = ck::tensor_operation::device::BaseArgument;
         using BaseInvoker  = ck::tensor_operation::device::BaseInvoker;
@@ -274,6 +266,25 @@ namespace hiptensor
               InDataTypeTuple,
               OutDataTypeTuple,
               ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
+              NumDim>>
+    {
+    };
+
+    template <typename InDataTypeTuple,
+              typename OutDataTypeTuple,
+              typename Aop,
+              typename Cop,
+              typename Binaryop,
+              ck::index_t NumDim>
+    struct MetaTraits<
+        ReferencePermutation<InDataTypeTuple,
+                             OutDataTypeTuple,
+                             ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
+                             NumDim>>
+        : public MetaTraits<ck::tensor_operation::device::DeviceElementwise<
+              InDataTypeTuple,
+              OutDataTypeTuple,
+              ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
               NumDim>>
     {
     };

@@ -32,13 +32,13 @@
 #include "permutation_test.hpp"
 #include "utils.hpp"
 
-template <typename floatTypeA, typename floatTypeB, typename floatTypeCompute>
-auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeCompute)
+template <typename InputType, typename OutputType, typename ComputeType>
+auto elementaryBinaryOpWithCpu(hipDataType inputType, hipDataType outputType, hipDataType typeCompute)
 {
-    std::vector<int> modeA{'w', 'h', 'c', 'n'};
-    std::vector<int> modeB{'c', 'n', 'h', 'w'};
-    int              nmodeA = modeA.size();
-    int              nmodeB = modeB.size();
+    std::vector<int> inMode{'w', 'h', 'c', 'n'};
+    std::vector<int> outputMode{'c', 'n', 'h', 'w'};
+    int              ninMode = inMode.size();
+    int              noutputMode = outputMode.size();
 
     std::unordered_map<int, int64_t> extent;
     extent['w'] = 3;
@@ -46,57 +46,62 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
     extent['c'] = 4;
     extent['n'] = 5;
 
-    std::vector<int64_t> extentA;
-    for(auto mode : modeA)
+    std::vector<int64_t> inExtent;
+    for(auto mode : inMode)
     {
-        extentA.push_back(extent[mode]);
+        inExtent.push_back(extent[mode]);
     }
-    std::vector<int64_t> extentB;
-    for(auto mode : modeB)
+    std::vector<int64_t> outputExtent;
+    for(auto mode : outputMode)
     {
-        extentB.push_back(extent[mode]);
+        outputExtent.push_back(extent[mode]);
     }
 
     /**********************
      * Allocating data
      **********************/
 
-    size_t elementsA = 1;
-    for(auto mode : modeA)
+    size_t inElements = 1;
+    for(auto mode : inMode)
     {
-        elementsA *= extent[mode];
+        inElements *= extent[mode];
     }
-    size_t elementsB = 1;
-    for(auto mode : modeB)
+    size_t outputElements = 1;
+    for(auto mode : outputMode)
     {
-        elementsB *= extent[mode];
+        outputElements *= extent[mode];
     }
 
-    size_t sizeA = sizeof(floatTypeA) * elementsA;
-    size_t sizeB = sizeof(floatTypeB) * elementsB;
+    // size_t sizeA = sizeof(InputType) * inElements;
+    // size_t sizeB = sizeof(OutputType) * outputElements;
 
-    std::vector<floatTypeA> aArray(elementsA);
-    std::vector<floatTypeB> bArray(elementsB);
+    std::vector<InputType> aArray(inElements);
     std::iota(aArray.begin(), aArray.end(), 0);
-    std::vector<floatTypeB> referenceArray;
+    std::vector<InputType> cArray(aArray);
+    std::vector<OutputType> dArray(outputElements);
+    std::vector<OutputType> referenceArray;
 
     using hiptensor::HiptensorOptions;
     auto& options = HiptensorOptions::instance();
 
     if(options->isColMajorStrides())
-    {
-        referenceArray
-            = {0.,    12.6,  25.2,  37.8,  50.4,  63.,   75.6,  88.2,  100.8, 113.4, 126.,  138.6,
-               151.2, 163.8, 176.4, 189.,  201.6, 214.2, 226.8, 239.4, 6.3,   18.9,  31.5,  44.1,
-               56.7,  69.3,  81.9,  94.5,  107.1, 119.7, 132.3, 144.9, 157.5, 170.1, 182.7, 195.3,
-               207.9, 220.5, 233.1, 245.7, 2.1,   14.7,  27.3,  39.9,  52.5,  65.1,  77.7,  90.3,
-               102.9, 115.5, 128.1, 140.7, 153.3, 165.9, 178.5, 191.1, 203.7, 216.3, 228.9, 241.5,
-               8.4,   21.,   33.6,  46.2,  58.8,  71.4,  84.,   96.6,  109.2, 121.8, 134.4, 147.,
-               159.6, 172.2, 184.8, 197.4, 210.,  222.6, 235.2, 247.8, 4.2,   16.8,  29.4,  42.,
-               54.6,  67.2,  79.8,  92.4,  105.,  117.6, 130.2, 142.8, 155.4, 168.,  180.6, 193.2,
-               205.8, 218.4, 231.,  243.6, 10.5,  23.1,  35.7,  48.3,  60.9,  73.5,  86.1,  98.7,
-               111.3, 123.9, 136.5, 149.1, 161.7, 174.3, 186.9, 199.5, 212.1, 224.7, 237.3, 249.9};
-    }
+	{
+		referenceArray
+			= {  0. ,  19.8,  39.6,  59.4,  79.2,  99. , 118.8, 138.6, 158.4,
+				178.2, 198. , 217.8, 237.6, 257.4, 277.2, 297. , 316.8, 336.6,
+				356.4, 376.2,   9.9,  29.7,  49.5,  69.3,  89.1, 108.9, 128.7,
+				148.5, 168.3, 188.1, 207.9, 227.7, 247.5, 267.3, 287.1, 306.9,
+				326.7, 346.5, 366.3, 386.1,   3.3,  23.1,  42.9,  62.7,  82.5,
+				102.3, 122.1, 141.9, 161.7, 181.5, 201.3, 221.1, 240.9, 260.7,
+				280.5, 300.3, 320.1, 339.9, 359.7, 379.5,  13.2,  33. ,  52.8,
+				72.6,  92.4, 112.2, 132. , 151.8, 171.6, 191.4, 211.2, 231. ,
+				250.8, 270.6, 290.4, 310.2, 330. , 349.8, 369.6, 389.4,   6.6,
+				26.4,  46.2,  66. ,  85.8, 105.6, 125.4, 145.2, 165. , 184.8,
+				204.6, 224.4, 244.2, 264. , 283.8, 303.6, 323.4, 343.2, 363. ,
+				382.8,  16.5,  36.3,  56.1,  75.9,  95.7, 115.5, 135.3, 155.1,
+				174.9, 194.7, 214.5, 234.3, 254.1, 273.9, 293.7, 313.5, 333.3,
+				353.1, 372.9, 392.7};
+	}
     else
     {
         referenceArray
@@ -112,61 +117,70 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
                37.8, 121.8, 205.8, 79.8, 163.8, 247.8, 39.9, 123.9, 207.9, 81.9, 165.9, 249.9};
     }
 
-    const floatTypeCompute alphaValue = 2.1f;
+    const ComputeType alphaValue = 2.1f;
+    const ComputeType gammaValue = 1.2f;
     hiptensorHandle_t*     handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, HIPTENSOR_OP_IDENTITY));
-
-    hiptensorTensorDescriptor_t descB;
+        handle, &descA, ninMode, inExtent.data(), NULL /* stride */, inputType, HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descC;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, HIPTENSOR_OP_IDENTITY));
+        handle, &descC, ninMode, inExtent.data(), NULL /* stride */, inputType, HIPTENSOR_OP_IDENTITY));
 
-    hiptensorPermutationReference(handle,
+    hiptensorTensorDescriptor_t descD;
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+        handle, &descD, noutputMode, outputExtent.data(), NULL /* stride */, outputType, HIPTENSOR_OP_IDENTITY));
+
+	hiptensorElementwiseBianryOpReference(handle,
                                   &alphaValue,
                                   aArray.data(),
                                   &descA,
-                                  modeA.data(),
-                                  bArray.data(),
-                                  &descB,
-                                  modeB.data(),
+                                  inMode.data(),
+                                  &gammaValue,
+                                  cArray.data(),
+                                  &descC,
+                                  inMode.data(),
+                                  dArray.data(),
+                                  &descD,
+                                  outputMode.data(),
+								  HIPTENSOR_OP_ADD,
                                   typeCompute,
                                   0);
 
     return compareEqual(referenceArray.data(),
-                        bArray.data(),
-                        bArray.size(),
+                        dArray.data(),
+                        dArray.size(),
                         hiptensor::convertToComputeType(typeCompute),
                         0);
 }
 
-TEST(PermutationCpuImplTest, CompareF32ResultWithReference)
+TEST(ElementaryBinaryOpCpuImplTest, CompareF32ResultWithReference)
 {
-    typedef float floatTypeA;
-    typedef float floatTypeB;
-    typedef float floatTypeCompute;
+    typedef float InputType;
+    typedef float OutputType;
+    typedef float ComputeType;
 
-    hipDataType typeA       = HIP_R_32F;
-    hipDataType typeB       = HIP_R_32F;
+    hipDataType inputType       = HIP_R_32F;
+    hipDataType outputType       = HIP_R_32F;
     hipDataType typeCompute = HIP_R_32F;
 
     auto [result, maxRelativeError]
-        = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, typeCompute);
+        = elementaryBinaryOpWithCpu<InputType, OutputType, ComputeType>(inputType, outputType, typeCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
 
-TEST(PermutationCpuImplTest, CompareF16ResultWithReference)
+TEST(ElementaryBinaryOpCpuImplTest, CompareF16ResultWithReference)
 {
-    typedef _Float16 floatTypeA;
-    typedef _Float16 floatTypeB;
-    typedef _Float16 floatTypeCompute;
+    typedef _Float16 InputType;
+    typedef _Float16 OutputType;
+    typedef _Float16 ComputeType;
 
-    hipDataType typeA       = HIP_R_16F;
-    hipDataType typeB       = HIP_R_16F;
+    hipDataType inputType       = HIP_R_16F;
+    hipDataType outputType       = HIP_R_16F;
     hipDataType typeCompute = HIP_R_16F;
 
     auto [result, maxRelativeError]
-        = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, typeCompute);
+        = elementaryBinaryOpWithCpu<InputType, OutputType, ComputeType>(inputType, outputType, typeCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
