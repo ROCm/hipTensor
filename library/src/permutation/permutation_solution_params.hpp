@@ -52,9 +52,6 @@ namespace hiptensor
         // Map to hipDataType
         virtual hipDataType typeIn() const  = 0;
         virtual hipDataType typeOut() const = 0;
-
-        // Map to operators
-        virtual PermutationOpId_t opScale() const = 0;
     };
 
 } // namespace hiptensor

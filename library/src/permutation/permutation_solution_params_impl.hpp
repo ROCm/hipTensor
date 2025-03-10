@@ -40,7 +40,7 @@ namespace std
         size_t operator()(hiptensor::PermutationSolutionParams const& s,
                           size_t                                      mPerThread) const noexcept
         {
-            return hiptensor::Hash{}(s.dim(), s.typeIn(), s.typeOut(), s.opScale(), mPerThread);
+            return hiptensor::Hash{}(s.dim(), s.typeIn(), s.typeOut(), mPerThread);
         }
     };
 }
@@ -72,11 +72,6 @@ namespace hiptensor
         hipDataType typeOut() const override
         {
             return HipDataType_v<typename ck::tuple_element_t<0, typename MetaTraitsT::OutDataT>>;
-        }
-
-        PermutationOpId_t opScale() const override
-        {
-            return PermutationOperatorType_v<typename MetaTraitsT::ScaleOp>;
         }
     };
 

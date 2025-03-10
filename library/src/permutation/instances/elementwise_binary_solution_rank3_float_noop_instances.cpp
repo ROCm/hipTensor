@@ -24,36 +24,28 @@
  *
  *******************************************************************************/
 
-#include "permutation_solution_instances.hpp"
-#include "permutation_solution.hpp"
+#include "../permutation_solution.hpp"
+#include "../permutation_solution_instances.hpp"
 
 // Ensure access to
-#include "device/hiptensor_permutation_scale_instances.hpp"
+#include "../device/hiptensor_permutation_scale_instances.hpp"
 
 namespace hiptensor
 {
-    PermutationSolutionInstances::PermutationSolutionInstances()
+    void PermutationSolutionInstances::ElementwiseBinarySolution3DFloatNoopInstances()
     {
-        PermutationSolution2DFloatNoopInstances();
-        PermutationSolution2DFloatInstances();
-        PermutationSolution2DHalfInstances();
-        PermutationSolution2DHalfNoopInstances();
-		PermutationSolution3DFloatNoopInstances();
-        PermutationSolution3DFloatInstances();
-        PermutationSolution3DHalfInstances();
-        PermutationSolution3DHalfNoopInstances();
-        PermutationSolution4DFloatNoopInstances();
-        PermutationSolution4DFloatInstances();
-        PermutationSolution4DHalfInstances();
-        PermutationSolution4DHalfNoopInstances();
-        PermutationSolution5DFloatNoopInstances();
-        PermutationSolution5DFloatInstances();
-        PermutationSolution5DHalfInstances();
-        PermutationSolution5DHalfNoopInstances();
-        PermutationSolution6DFloatNoopInstances();
-        PermutationSolution6DFloatInstances();
-        PermutationSolution6DHalfInstances();
-        PermutationSolution6DHalfNoopInstances();
-        ElementwiseBinarySolution3DFloatNoopInstances();
+		using Scale  = ck::tensor_operation::element_wise::Scale;
+		using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+		using ScaleUnaryOp = ck::tensor_operation::element_wise::UnaryCombinedOp<UnaryOp, Scale>;
+		using BinaryAdd = ck::tensor_operation::element_wise::Add;
+		using BinaryAddScaleUnaryOp = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<BinaryAdd, ScaleUnaryOp, ScaleUnaryOp>;
+
+        // Register all the solutions exactly once
+        // 3d ElementwiseBinary
+        registerSolutions(
+            enumeratePermutationSolutions<ck::Tuple<float, float>,
+                                          ck::Tuple<float>,
+										  BinaryAddScaleUnaryOp,
+                                          3>());
     }
 } // namespace hiptensor

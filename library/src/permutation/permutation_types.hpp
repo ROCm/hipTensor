@@ -34,6 +34,18 @@
 namespace hiptensor
 {
     using Uid = std::size_t;
+
+    /**
+     * \brief This enum respresents the solution instance is of permutation, elementwise binary operation
+     * or elementwise trinary operation
+     */
+    enum struct InstanceType_t : int32_t
+    {
+        PERMUTATION,
+        ELEMENTWISE_BINARY_OP,
+        ELEMENTWISE_TRINARY_OP,
+        UNKNOWN,
+    };
     /**
      * \brief This enum decides the over the operation based on the inputs.
      * \details This enum decides the operation based on the in puts passed in the

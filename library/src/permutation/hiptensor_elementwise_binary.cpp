@@ -121,24 +121,20 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
             {descA->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
             hiptensor::PermutationInstanceType_t::Device);
 
-#if 0
-    float alphaF;
-    if(alpha != nullptr){
-        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
-    }
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun = pSolution->initArgs({alphaF},
-                                  {descA->mLengths},
-                                  {descA->mStrides},
-                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size())},
-                                  {descB->mLengths},
-                                  {descB->mStrides},
-                                  {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
-                                  {descA->mUnaryOp},
-                                  {A},
-                                  {B});
+        canRun = pSolution->initArgs({alphaF, gammaF},
+                                  {descA->mLengths, descC->mLengths},
+                                  {descA->mStrides, descC->mStrides},
+                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                                  std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+                                  {descD->mLengths},
+                                  {descD->mStrides},
+                                  {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+                                  {descA->mUnaryOp, descC->mUnaryOp},
+                                  {A, C},
+                                  {D});
 
         if(canRun)
         {
@@ -160,6 +156,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
                     return HIPTENSOR_STATUS_CK_ERROR;
                 }
 
+				// TODO update flops
                 auto flops = std::size_t(2) * pSolution->problemSize();
                 auto bytes = pSolution->problemBytes();
 
@@ -202,6 +199,4 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
              hiptensorGetErrorString(errorCode));
     logger->logError("hiptensorPermutation", msg);
     return errorCode;
-#endif
-    return HIPTENSOR_STATUS_SUCCESS;
 }

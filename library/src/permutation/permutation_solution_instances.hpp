@@ -65,6 +65,7 @@ namespace hiptensor
         void PermutationSolution6DFloatInstances();
         void PermutationSolution6DHalfInstances();
         void PermutationSolution6DHalfNoopInstances();
+        void ElementwiseBinarySolution3DFloatNoopInstances();
         // Singleton: only one instance
         PermutationSolutionInstances();
         PermutationSolutionInstances(PermutationSolutionInstances const&)            = delete;

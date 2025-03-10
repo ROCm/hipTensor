@@ -30,14 +30,12 @@ namespace hiptensor
 {
 
     PermutationSolution::PermutationSolution(
-        std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
-        std::unique_ptr<PermutationSolutionParams>&&                  params)
+        std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp)
         : mDim(0)
         , mSize(0)
         , mBytes(0)
         , mValid(false)
         , mDeviceOp(std::move(deviceOp))
-        , mParams(std::move(params))
     {
     }
 
@@ -47,7 +45,6 @@ namespace hiptensor
         , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
-        , mParams(std::move(other.mParams))
         , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
         , mInvokerPtr(std::move(other.mInvokerPtr))
     {
@@ -63,7 +60,6 @@ namespace hiptensor
             mBytes = other.mBytes;
             mValid = other.mValid;
 
-            mParams        = std::move(other.mParams);
             mDeviceOp      = std::move(other.mDeviceOp);
             mInvokerArgPtr = std::move(other.mInvokerArgPtr);
             mInvokerPtr    = std::move(other.mInvokerPtr);
@@ -73,7 +69,7 @@ namespace hiptensor
 
     float PermutationSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
-        if(!mInvokerArgPtr || !mInvokerPtr || !mParams)
+        if(!mInvokerArgPtr || !mInvokerPtr)
         {
 #if !NDEBUG
             std::cout << mDeviceOp->GetTypeString() << " is not initialized" << std::endl;
@@ -133,11 +129,6 @@ namespace hiptensor
     bool PermutationSolution::isValid() const
     {
         return mValid;
-    }
-
-    std::unique_ptr<PermutationSolutionParams> const& PermutationSolution::params() const
-    {
-        return mParams;
     }
 
     size_t PermutationSolution::uid() const

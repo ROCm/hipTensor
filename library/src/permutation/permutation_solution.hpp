@@ -38,7 +38,6 @@
 
 #include "performance.hpp"
 #include "permutation_meta_traits.hpp"
-#include "permutation_solution_params.hpp"
 #include "util.hpp"
 
 namespace hiptensor
@@ -56,8 +55,7 @@ namespace hiptensor
 
         // This class is intended to receive DeviceOp kernel pointers from
         // the CK generator and take ownership.
-        PermutationSolution(std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
-                            std::unique_ptr<PermutationSolutionParams>&&                  params);
+        explicit PermutationSolution(std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp);
         PermutationSolution(PermutationSolution&& other);
         PermutationSolution& operator=(PermutationSolution&& other);
 
@@ -76,29 +74,10 @@ namespace hiptensor
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});
 
-/*
-        float operator()(void const*                     alpha,
-                         void const*                     A,
-                         void*                           B,
-                         std::vector<std::size_t> const& a_lengths,
-                         std::vector<std::size_t> const& a_strides,
-                         hiptensorOperator_t             opA,
-                         const int32_t                   modeA[],
-                         std::vector<std::size_t> const& b_lengths,
-                         std::vector<std::size_t> const& b_strides,
-                         hiptensorOperator_t             opB,
-                         const int32_t                   modeB[],
-                         const hipDataType               typeScalar,
-                         StreamConfig const&             streamConfig = StreamConfig{});
-*/
-
         /// Accessors
 
         // Problem can be solved with this kernel
         bool isValid() const;
-
-        // Run-time solution parameters
-        std::unique_ptr<PermutationSolutionParams> const& params() const;
 
         // Unique ID for the kernel
         size_t uid() const;
@@ -133,7 +112,6 @@ namespace hiptensor
         uint32_t    mThreadDim;
 
         // Kernel Params
-        std::unique_ptr<PermutationSolutionParams>                  mParams;
         std::unique_ptr<ck::tensor_operation::device::BaseOperator> mDeviceOp;
         std::unique_ptr<ck::tensor_operation::device::BaseArgument> mInvokerArgPtr;
         std::unique_ptr<ck::tensor_operation::device::BaseInvoker>  mInvokerPtr;

@@ -53,6 +53,7 @@ namespace hiptensor
         NumDim>>
     {
         constexpr static ck::index_t NDim = NumDim;
+        constexpr static InstanceType_t InstanceType = InstanceType_t::PERMUTATION;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
@@ -61,6 +62,31 @@ namespace hiptensor
         using BOp        = Bop;
         using ScaleOp    = Scale;
         using CombinedOp = ck::tensor_operation::element_wise::UnaryCombinedOp<AOp, ScaleOp, BOp>;
+    };
+
+    // Meta traits for Scalar elementwise_binary
+    template <typename InDataTypeTuple,
+              typename OutDataTypeTuple,
+              typename Aop,
+              typename Cop,
+              typename Binaryop,
+              ck::index_t NumDim>
+    struct MetaTraits<ck::tensor_operation::device::DeviceElementwise<
+        InDataTypeTuple,
+        OutDataTypeTuple,
+		ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
+        NumDim>>
+    {
+        constexpr static ck::index_t NDim = NumDim;
+        constexpr static InstanceType_t InstanceType = InstanceType_t::ELEMENTWISE_BINARY_OP;
+
+        using InDataT  = InDataTypeTuple;
+        using OutDataT = OutDataTypeTuple;
+
+        using AOp        = Aop;
+        using COp        = Cop;
+        using BinaryOp        = Binaryop;
+        using CombinedOp =  ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>;
     };
 } // namespace hiptensor
 

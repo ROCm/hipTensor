@@ -35,18 +35,6 @@
 #include "permutation_solution.hpp"
 #include <hiptensor_unary_element_wise_operation.hpp>
 
-namespace std
-{
-    template <>
-    struct hash<hiptensor::PermutationSolution>
-    {
-        size_t operator()(hiptensor::PermutationSolution const& s) const noexcept
-        {
-            return hash<hiptensor::PermutationSolutionParams>{}(*s.params(), s.threadDim());
-        }
-    };
-}
-
 namespace hiptensor
 {
     template <typename DeviceOp, typename Enabler = void>
@@ -57,8 +45,7 @@ namespace hiptensor
     {
     public:
         PermutationSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
-            : PermutationSolution(std::move(deviceOp),
-                                  std::make_unique<PermutationSolutionParamsImpl<DeviceOp>>())
+            : PermutationSolution(std::move(deviceOp))
         {
         }
 
@@ -143,37 +130,58 @@ namespace hiptensor
             convertVectorToCkArray(outBuffers, deviceOutBuffers);
 
             // Initialize the argument pointer
-            if constexpr(std::is_same_v<typename Traits::ScaleOp,
-                                        ck::tensor_operation::element_wise::PassThrough>)
-            {
-                Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
-                            deviceInputLengths,
-                    deviceInputStrides,
-                    deviceOutputStrides,
-                    deviceInBuffers,
-                    deviceOutBuffers,
-                    // ck::tensor_operation::element_wise::PassThrough{}));
+            if constexpr(Traits::InstanceType == InstanceType_t::PERMUTATION) {
+                if constexpr(std::is_same_v<typename Traits::ScaleOp,
+                        ck::tensor_operation::element_wise::PassThrough>)
+                {
+                    Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                                deviceInputLengths,
+                                deviceInputStrides,
+                                deviceOutputStrides,
+                                deviceInBuffers,
+                                deviceOutBuffers,
+                                // ck::tensor_operation::element_wise::PassThrough{}));
                     typename Traits::CombinedOp{typename Traits::AOp{},
-                                                ck::tensor_operation::element_wise::PassThrough{},
-                                                typename Traits::BOp{}}));
-            }
-            else
-            {
+                        ck::tensor_operation::element_wise::PassThrough{},
+                        typename Traits::BOp{}}));
+                }
+                else
+                {
 
-                // According to the definition of permutation \f$B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)}))\f$
-                // No operations can be applied to B so that the `opB` which is from descriptor B should be ignored.
-                Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
-                            deviceInputLengths,
-                    deviceInputStrides,
-                    deviceOutputStrides,
-                    deviceInBuffers,
-                    deviceOutBuffers,
-                    // ck::tensor_operation::element_wise::PassThrough{}));
+                    // According to the definition of permutation \f$B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)}))\f$
+                    // No operations can be applied to B so that the `opB` which is from descriptor B should be ignored.
+                    Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                                deviceInputLengths,
+                                deviceInputStrides,
+                                deviceOutputStrides,
+                                deviceInBuffers,
+                                deviceOutBuffers,
+                                // ck::tensor_operation::element_wise::PassThrough{}));
                     typename Traits::CombinedOp{
                         typename Traits::AOp{operators[0]},
                         typename Traits::ScaleOp{scalarValues[0]},
                         typename Traits::BOp{
                             HIPTENSOR_OP_IDENTITY}})); // ignore opB since none operation should be applied on output
+                }
+            } else  if constexpr(Traits::InstanceType == InstanceType_t::ELEMENTWISE_BINARY_OP) {
+                using Scale  = ck::tensor_operation::element_wise::Scale;
+                using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+                using ScaleUnaryOp = ck::tensor_operation::element_wise::UnaryCombinedOp<UnaryOp, Scale>;
+                    Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                                deviceInputLengths,
+                                deviceInputStrides,
+                                deviceOutputStrides,
+                                deviceInBuffers,
+                                deviceOutBuffers,
+                                // ck::tensor_operation::element_wise::PassThrough{}));
+                        typename Traits::CombinedOp{
+                            typename Traits::BinaryOp{},
+                            typename Traits::AOp{UnaryOp{operators[0]}, Scale{scalarValues[0]}},
+                            typename Traits::COp{UnaryOp{operators[1]}, Scale{scalarValues[1]}},
+                        })); // ignore opB since none operation should be applied on output
+            } else  if constexpr(Traits::InstanceType == InstanceType_t::ELEMENTWISE_TRINARY_OP) {
+            } else {
+                static_assert(false, "InstanceType of the solution intance is invalid");
             }
 
             // Initialize the invoker
