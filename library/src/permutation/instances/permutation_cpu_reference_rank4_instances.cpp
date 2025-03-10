@@ -56,8 +56,8 @@ namespace hiptensor
 		using Scale  = ck::tensor_operation::element_wise::Scale;
 		using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
 		using ScaleUnaryOp = ck::tensor_operation::element_wise::UnaryCombinedOp<UnaryOp, Scale>;
-		using BinaryAdd = ck::tensor_operation::element_wise::Add;
-		using BinaryAddScaleUnaryOp = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<BinaryAdd, ScaleUnaryOp, ScaleUnaryOp>;
+		using BinaryOp = ck::tensor_operation::element_wise::HiptensorBinaryOp;
+		using BinaryAddScaleUnaryOp = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<BinaryOp, ScaleUnaryOp, ScaleUnaryOp>;
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float, float>,
                                         ck::Tuple<float>,

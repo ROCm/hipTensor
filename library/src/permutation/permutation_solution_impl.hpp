@@ -175,7 +175,7 @@ namespace hiptensor
                                 deviceOutBuffers,
                                 // ck::tensor_operation::element_wise::PassThrough{}));
                         typename Traits::CombinedOp{
-                            typename Traits::BinaryOp{},
+                            typename Traits::BinaryOp{operators[2]},
                             typename Traits::AOp{UnaryOp{operators[0]}, Scale{scalarValues[0]}},
                             typename Traits::COp{UnaryOp{operators[1]}, Scale{scalarValues[1]}},
                         })); // ignore opB since none operation should be applied on output

@@ -232,6 +232,50 @@ namespace ck
                 };
             };
 
+            struct HiptensorBinaryOp
+            {
+                __host__ __device__ HiptensorBinaryOp(hiptensorOperator_t operator_type)
+                    : op_type(operator_type)
+                {
+                }
+                __host__ __device__ HiptensorBinaryOp(const HiptensorBinaryOp& dynamic_op) = default;
+                __host__            __device__ ~HiptensorBinaryOp()                       = default;
+                __host__ __device__ HiptensorBinaryOp& operator=(const HiptensorBinaryOp& other)
+                    = default;
+
+                __host__ __device__ void operator()(float& y, const float& x1, const float& x2) const
+                {
+                    switch(op_type) {
+                        case  HIPTENSOR_OP_ADD :
+                            y =  x1 + x2;
+                            break;
+                        case  HIPTENSOR_OP_MUL :
+                            y =  x1 * x2;
+                            break;
+                        case  HIPTENSOR_OP_MAX :
+                            y =  x1 > x2 ? x1 : x2;
+                            break;
+                        case  HIPTENSOR_OP_MIN :
+                            y =  x1 < x2 ? x1 : x2;
+                            break;
+                        default:
+                            y =  y;
+                            break;
+                    }
+                }
+
+                __host__ __device__ void operator()(half_t& y, const half_t& x1, const half_t& x2) const
+                {
+                    float tempX1 = static_cast<float>(x1);
+                    float tempX2 = static_cast<float>(x2);
+                    float tempY;
+                    this->operator()(tempY, tempX1, tempX2);
+                    y = static_cast<float>(tempY);
+                }
+
+            public:
+                hiptensorOperator_t          op_type = HIPTENSOR_OP_IDENTITY;
+            };
         } // namespace element_wise
     } // namespace tensor_operation
 } // namespace ck

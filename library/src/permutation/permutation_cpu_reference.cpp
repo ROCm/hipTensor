@@ -114,7 +114,7 @@ hiptensorStatus_t hiptensorElementwiseBianryOpReference(const hiptensorHandle_t*
                                   {descD->mLengths},
                                   {descD->mStrides},
                                   {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {descA->mUnaryOp, descC->mUnaryOp},
+                                  {descA->mUnaryOp, descC->mUnaryOp, opAC},
                                   {A, C},
                                   {D}))
         {

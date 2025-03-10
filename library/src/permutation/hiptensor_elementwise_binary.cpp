@@ -132,7 +132,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
                                   {descD->mLengths},
                                   {descD->mStrides},
                                   {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {descA->mUnaryOp, descC->mUnaryOp},
+                                  {descA->mUnaryOp, descC->mUnaryOp, opAC},
                                   {A, C},
                                   {D});
 

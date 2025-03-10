@@ -78,6 +78,10 @@ namespace hiptensor
                                                                      ElementOp,
                                                                      NumDim>
     {
+        using Base = ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
+                                                                     OutDataTypeTuple,
+                                                                     ElementOp,
+                                                                     NumDim>;
         using BaseArgument = ck::tensor_operation::device::BaseArgument;
         using BaseInvoker  = ck::tensor_operation::device::BaseInvoker;
         using index_t      = ck::index_t;
@@ -250,45 +254,6 @@ namespace hiptensor
         }
     };
 
-    // Partial specialize for reference permutation
-    template <typename InDataTypeTuple,
-              typename OutDataTypeTuple,
-              typename Aop,
-              typename Bop,
-              typename Scale,
-              ck::index_t NumDim>
-    struct MetaTraits<
-        ReferencePermutation<InDataTypeTuple,
-                             OutDataTypeTuple,
-                             ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
-                             NumDim>>
-        : public MetaTraits<ck::tensor_operation::device::DeviceElementwise<
-              InDataTypeTuple,
-              OutDataTypeTuple,
-              ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
-              NumDim>>
-    {
-    };
-
-    template <typename InDataTypeTuple,
-              typename OutDataTypeTuple,
-              typename Aop,
-              typename Cop,
-              typename Binaryop,
-              ck::index_t NumDim>
-    struct MetaTraits<
-        ReferencePermutation<InDataTypeTuple,
-                             OutDataTypeTuple,
-                             ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
-                             NumDim>>
-        : public MetaTraits<ck::tensor_operation::device::DeviceElementwise<
-              InDataTypeTuple,
-              OutDataTypeTuple,
-              ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
-              NumDim>>
-    {
-    };
-
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
               typename  ElementwiseOperation,
@@ -300,8 +265,9 @@ namespace hiptensor
             OutDataTypeTuple,
             ElementwiseOperation,
             NumDim>;
+        using BaseOp = typename ReferenceOp::Base;
 
-        auto solution = std::make_unique<PermutationSolutionImpl<ReferenceOp>>(
+        auto solution = std::make_unique<PermutationSolutionImpl<BaseOp>>(
             std::make_unique<ReferenceOp>());
 
         constexpr hiptensor::PermutationOpId_t opType = std::is_same_v<ElementwiseOperation,
