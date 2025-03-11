@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2026-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,13 +33,13 @@
 
 namespace hiptensor
 {
-    void PermutationSolutionInstances::ElementwiseBinarySolution6DFloatNoopInstances()
+    void PermutationSolutionInstances::ElementwiseBinarySolution5DFloatInstances()
     {
         // Register all the solutions exactly once
-        // 6d ElementwiseBinary
+        // 5d ElementwiseBinary
         registerSolutions(enumeratePermutationSolutions<ck::Tuple<float, float>,
                                                         ck::Tuple<float>,
                                                         CkBinaryWithUnaryCombinedOp,
-                                                        6>());
+                                                        5>());
     }
 } // namespace hiptensor

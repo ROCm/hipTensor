@@ -34,30 +34,35 @@ namespace hiptensor
 {
     PermutationSolutionInstances::PermutationSolutionInstances()
     {
-        PermutationSolution2DFloatNoopInstances();
+        ElementwiseBinarySolution2DFloatInstances();
+        ElementwiseBinarySolution2DHalfInstances();
+        ElementwiseBinarySolution3DFloatInstances();
+        ElementwiseBinarySolution3DHalfInstances();
+        ElementwiseBinarySolution4DFloatInstances();
+        ElementwiseBinarySolution4DHalfInstances();
+        ElementwiseBinarySolution5DFloatInstances();
+        ElementwiseBinarySolution5DHalfInstances();
+        ElementwiseBinarySolution6DFloatInstances();
+        ElementwiseBinarySolution6DHalfInstances();
         PermutationSolution2DFloatInstances();
+        PermutationSolution2DFloatNoopInstances();
         PermutationSolution2DHalfInstances();
         PermutationSolution2DHalfNoopInstances();
-        PermutationSolution3DFloatNoopInstances();
         PermutationSolution3DFloatInstances();
+        PermutationSolution3DFloatNoopInstances();
         PermutationSolution3DHalfInstances();
         PermutationSolution3DHalfNoopInstances();
-        PermutationSolution4DFloatNoopInstances();
         PermutationSolution4DFloatInstances();
+        PermutationSolution4DFloatNoopInstances();
         PermutationSolution4DHalfInstances();
         PermutationSolution4DHalfNoopInstances();
-        PermutationSolution5DFloatNoopInstances();
         PermutationSolution5DFloatInstances();
+        PermutationSolution5DFloatNoopInstances();
         PermutationSolution5DHalfInstances();
         PermutationSolution5DHalfNoopInstances();
-        PermutationSolution6DFloatNoopInstances();
         PermutationSolution6DFloatInstances();
+        PermutationSolution6DFloatNoopInstances();
         PermutationSolution6DHalfInstances();
         PermutationSolution6DHalfNoopInstances();
-        ElementwiseBinarySolution2DFloatNoopInstances();
-        ElementwiseBinarySolution3DFloatNoopInstances();
-        ElementwiseBinarySolution4DFloatNoopInstances();
-        ElementwiseBinarySolution5DFloatNoopInstances();
-        ElementwiseBinarySolution6DFloatNoopInstances();
     }
 } // namespace hiptensor
