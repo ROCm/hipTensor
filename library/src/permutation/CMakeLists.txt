@@ -58,7 +58,11 @@ set(HIPTENSOR_PERMUTATION_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank4_half_noop_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank5_half_noop_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/permutation_solution_rank6_half_noop_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/elementwise_binary_solution_rank2_float_noop_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/instances/elementwise_binary_solution_rank3_float_noop_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/elementwise_binary_solution_rank4_float_noop_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/elementwise_binary_solution_rank5_float_noop_instances.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/instances/elementwise_binary_solution_rank6_float_noop_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_reference_instances.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/permutation_instance_selection.cpp

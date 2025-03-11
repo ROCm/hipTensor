@@ -27,6 +27,7 @@
 #include "../permutation_cpu_reference_impl.hpp"
 #include "../permutation_cpu_reference_instances.hpp"
 #include <hiptensor_unary_element_wise_operation.hpp>
+#include "../device/hiptensor_ck_types.hpp"
 
 namespace hiptensor
 {
@@ -53,21 +54,16 @@ namespace hiptensor
                                         4>());
 
 
-		using Scale  = ck::tensor_operation::element_wise::Scale;
-		using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
-		using ScaleUnaryOp = ck::tensor_operation::element_wise::UnaryCombinedOp<UnaryOp, Scale>;
-		using BinaryOp = ck::tensor_operation::element_wise::HiptensorBinaryOp;
-		using BinaryAddScaleUnaryOp = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<BinaryOp, ScaleUnaryOp, ScaleUnaryOp>;
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float, float>,
                                         ck::Tuple<float>,
-										BinaryAddScaleUnaryOp,
+										CkBinaryWithUnaryCombinedOp,
                                         4>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t>,
                                         ck::Tuple<ck::half_t>,
-										BinaryAddScaleUnaryOp,
+										CkBinaryWithUnaryCombinedOp,
                                         4>());
     }
 } // namespace hiptensor

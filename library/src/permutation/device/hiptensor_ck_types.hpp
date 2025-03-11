@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  *
  * MIT License
@@ -24,23 +25,24 @@
  *
  *******************************************************************************/
 
-#include "../permutation_solution.hpp"
-#include "../permutation_solution_instances.hpp"
+#ifndef HIPTENSOR_CK_TYPES_HPP
+#define HIPTENSOR_CK_TYPES_HPP
 
-// Ensure access to
-#include "../device/hiptensor_permutation_scale_instances.hpp"
-#include "../device/hiptensor_ck_types.hpp"
+#include <ck/ck.hpp>
+#include <ck/tensor_operation/gpu/device/device_elementwise.hpp>
+#include <ck/tensor_operation/gpu/element/combined_element_wise_operation.hpp>
+#include <ck/tensor_operation/gpu/device/impl/device_elementwise_dynamic_vector_dims_impl.hpp>
+
+#include <hiptensor_unary_element_wise_operation.hpp>
 
 namespace hiptensor
 {
-    void PermutationSolutionInstances::ElementwiseBinarySolution3DFloatNoopInstances()
-    {
-        // Register all the solutions exactly once
-        // 3d ElementwiseBinary
-        registerSolutions(
-            enumeratePermutationSolutions<ck::Tuple<float, float>,
-                                          ck::Tuple<float>,
-										  CkBinaryWithUnaryCombinedOp,
-                                          3>());
-    }
-} // namespace hiptensor
+	using CkScale  = ck::tensor_operation::element_wise::Scale;
+	using CkPassThrough = ck::tensor_operation::element_wise::PassThrough;
+	using CkHiptensorUnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+	using CkHiptensorBinaryOp = ck::tensor_operation::element_wise::HiptensorBinaryOp;
+	using CkUnaryCombinedOp = ck::tensor_operation::element_wise::UnaryCombinedOp<CkHiptensorUnaryOp, CkScale>;
+	using CkBinaryWithUnaryCombinedOp = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<CkHiptensorBinaryOp, CkUnaryCombinedOp, CkUnaryCombinedOp>;
+}
+
+#endif // HIPTENSOR_CK_TYPES_HPP

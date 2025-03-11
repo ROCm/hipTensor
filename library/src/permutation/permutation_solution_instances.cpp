@@ -54,6 +54,10 @@ namespace hiptensor
         PermutationSolution6DFloatInstances();
         PermutationSolution6DHalfInstances();
         PermutationSolution6DHalfNoopInstances();
+        ElementwiseBinarySolution2DFloatNoopInstances();
         ElementwiseBinarySolution3DFloatNoopInstances();
+        ElementwiseBinarySolution4DFloatNoopInstances();
+        ElementwiseBinarySolution5DFloatNoopInstances();
+        ElementwiseBinarySolution6DFloatNoopInstances();
     }
 } // namespace hiptensor
