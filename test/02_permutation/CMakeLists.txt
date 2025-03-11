@@ -29,6 +29,12 @@
      ${CMAKE_CURRENT_SOURCE_DIR}/permutation_test.cpp
      )
 
+ set(ElementwiseBinaryOpCommonSources
+     ${HIPTENSOR_COMMON_TEST_SOURCES}
+     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_resource.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_binary_op_test.cpp
+     )
+
 #  tests
 set (PermutationTestSources
     ${PermutationCommonSources}
@@ -43,6 +49,11 @@ set (PermutationRank2TestSources ${PermutationCommonSources}
      ${CMAKE_CURRENT_SOURCE_DIR}/rank2_permutation_test.cpp)
 set (PermutationRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank2_test_params.yaml)
 add_hiptensor_test(rank2_permutation_test ${PermutationRank2TestConfig}  ${PermutationRank2TestSources})
+
+set (ElementwiseBinaryOpRank2TestSources ${ElementwiseBinaryOpCommonSources}
+     ${CMAKE_CURRENT_SOURCE_DIR}/rank2_elementwise_binary_op_test.cpp)
+set (ElementwiseBinaryOpRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank2_binary_op_test_params.yaml)
+add_hiptensor_test(rank2_elementwise_binary_op_test ${ElementwiseBinaryOpRank2TestConfig}  ${ElementwiseBinaryOpRank2TestSources})
 
 # Rank 3 tests
 set (PermutationRank3TestSources ${PermutationCommonSources}

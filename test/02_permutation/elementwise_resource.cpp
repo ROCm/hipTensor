@@ -68,6 +68,7 @@ namespace hiptensor
     {
     }
 
+    // suppose that all input and output data types are same.
     void ElementwiseResource::setupStorage(ProblemDims const& dimSizes, hipDataType dataType, ElementwiseOp opType)
     {
 		mOpType = opType;
