@@ -34,39 +34,62 @@
 namespace hiptensor
 {
 
-    PermutationResource::PermutationResource()
+    ElementwiseResource::ElementwiseResource()
         : HipResource()
         , mDeviceInput1(Base::allocDevice(0))
+        , mDeviceInput2(Base::allocDevice(0))
+        , mDeviceInput3(Base::allocDevice(0))
         , mDeviceOutput(Base::allocDevice(0))
         , mHostInput1(Base::allocHost(0))
+        , mHostInput2(Base::allocHost(0))
+        , mHostInput3(Base::allocHost(0))
         , mHostOutput(Base::allocHost(0))
         , mCurrentMatrixElement(0)
+        , mOpType(ElementwiseOp::PERMUTATION)
         , mCurrentDataType(HIP_R_32F)
         , mCurrentAllocByte(0)
     {
     }
 
-    PermutationResource::PermutationResource(PermutationResource&& rhs)
+    ElementwiseResource::ElementwiseResource(ElementwiseResource&& rhs)
         : HipResource()
         , mDeviceInput1(std::move(rhs.mDeviceInput1))
+        , mDeviceInput2(std::move(rhs.mDeviceInput2))
+        , mDeviceInput3(std::move(rhs.mDeviceInput3))
         , mDeviceOutput(std::move(rhs.mDeviceOutput))
         , mHostInput1(std::move(rhs.mHostInput1))
+        , mHostInput2(std::move(rhs.mHostInput2))
+        , mHostInput3(std::move(rhs.mHostInput3))
         , mHostOutput(std::move(rhs.mHostOutput))
         , mCurrentMatrixElement(rhs.mCurrentMatrixElement)
+        , mOpType(rhs.mOpType)
         , mCurrentDataType(rhs.mCurrentDataType)
         , mCurrentAllocByte(rhs.mCurrentAllocByte)
     {
     }
 
-    void PermutationResource::setupStorage(ProblemDims const& dimSizes, hipDataType dataType)
+    void ElementwiseResource::setupStorage(ProblemDims const& dimSizes, hipDataType dataType, ElementwiseOp opType)
     {
+		mOpType = opType;
         auto requiredElementCount = getProduct(dimSizes);
         auto requiredMemorySize   = requiredElementCount * hipDataTypeSize(dataType);
 
         bool needFillData = false;
         if(requiredMemorySize > mCurrentAllocByte)
         {
-            Base::reallocDeviceHostPair(mDeviceInput1, mHostInput1, requiredMemorySize);
+			switch(mOpType) {
+				case ElementwiseOp::TRINARY_OP:
+					Base::reallocDeviceHostPair(mDeviceInput3, mHostInput3, requiredMemorySize);
+					// no break;
+				case ElementwiseOp::BINARY_OP:
+					Base::reallocDeviceHostPair(mDeviceInput2, mHostInput2, requiredMemorySize);
+					// no break;
+				case ElementwiseOp::PERMUTATION:
+					Base::reallocDeviceHostPair(mDeviceInput1, mHostInput1, requiredMemorySize);
+					break;
+				default:
+					break;
+			}
             Base::reallocDeviceHostPair(mDeviceOutput, mHostOutput, requiredMemorySize);
             Base::reallocDeviceHostPair(mDeviceReference, mHostReference, requiredMemorySize);
             mCurrentAllocByte = requiredMemorySize;
@@ -80,81 +103,131 @@ namespace hiptensor
         mCurrentDataType      = dataType;
         if(needFillData)
         {
-            fillRandToInput1();
-        }
+			switch(mOpType) {
+				case ElementwiseOp::TRINARY_OP:
+					fillRandToInput3();
+					// no break;
+				case ElementwiseOp::BINARY_OP:
+					fillRandToInput2();
+					// no break;
+				case ElementwiseOp::PERMUTATION:
+					fillRandToInput1();
+					break;
+				default:
+					break;
+			}
+		}
     }
 
-    void PermutationResource::reset()
+    void ElementwiseResource::reset()
     {
         Base::reallocDeviceHostPair(mDeviceInput1, mHostInput1, 0);
+        Base::reallocDeviceHostPair(mDeviceInput2, mHostInput2, 0);
+        Base::reallocDeviceHostPair(mDeviceInput3, mHostInput3, 0);
         Base::reallocDeviceHostPair(mDeviceOutput, mHostOutput, 0);
         Base::reallocDeviceHostPair(mDeviceReference, mHostReference, 0);
         mCurrentMatrixElement = 0;
+        mOpType = ElementwiseOp::PERMUTATION;
         mCurrentDataType      = HIP_R_32F;
         mCurrentAllocByte     = 0;
     }
 
-    void PermutationResource::fillRandToInput1()
+    void ElementwiseResource::fillRandToInput(HostPtrT& hostPtr, DevicePtrT& devicePtr)
     {
         uint32_t seed = static_cast<uint32_t>(256);
 
         if(mCurrentDataType == HIP_R_32F)
         {
-            fillLaunchKernel<float>((float*)deviceInput1().get(), mCurrentMatrixElement, seed);
+            fillLaunchKernel<float>((float*)devicePtr.get(), mCurrentMatrixElement, seed);
         }
         else
         {
-            fillLaunchKernel<_Float16>((_Float16*)deviceInput1().get(), mCurrentMatrixElement, seed);
+            fillLaunchKernel<_Float16>((_Float16*)devicePtr.get(), mCurrentMatrixElement, seed);
         }
-        Base::copyData(hostInput1(), deviceInput1(), getCurrentMatrixMemorySize());
+        Base::copyData(hostPtr, devicePtr, getCurrentMatrixMemorySize());
     }
 
-    void PermutationResource::copyOutputToHost()
+    void ElementwiseResource::fillRandToInput1()
+	{
+		fillRandToInput(hostInput1(), deviceInput1());
+	}
+
+    void ElementwiseResource::fillRandToInput2()
+	{
+		fillRandToInput(hostInput2(), deviceInput2());
+	}
+
+    void ElementwiseResource::fillRandToInput3()
+	{
+		fillRandToInput(hostInput3(), deviceInput3());
+	}
+
+    void ElementwiseResource::copyOutputToHost()
     {
         Base::copyData(hostOutput(), deviceOutput(), getCurrentMatrixMemorySize());
     }
 
-    void PermutationResource::copyReferenceToDevice()
+    void ElementwiseResource::copyReferenceToDevice()
     {
         Base::copyData(deviceReference(), hostReference(), getCurrentMatrixMemorySize());
     }
 
-    size_t PermutationResource::getCurrentMatrixElement() const
+    size_t ElementwiseResource::getCurrentMatrixElement() const
     {
         return mCurrentMatrixElement;
     }
 
-    size_t PermutationResource::getCurrentMatrixMemorySize() const
+    size_t ElementwiseResource::getCurrentMatrixMemorySize() const
     {
         return mCurrentMatrixElement * hipDataTypeSize(mCurrentDataType);
     }
 
-    auto PermutationResource::hostInput1() -> HostPtrT&
+    auto ElementwiseResource::hostInput1() -> HostPtrT&
     {
         return mHostInput1;
     }
 
-    auto PermutationResource::hostOutput() -> HostPtrT&
+    auto ElementwiseResource::hostInput2() -> HostPtrT&
+    {
+        return mHostInput2;
+    }
+
+    auto ElementwiseResource::hostInput3() -> HostPtrT&
+    {
+        return mHostInput3;
+    }
+
+    auto ElementwiseResource::hostOutput() -> HostPtrT&
     {
         return mHostOutput;
     }
 
-    auto PermutationResource::hostReference() -> HostPtrT&
+    auto ElementwiseResource::hostReference() -> HostPtrT&
     {
         return mHostReference;
     }
 
-    auto PermutationResource::deviceInput1() -> DevicePtrT&
+    auto ElementwiseResource::deviceInput1() -> DevicePtrT&
     {
         return mDeviceInput1;
     }
 
-    auto PermutationResource::deviceOutput() -> DevicePtrT&
+    auto ElementwiseResource::deviceInput2() -> DevicePtrT&
+    {
+        return mDeviceInput2;
+    }
+
+    auto ElementwiseResource::deviceInput3() -> DevicePtrT&
+    {
+        return mDeviceInput3;
+    }
+
+    auto ElementwiseResource::deviceOutput() -> DevicePtrT&
     {
         return mDeviceOutput;
     }
 
-    auto PermutationResource::deviceReference() -> DevicePtrT&
+    auto ElementwiseResource::deviceReference() -> DevicePtrT&
     {
         return mDeviceReference;
     }

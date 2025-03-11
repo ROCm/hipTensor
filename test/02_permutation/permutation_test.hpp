@@ -53,7 +53,7 @@ namespace hiptensor
         using Base = ::testing::TestWithParam<PermutationTestParams_t>;
 
         // Shared access to Permutation storage
-        using DataStorage = PermutationResource;
+        using DataStorage = ElementwiseResource;
 
         friend void logMessage(int32_t, const char*, const char*);
 
@@ -74,7 +74,7 @@ namespace hiptensor
         std::ostream& printHeader(std::ostream& stream) const;
         std::ostream& printKernel(std::ostream& stream) const;
 
-        PermutationResource* getResource() const;
+        ElementwiseResource* getResource() const;
 
         void SetUp() final;
         void TearDown() final;

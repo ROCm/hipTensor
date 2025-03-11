@@ -148,7 +148,7 @@ namespace hiptensor
         return stream;
     }
 
-    PermutationResource* PermutationTest::getResource() const
+    ElementwiseResource* PermutationTest::getResource() const
     {
         return DataStorage::instance().get();
     }
@@ -185,7 +185,7 @@ namespace hiptensor
         }
         else
         {
-            getResource()->setupStorage(lengths, abDataType);
+            getResource()->setupStorage(lengths, abDataType,ElementwiseResource::ElementwiseOp::PERMUTATION);
 
             // set mPrintElements to true to print element
             mPrintElements = false;
