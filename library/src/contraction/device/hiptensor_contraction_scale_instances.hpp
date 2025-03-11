@@ -197,8 +197,10 @@ namespace ck
                     {
                         std::vector<std::unique_ptr<DeviceOp>> op_ptrs;
 
-                        if constexpr(is_same_v<ADataType, float> && is_same_v<BDataType, float>
-                                     && is_same_v<EDataType, float>)
+                        if constexpr(
+                            is_same_v<
+                                ADataType,
+                                float> && is_same_v<BDataType, float> && is_same_v<EDataType, float>)
                         {
                             if constexpr(NumDimM == 6 && NumDimN == 6 && NumDimK == 6)
                             {
@@ -213,8 +215,10 @@ namespace ck
                             }
                         }
 
-                        if constexpr(is_same_v<ADataType, double> && is_same_v<BDataType, double>
-                                     && is_same_v<EDataType, double>)
+                        if constexpr(
+                            is_same_v<
+                                ADataType,
+                                double> && is_same_v<BDataType, double> && is_same_v<EDataType, double>)
                         {
                             if constexpr(NumDimM == 6 && NumDimN == 6 && NumDimK == 6)
                             {

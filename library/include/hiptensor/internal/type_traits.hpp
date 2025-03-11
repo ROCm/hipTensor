@@ -285,8 +285,7 @@ namespace hiptensor
     template <typename T,
               typename std::enable_if_t<std::is_floating_point<T>::value
                                             && std::numeric_limits<T>::digits,
-                                        int>
-              = 0>
+                                        int> = 0>
     constexpr auto maxExactInteger() ->
         typename std::conditional_t<std::is_same<T, float64_t>::value, int64_t, int32_t>
     {
@@ -301,8 +300,7 @@ namespace hiptensor
                   std::is_same<T, hfloat16_t>::value ||
 #endif // !HIPTENSOR_NO_HALF
                       std::is_same<T, float16_t>::value,
-                  int>
-              = 0>
+                  int> = 0>
     constexpr auto maxExactInteger() -> int32_t
     {
         // f16 mantissa is 10 bits

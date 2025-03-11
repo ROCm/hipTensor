@@ -40,10 +40,10 @@ namespace hiptensor
         registerSolutions(
             enumeratePermutationSolutions<ck::Tuple<float>,
                                           ck::Tuple<float>,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                          ck::tensor_operation::element_wise::HiptensorUnaryOp,
-                                          ck::tensor_operation::element_wise::Scale,
-                                          ck::tensor_operation::element_wise::HiptensorUnaryOp>,
+                                          ck::tensor_operation::element_wise::UnaryCombinedOp<
+                                              ck::tensor_operation::element_wise::HiptensorUnaryOp,
+                                              ck::tensor_operation::element_wise::Scale,
+                                              ck::tensor_operation::element_wise::HiptensorUnaryOp>,
                                           4>());
     }
 } // namespace hiptensor

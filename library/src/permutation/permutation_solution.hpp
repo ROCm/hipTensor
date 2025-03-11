@@ -55,21 +55,22 @@ namespace hiptensor
 
         // This class is intended to receive DeviceOp kernel pointers from
         // the CK generator and take ownership.
-        explicit PermutationSolution(std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp);
+        explicit PermutationSolution(
+            std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp);
         PermutationSolution(PermutationSolution&& other);
         PermutationSolution& operator=(PermutationSolution&& other);
 
         // Must specialize incoming arg handling
-		virtual bool initArgs( std::vector<float>                     const & scalarValues,
-				 std::vector<std::vector<std::size_t>> const & inLengthsArray,
-				 std::vector<std::vector<std::size_t>> const & inStridesArray,
-				 std::vector<std::vector<int32_t>> const & inModesArray,
-				 std::vector<std::vector<std::size_t>> const & outLengthsArray,
-				 std::vector<std::vector<std::size_t>> const & outStridesArray,
-				 std::vector<std::vector<int32_t>> const & outModesArray,
-				 std::vector<hiptensorOperator_t>             const & operators,
-				 std::vector<const void*> const & inBuffers,
-				 std::vector<void*> const & outBuffers)
+        virtual bool initArgs(std::vector<float> const&                    scalarValues,
+                              std::vector<std::vector<std::size_t>> const& inLengthsArray,
+                              std::vector<std::vector<std::size_t>> const& inStridesArray,
+                              std::vector<std::vector<int32_t>> const&     inModesArray,
+                              std::vector<std::vector<std::size_t>> const& outLengthsArray,
+                              std::vector<std::vector<std::size_t>> const& outStridesArray,
+                              std::vector<std::vector<int32_t>> const&     outModesArray,
+                              std::vector<hiptensorOperator_t> const&      operators,
+                              std::vector<const void*> const&              inBuffers,
+                              std::vector<void*> const&                    outBuffers)
             = 0;
 
         float operator()(StreamConfig const& streamConfig = StreamConfig{});

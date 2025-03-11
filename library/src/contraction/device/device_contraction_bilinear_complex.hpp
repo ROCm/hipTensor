@@ -195,11 +195,11 @@ namespace ck
                 using DecompCompute = ComputeDataType;
 
                 // For complex types, we need to make sure that all of the types are the same
-                static_assert(std::is_same_v<DecompA, DecompB> && std::is_same_v<DecompB, DecompDs>
-                                  && std::is_same_v<DecompDs, DecompE>
-                                  && std::is_same_v<DecompE, DecompCompute>
-                                  && std::is_same_v<DecompCompute, CShuffleDataType>,
-                              "Complex operations must have the same data type");
+                static_assert(
+                    std::is_same_v<
+                        DecompA,
+                        DecompB> && std::is_same_v<DecompB, DecompDs> && std::is_same_v<DecompDs, DecompE> && std::is_same_v<DecompE, DecompCompute> && std::is_same_v<DecompCompute, CShuffleDataType>,
+                    "Complex operations must have the same data type");
 
                 static_assert(std::is_same_v<DecompA, float> || std::is_same_v<DecompA, double>,
                               "Complex operations only supported with single or double precision");

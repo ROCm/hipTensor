@@ -33,74 +33,80 @@
 namespace std
 {
     template <typename T, std::size_t N>
-        struct hash<std::array<T, N>> {
-            constexpr std::size_t operator()(const std::array<T, N>& arr) const {
-                std::size_t seed = 0;
-                for (const auto& elem : arr) {
-                    // Combine the hash of each element into the overall hash
-                    seed ^= std::hash<T>{}(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-                }
-                return seed;
+    struct hash<std::array<T, N>>
+    {
+        constexpr std::size_t operator()(const std::array<T, N>& arr) const
+        {
+            std::size_t seed = 0;
+            for(const auto& elem : arr)
+            {
+                // Combine the hash of each element into the overall hash
+                seed ^= std::hash<T>{}(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
             }
-        };
+            return seed;
+        }
+    };
     template <typename T>
-        struct hash<std::vector<T>> {
-            constexpr std::size_t operator()(const std::vector<T>& vec) const {
-                std::size_t seed = 0;
-                for (const auto& elem : vec) {
-                    // Combine the hash of each element into the overall hash
-                    seed ^= std::hash<T>{}(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-                }
-                return seed;
+    struct hash<std::vector<T>>
+    {
+        constexpr std::size_t operator()(const std::vector<T>& vec) const
+        {
+            std::size_t seed = 0;
+            for(const auto& elem : vec)
+            {
+                // Combine the hash of each element into the overall hash
+                seed ^= std::hash<T>{}(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
             }
-        };
+            return seed;
+        }
+    };
 }
 
 namespace ck::tensor_operation::device::instance
 {
-    template < typename DataTypeTuple, std::size_t... Is>
-    constexpr inline auto convertTypeTupleToHipDataTypeArrayImpl(std::index_sequence<Is...> ) {
-        std::array<hipDataType, DataTypeTuple::Size()> hipDataTypeArray = {{
-            hiptensor::HipDataType_v<typename ck::tuple_element_t<Is, DataTypeTuple>>...
-        }};
+    template <typename DataTypeTuple, std::size_t... Is>
+    constexpr inline auto convertTypeTupleToHipDataTypeArrayImpl(std::index_sequence<Is...>)
+    {
+        std::array<hipDataType, DataTypeTuple::Size()> hipDataTypeArray
+            = {{hiptensor::HipDataType_v<typename ck::tuple_element_t<Is, DataTypeTuple>>...}};
         return hipDataTypeArray;
     }
-    template < typename DataTypeTuple>
-    constexpr inline auto convertTypeTupleToHipDataTypeArray() {
-        return convertTypeTupleToHipDataTypeArrayImpl<DataTypeTuple>(std::make_index_sequence<DataTypeTuple::Size()>());
+    template <typename DataTypeTuple>
+    constexpr inline auto convertTypeTupleToHipDataTypeArray()
+    {
+        return convertTypeTupleToHipDataTypeArrayImpl<DataTypeTuple>(
+            std::make_index_sequence<DataTypeTuple::Size()>());
     }
 
-    template <
-        typename InDataTypeTuple,
+    template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
               hiptensor::PermutationOpId_t Scale,
-              index_t NumDim,
-              index_t BlockSize                  = 0,
-              index_t M0PerBlock                 = 0,
-              index_t M1PerBlock                 = 0,
-              index_t M0PerThread                = 0,
-              index_t M1PerThread                = 0,
-              typename ThreadClusterArrangeOrder = ck::Sequence<0, 0>,
-              typename InScalarPerVectorSeq      = ck::Sequence<0>,
-              typename OutScalarPerVectorSeq     = ck::Sequence<0>>
+              index_t                      NumDim,
+              index_t                      BlockSize   = 0,
+              index_t                      M0PerBlock  = 0,
+              index_t                      M1PerBlock  = 0,
+              index_t                      M0PerThread = 0,
+              index_t                      M1PerThread = 0,
+              typename ThreadClusterArrangeOrder       = ck::Sequence<0, 0>,
+              typename InScalarPerVectorSeq            = ck::Sequence<0>,
+              typename OutScalarPerVectorSeq           = ck::Sequence<0>>
     struct DeviceElementwiseParams
     {
         constexpr static hiptensor::Uid hashCode()
         {
-            return hiptensor::Hash{}(
-                convertTypeTupleToHipDataTypeArray<InDataTypeTuple>(),
-                convertTypeTupleToHipDataTypeArray<OutDataTypeTuple>(),
-                Scale,
-                NumDim,
-                BlockSize,
-                M0PerBlock,
-                M1PerBlock,
-                M0PerThread,
-                M1PerThread,
-                ThreadClusterArrangeOrder::At(0),
-                ThreadClusterArrangeOrder::At(1),
-                InScalarPerVectorSeq::At(0),
-                OutScalarPerVectorSeq::At(0));
+            return hiptensor::Hash{}(convertTypeTupleToHipDataTypeArray<InDataTypeTuple>(),
+                                     convertTypeTupleToHipDataTypeArray<OutDataTypeTuple>(),
+                                     Scale,
+                                     NumDim,
+                                     BlockSize,
+                                     M0PerBlock,
+                                     M1PerBlock,
+                                     M0PerThread,
+                                     M1PerThread,
+                                     ThreadClusterArrangeOrder::At(0),
+                                     ThreadClusterArrangeOrder::At(1),
+                                     InScalarPerVectorSeq::At(0),
+                                     OutScalarPerVectorSeq::At(0));
         }
     };
 
@@ -114,9 +120,9 @@ namespace ck::tensor_operation::device::instance
 
     // The caller should test the returned hash code in order since earlier instances have better perf.
     std::vector<hiptensor::Uid>
-// TODO typeIn should be InDataTypeTuple
-        getHashCodeOfBestPerfInstances(std::vector<hipDataType>                           const & typeIn,
-                                       std::vector<hipDataType>                           const & typeOut,
+        // TODO typeIn should be InDataTypeTuple
+        getHashCodeOfBestPerfInstances(std::vector<hipDataType> const&       typeIn,
+                                       std::vector<hipDataType> const&       typeOut,
                                        hiptensor::PermutationOpId_t          scale,
                                        index_t                               numDim,
                                        hiptensor::InstanceHyperParams const& hyperParams);

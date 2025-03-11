@@ -38,7 +38,7 @@ namespace hiptensor
         PermutationSolution2DFloatInstances();
         PermutationSolution2DHalfInstances();
         PermutationSolution2DHalfNoopInstances();
-		PermutationSolution3DFloatNoopInstances();
+        PermutationSolution3DFloatNoopInstances();
         PermutationSolution3DFloatInstances();
         PermutationSolution3DHalfInstances();
         PermutationSolution3DHalfNoopInstances();

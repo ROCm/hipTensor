@@ -105,9 +105,9 @@ int main()
     CHECK_HIP_ERROR(hipMalloc((void**)&C_d, sizeC));
     CHECK_HIP_ERROR(hipMalloc((void**)&D_d, sizeD));
 
-    floatTypeA *A;
-    floatTypeC *C;
-    floatTypeD *D;
+    floatTypeA* A;
+    floatTypeC* C;
+    floatTypeD* D;
     CHECK_HIP_ERROR(hipHostMalloc((void**)&A, sizeof(floatTypeA) * elementsA));
     CHECK_HIP_ERROR(hipHostMalloc((void**)&C, sizeof(floatTypeC) * elementsC));
     CHECK_HIP_ERROR(hipHostMalloc((void**)&D, sizeof(floatTypeD) * elementsD));
@@ -115,7 +115,7 @@ int main()
     for(size_t i = 0; i < elementsA; i++)
     {
         A[i] = (float)i;
-		C[i] = static_cast<float>(i % 41);
+        C[i] = static_cast<float>(i % 41);
     }
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, A, sizeA, hipMemcpyDefault));
@@ -127,16 +127,31 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), nullptr /* stride */, typeA, HIPTENSOR_OP_IDENTITY));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &descA,
+                                                        nmodeA,
+                                                        extentA.data(),
+                                                        nullptr /* stride */,
+                                                        typeA,
+                                                        HIPTENSOR_OP_IDENTITY));
 
     hiptensorTensorDescriptor_t descC;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descC, nmodeC, extentC.data(), nullptr /* stride */, typeC, HIPTENSOR_OP_IDENTITY));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &descC,
+                                                        nmodeC,
+                                                        extentC.data(),
+                                                        nullptr /* stride */,
+                                                        typeC,
+                                                        HIPTENSOR_OP_IDENTITY));
 
     hiptensorTensorDescriptor_t descD;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descD, nmodeD, extentD.data(), nullptr /* stride */, typeD, HIPTENSOR_OP_IDENTITY));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &descD,
+                                                        nmodeD,
+                                                        extentD.data(),
+                                                        nullptr /* stride */,
+                                                        typeD,
+                                                        HIPTENSOR_OP_IDENTITY));
 
     using hiptensor::HiptensorOptions;
     auto& options = HiptensorOptions::instance();
@@ -146,20 +161,20 @@ int main()
     const floatTypeCompute gamma = 2.0f;
 
     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
-                                               &alpha,
-                                               A_d,
-                                               &descA,
-                                               modeA.data(),
-											   &gamma,
-                                               C_d,
-                                               &descC,
-                                               modeC.data(),
-                                               D_d,
-                                               &descD,
-                                               modeD.data(),
-											   HIPTENSOR_OP_ADD,
-                                               typeCompute,
-                                               0 /* stream */));
+                                                     &alpha,
+                                                     A_d,
+                                                     &descA,
+                                                     modeA.data(),
+                                                     &gamma,
+                                                     C_d,
+                                                     &descC,
+                                                     modeC.data(),
+                                                     D_d,
+                                                     &descD,
+                                                     modeD.data(),
+                                                     HIPTENSOR_OP_ADD,
+                                                     typeCompute,
+                                                     0 /* stream */));
 
 #if !NDEBUG
     bool printElements = false;

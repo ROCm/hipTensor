@@ -73,15 +73,11 @@ namespace hiptensor
               typename ElementOp,
               ck::index_t NumDim>
     struct ReferencePermutation
-        : public ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
-                                                                     OutDataTypeTuple,
-                                                                     ElementOp,
-                                                                     NumDim>
+        : public ck::tensor_operation::device::
+              DeviceElementwise<InDataTypeTuple, OutDataTypeTuple, ElementOp, NumDim>
     {
-        using Base = ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
-                                                                     OutDataTypeTuple,
-                                                                     ElementOp,
-                                                                     NumDim>;
+        using Base = ck::tensor_operation::device::
+            DeviceElementwise<InDataTypeTuple, OutDataTypeTuple, ElementOp, NumDim>;
         using BaseArgument = ck::tensor_operation::device::BaseArgument;
         using BaseInvoker  = ck::tensor_operation::device::BaseInvoker;
         using index_t      = ck::index_t;
@@ -95,8 +91,8 @@ namespace hiptensor
             Argument(const std::array<index_t, NumDim>                        lengths,
                      const std::array<std::array<index_t, NumDim>, NumInput>  inStridesArray,
                      const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
-                     const std::array<const void*, NumInput>                                              in_dev_buffers,
-                     const std::array<void*, NumOutput>                                                    out_dev_buffers,
+                     const std::array<const void*, NumInput>                  in_dev_buffers,
+                     const std::array<void*, NumOutput>                       out_dev_buffers,
                      ElementOp                                                elementwise_op)
                 : BaseArgument()
                 , mLengths(lengths)
@@ -104,12 +100,16 @@ namespace hiptensor
                 , mOutStrides(outStridesArray)
                 , mElementOp(elementwise_op)
             {
-                static_for<NumInput>([this, & in_dev_buffers](auto index) {
-                        mInput.At(ck::Number<index>{})  = static_cast<ck::tuple_element_t<index, decltype(mInput)>>(in_dev_buffers[index]);
-                        });
-                static_for<NumOutput>([this, & out_dev_buffers](auto index) {
-                        mOutput.At(ck::Number<index>{}) = static_cast<ck::tuple_element_t<index, decltype(mOutput)>>(out_dev_buffers[index]);
-                        });
+                static_for<NumInput>([this, &in_dev_buffers](auto index) {
+                    mInput.At(ck::Number<index>{})
+                        = static_cast<ck::tuple_element_t<index, decltype(mInput)>>(
+                            in_dev_buffers[index]);
+                });
+                static_for<NumOutput>([this, &out_dev_buffers](auto index) {
+                    mOutput.At(ck::Number<index>{})
+                        = static_cast<ck::tuple_element_t<index, decltype(mOutput)>>(
+                            out_dev_buffers[index]);
+                });
             }
 
             Argument(Argument const&)            = default;
@@ -117,7 +117,7 @@ namespace hiptensor
             ~Argument()                          = default;
 
             MakeTupleOfConstPointers_t<InDataTypeTuple> mInput;
-            MakeTupleOfPointers_t<OutDataTypeTuple> mOutput;
+            MakeTupleOfPointers_t<OutDataTypeTuple>     mOutput;
 
             std::array<index_t, NumDim>                        mLengths;
             std::array<std::array<index_t, NumDim>, NumInput>  mInStrides;
@@ -165,15 +165,26 @@ namespace hiptensor
                     nextIndex();
 
                     // Perform sequence of unary, scale operations on input
-                    if constexpr (NumInput == 1) {
-                        arg.mElementOp(arg.mOutput.At(ck::Number<0>{})[outOffset], arg.mInput.At(ck::Number<0>{})[inOffset]);
+                    if constexpr(NumInput == 1)
+                    {
+                        arg.mElementOp(arg.mOutput.At(ck::Number<0>{})[outOffset],
+                                       arg.mInput.At(ck::Number<0>{})[inOffset]);
                     }
-                    else if constexpr (NumInput == 2) {
-                        arg.mElementOp(arg.mOutput.At(ck::Number<0>{})[outOffset], arg.mInput.At(ck::Number<0>{})[inOffset], arg.mInput.At(ck::Number<1>{})[inOffset]);
+                    else if constexpr(NumInput == 2)
+                    {
+                        arg.mElementOp(arg.mOutput.At(ck::Number<0>{})[outOffset],
+                                       arg.mInput.At(ck::Number<0>{})[inOffset],
+                                       arg.mInput.At(ck::Number<1>{})[inOffset]);
                     }
-                    else if constexpr (NumInput == 3) {
-                        arg.mElementOp(arg.mOutput.At(ck::Number<0>{})[outOffset], arg.mInput.At(ck::Number<0>{})[inOffset], arg.mInput.At(ck::Number<1>{})[inOffset], arg.mInput.At(ck::Number<2>{})[inOffset]);
-                    } else {
+                    else if constexpr(NumInput == 3)
+                    {
+                        arg.mElementOp(arg.mOutput.At(ck::Number<0>{})[outOffset],
+                                       arg.mInput.At(ck::Number<0>{})[inOffset],
+                                       arg.mInput.At(ck::Number<1>{})[inOffset],
+                                       arg.mInput.At(ck::Number<2>{})[inOffset]);
+                    }
+                    else
+                    {
                         static_assert(false, "Invalid lengths of InDataTypeTuple");
                     }
                 }
@@ -202,8 +213,8 @@ namespace hiptensor
             MakeArgument(const std::array<index_t, NumDim>                        lengths,
                          const std::array<std::array<index_t, NumDim>, NumInput>  inStridesArray,
                          const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
-                         const std::array<const void*, NumInput>                                              in_dev_buffers,
-                         const std::array<void*, NumOutput>                                                    out_dev_buffers,
+                         const std::array<const void*, NumInput>                  in_dev_buffers,
+                         const std::array<void*, NumOutput>                       out_dev_buffers,
                          ElementOp                                                elementwise_op)
         {
             return Argument{lengths,
@@ -218,8 +229,8 @@ namespace hiptensor
             const std::array<index_t, NumDim>                        lengths,
             const std::array<std::array<index_t, NumDim>, NumInput>  inStridesArray,
             const std::array<std::array<index_t, NumDim>, NumOutput> outStridesArray,
-            const std::array<const void*, NumInput>                                              in_dev_buffers,
-            const std::array<void*, NumOutput>                                                    out_dev_buffers,
+            const std::array<const void*, NumInput>                  in_dev_buffers,
+            const std::array<void*, NumOutput>                       out_dev_buffers,
             ElementOp                                                elementwise_op) override
         {
             return std::make_unique<Argument>(Argument{lengths,
@@ -256,27 +267,25 @@ namespace hiptensor
 
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
-              typename  ElementwiseOperation,
+              typename ElementwiseOperation,
               ck::index_t NumDim>
     auto enumerateReferenceSolutions()
     {
-        using ReferenceOp = ReferencePermutation<
-            InDataTypeTuple,
-            OutDataTypeTuple,
-            ElementwiseOperation,
-            NumDim>;
+        using ReferenceOp
+            = ReferencePermutation<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation, NumDim>;
         using BaseOp = typename ReferenceOp::Base;
 
-        auto solution = std::make_unique<PermutationSolutionImpl<BaseOp>>(
-            std::make_unique<ReferenceOp>());
+        auto solution
+            = std::make_unique<PermutationSolutionImpl<BaseOp>>(std::make_unique<ReferenceOp>());
 
-        constexpr hiptensor::PermutationOpId_t opType = std::is_same_v<ElementwiseOperation,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough>> ?
-                              hiptensor::PermutationOpId_t::PASS_THROUGH:
-                              hiptensor::PermutationOpId_t::SCALE;
+        constexpr hiptensor::PermutationOpId_t opType
+            = std::is_same_v<ElementwiseOperation,
+                             ck::tensor_operation::element_wise::UnaryCombinedOp<
+                                 ck::tensor_operation::element_wise::PassThrough,
+                                 ck::tensor_operation::element_wise::PassThrough,
+                                 ck::tensor_operation::element_wise::PassThrough>>
+                  ? hiptensor::PermutationOpId_t::PASS_THROUGH
+                  : hiptensor::PermutationOpId_t::SCALE;
         auto hashCode = ck::tensor_operation::device::instance::
             DeviceElementwiseParams<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>::hashCode();
         auto result = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();

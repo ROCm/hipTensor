@@ -190,45 +190,45 @@ namespace ck
             public:
                 hiptensorOperator_t          op_type = HIPTENSOR_OP_IDENTITY;
                 static constexpr FunctionPtr ops[]   = {
-                    hiptensor_identity, // placeholder 0
-                    hiptensor_identity, //HIPTENSOR_OP_IDENTITY = 1, ///< Identity operator (i.e., elements are not changed)
-                    hiptensor_sqrt, //HIPTENSOR_OP_SQRT     = 2, ///< Square root
-                    hiptensor_identity, // placeholder 3
-                    hiptensor_identity, // placeholder 4
-                    hiptensor_identity, // placeholder 5
-                    hiptensor_identity, // placeholder 6
-                    hiptensor_identity, // placeholder 7
-                    hiptensor_relu, //HIPTENSOR_OP_RELU     = 8, ///< Rectified linear unit
-                    hiptensor_conj, //HIPTENSOR_OP_CONJ     = 9, ///< Complex conjugate
-                    hiptensor_rcp, //HIPTENSOR_OP_RCP      = 10, ///< Reciprocal
-                    hiptensor_sigmoid, //HIPTENSOR_OP_SIGMOID  = 11, ///< y=1/(1+exp(-x))
-                    hiptensor_tanh, //HIPTENSOR_OP_TANH     = 12, ///< y=tanh(x)
-                    hiptensor_identity, // placeholder 13
-                    hiptensor_identity, // placeholder 14
-                    hiptensor_identity, // placeholder 15
-                    hiptensor_identity, // placeholder 16
-                    hiptensor_identity, // placeholder 17
-                    hiptensor_identity, // placeholder 18
-                    hiptensor_identity, // placeholder 19
-                    hiptensor_identity, // placeholder 20
-                    hiptensor_identity, // placeholder 21
-                    hiptensor_exp, //HIPTENSOR_OP_EXP      = 22, ///< Exponentiation.
-                    hiptensor_log, //HIPTENSOR_OP_LOG      = 23, ///< Log (base e).
-                    hiptensor_abs, //HIPTENSOR_OP_ABS      = 24, ///< Absolute value.
-                    hiptensor_neg, //HIPTENSOR_OP_NEG      = 25, ///< Negation.
-                    hiptensor_sin, //HIPTENSOR_OP_SIN      = 26, ///< Sine.
-                    hiptensor_cos, //HIPTENSOR_OP_COS      = 27, ///< Cosine.
-                    hiptensor_tan, //HIPTENSOR_OP_TAN      = 28, ///< Tangent.
-                    hiptensor_sinh, //HIPTENSOR_OP_SINH     = 29, ///< Hyperbolic sine.
-                    hiptensor_cosh, //HIPTENSOR_OP_COSH     = 30, ///< Hyperbolic cosine.
-                    hiptensor_asin, //HIPTENSOR_OP_ASIN     = 31, ///< Inverse sine.
-                    hiptensor_acos, //HIPTENSOR_OP_ACOS     = 32, ///< Inverse cosine.
-                    hiptensor_atan, //HIPTENSOR_OP_ATAN     = 33, ///< Inverse tangent.
-                    hiptensor_asinh, //HIPTENSOR_OP_ASINH    = 34, ///< Inverse hyperbolic sine.
-                    hiptensor_acosh, //HIPTENSOR_OP_ACOSH    = 35, ///< Inverse hyperbolic cosine.
-                    hiptensor_atanh, //HIPTENSOR_OP_ATANH    = 36, ///< Inverse hyperbolic tangent.
-                    hiptensor_ceil, //HIPTENSOR_OP_CEIL     = 37, ///< Ceiling.
-                    hiptensor_floor, //HIPTENSOR_OP_FLOOR    = 38, ///< Floor.
+                      hiptensor_identity, // placeholder 0
+                      hiptensor_identity, //HIPTENSOR_OP_IDENTITY = 1, ///< Identity operator (i.e., elements are not changed)
+                      hiptensor_sqrt, //HIPTENSOR_OP_SQRT     = 2, ///< Square root
+                      hiptensor_identity, // placeholder 3
+                      hiptensor_identity, // placeholder 4
+                      hiptensor_identity, // placeholder 5
+                      hiptensor_identity, // placeholder 6
+                      hiptensor_identity, // placeholder 7
+                      hiptensor_relu, //HIPTENSOR_OP_RELU     = 8, ///< Rectified linear unit
+                      hiptensor_conj, //HIPTENSOR_OP_CONJ     = 9, ///< Complex conjugate
+                      hiptensor_rcp, //HIPTENSOR_OP_RCP      = 10, ///< Reciprocal
+                      hiptensor_sigmoid, //HIPTENSOR_OP_SIGMOID  = 11, ///< y=1/(1+exp(-x))
+                      hiptensor_tanh, //HIPTENSOR_OP_TANH     = 12, ///< y=tanh(x)
+                      hiptensor_identity, // placeholder 13
+                      hiptensor_identity, // placeholder 14
+                      hiptensor_identity, // placeholder 15
+                      hiptensor_identity, // placeholder 16
+                      hiptensor_identity, // placeholder 17
+                      hiptensor_identity, // placeholder 18
+                      hiptensor_identity, // placeholder 19
+                      hiptensor_identity, // placeholder 20
+                      hiptensor_identity, // placeholder 21
+                      hiptensor_exp, //HIPTENSOR_OP_EXP      = 22, ///< Exponentiation.
+                      hiptensor_log, //HIPTENSOR_OP_LOG      = 23, ///< Log (base e).
+                      hiptensor_abs, //HIPTENSOR_OP_ABS      = 24, ///< Absolute value.
+                      hiptensor_neg, //HIPTENSOR_OP_NEG      = 25, ///< Negation.
+                      hiptensor_sin, //HIPTENSOR_OP_SIN      = 26, ///< Sine.
+                      hiptensor_cos, //HIPTENSOR_OP_COS      = 27, ///< Cosine.
+                      hiptensor_tan, //HIPTENSOR_OP_TAN      = 28, ///< Tangent.
+                      hiptensor_sinh, //HIPTENSOR_OP_SINH     = 29, ///< Hyperbolic sine.
+                      hiptensor_cosh, //HIPTENSOR_OP_COSH     = 30, ///< Hyperbolic cosine.
+                      hiptensor_asin, //HIPTENSOR_OP_ASIN     = 31, ///< Inverse sine.
+                      hiptensor_acos, //HIPTENSOR_OP_ACOS     = 32, ///< Inverse cosine.
+                      hiptensor_atan, //HIPTENSOR_OP_ATAN     = 33, ///< Inverse tangent.
+                      hiptensor_asinh, //HIPTENSOR_OP_ASINH    = 34, ///< Inverse hyperbolic sine.
+                      hiptensor_acosh, //HIPTENSOR_OP_ACOSH    = 35, ///< Inverse hyperbolic cosine.
+                      hiptensor_atanh, //HIPTENSOR_OP_ATANH    = 36, ///< Inverse hyperbolic tangent.
+                      hiptensor_ceil, //HIPTENSOR_OP_CEIL     = 37, ///< Ceiling.
+                      hiptensor_floor, //HIPTENSOR_OP_FLOOR    = 38, ///< Floor.
                 };
             };
 
@@ -238,33 +238,37 @@ namespace ck
                     : op_type(operator_type)
                 {
                 }
-                __host__ __device__ HiptensorBinaryOp(const HiptensorBinaryOp& dynamic_op) = default;
-                __host__            __device__ ~HiptensorBinaryOp()                       = default;
+                __host__ __device__ HiptensorBinaryOp(const HiptensorBinaryOp& dynamic_op)
+                    = default;
+                __host__                               __device__ ~HiptensorBinaryOp() = default;
                 __host__ __device__ HiptensorBinaryOp& operator=(const HiptensorBinaryOp& other)
                     = default;
 
-                __host__ __device__ void operator()(float& y, const float& x1, const float& x2) const
+                __host__ __device__ void
+                    operator()(float& y, const float& x1, const float& x2) const
                 {
-                    switch(op_type) {
-                        case  HIPTENSOR_OP_ADD :
-                            y =  x1 + x2;
-                            break;
-                        case  HIPTENSOR_OP_MUL :
-                            y =  x1 * x2;
-                            break;
-                        case  HIPTENSOR_OP_MAX :
-                            y =  x1 > x2 ? x1 : x2;
-                            break;
-                        case  HIPTENSOR_OP_MIN :
-                            y =  x1 < x2 ? x1 : x2;
-                            break;
-                        default:
-                            y =  y;
-                            break;
+                    switch(op_type)
+                    {
+                    case HIPTENSOR_OP_ADD:
+                        y = x1 + x2;
+                        break;
+                    case HIPTENSOR_OP_MUL:
+                        y = x1 * x2;
+                        break;
+                    case HIPTENSOR_OP_MAX:
+                        y = x1 > x2 ? x1 : x2;
+                        break;
+                    case HIPTENSOR_OP_MIN:
+                        y = x1 < x2 ? x1 : x2;
+                        break;
+                    default:
+                        y = y;
+                        break;
                     }
                 }
 
-                __host__ __device__ void operator()(half_t& y, const half_t& x1, const half_t& x2) const
+                __host__ __device__ void
+                    operator()(half_t& y, const half_t& x1, const half_t& x2) const
                 {
                     float tempX1 = static_cast<float>(x1);
                     float tempX2 = static_cast<float>(x2);
@@ -274,7 +278,7 @@ namespace ck
                 }
 
             public:
-                hiptensorOperator_t          op_type = HIPTENSOR_OP_IDENTITY;
+                hiptensorOperator_t op_type = HIPTENSOR_OP_IDENTITY;
             };
         } // namespace element_wise
     } // namespace tensor_operation

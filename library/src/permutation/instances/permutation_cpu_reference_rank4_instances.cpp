@@ -24,10 +24,10 @@
  *
  *******************************************************************************/
 
+#include "../device/hiptensor_ck_types.hpp"
 #include "../permutation_cpu_reference_impl.hpp"
 #include "../permutation_cpu_reference_instances.hpp"
 #include <hiptensor_unary_element_wise_operation.hpp>
-#include "../device/hiptensor_ck_types.hpp"
 
 namespace hiptensor
 {
@@ -38,32 +38,29 @@ namespace hiptensor
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<float>,
                                         ck::Tuple<float>,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                        ck::tensor_operation::element_wise::HiptensorUnaryOp,
-                                        ck::tensor_operation::element_wise::Scale,
-                                        ck::tensor_operation::element_wise::HiptensorUnaryOp>,
+                                        ck::tensor_operation::element_wise::UnaryCombinedOp<
+                                            ck::tensor_operation::element_wise::HiptensorUnaryOp,
+                                            ck::tensor_operation::element_wise::Scale,
+                                            ck::tensor_operation::element_wise::HiptensorUnaryOp>,
                                         4>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
                                         ck::Tuple<ck::half_t>,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                        ck::tensor_operation::element_wise::HiptensorUnaryOp,
-                                        ck::tensor_operation::element_wise::Scale,
-                                        ck::tensor_operation::element_wise::HiptensorUnaryOp>,
+                                        ck::tensor_operation::element_wise::UnaryCombinedOp<
+                                            ck::tensor_operation::element_wise::HiptensorUnaryOp,
+                                            ck::tensor_operation::element_wise::Scale,
+                                            ck::tensor_operation::element_wise::HiptensorUnaryOp>,
                                         4>());
 
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<float, float>,
+                                                      ck::Tuple<float>,
+                                                      CkBinaryWithUnaryCombinedOp,
+                                                      4>());
 
-        registerSolutions(
-            enumerateReferenceSolutions<ck::Tuple<float, float>,
-                                        ck::Tuple<float>,
-										CkBinaryWithUnaryCombinedOp,
-                                        4>());
-
-        registerSolutions(
-            enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t>,
-                                        ck::Tuple<ck::half_t>,
-										CkBinaryWithUnaryCombinedOp,
-                                        4>());
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t>,
+                                                      ck::Tuple<ck::half_t>,
+                                                      CkBinaryWithUnaryCombinedOp,
+                                                      4>());
     }
 } // namespace hiptensor

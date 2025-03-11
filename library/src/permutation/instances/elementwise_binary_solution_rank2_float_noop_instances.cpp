@@ -28,8 +28,8 @@
 #include "../permutation_solution_instances.hpp"
 
 // Ensure access to
-#include "../device/hiptensor_permutation_scale_instances.hpp"
 #include "../device/hiptensor_ck_types.hpp"
+#include "../device/hiptensor_permutation_scale_instances.hpp"
 
 namespace hiptensor
 {
@@ -37,10 +37,9 @@ namespace hiptensor
     {
         // Register all the solutions exactly once
         // 2d ElementwiseBinary
-        registerSolutions(
-            enumeratePermutationSolutions<ck::Tuple<float, float>,
-                                          ck::Tuple<float>,
-										  CkBinaryWithUnaryCombinedOp,
-                                          2>());
+        registerSolutions(enumeratePermutationSolutions<ck::Tuple<float, float>,
+                                                        ck::Tuple<float>,
+                                                        CkBinaryWithUnaryCombinedOp,
+                                                        2>());
     }
 } // namespace hiptensor

@@ -52,7 +52,7 @@ namespace hiptensor
         ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale, Bop>,
         NumDim>>
     {
-        constexpr static ck::index_t NDim = NumDim;
+        constexpr static ck::index_t    NDim         = NumDim;
         constexpr static InstanceType_t InstanceType = InstanceType_t::PERMUTATION;
 
         using InDataT  = InDataTypeTuple;
@@ -74,19 +74,20 @@ namespace hiptensor
     struct MetaTraits<ck::tensor_operation::device::DeviceElementwise<
         InDataTypeTuple,
         OutDataTypeTuple,
-		ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
+        ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
         NumDim>>
     {
-        constexpr static ck::index_t NDim = NumDim;
+        constexpr static ck::index_t    NDim         = NumDim;
         constexpr static InstanceType_t InstanceType = InstanceType_t::ELEMENTWISE_BINARY_OP;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
 
-        using AOp        = Aop;
-        using COp        = Cop;
-        using BinaryOp        = Binaryop;
-        using CombinedOp =  ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>;
+        using AOp      = Aop;
+        using COp      = Cop;
+        using BinaryOp = Binaryop;
+        using CombinedOp
+            = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>;
     };
 } // namespace hiptensor
 

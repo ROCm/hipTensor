@@ -148,33 +148,34 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     }
 
     float alphaF;
-    if(alpha != nullptr){
+    if(alpha != nullptr)
+    {
         alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
 
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
     auto  solutions = instances->query({alphaF},
-            descA->mLengths,
-            {descA->mType},
-            {descB->mType},
-            {{modeA, modeA + descA->mLengths.size()}},
-            {{modeB, modeB + descB->mLengths.size()}},
-            {descA->mUnaryOp, descB->mUnaryOp},
-            hiptensor::PermutationInstanceType_t::Device);
+                                      descA->mLengths,
+                                      {descA->mType},
+                                      {descB->mType},
+                                      {{modeA, modeA + descA->mLengths.size()}},
+                                      {{modeB, modeB + descB->mLengths.size()}},
+                                      {descA->mUnaryOp, descB->mUnaryOp},
+                                      hiptensor::PermutationInstanceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)
     {
         canRun = pSolution->initArgs({alphaF},
-                                  {descA->mLengths},
-                                  {descA->mStrides},
-                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size())},
-                                  {descB->mLengths},
-                                  {descB->mStrides},
-                                  {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
-                                  {descA->mUnaryOp},
-                                  {A},
-                                  {B});
+                                     {descA->mLengths},
+                                     {descA->mStrides},
+                                     {std::vector<int32_t>(modeA, modeA + descA->mLengths.size())},
+                                     {descB->mLengths},
+                                     {descB->mStrides},
+                                     {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
+                                     {descA->mUnaryOp},
+                                     {A},
+                                     {B});
 
         if(canRun)
         {

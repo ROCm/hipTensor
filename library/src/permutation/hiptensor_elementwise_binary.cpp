@@ -32,11 +32,21 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
-		const void* alpha, const void* A, const hiptensorTensorDescriptor_t* descA, const int32_t modeA[],
-		const void* gamma, const void* C, const hiptensorTensorDescriptor_t* descC, const int32_t modeC[],
-		void* D, const hiptensorTensorDescriptor_t* descD, const int32_t modeD[],
-		hiptensorOperator_t opAC, hipDataType typeScalar, hipStream_t stream)
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
+                                             const void*                        alpha,
+                                             const void*                        A,
+                                             const hiptensorTensorDescriptor_t* descA,
+                                             const int32_t                      modeA[],
+                                             const void*                        gamma,
+                                             const void*                        C,
+                                             const hiptensorTensorDescriptor_t* descC,
+                                             const int32_t                      modeC[],
+                                             void*                              D,
+                                             const hiptensorTensorDescriptor_t* descD,
+                                             const int32_t                      modeD[],
+                                             hiptensorOperator_t                opAC,
+                                             hipDataType                        typeScalar,
+                                             hipStream_t                        stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -66,75 +76,82 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
              stream);
 
     logger->logAPITrace("hiptensorElementwiseBinary", msg);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  handle);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  alpha);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  A);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  descA);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  modeA);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  gamma);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  C);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  descC);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  modeC);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  D);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  descD);
-    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED,  modeD);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, alpha);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, A);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeA);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, gamma);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, C);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descC);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeC);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, D);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descD);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeD);
 
-	constexpr std::array<std::array<hipDataType, 3>, 4> validDataTypes= {{ // typeA, typeC, typeScalar
-		{HIP_R_16F, HIP_R_16F,HIP_R_16F},
-		{HIP_R_16F, HIP_R_16F,HIP_R_32F},
-		{HIP_R_32F, HIP_R_32F,HIP_R_32F},
-		{HIP_R_32F, HIP_R_16F,HIP_R_32F}
-	}};
+    constexpr std::array<std::array<hipDataType, 3>, 4> validDataTypes
+        = {{// typeA, typeC, typeScalar
+            {HIP_R_16F, HIP_R_16F, HIP_R_16F},
+            {HIP_R_16F, HIP_R_16F, HIP_R_32F},
+            {HIP_R_32F, HIP_R_32F, HIP_R_32F},
+            {HIP_R_32F, HIP_R_16F, HIP_R_32F}}};
 
-	std::array<hipDataType, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
-	if (descC->mType != descD->mType || std::none_of(validDataTypes.cbegin(), validDataTypes.cend(), [&inputTensorTypes](auto && types) {
-				return types == inputTensorTypes;
-				})) {
-			auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
-			snprintf(msg,
-					sizeof(msg),
-					"Unsupported Data Type Error : The combination of data types for input tensors A, C, and D is not supported. "
-					"See the link for details https://rocm.docs.amd.com/projects/hipTensor/en/docs-6.5.0/api-reference/api-reference.html "
-					"(%s)",
-					hiptensorGetErrorString(errorCode));
-			logger->logError("hiptensorPermutation", msg);
-			return errorCode;
-
-			}
+    std::array<hipDataType, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
+    if(descC->mType != descD->mType
+       || std::none_of(validDataTypes.cbegin(),
+                       validDataTypes.cend(),
+                       [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Unsupported Data Type Error : The combination of data types for input tensors A, "
+                 "C, and D is not supported. "
+                 "See the link for details "
+                 "https://rocm.docs.amd.com/projects/hipTensor/en/docs-6.5.0/api-reference/"
+                 "api-reference.html "
+                 "(%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorPermutation", msg);
+        return errorCode;
+    }
 
     float alphaF;
-    if(alpha != nullptr){
+    if(alpha != nullptr)
+    {
         alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
     float gammaF;
-    if(gamma != nullptr){
+    if(gamma != nullptr)
+    {
         gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
-    auto  solutions = instances->query({alphaF, gammaF},
-            descA->mLengths,
-            {descA->mType, descC->mType},
-            {descD->mType},
-            {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
-            {{modeD, modeD + descD->mLengths.size()}},
-            {descA->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
-            hiptensor::PermutationInstanceType_t::Device);
+    auto  solutions = instances->query(
+        {alphaF, gammaF},
+        descA->mLengths,
+        {descA->mType, descC->mType},
+        {descD->mType},
+        {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
+        {{modeD, modeD + descD->mLengths.size()}},
+        {descA->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
+        hiptensor::PermutationInstanceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)
     {
         canRun = pSolution->initArgs({alphaF, gammaF},
-                                  {descA->mLengths, descC->mLengths},
-                                  {descA->mStrides, descC->mStrides},
-                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
-                                  std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
-                                  {descD->mLengths},
-                                  {descD->mStrides},
-                                  {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {descA->mUnaryOp, descC->mUnaryOp, opAC},
-                                  {A, C},
-                                  {D});
+                                     {descA->mLengths, descC->mLengths},
+                                     {descA->mStrides, descC->mStrides},
+                                     {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                                      std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+                                     {descD->mLengths},
+                                     {descD->mStrides},
+                                     {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+                                     {descA->mUnaryOp, descC->mUnaryOp, opAC},
+                                     {A, C},
+                                     {D});
 
         if(canRun)
         {
@@ -156,7 +173,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
                     return HIPTENSOR_STATUS_CK_ERROR;
                 }
 
-				// TODO update flops
+                // TODO update flops
                 auto flops = std::size_t(2) * pSolution->problemSize();
                 auto bytes = pSolution->problemBytes();
 

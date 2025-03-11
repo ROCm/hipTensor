@@ -97,7 +97,7 @@ namespace hiptensor
     void PermutationResource::fillRandToA()
     {
         uint32_t seed = static_cast<uint32_t>(256);
-        
+
         if(mCurrentDataType == HIP_R_32F)
         {
             fillLaunchKernel<float>((float*)deviceA().get(), mCurrentMatrixElement, seed);

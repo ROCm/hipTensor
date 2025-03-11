@@ -210,15 +210,15 @@ namespace hiptensor
             typename ck::reduce_unary_operator<ReduceOpId, true, true>::AccElementwiseOperation;
 
         using DeviceOp    = ck::tensor_operation::device::DeviceReduce<InDataType,
-                                                                       AccDataType,
-                                                                       OutDataType,
-                                                                       Rank,
-                                                                       NumReduceDim,
-                                                                       ReduceOperation,
-                                                                       InElementwiseOperation,
-                                                                       AccElementwiseOperation,
-                                                                       PropagateNan,
-                                                                       OutputIndex>;
+                                                                    AccDataType,
+                                                                    OutDataType,
+                                                                    Rank,
+                                                                    NumReduceDim,
+                                                                    ReduceOperation,
+                                                                    InElementwiseOperation,
+                                                                    AccElementwiseOperation,
+                                                                    PropagateNan,
+                                                                    OutputIndex>;
         using DeviceOpPtr = ck::tensor_operation::device::DeviceReducePtr<InDataType,
                                                                           AccDataType,
                                                                           OutDataType,

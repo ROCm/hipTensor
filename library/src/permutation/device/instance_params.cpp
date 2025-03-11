@@ -29,8 +29,8 @@
 namespace ck::tensor_operation::device::instance
 {
     std::vector<hiptensor::Uid>
-        getHashCodeOfBestPerfInstances(std::vector<hipDataType>                           const & typeIn,
-                                       std::vector<hipDataType>                           const & typeOut,
+        getHashCodeOfBestPerfInstances(std::vector<hipDataType> const&       typeIn,
+                                       std::vector<hipDataType> const&       typeOut,
                                        hiptensor::PermutationOpId_t          scale,
                                        index_t                               numDim,
                                        hiptensor::InstanceHyperParams const& hyperParams)

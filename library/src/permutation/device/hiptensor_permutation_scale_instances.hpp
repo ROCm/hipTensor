@@ -99,11 +99,10 @@ namespace ck
                           typename ElementwiseOperation,
                           index_t NumDim>
                 struct DeviceOperationInstanceFactory<
-                    ck::tensor_operation::device::DeviceElementwise<
-                        InDataTypeTuple,
-                        OutDataTypeTuple,
-						ElementwiseOperation,
-                        NumDim>>
+                    ck::tensor_operation::device::DeviceElementwise<InDataTypeTuple,
+                                                                    OutDataTypeTuple,
+                                                                    ElementwiseOperation,
+                                                                    NumDim>>
                 {
                     using DeviceOp = DeviceElementwise<InDataTypeTuple,
                                                        OutDataTypeTuple,
@@ -121,15 +120,16 @@ namespace ck
                               typename Container>
                     static void addInstance(Container& container)
                     {
-                        constexpr hiptensor::PermutationOpId_t opType = std::is_same_v<ElementwiseOperation,
-            ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough,
-                                          ck::tensor_operation::element_wise::PassThrough> > ?
-                            hiptensor::PermutationOpId_t::PASS_THROUGH:
-                            hiptensor::PermutationOpId_t::SCALE;
+                        constexpr hiptensor::PermutationOpId_t opType
+                            = std::is_same_v<ElementwiseOperation,
+                                             ck::tensor_operation::element_wise::UnaryCombinedOp<
+                                                 ck::tensor_operation::element_wise::PassThrough,
+                                                 ck::tensor_operation::element_wise::PassThrough,
+                                                 ck::tensor_operation::element_wise::PassThrough>>
+                                  ? hiptensor::PermutationOpId_t::PASS_THROUGH
+                                  : hiptensor::PermutationOpId_t::SCALE;
                         container.insert(
-                                {DeviceElementwiseParams<InDataTypeTuple,
+                            {DeviceElementwiseParams<InDataTypeTuple,
                                                      OutDataTypeTuple,
                                                      opType,
                                                      NumDim,

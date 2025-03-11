@@ -121,11 +121,21 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t* handle,
-		const void* alpha, const void* A, const hiptensorTensorDescriptor_t* descA, const int32_t modeA[],
-		const void* gamma, const void* C, const hiptensorTensorDescriptor_t* descC, const int32_t modeC[],
-		void* D, const hiptensorTensorDescriptor_t* descD, const int32_t modeD[],
-		hiptensorOperator_t opAC, hipDataType typeScalar, hipStream_t stream);
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
+                                             const void*                        alpha,
+                                             const void*                        A,
+                                             const hiptensorTensorDescriptor_t* descA,
+                                             const int32_t                      modeA[],
+                                             const void*                        gamma,
+                                             const void*                        C,
+                                             const hiptensorTensorDescriptor_t* descC,
+                                             const int32_t                      modeC[],
+                                             void*                              D,
+                                             const hiptensorTensorDescriptor_t* descD,
+                                             const int32_t                      modeD[],
+                                             hiptensorOperator_t                opAC,
+                                             hipDataType                        typeScalar,
+                                             hipStream_t                        stream);
 
 //! @brief Computes the alignment requirement for a given pointer and descriptor.
 //! @param[in] handle Opaque handle holding hipTensor's library context.
