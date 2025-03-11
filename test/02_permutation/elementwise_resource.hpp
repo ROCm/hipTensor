@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,16 +73,16 @@ namespace hiptensor
         virtual ~PermutationResource() = default;
 
         void setupStorage(ProblemDims const& dimSizes, hipDataType dataType);
-        void fillRandToA();
-        void copyBToHost();
+        void fillRandToInput1();
+        void copyOutputToHost();
         void copyReferenceToDevice();
 
-        HostPtrT& hostA();
-        HostPtrT& hostB();
+        HostPtrT& hostInput1();
+        HostPtrT& hostOutput();
         HostPtrT& hostReference();
 
-        DevicePtrT& deviceA();
-        DevicePtrT& deviceB();
+        DevicePtrT& deviceInput1();
+        DevicePtrT& deviceOutput();
         DevicePtrT& deviceReference();
 
         size_t getCurrentMatrixElement() const;
@@ -90,12 +90,12 @@ namespace hiptensor
         void   reset() final;
 
     protected:
-        DevicePtrT mDeviceA, mDeviceB, mDeviceReference;
-        HostPtrT   mHostA, mHostB, mHostReference;
+        DevicePtrT mDeviceInput1, mDeviceOutput, mDeviceReference;
+        HostPtrT   mHostInput1, mHostOutput, mHostReference;
 
-        size_t mCurrentMatrixElement; /**< Element count of A/B */
+        size_t mCurrentMatrixElement; /**< Element count of Input1/Output */
         hipDataType
-            mCurrentDataType; /**< Type size of element of A/B, only support HIP_R_16F, HIP_R_32F */
+            mCurrentDataType; /**< Type size of element of Input1/Output, only support HIP_R_16F, HIP_R_32F */
         size_t mCurrentAllocByte; /**< Allocated size of memory */
     };
 

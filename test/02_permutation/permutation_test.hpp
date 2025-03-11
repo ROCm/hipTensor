@@ -32,7 +32,7 @@
 #include <hiptensor/hiptensor_types.hpp>
 
 #include "common.hpp"
-#include "permutation_resource.hpp"
+#include "elementwise_resource.hpp"
 #include "permutation_test_params.hpp"
 
 #include <gtest/gtest.h>

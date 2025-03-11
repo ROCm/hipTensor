@@ -25,7 +25,7 @@
  ###############################################################################
  set(PermutationCommonSources
      ${HIPTENSOR_COMMON_TEST_SOURCES}
-     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_resource.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_resource.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/permutation_test.cpp
      )
 

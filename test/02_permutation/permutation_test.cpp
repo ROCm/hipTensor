@@ -224,12 +224,12 @@ namespace hiptensor
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<float>(
-                        stream, (float*)resource->hostA().get(), elementsA);
+                        stream, (float*)resource->hostInput1().get(), elementsA);
                     stream << std::endl;
 
                     stream << "Tensor B elements (" << elementsB << "):\n";
                     hiptensorPrintArrayElements<float>(
-                        stream, (float*)resource->hostB().get(), elementsB);
+                        stream, (float*)resource->hostOutput().get(), elementsB);
                     stream << std::endl;
 
                     stream << "Tensor ref elements (" << elementsRef << "):\n";
@@ -241,12 +241,12 @@ namespace hiptensor
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<_Float16>(
-                        stream, (_Float16*)resource->hostA().get(), elementsA);
+                        stream, (_Float16*)resource->hostInput1().get(), elementsA);
                     stream << std::endl;
 
                     stream << "Tensor B elements (" << elementsB << "):\n";
                     hiptensorPrintArrayElements<_Float16>(
-                        stream, (_Float16*)resource->hostB().get(), elementsB);
+                        stream, (_Float16*)resource->hostOutput().get(), elementsB);
                     stream << std::endl;
 
                     stream << "Tensor ref elements (" << elementsRef << "):\n";
@@ -341,10 +341,10 @@ namespace hiptensor
 
             CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
                                                        &alphaValue,
-                                                       resource->deviceA().get(),
+                                                       resource->deviceInput1().get(),
                                                        &descA,
                                                        modeA.data(),
-                                                       resource->deviceB().get(),
+                                                       resource->deviceOutput().get(),
                                                        &descB,
                                                        modeB.data(),
                                                        computeDataType,
@@ -377,20 +377,20 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventDestroy(startEvent));
             CHECK_HIP_ERROR(hipEventDestroy(stopEvent));
 
-            resource->copyBToHost();
+            resource->copyOutputToHost();
 
             auto& testOptions = HiptensorOptions::instance();
 
             if(testOptions->performValidation())
             {
-                resource->copyBToHost();
+                resource->copyOutputToHost();
 
                 if(abDataType == HIP_R_32F)
                 {
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(handle,
                                                       &alphaValue,
-                                                      (const float*)resource->hostA().get(),
+                                                      (const float*)resource->hostInput1().get(),
                                                       &descA,
                                                       modeA.data(),
                                                       (float*)resource->hostReference().get(),
@@ -401,7 +401,7 @@ namespace hiptensor
 
                     resource->copyReferenceToDevice();
                     std::tie(mValidationResult, mMaxRelativeError)
-                        = compareEqualLaunchKernel<float>((float*)resource->deviceB().get(),
+                        = compareEqualLaunchKernel<float>((float*)resource->deviceOutput().get(),
                                                           (float*)resource->deviceReference().get(),
                                                           resource->getCurrentMatrixElement(),
                                                           convertToComputeType(computeDataType));
@@ -411,7 +411,7 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(handle,
                                                       &alphaValue,
-                                                      (const _Float16*)resource->hostA().get(),
+                                                      (const _Float16*)resource->hostInput1().get(),
                                                       &descA,
                                                       modeA.data(),
                                                       (_Float16*)resource->hostReference().get(),
@@ -424,7 +424,7 @@ namespace hiptensor
 
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<_Float16>(
-                            (_Float16*)resource->deviceB().get(),
+                            (_Float16*)resource->deviceOutput().get(),
                             (_Float16*)resource->deviceReference().get(),
                             resource->getCurrentMatrixElement(),
                             convertToComputeType(computeDataType));
