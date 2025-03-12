@@ -32,9 +32,9 @@ namespace hiptensor
     PermutationCpuReferenceInstances::PermutationCpuReferenceInstances()
     {
         PermutationCpuReference2DInstances();
-        PermutationCpuReference3DInstances();
-        PermutationCpuReference4DInstances();
-        PermutationCpuReference5DInstances();
-        PermutationCpuReference6DInstances();
+        // PermutationCpuReference3DInstances();
+        // PermutationCpuReference4DInstances();
+        // PermutationCpuReference5DInstances();
+        // PermutationCpuReference6DInstances();
     }
 } // namespace hiptensor
