@@ -462,10 +462,16 @@ namespace hiptensor
             }
             else
             {
-                outStream << element;
-                if(element != container.back())
+                auto it = container.begin();
+                if (it != container.end())
                 {
-                    outStream << " ";
+                    outStream << *it;  // Print the first element
+                    ++it;
+                }
+                while (it != container.end())
+                {
+                    outStream << " " << *it;  // Print space and then the element
+                    ++it;
                 }
             }
         }

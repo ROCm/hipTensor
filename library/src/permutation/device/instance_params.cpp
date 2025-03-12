@@ -62,37 +62,42 @@ namespace ck::tensor_operation::device::instance
                                               inScalarPerVectorSeq));
         // instances below are safe net
         // clang-format off
-#if 1 //TODO why add various instances ??
-        if (numDim == 2) {
-            if (typeIn[0] == HIP_R_16F) {
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 2 , 2));
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 1 , 1));
-            } else if (typeIn[0] == HIP_R_32F) {
+        if (typeIn.size() == 1)
+        {
+            if (numDim == 2) {
+                if (typeIn[0] == HIP_R_16F) {
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 2 , 2));
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 32  , 128 , 8 , 8 , 0 , 1 , 1 , 1));
+                } else if (typeIn[0] == HIP_R_32F) {
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
+                }
+            } else if (numDim == 3) {
+                if (typeIn[0] == HIP_R_16F) {
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 2 , 2));
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 1 , 1));
+                } else if (typeIn[0] == HIP_R_32F) {
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
+                }
+            } else if (numDim == 4) {
+                if (typeIn[0] == HIP_R_16F) {
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 2  , 2));
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 1  , 1));
+                } else if (typeIn[0] == HIP_R_32F) {
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
+                    hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
+                }
+            } else if (numDim == 5 || numDim == 6) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 4 , 4));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
             }
-        } else if (numDim == 3) {
-            if (typeIn[0] == HIP_R_16F) {
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 2 , 2));
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 128 , 128 , 8 , 8 , 0 , 1 , 1 , 1));
-            } else if (typeIn[0] == HIP_R_32F) {
+        } else if (typeIn.size() == 2 || typeIn.size() == 3) {
+                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 4 , 4));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
                 hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
-            }
-        } else if (numDim == 4) {
-            if (typeIn[0] == HIP_R_16F) {
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 2  , 2));
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 64  , 128 , 32  , 8  , 8  , 0 , 1 , 1  , 1));
-            } else if (typeIn[0] == HIP_R_32F) {
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
-                hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
-            }
-        } else if (numDim == 5 || numDim == 6) {
-            hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 4 , 4));
-            hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 2 , 2));
-            hashCodes.push_back(hiptensor::Hash{}( typeIn , typeOut , scale , numDim , 256 , 64  , 64  , 4 , 4 , 0 , 1 , 1 , 1));
         }
-#endif
         // clang-format on
 
         return hashCodes;
