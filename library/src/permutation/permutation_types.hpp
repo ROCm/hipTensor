@@ -62,19 +62,12 @@ namespace hiptensor
      * \brief This enum categorizes the permutation instance
      * \details Device instances run on GPUs, while host instances run on CPUs.
      */
-    enum struct PermutationInstanceType_t : int32_t
+    enum struct ElementwiseExecutionSpaceType_t : int32_t
     {
         Device,
         Host,
         UNKNOWN,
     };
-
-    // Map type to runtime PermutationOpId_t
-    template <typename OpId>
-    struct PermutationOperatorType;
-
-    template <typename OpId>
-    static constexpr auto PermutationOperatorType_v = PermutationOperatorType<OpId>::value;
 
     using InstanceHyperParams = std::tuple<ck::index_t,
                                            ck::index_t,

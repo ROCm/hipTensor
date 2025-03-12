@@ -64,8 +64,7 @@ namespace hiptensor
                        std::vector<std::vector<int32_t>> const& inModesArray,
                        std::vector<std::vector<int32_t>> const& outModesArray,
                        std::vector<hiptensorOperator_t> const&  operators,
-                       PermutationInstanceType_t                instanceType) const;
-        uint32_t solutionCount() const;
+                       ElementwiseExecutionSpaceType_t                instanceType) const;
 
     private:
         std::unordered_map<Uid, std::unique_ptr<PermutationSolution>> mAllSolutions;

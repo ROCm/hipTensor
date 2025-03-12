@@ -136,7 +136,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
         {descA->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
-        hiptensor::PermutationInstanceType_t::Device);
+        hiptensor::ElementwiseExecutionSpaceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)

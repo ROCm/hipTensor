@@ -35,18 +35,6 @@
 
 namespace hiptensor
 {
-    // Specialize overrides for runtime PermutationOperatorType
-    template <>
-    struct PermutationOperatorType<ck::tensor_operation::element_wise::Scale>
-    {
-        static constexpr auto value = PermutationOpId_t::SCALE;
-    };
-
-    template <>
-    struct PermutationOperatorType<ck::tensor_operation::element_wise::PassThrough>
-    {
-        static constexpr auto value = PermutationOpId_t::PASS_THROUGH;
-    };
 
 } // namespace hiptensor
 

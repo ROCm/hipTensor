@@ -161,7 +161,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                       {{modeA, modeA + descA->mLengths.size()}},
                                       {{modeB, modeB + descB->mLengths.size()}},
                                       {descA->mUnaryOp, descB->mUnaryOp},
-                                      hiptensor::PermutationInstanceType_t::Device);
+                                      hiptensor::ElementwiseExecutionSpaceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)

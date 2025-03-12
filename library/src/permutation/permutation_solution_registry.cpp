@@ -41,14 +41,14 @@ namespace hiptensor
                                            std::vector<std::vector<int32_t>> const& inModesArray,
                                            std::vector<std::vector<int32_t>> const& outModesArray,
                                            std::vector<hiptensorOperator_t> const&  operators,
-                                           PermutationInstanceType_t instanceType) const
+                                           ElementwiseExecutionSpaceType_t instanceType) const
     {
         int nDims = lengths.size();
         // TODO Only handle all input tensors have the same modes here. Need to handle cases when they are not.
         auto outputDims = hiptensor::findIndices(inModesArray[0], outModesArray[0]);
 
         // TODO Only handle A, B have the same types here. Need to handle A, B are different types
-        auto instanceParams = instanceType == PermutationInstanceType_t::Device
+        auto instanceParams = instanceType == ElementwiseExecutionSpaceType_t::Device
                                   ? selectInstanceParams(
                                       lengths, outputDims, inDataTypes[0], outDataTypes[0], nDims)
                                   : InstanceHyperParams{0, 0, 0, 0, 0, {0, 0}, 0, 0};
@@ -71,7 +71,7 @@ namespace hiptensor
         };
         bool usePassThroughIfAlphaIsOne
             = (allEquals(scalarValues, 1.0F) && allEquals(operators, HIPTENSOR_OP_IDENTITY)
-               && instanceType == PermutationInstanceType_t::Device);
+               && instanceType == ElementwiseExecutionSpaceType_t::Device);
         auto scale     = usePassThroughIfAlphaIsOne ? hiptensor::PermutationOpId_t::PASS_THROUGH
                                                     : hiptensor::PermutationOpId_t::SCALE;
         auto hashCodes = ck::tensor_operation::device::instance::getHashCodeOfBestPerfInstances(
@@ -96,11 +96,6 @@ namespace hiptensor
             // Register with the query then take ownership
             mAllSolutions.insert(std::move(solution));
         }
-    }
-
-    uint32_t PermutationSolutionRegistry::solutionCount() const
-    {
-        return mAllSolutions.size();
     }
 
 } // namespace hiptensor

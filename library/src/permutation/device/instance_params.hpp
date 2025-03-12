@@ -120,7 +120,6 @@ namespace ck::tensor_operation::device::instance
 
     // The caller should test the returned hash code in order since earlier instances have better perf.
     std::vector<hiptensor::Uid>
-        // TODO typeIn should be InDataTypeTuple
         getHashCodeOfBestPerfInstances(std::vector<hipDataType> const&       typeIn,
                                        std::vector<hipDataType> const&       typeOut,
                                        hiptensor::PermutationOpId_t          scale,

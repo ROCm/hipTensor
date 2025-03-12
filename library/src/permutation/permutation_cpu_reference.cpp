@@ -55,7 +55,7 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
                                           {{modeA, modeA + descA->mLengths.size()}},
                                           {{modeB, modeB + descB->mLengths.size()}},
                                           {descA->mUnaryOp, descB->mUnaryOp},
-                                          hiptensor::PermutationInstanceType_t::Host);
+                                          hiptensor::ElementwiseExecutionSpaceType_t::Host);
 
     for(auto refCandidate : refCandidates)
     {
@@ -116,7 +116,7 @@ hiptensorStatus_t hiptensorElementwiseBianryOpReference(const hiptensorHandle_t*
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
         {descA->mUnaryOp, descD->mUnaryOp},
-        hiptensor::PermutationInstanceType_t::Host);
+        hiptensor::ElementwiseExecutionSpaceType_t::Host);
 
     for(auto refCandidate : refCandidates)
     {
