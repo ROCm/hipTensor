@@ -39,7 +39,7 @@ namespace hiptensor
      * \brief This enum respresents the solution instance is of permutation, elementwise binary operation
      * or elementwise trinary operation
      */
-    enum struct InstanceType_t : int32_t
+    enum struct ElementwiseInstanceType_t : int32_t
     {
         PERMUTATION,
         ELEMENTWISE_BINARY_OP,
@@ -59,7 +59,7 @@ namespace hiptensor
     };
 
     /**
-     * \brief This enum categorizes the permutation instance
+     * \brief This enum categorizes the elementwise instance
      * \details Device instances run on GPUs, while host instances run on CPUs.
      */
     enum struct ElementwiseExecutionSpaceType_t : int32_t

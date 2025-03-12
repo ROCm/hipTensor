@@ -135,7 +135,7 @@ namespace hiptensor
             convertVectorToCkArray(outBuffers, deviceOutBuffers);
 
             // Initialize the argument pointer
-            if constexpr(Traits::InstanceType == InstanceType_t::PERMUTATION)
+            if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::PERMUTATION)
             {
                 if constexpr(std::is_same_v<typename Traits::ScaleOp,
                                             ck::tensor_operation::element_wise::PassThrough>)
@@ -171,7 +171,7 @@ namespace hiptensor
                                 HIPTENSOR_OP_IDENTITY}})); // ignore opB since none operation should be applied on output
                 }
             }
-            else if constexpr(Traits::InstanceType == InstanceType_t::ELEMENTWISE_BINARY_OP)
+            else if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP)
             {
                 using Scale   = ck::tensor_operation::element_wise::Scale;
                 using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
@@ -190,7 +190,7 @@ namespace hiptensor
                         typename Traits::COp{UnaryOp{operators[1]}, Scale{scalarValues[1]}},
                     })); // ignore opB since none operation should be applied on output
             }
-            else if constexpr(Traits::InstanceType == InstanceType_t::ELEMENTWISE_TRINARY_OP)
+            else if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::ELEMENTWISE_TRINARY_OP)
             {
             }
             else

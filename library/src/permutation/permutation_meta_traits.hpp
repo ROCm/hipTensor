@@ -53,7 +53,7 @@ namespace hiptensor
         NumDim>>
     {
         constexpr static ck::index_t    NDim         = NumDim;
-        constexpr static InstanceType_t InstanceType = InstanceType_t::PERMUTATION;
+        constexpr static ElementwiseInstanceType_t InstanceType = ElementwiseInstanceType_t::PERMUTATION;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
@@ -78,7 +78,7 @@ namespace hiptensor
         NumDim>>
     {
         constexpr static ck::index_t    NDim         = NumDim;
-        constexpr static InstanceType_t InstanceType = InstanceType_t::ELEMENTWISE_BINARY_OP;
+        constexpr static ElementwiseInstanceType_t InstanceType = ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
