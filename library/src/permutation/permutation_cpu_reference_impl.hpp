@@ -286,8 +286,9 @@ namespace hiptensor
                                  ck::tensor_operation::element_wise::PassThrough>>
                   ? hiptensor::PermutationOpId_t::PASS_THROUGH
                   : hiptensor::PermutationOpId_t::SCALE;
-        auto hashCode = ck::tensor_operation::device::instance::
-            DeviceElementwiseParams<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>::hashCode();
+        auto params = ck::tensor_operation::device::instance::
+            DeviceElementwiseParams::Gen<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>();
+        auto hashCode = hiptensor::Hash{}(params);
         auto result = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();
         result.insert({hashCode, std::move(solution)});
 

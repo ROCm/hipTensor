@@ -128,8 +128,7 @@ namespace ck
                                                  ck::tensor_operation::element_wise::PassThrough>>
                                   ? hiptensor::PermutationOpId_t::PASS_THROUGH
                                   : hiptensor::PermutationOpId_t::SCALE;
-                        container.insert(
-                            {DeviceElementwiseParams<InDataTypeTuple,
+                        auto params =  DeviceElementwiseParams::Gen<InDataTypeTuple,
                                                      OutDataTypeTuple,
                                                      opType,
                                                      NumDim,
@@ -140,7 +139,9 @@ namespace ck
                                                      M1PerThread,
                                                      ThreadClusterArrangeOrder,
                                                      InScalarPerVectorSeq,
-                                                     OutScalarPerVectorSeq>::hashCode(),
+                                                     OutScalarPerVectorSeq>();
+
+                        container.insert({hiptensor::Hash{}(params),
                              std::make_unique<
                                  HiptensorDeviceElementwiseImpl<InDataTypeTuple,
                                                                 OutDataTypeTuple,

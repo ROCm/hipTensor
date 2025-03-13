@@ -50,8 +50,8 @@ namespace hiptensor
         // TODO Only handle A, B have the same types here. Need to handle A, B are different types
         auto instanceParams = instanceType == ElementwiseExecutionSpaceType_t::Device
                                   ? selectInstanceParams(
-                                      lengths, outputDims, inDataTypes[0], outDataTypes[0], nDims)
-                                  : InstanceHyperParams{0, 0, 0, 0, 0, {0, 0}, 0, 0};
+                                      lengths, outputDims, inDataTypes, outDataTypes, nDims)
+                                  : InstanceHyperParams{};
 
         /// When all operators are both pass_through and alpha is 1.0. Permutation only moves data around.
         /// Use PermutationOpId_t::PASS_THROUGH instead of PermutationOpId_t::SCALE in this case so that the performance is much better.
@@ -76,6 +76,7 @@ namespace hiptensor
                                                     : hiptensor::PermutationOpId_t::SCALE;
         auto hashCodes = ck::tensor_operation::device::instance::getHashCodeOfBestPerfInstances(
             inDataTypes, outDataTypes, scale, nDims, instanceParams);
+
         std::vector<PermutationSolution*> solutions;
         for(auto hashCode : hashCodes)
         {

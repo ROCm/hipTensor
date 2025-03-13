@@ -30,6 +30,7 @@
 #include <ck/ck.hpp>
 #include <ck/utility/sequence.hpp>
 #include <ostream>
+#include <vector>
 
 namespace hiptensor
 {
@@ -69,14 +70,17 @@ namespace hiptensor
         UNKNOWN,
     };
 
-    using InstanceHyperParams = std::tuple<ck::index_t,
-                                           ck::index_t,
-                                           ck::index_t,
-                                           ck::index_t,
-                                           ck::index_t,
-                                           std::pair<ck::index_t, ck::index_t>,
-                                           ck::index_t,
-                                           ck::index_t>;
+    struct InstanceHyperParams
+    {
+        ck::index_t                      mBlockSize;
+        ck::index_t                      mM0PerBlock;
+        ck::index_t                      mM1PerBlock;
+        ck::index_t                      mM0PerThread;
+        ck::index_t                      mM1PerThread;
+        std::vector<int>  mThreadClusterArrangeOrder;
+        std::vector<int>  mInScalarPerVectorSeq;
+        std::vector<int>  mOutScalarPerVectorSeq;
+    };
 } // namespace hiptensor
 
 namespace std

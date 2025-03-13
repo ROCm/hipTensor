@@ -34,8 +34,8 @@ namespace hiptensor
 {
     InstanceHyperParams selectInstanceParams(std::vector<Uid> const&     lengths,
                                              std::vector<int32_t> const& outputMode,
-                                             hipDataType                 typeIn,
-                                             hipDataType                 typeOut,
+                                             std::vector<hipDataType> const &                     typeIn,
+                                             std::vector<hipDataType> const &                     typeOut,
                                              ck::index_t                 numDim);
 } // namespace hiptensor
 
