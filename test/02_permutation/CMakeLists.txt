@@ -47,7 +47,7 @@ add_hiptensor_unit_test(permutation_cpu_test ${PermutationTestSources})
 # Rank 2 tests
 set (PermutationRank2TestSources ${PermutationCommonSources}
      ${CMAKE_CURRENT_SOURCE_DIR}/rank2_permutation_test.cpp)
-set (PermutationRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank2_test_params.yaml)
+set (PermutationRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/permutation/rank2_test_params.yaml)
 add_hiptensor_test(rank2_permutation_test ${PermutationRank2TestConfig}  ${PermutationRank2TestSources})
 
 set (ElementwiseBinaryOpRank2TestSources ${ElementwiseBinaryOpCommonSources}
@@ -55,47 +55,47 @@ set (ElementwiseBinaryOpRank2TestSources ${ElementwiseBinaryOpCommonSources}
 set (ElementwiseBinaryOpRank2TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank2_binary_op_test_params.yaml)
 add_hiptensor_test(rank2_elementwise_binary_op_test ${ElementwiseBinaryOpRank2TestConfig}  ${ElementwiseBinaryOpRank2TestSources})
 
-## Rank 3 tests
-# set (PermutationRank3TestSources ${PermutationCommonSources}
-     # ${CMAKE_CURRENT_SOURCE_DIR}/rank3_permutation_test.cpp)
-# set (PermutationRank3TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank3_test_params.yaml)
-# add_hiptensor_test(rank3_permutation_test ${PermutationRank3TestConfig}  ${PermutationRank3TestSources})
-#
-# set (ElementwiseBinaryOpRank3TestSources ${ElementwiseBinaryOpCommonSources}
-	 # ${CMAKE_CURRENT_SOURCE_DIR}/rank3_elementwise_binary_op_test.cpp)
-# set (ElementwiseBinaryOpRank3TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank3_binary_op_test_params.yaml)
-# add_hiptensor_test(rank3_elementwise_binary_op_test ${ElementwiseBinaryOpRank3TestConfig}  ${ElementwiseBinaryOpRank3TestSources})
-#
-## Rank 4 tests
-# set (PermutationRank4TestSources ${PermutationCommonSources}
-     # ${CMAKE_CURRENT_SOURCE_DIR}/rank4_permutation_test.cpp)
-# set (PermutationRank4TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank4_test_params.yaml)
-# add_hiptensor_test(rank4_permutation_test ${PermutationRank4TestConfig}  ${PermutationRank4TestSources})
-#
-# set (ElementwiseBinaryOpRank4TestSources ${ElementwiseBinaryOpCommonSources}
-	 # ${CMAKE_CURRENT_SOURCE_DIR}/rank4_elementwise_binary_op_test.cpp)
-# set (ElementwiseBinaryOpRank4TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank4_binary_op_test_params.yaml)
-# add_hiptensor_test(rank4_elementwise_binary_op_test ${ElementwiseBinaryOpRank4TestConfig}  ${ElementwiseBinaryOpRank4TestSources})
-#
-## Rank 5 tests
-# set (PermutationRank5TestSources ${PermutationCommonSources}
-     # ${CMAKE_CURRENT_SOURCE_DIR}/rank5_permutation_test.cpp)
-# set (PermutationRank5TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank5_test_params.yaml)
-# add_hiptensor_test(rank5_permutation_test ${PermutationRank5TestConfig}  ${PermutationRank5TestSources})
-#
-# set (ElementwiseBinaryOpRank5TestSources ${ElementwiseBinaryOpCommonSources}
-	 # ${CMAKE_CURRENT_SOURCE_DIR}/rank5_elementwise_binary_op_test.cpp)
-# set (ElementwiseBinaryOpRank5TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank5_binary_op_test_params.yaml)
-# add_hiptensor_test(rank5_elementwise_binary_op_test ${ElementwiseBinaryOpRank5TestConfig}  ${ElementwiseBinaryOpRank5TestSources})
-#
-## Rank 6 tests
-# set (PermutationRank6TestSources ${PermutationCommonSources}
-     # ${CMAKE_CURRENT_SOURCE_DIR}/rank6_permutation_test.cpp)
-# set (PermutationRank6TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/rank6_test_params.yaml)
-# add_hiptensor_test(rank6_permutation_test ${PermutationRank6TestConfig}  ${PermutationRank6TestSources})
-#
-# set (ElementwiseBinaryOpRank6TestSources ${ElementwiseBinaryOpCommonSources}
-	 # ${CMAKE_CURRENT_SOURCE_DIR}/rank6_elementwise_binary_op_test.cpp)
-# set (ElementwiseBinaryOpRank6TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank6_binary_op_test_params.yaml)
-# add_hiptensor_test(rank6_elementwise_binary_op_test ${ElementwiseBinaryOpRank6TestConfig}  ${ElementwiseBinaryOpRank6TestSources})
+# Rank 3 tests
+set (PermutationRank3TestSources ${PermutationCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank3_permutation_test.cpp)
+set (PermutationRank3TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/permutation/rank3_test_params.yaml)
+add_hiptensor_test(rank3_permutation_test ${PermutationRank3TestConfig}  ${PermutationRank3TestSources})
 
+set (ElementwiseBinaryOpRank3TestSources ${ElementwiseBinaryOpCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank3_elementwise_binary_op_test.cpp)
+set (ElementwiseBinaryOpRank3TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank3_binary_op_test_params.yaml)
+add_hiptensor_test(rank3_elementwise_binary_op_test ${ElementwiseBinaryOpRank3TestConfig}  ${ElementwiseBinaryOpRank3TestSources})
+
+# Rank 4 tests
+set (PermutationRank4TestSources ${PermutationCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank4_permutation_test.cpp)
+set (PermutationRank4TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/permutation/rank4_test_params.yaml)
+add_hiptensor_test(rank4_permutation_test ${PermutationRank4TestConfig}  ${PermutationRank4TestSources})
+
+set (ElementwiseBinaryOpRank4TestSources ${ElementwiseBinaryOpCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank4_elementwise_binary_op_test.cpp)
+set (ElementwiseBinaryOpRank4TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank4_binary_op_test_params.yaml)
+add_hiptensor_test(rank4_elementwise_binary_op_test ${ElementwiseBinaryOpRank4TestConfig}  ${ElementwiseBinaryOpRank4TestSources})
+
+# Rank 5 tests
+set (PermutationRank5TestSources ${PermutationCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank5_permutation_test.cpp)
+set (PermutationRank5TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/permutation/rank5_test_params.yaml)
+add_hiptensor_test(rank5_permutation_test ${PermutationRank5TestConfig}  ${PermutationRank5TestSources})
+
+set (ElementwiseBinaryOpRank5TestSources ${ElementwiseBinaryOpCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank5_elementwise_binary_op_test.cpp)
+set (ElementwiseBinaryOpRank5TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank5_binary_op_test_params.yaml)
+add_hiptensor_test(rank5_elementwise_binary_op_test ${ElementwiseBinaryOpRank5TestConfig}  ${ElementwiseBinaryOpRank5TestSources})
+
+# Rank 6 tests
+set (PermutationRank6TestSources ${PermutationCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank6_permutation_test.cpp)
+set (PermutationRank6TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/permutation/rank6_test_params.yaml)
+add_hiptensor_test(rank6_permutation_test ${PermutationRank6TestConfig}  ${PermutationRank6TestSources})
+
+set (ElementwiseBinaryOpRank6TestSources ${ElementwiseBinaryOpCommonSources}
+	 ${CMAKE_CURRENT_SOURCE_DIR}/rank6_elementwise_binary_op_test.cpp)
+set (ElementwiseBinaryOpRank6TestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/validation/binary_op/rank6_binary_op_test_params.yaml)
+add_hiptensor_test(rank6_elementwise_binary_op_test ${ElementwiseBinaryOpRank6TestConfig}  ${ElementwiseBinaryOpRank6TestSources})
+#

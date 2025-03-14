@@ -32,6 +32,10 @@
 #include <ostream>
 #include <vector>
 
+#include <combined_element_wise_operation.hpp>
+#include <hiptensor/hiptensor_types.hpp>
+#include "permutation_types.hpp"
+
 namespace hiptensor
 {
     using Uid = std::size_t;
@@ -88,7 +92,5 @@ namespace std
     ostream& operator<<(ostream& os, hiptensor::PermutationOpId_t const&);
 
 } // namespace std
-
-#include "permutation_types_impl.hpp"
 
 #endif // HIPTENSOR_PERMUTATION_TYPES_HPP

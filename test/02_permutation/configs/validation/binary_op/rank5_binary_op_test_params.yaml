@@ -10,8 +10,7 @@ Gammas:
 Lengths:
   - [ 1, 1, 1, 1, 1]
   - [ 5, 2, 3, 4, 5]
-  - [ 5, 2, 1, 1, 2]
-  - [ 15, 12, 23, 11, 2]
+  - [ 32, 2, 64, 32, 64]
 Operators:
   - [HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_ADD]
   - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_ADD]
