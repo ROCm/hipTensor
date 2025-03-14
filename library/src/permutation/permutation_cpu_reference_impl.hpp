@@ -280,10 +280,7 @@ namespace hiptensor
 
         constexpr hiptensor::PermutationOpId_t opType
             = std::is_same_v<ElementwiseOperation,
-                             ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                 ck::tensor_operation::element_wise::PassThrough,
-                                 ck::tensor_operation::element_wise::PassThrough,
-                                 ck::tensor_operation::element_wise::PassThrough>>
+                                          CkPermutationPassThroughCombinedOp>
                   ? hiptensor::PermutationOpId_t::PASS_THROUGH
                   : hiptensor::PermutationOpId_t::SCALE;
         auto params = ck::tensor_operation::device::instance::

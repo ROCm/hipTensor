@@ -40,6 +40,7 @@
 #include <device_elementwise_dynamic_vector_dims_impl.hpp>
 
 #include "instance_params.hpp"
+#include "hiptensor_ck_types.hpp"
 
 namespace ck
 {
@@ -122,10 +123,7 @@ namespace ck
                     {
                         constexpr hiptensor::PermutationOpId_t opType
                             = std::is_same_v<ElementwiseOperation,
-                                             ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                                 ck::tensor_operation::element_wise::PassThrough,
-                                                 ck::tensor_operation::element_wise::PassThrough,
-                                                 ck::tensor_operation::element_wise::PassThrough>>
+                                          hiptensor::CkPermutationPassThroughCombinedOp>
                                   ? hiptensor::PermutationOpId_t::PASS_THROUGH
                                   : hiptensor::PermutationOpId_t::SCALE;
                         auto params =  DeviceElementwiseParams::Gen<InDataTypeTuple,

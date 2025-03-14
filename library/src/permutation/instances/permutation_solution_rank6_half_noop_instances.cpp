@@ -28,6 +28,7 @@
 #include "../permutation_solution_instances.hpp"
 
 // Ensure access to
+#include "../device/hiptensor_ck_types.hpp"
 #include "../device/hiptensor_permutation_scale_instances.hpp"
 
 namespace hiptensor
@@ -39,10 +40,7 @@ namespace hiptensor
         registerSolutions(
             enumeratePermutationSolutions<ck::Tuple<ck::half_t>,
                                           ck::Tuple<ck::half_t>,
-                                          ck::tensor_operation::element_wise::UnaryCombinedOp<
-                                              ck::tensor_operation::element_wise::PassThrough,
-                                              ck::tensor_operation::element_wise::PassThrough,
-                                              ck::tensor_operation::element_wise::PassThrough>,
+                                          CkPermutationPassThroughCombinedOp,
                                           6>());
     }
 } // namespace hiptensor

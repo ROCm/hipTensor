@@ -110,7 +110,7 @@ namespace hiptensor
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                                              // 1
             << computeTypeToString(convertToComputeType(testType[1])) << ", "                       // 2
-            << "[ " << opTypeToString(operators[0]) << " " << opTypeToString(operators[1]) << "], " // 3
+            << "[ " << opTypeToString(operators[0]) << "], "                                        // 3
             << logLevelToString(logLevel) << ", ";                                                  // 4
         printContainerInCsv(lengths, stream) << ", ";                                               // 5
         printContainerInCsv(permutedDims, stream) << ", ";                                          // 6
@@ -169,7 +169,7 @@ namespace hiptensor
         EXPECT_TRUE((lengths.size() > 1) && (lengths.size() <= 6));
         EXPECT_TRUE((permutedDims.size() > 1) && (permutedDims.size() <= 6));
 
-        EXPECT_EQ(operators.size(), 2); // HIPTENSOR_OP_IDENTITY or HIPTENSOR_OP_SQRT
+        EXPECT_EQ(operators.size(), 1); // HIPTENSOR_OP_IDENTITY or HIPTENSOR_OP_NEG
         auto op = operators[0];
         EXPECT_TRUE((op == HIPTENSOR_OP_IDENTITY) || (op == HIPTENSOR_OP_NEG));
 
@@ -272,7 +272,6 @@ namespace hiptensor
         auto computeDataType = dataTypes[1];
 
         auto Aop = operators[0];
-        auto Bop = operators[1];
 
         if(!mRunFlag)
         {
@@ -322,7 +321,7 @@ namespace hiptensor
 
             hiptensorTensorDescriptor_t descB;
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, abDataType, Bop));
+                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, abDataType, HIPTENSOR_OP_IDENTITY));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)

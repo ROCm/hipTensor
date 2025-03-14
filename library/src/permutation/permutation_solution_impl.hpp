@@ -146,11 +146,9 @@ namespace hiptensor
                         deviceOutputStrides,
                         deviceInBuffers,
                         deviceOutBuffers,
-                        // ck::tensor_operation::element_wise::PassThrough{}));
                         typename Traits::CombinedOp{
-                            typename Traits::AOp{},
                             ck::tensor_operation::element_wise::PassThrough{},
-                            typename Traits::BOp{}}));
+                            ck::tensor_operation::element_wise::PassThrough{}}));
                 }
                 else
                 {
@@ -166,9 +164,7 @@ namespace hiptensor
                         // ck::tensor_operation::element_wise::PassThrough{}));
                         typename Traits::CombinedOp{
                             typename Traits::AOp{operators[0]},
-                            typename Traits::ScaleOp{scalarValues[0]},
-                            typename Traits::BOp{
-                                HIPTENSOR_OP_IDENTITY}})); // ignore opB since none operation should be applied on output
+                            typename Traits::ScaleOp{scalarValues[0]}}));
                 }
             }
             else if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP)
