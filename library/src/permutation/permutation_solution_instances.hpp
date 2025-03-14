@@ -45,14 +45,19 @@ namespace hiptensor
         ~PermutationSolutionInstances() = default;
 
     private:
+        void ElementwiseBinarySolution2DDoubleInstances();
         void ElementwiseBinarySolution2DFloatInstances();
         void ElementwiseBinarySolution2DHalfInstances();
+        void ElementwiseBinarySolution3DDoubleInstances();
         void ElementwiseBinarySolution3DFloatInstances();
         void ElementwiseBinarySolution3DHalfInstances();
+        void ElementwiseBinarySolution4DDoubleInstances();
         void ElementwiseBinarySolution4DFloatInstances();
         void ElementwiseBinarySolution4DHalfInstances();
+        void ElementwiseBinarySolution5DDoubleInstances();
         void ElementwiseBinarySolution5DFloatInstances();
         void ElementwiseBinarySolution5DHalfInstances();
+        void ElementwiseBinarySolution6DDoubleInstances();
         void ElementwiseBinarySolution6DFloatInstances();
         void ElementwiseBinarySolution6DHalfInstances();
         void PermutationSolution2DFloatInstances();

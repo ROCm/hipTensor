@@ -57,7 +57,7 @@ namespace hiptensor
     // False = skip test
     bool ElementwiseBinaryOpTest::checkDevice(hipDataType datatype) const
     {
-        return isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F));
+        return (isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F))) || (isF64Supported() && (datatype == HIP_R_64F));
     }
 
     bool ElementwiseBinaryOpTest::checkSizes() const
@@ -229,7 +229,29 @@ namespace hiptensor
                 size_t elementsD   = elementsA;
                 size_t elementsRef = elementsA;
 
-                if(dataType == HIP_R_32F)
+                if(dataType == HIP_R_64F)
+                {
+                    stream << "Tensor A elements (" << elementsA << "):\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)resource->hostInput1().get(), elementsA);
+                    stream << std::endl;
+
+                    stream << "Tensor C elements (" << elementsC << "):\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)resource->hostInput2().get(), elementsC);
+                    stream << std::endl;
+
+                    stream << "Tensor D elements (" << elementsD << "):\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)resource->hostOutput().get(), elementsD);
+                    stream << std::endl;
+
+                    stream << "Tensor ref elements (" << elementsRef << "):\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)resource->hostReference().get(), elementsRef);
+                    stream << std::endl;
+                }
+                else if(dataType == HIP_R_32F)
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<float>(
@@ -431,7 +453,33 @@ namespace hiptensor
             {
                 resource->copyOutputToHost();
 
-                if(dataType == HIP_R_32F)
+                if(dataType == HIP_R_64F)
+                {
+                    CHECK_HIPTENSOR_ERROR(
+                        hiptensorElementwiseBianryOpReference(handle,
+                                                      &alphaValue,
+                                                      (const double*)resource->hostInput1().get(),
+                                                      &descA,
+                                                      modeA.data(),
+                                                      &gammaValue,
+                                                      (const double*)resource->hostInput2().get(),
+                                                      &descC,
+                                                      modeC.data(),
+                                                      (double*)resource->hostReference().get(),
+                                                      &descD,
+                                                      modeD.data(),
+													  ACop,
+                                                      computeDataType,
+                                                      0 /* stream */));
+
+                    resource->copyReferenceToDevice();
+                    std::tie(mValidationResult, mMaxRelativeError)
+                        = compareEqualLaunchKernel<double>((double*)resource->deviceOutput().get(),
+                                                          (double*)resource->deviceReference().get(),
+                                                          resource->getCurrentMatrixElement(),
+                                                          convertToComputeType(computeDataType));
+                }
+                else if(dataType == HIP_R_32F)
                 {
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorElementwiseBianryOpReference(handle,

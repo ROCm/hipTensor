@@ -53,6 +53,11 @@ namespace hiptensor
                                             ck::tensor_operation::element_wise::HiptensorUnaryOp>,
                                         4>());
 
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<double, double>,
+                                                      ck::Tuple<double>,
+                                                      CkBinaryWithUnaryCombinedOp,
+                                                      4>());
+
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<float, float>,
                                                       ck::Tuple<float>,
                                                       CkBinaryWithUnaryCombinedOp,

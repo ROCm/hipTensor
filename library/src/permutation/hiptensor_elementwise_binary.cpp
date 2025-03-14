@@ -89,12 +89,11 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descD);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeD);
 
-    constexpr std::array<std::array<hipDataType, 3>, 4> validDataTypes
+    constexpr std::array<std::array<hipDataType, 3>, 3> validDataTypes
         = {{// typeA, typeC, typeScalar
             {HIP_R_16F, HIP_R_16F, HIP_R_16F},
-            {HIP_R_16F, HIP_R_16F, HIP_R_32F},
             {HIP_R_32F, HIP_R_32F, HIP_R_32F},
-            {HIP_R_32F, HIP_R_16F, HIP_R_32F}}};
+            {HIP_R_64F, HIP_R_64F, HIP_R_64F}}};
 
     std::array<hipDataType, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
     if(descC->mType != descD->mType
