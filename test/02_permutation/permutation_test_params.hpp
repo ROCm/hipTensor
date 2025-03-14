@@ -45,7 +45,7 @@ namespace hiptensor
         using LogLevelT     = hiptensorLogLevel_t;
         using LengthsT      = std::vector<std::size_t>;
         using AlphaT        = double;
-        using BetaT        = double;
+        using BetaT         = double;
         using GammaT        = double;
         using PermutedDimsT = std::vector<std::size_t>;
         using OperatorT     = std::vector<hiptensorOperator_t>;
@@ -109,7 +109,7 @@ namespace hiptensor
         LogLevelT                  mLogLevelMask;
         std::vector<LengthsT>      mProblemLengths;
         std::vector<AlphaT>        mAlphas;
-        std::vector<BetaT>        mBetas;
+        std::vector<BetaT>         mBetas;
         std::vector<GammaT>        mGammas;
         std::vector<OperatorT>     mOperators;
         std::vector<PermutedDimsT> mPermutedDims;

@@ -39,8 +39,8 @@
 #include <combined_element_wise_operation.hpp>
 #include <device_elementwise_dynamic_vector_dims_impl.hpp>
 
-#include "instance_params.hpp"
 #include "hiptensor_ck_types.hpp"
+#include "instance_params.hpp"
 
 namespace ck
 {
@@ -123,23 +123,24 @@ namespace ck
                     {
                         constexpr hiptensor::PermutationOpId_t opType
                             = std::is_same_v<ElementwiseOperation,
-                                          hiptensor::CkPermutationPassThroughCombinedOp>
+                                             hiptensor::CkPermutationPassThroughCombinedOp>
                                   ? hiptensor::PermutationOpId_t::PASS_THROUGH
                                   : hiptensor::PermutationOpId_t::SCALE;
-                        auto params =  DeviceElementwiseParams::Gen<InDataTypeTuple,
-                                                     OutDataTypeTuple,
-                                                     opType,
-                                                     NumDim,
-                                                     BlockSize,
-                                                     M0PerBlock,
-                                                     M1PerBlock,
-                                                     M0PerThread,
-                                                     M1PerThread,
-                                                     ThreadClusterArrangeOrder,
-                                                     InScalarPerVectorSeq,
-                                                     OutScalarPerVectorSeq>();
+                        auto params = DeviceElementwiseParams::Gen<InDataTypeTuple,
+                                                                   OutDataTypeTuple,
+                                                                   opType,
+                                                                   NumDim,
+                                                                   BlockSize,
+                                                                   M0PerBlock,
+                                                                   M1PerBlock,
+                                                                   M0PerThread,
+                                                                   M1PerThread,
+                                                                   ThreadClusterArrangeOrder,
+                                                                   InScalarPerVectorSeq,
+                                                                   OutScalarPerVectorSeq>();
 
-                        container.insert({hiptensor::Hash{}(params),
+                        container.insert(
+                            {hiptensor::Hash{}(params),
                              std::make_unique<
                                  HiptensorDeviceElementwiseImpl<InDataTypeTuple,
                                                                 OutDataTypeTuple,

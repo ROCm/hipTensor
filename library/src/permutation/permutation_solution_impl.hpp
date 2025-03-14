@@ -162,12 +162,12 @@ namespace hiptensor
                         deviceInBuffers,
                         deviceOutBuffers,
                         // ck::tensor_operation::element_wise::PassThrough{}));
-                        typename Traits::CombinedOp{
-                            typename Traits::AOp{operators[0]},
-                            typename Traits::ScaleOp{scalarValues[0]}}));
+                        typename Traits::CombinedOp{typename Traits::AOp{operators[0]},
+                                                    typename Traits::ScaleOp{scalarValues[0]}}));
                 }
             }
-            else if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP)
+            else if constexpr(Traits::InstanceType
+                              == ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP)
             {
                 using Scale   = ck::tensor_operation::element_wise::Scale;
                 using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
@@ -186,7 +186,8 @@ namespace hiptensor
                         typename Traits::COp{UnaryOp{operators[1]}, Scale{scalarValues[1]}},
                     })); // ignore opB since none operation should be applied on output
             }
-            else if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::ELEMENTWISE_TRINARY_OP)
+            else if constexpr(Traits::InstanceType
+                              == ElementwiseInstanceType_t::ELEMENTWISE_TRINARY_OP)
             {
             }
             else

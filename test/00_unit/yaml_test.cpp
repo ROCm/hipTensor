@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
     auto yee          = hiptensor::ContractionTestParams{};
     yee.mLogLevelMask = (hiptensorLogLevel_t)(HIPTENSOR_LOG_LEVEL_OFF);
     yee.mDataTypes    = {
-           // clang-format off
+        // clang-format off
                 {HIP_R_32F, HIP_R_32F, hiptensor::NONE_TYPE, HIP_R_32F, HIP_R_32F}, // scale F32
                 {HIP_C_32F, HIP_C_32F, hiptensor::NONE_TYPE, HIP_C_32F, HIP_C_32F}, // scale F32 Complex
                 {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F}, // bilinear F32

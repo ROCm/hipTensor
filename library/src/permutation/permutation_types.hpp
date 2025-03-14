@@ -32,9 +32,9 @@
 #include <ostream>
 #include <vector>
 
+#include "permutation_types.hpp"
 #include <combined_element_wise_operation.hpp>
 #include <hiptensor/hiptensor_types.hpp>
-#include "permutation_types.hpp"
 
 namespace hiptensor
 {
@@ -76,14 +76,14 @@ namespace hiptensor
 
     struct InstanceHyperParams
     {
-        ck::index_t                      mBlockSize;
-        ck::index_t                      mM0PerBlock;
-        ck::index_t                      mM1PerBlock;
-        ck::index_t                      mM0PerThread;
-        ck::index_t                      mM1PerThread;
-        std::vector<int>  mThreadClusterArrangeOrder;
-        std::vector<int>  mInScalarPerVectorSeq;
-        std::vector<int>  mOutScalarPerVectorSeq;
+        ck::index_t      mBlockSize;
+        ck::index_t      mM0PerBlock;
+        ck::index_t      mM1PerBlock;
+        ck::index_t      mM0PerThread;
+        ck::index_t      mM1PerThread;
+        std::vector<int> mThreadClusterArrangeOrder;
+        std::vector<int> mInScalarPerVectorSeq;
+        std::vector<int> mOutScalarPerVectorSeq;
     };
 } // namespace hiptensor
 

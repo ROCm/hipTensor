@@ -185,7 +185,8 @@ namespace hiptensor
         }
         else
         {
-            getResource()->setupStorage(lengths, abDataType,ElementwiseResource::ElementwiseOp::PERMUTATION);
+            getResource()->setupStorage(
+                lengths, abDataType, ElementwiseResource::ElementwiseOp::PERMUTATION);
 
             // set mPrintElements to true to print element
             mPrintElements = false;
@@ -320,8 +321,13 @@ namespace hiptensor
                 handle, &descA, nmodeA, extentA.data(), NULL /* stride */, abDataType, Aop));
 
             hiptensorTensorDescriptor_t descB;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, abDataType, HIPTENSOR_OP_IDENTITY));
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                                &descB,
+                                                                nmodeB,
+                                                                extentB.data(),
+                                                                NULL /* stride */,
+                                                                abDataType,
+                                                                HIPTENSOR_OP_IDENTITY));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)

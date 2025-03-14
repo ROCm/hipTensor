@@ -48,10 +48,10 @@ namespace hiptensor
         auto outputDims = hiptensor::findIndices(inModesArray[0], outModesArray[0]);
 
         // TODO Only handle A, B have the same types here. Need to handle A, B are different types
-        auto instanceParams = instanceType == ElementwiseExecutionSpaceType_t::Device
-                                  ? selectInstanceParams(
-                                      lengths, outputDims, inDataTypes, outDataTypes, nDims)
-                                  : InstanceHyperParams{};
+        auto instanceParams
+            = instanceType == ElementwiseExecutionSpaceType_t::Device
+                  ? selectInstanceParams(lengths, outputDims, inDataTypes, outDataTypes, nDims)
+                  : InstanceHyperParams{};
 
         /// When all operators are both pass_through and alpha is 1.0. Permutation only moves data around.
         /// Use PermutationOpId_t::PASS_THROUGH instead of PermutationOpId_t::SCALE in this case so that the performance is much better.

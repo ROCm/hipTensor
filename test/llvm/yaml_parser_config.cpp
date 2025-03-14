@@ -369,8 +369,12 @@ namespace llvm
                 // Sequences of combinatorial fields
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
-                io.mapOptional("Betas", (std::vector<BetaT>&)(doc.betas()), std::vector<BetaT>(doc.alphas().size()));
-                io.mapOptional("Gammas", (std::vector<GammaT>&)(doc.gammas()), std::vector<GammaT>(doc.alphas().size()));
+                io.mapOptional("Betas",
+                               (std::vector<BetaT>&)(doc.betas()),
+                               std::vector<BetaT>(doc.alphas().size()));
+                io.mapOptional("Gammas",
+                               (std::vector<GammaT>&)(doc.gammas()),
+                               std::vector<GammaT>(doc.alphas().size()));
                 io.mapRequired("Lengths", doc.problemLengths());
                 io.mapRequired("Permuted Dims", doc.permutedDims());
                 io.mapRequired("Operators", (doc.operators()));

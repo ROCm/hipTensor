@@ -46,4 +46,6 @@ TEST_P(Rank2ElementwiseBinaryOpTest, RunKernel)
     this->RunKernel();
 }
 
-INSTANTIATE_TEST_SUITE_P(ElementwiseBinaryOpTests, Rank2ElementwiseBinaryOpTest, load_config_helper());
+INSTANTIATE_TEST_SUITE_P(ElementwiseBinaryOpTests,
+                         Rank2ElementwiseBinaryOpTest,
+                         load_config_helper());

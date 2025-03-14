@@ -35,17 +35,15 @@ namespace hiptensor
     {
         // Register all the solutions exactly once
         // 5d Permutation
-        registerSolutions(
-            enumerateReferenceSolutions<ck::Tuple<float>,
-                                        ck::Tuple<float>,
-										  CkPermutationUnaryCombinedOp,
-                                        5>());
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<float>,
+                                                      ck::Tuple<float>,
+                                                      CkPermutationUnaryCombinedOp,
+                                                      5>());
 
-        registerSolutions(
-            enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
-                                        ck::Tuple<ck::half_t>,
-										  CkPermutationUnaryCombinedOp,
-                                        5>());
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
+                                                      ck::Tuple<ck::half_t>,
+                                                      CkPermutationUnaryCombinedOp,
+                                                      5>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<double, double>,
                                                       ck::Tuple<double>,

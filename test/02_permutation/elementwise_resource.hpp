@@ -50,7 +50,8 @@ namespace hiptensor
 
     struct ElementwiseResource : public HipResource, public LazySingleton<ElementwiseResource>
     {
-        enum class ElementwiseOp {
+        enum class ElementwiseOp
+        {
             PERMUTATION,
             BINARY_OP,
             TRINARY_OP,
@@ -69,15 +70,16 @@ namespace hiptensor
     private: // No public instantiation except make_unique.
              // No copy
         ElementwiseResource();
-        ElementwiseResource(const ElementwiseResource&)            = delete;
+        ElementwiseResource(const ElementwiseResource&) = delete;
         ElementwiseResource& operator=(const ElementwiseResource&) = delete;
 
-        void fillRandToInput(HostPtrT& hostPtr, DevicePtrT& devicePtr);
-        void fillRandToInput1();
-        void fillRandToInput2();
-        void fillRandToInput3();
+        void   fillRandToInput(HostPtrT& hostPtr, DevicePtrT& devicePtr);
+        void   fillRandToInput1();
+        void   fillRandToInput2();
+        void   fillRandToInput3();
         size_t getCurrentMatrixMemorySize() const;
         void   reset() final;
+
     public:
         ElementwiseResource(ElementwiseResource&&);
         virtual ~ElementwiseResource() = default;
@@ -104,18 +106,18 @@ namespace hiptensor
         DevicePtrT mDeviceInput1;
         DevicePtrT mDeviceInput2;
         DevicePtrT mDeviceInput3;
-        DevicePtrT  mDeviceOutput;
+        DevicePtrT mDeviceOutput;
         DevicePtrT mDeviceReference;
         HostPtrT   mHostInput1;
         HostPtrT   mHostInput2;
         HostPtrT   mHostInput3;
-        HostPtrT  mHostOutput;
-        HostPtrT mHostReference;
+        HostPtrT   mHostOutput;
+        HostPtrT   mHostReference;
 
         ElementwiseOp mOpType;
-        size_t mCurrentMatrixElement; /**< Element count of Input[1,2,3]/Output */
+        size_t        mCurrentMatrixElement; /**< Element count of Input[1,2,3]/Output */
         hipDataType
-            mCurrentDataType; /**< Type size of element of Input[1,2,3]/Output, only support HIP_R_16F, HIP_R_32F */
+               mCurrentDataType; /**< Type size of element of Input[1,2,3]/Output, only support HIP_R_16F, HIP_R_32F */
         size_t mCurrentAllocByte; /**< Allocated size of memory */
     };
 

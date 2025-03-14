@@ -39,11 +39,7 @@ namespace ck::tensor_operation::device::instance
         // - scalarPerVectorSeq is 0 when it is CPU reference instance.
         // - `hashCodes` may contain hash codes that not represent any instances. It is not a problem
         //      since these hash codes will be ignored.
-		auto params = DeviceElementwiseParams::Gen( typeIn,
-                                              typeOut,
-                                              scale,
-                                              numDim,
-											  hyperParams);
+        auto params = DeviceElementwiseParams::Gen(typeIn, typeOut, scale, numDim, hyperParams);
         hashCodes.push_back(hiptensor::Hash{}(params));
         // instances below are safe net
         // clang-format off

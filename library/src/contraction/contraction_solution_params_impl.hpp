@@ -59,12 +59,12 @@ namespace hiptensor
     template <typename DeviceOp>
     struct ContractionSolutionParamsImpl : public ContractionSolutionParams
     {
-        ContractionSolutionParamsImpl()                                                = default;
-        ~ContractionSolutionParamsImpl()                                               = default;
-        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl const&)            = default;
-        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl&&)                 = default;
+        ContractionSolutionParamsImpl()                                     = default;
+        ~ContractionSolutionParamsImpl()                                    = default;
+        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl const&) = default;
+        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl&&)      = default;
         ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl const&) = default;
-        ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl&&)      = default;
+        ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl&&) = default;
 
         using MetaTraitsT = MetaTraits<DeviceOp>;
 

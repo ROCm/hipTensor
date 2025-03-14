@@ -48,9 +48,9 @@ namespace hiptensor
         // Due to unique_ptr ownership of members,
         // PermutationSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        PermutationSolution()                                      = delete;
-        PermutationSolution(PermutationSolution const&)            = delete;
-        virtual ~PermutationSolution()                             = default;
+        PermutationSolution()                           = delete;
+        PermutationSolution(PermutationSolution const&) = delete;
+        virtual ~PermutationSolution()                  = default;
         PermutationSolution& operator=(PermutationSolution const&) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from

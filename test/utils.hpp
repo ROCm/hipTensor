@@ -463,14 +463,14 @@ namespace hiptensor
             else
             {
                 auto it = container.begin();
-                if (it != container.end())
+                if(it != container.end())
                 {
-                    outStream << *it;  // Print the first element
+                    outStream << *it; // Print the first element
                     ++it;
                 }
-                while (it != container.end())
+                while(it != container.end())
                 {
-                    outStream << " " << *it;  // Print space and then the element
+                    outStream << " " << *it; // Print space and then the element
                     ++it;
                 }
             }

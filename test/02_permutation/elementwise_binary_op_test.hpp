@@ -41,13 +41,14 @@ namespace hiptensor
 {
     static void logMessage(int32_t logLevel, const char* funcName = "", const char* msg = "");
 
-    using ElementwiseBinaryOpTestParams_t = std::tuple<typename PermutationTestParams::DataTypesT,
-                                               typename PermutationTestParams::LogLevelT,
-                                               typename PermutationTestParams::LengthsT,
-                                               typename PermutationTestParams::PermutedDimsT,
-                                               typename PermutationTestParams::AlphaT,
-                                               typename PermutationTestParams::GammaT,
-                                               typename PermutationTestParams::OperatorT>;
+    using ElementwiseBinaryOpTestParams_t
+        = std::tuple<typename PermutationTestParams::DataTypesT,
+                     typename PermutationTestParams::LogLevelT,
+                     typename PermutationTestParams::LengthsT,
+                     typename PermutationTestParams::PermutedDimsT,
+                     typename PermutationTestParams::AlphaT,
+                     typename PermutationTestParams::GammaT,
+                     typename PermutationTestParams::OperatorT>;
     class ElementwiseBinaryOpTest : public ::testing::TestWithParam<ElementwiseBinaryOpTestParams_t>
     {
     protected: // Types
@@ -63,9 +64,9 @@ namespace hiptensor
         virtual ~ElementwiseBinaryOpTest() = default;
 
     protected: // Functions
-        ElementwiseBinaryOpTest(ElementwiseBinaryOpTest&&)            = delete;
-        ElementwiseBinaryOpTest(ElementwiseBinaryOpTest const&)       = delete;
-        ElementwiseBinaryOpTest& operator=(ElementwiseBinaryOpTest&)  = delete;
+        ElementwiseBinaryOpTest(ElementwiseBinaryOpTest&&)      = delete;
+        ElementwiseBinaryOpTest(ElementwiseBinaryOpTest const&) = delete;
+        ElementwiseBinaryOpTest& operator=(ElementwiseBinaryOpTest&) = delete;
         ElementwiseBinaryOpTest& operator=(ElementwiseBinaryOpTest&&) = delete;
 
         bool checkDevice(hipDataType datatype) const;

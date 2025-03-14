@@ -4116,11 +4116,12 @@ namespace hiptensor
 
     InstanceHyperParams selectInstanceParams(std::vector<std::size_t> const& lengths,
                                              std::vector<int32_t> const&     outputMode,
-                                             std::vector<hipDataType> const &                     typeIn,
-                                             std::vector<hipDataType> const &                     typeOut,
+                                             std::vector<hipDataType> const& typeIn,
+                                             std::vector<hipDataType> const& typeOut,
                                              ck::index_t                     numDim)
     {
-        if (typeIn.size() == 1) {
+        if(typeIn.size() == 1)
+        {
             auto key = hipTypeToString(typeIn[0]);
             for(auto&& index : findRepresentPointOfSubSpace(lengths))
             {
@@ -4136,19 +4137,19 @@ namespace hiptensor
             decltype(lookUpTableRank2)* lut = nullptr;
             switch(numDim)
             {
-                case 2:
-                    lut = &lookUpTableRank2;
-                    break;
-                case 3:
-                    lut = &lookUpTableRank3;
-                    break;
-                case 4:
-                    lut = &lookUpTableRank4;
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    break;
+            case 2:
+                lut = &lookUpTableRank2;
+                break;
+            case 3:
+                lut = &lookUpTableRank3;
+                break;
+            case 4:
+                lut = &lookUpTableRank4;
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
             }
             if(lut)
             {
@@ -4160,11 +4161,17 @@ namespace hiptensor
 
             // default instance has the best perf on average
             return {256, 64, 64, 4, 4, {0, 1}, {4}, {4}};
-        } else  if (typeIn.size() == 2) {
+        }
+        else if(typeIn.size() == 2)
+        {
             return {256, 64, 64, 4, 4, {0, 1}, {4, 4}, {4}};
-        } else  if (typeIn.size() == 3) {
+        }
+        else if(typeIn.size() == 3)
+        {
             return {256, 64, 64, 4, 4, {0, 1}, {4, 4, 4}, {4}};
-        } else {
+        }
+        else
+        {
             return {256, 64, 64, 4, 4, {0, 1}, {4}, {4}};
         }
     }

@@ -26,10 +26,10 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
+#include "elementwise_binary_op_test.hpp"
 #include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "permutation/permutation_cpu_reference.hpp"
-#include "elementwise_binary_op_test.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -57,7 +57,8 @@ namespace hiptensor
     // False = skip test
     bool ElementwiseBinaryOpTest::checkDevice(hipDataType datatype) const
     {
-        return (isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F))) || (isF64Supported() && (datatype == HIP_R_64F));
+        return (isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F)))
+               || (isF64Supported() && (datatype == HIP_R_64F));
     }
 
     bool ElementwiseBinaryOpTest::checkSizes() const
@@ -74,11 +75,11 @@ namespace hiptensor
         mValidationResult = false;
         mMaxRelativeError = 0.0;
 
-		mElapsedTimeMs = 0.0;
-		mTotalGFlops = 0.0;
-		mMeasuredTFlopsPerSec = 0.0;
-		mTotalGBytes = 0.0;
-		mGBytesPerSec = 0.0;
+        mElapsedTimeMs        = 0.0;
+        mTotalGFlops          = 0.0;
+        mMeasuredTFlopsPerSec = 0.0;
+        mTotalGBytes          = 0.0;
+        mGBytesPerSec         = 0.0;
     }
 
     std::ostream& ElementwiseBinaryOpTest::printHeader(std::ostream& stream /* = std::cout */) const
@@ -193,7 +194,8 @@ namespace hiptensor
         }
         else
         {
-            getResource()->setupStorage(lengths, dataType,ElementwiseResource::ElementwiseOp::BINARY_OP);
+            getResource()->setupStorage(
+                lengths, dataType, ElementwiseResource::ElementwiseOp::BINARY_OP);
 
             // set mPrintElements to true to print element
             mPrintElements = false;
@@ -201,11 +203,11 @@ namespace hiptensor
     }
 
     void ElementwiseBinaryOpTest::reportResults(std::ostream& stream,
-                                        hipDataType   dataType,
-                                        bool          omitHeader,
-                                        bool          omitSkipped,
-                                        bool          omitFailed,
-                                        bool          omitPassed) const
+                                                hipDataType   dataType,
+                                                bool          omitHeader,
+                                                bool          omitSkipped,
+                                                bool          omitFailed,
+                                                bool          omitPassed) const
     {
         if(!omitHeader)
         {
@@ -310,11 +312,11 @@ namespace hiptensor
         auto gamma        = std::get<5>(param);
         auto operators    = std::get<6>(param);
 
-        auto dataType      = dataTypes[0];
+        auto dataType        = dataTypes[0];
         auto computeDataType = dataTypes[1];
 
-        auto Aop = operators[0];
-        auto Cop = operators[1];
+        auto Aop  = operators[0];
+        auto Cop  = operators[1];
         auto ACop = operators[2];
 
         if(!mRunFlag)
@@ -344,7 +346,7 @@ namespace hiptensor
             int                              nmodeC = modeC.size();
             int                              nmodeD = modeD.size();
             std::unordered_map<int, int64_t> extent;
-			for (int i = 0; i < modeA.size(); i++)
+            for(int i = 0; i < modeA.size(); i++)
             {
                 extent[modeA[i]] = lengths[i];
             }
@@ -370,8 +372,13 @@ namespace hiptensor
                 handle, &descC, nmodeC, extentC.data(), NULL /* stride */, dataType, Cop));
 
             hiptensorTensorDescriptor_t descD;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descD, nmodeD, extentD.data(), NULL /* stride */, dataType, HIPTENSOR_OP_IDENTITY));
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                                &descD,
+                                                                nmodeD,
+                                                                extentD.data(),
+                                                                NULL /* stride */,
+                                                                dataType,
+                                                                HIPTENSOR_OP_IDENTITY));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -398,20 +405,20 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
             CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
-                                                       &alphaValue,
-                                                       resource->deviceInput1().get(),
-                                                       &descA,
-                                                       modeA.data(),
-                                                       &gammaValue,
-                                                       resource->deviceInput2().get(),
-                                                       &descC,
-                                                       modeC.data(),
-                                                       resource->deviceOutput().get(),
-                                                       &descD,
-                                                       modeD.data(),
-													   ACop,
-                                                       computeDataType,
-                                                       0 /* stream */));
+                                                             &alphaValue,
+                                                             resource->deviceInput1().get(),
+                                                             &descA,
+                                                             modeA.data(),
+                                                             &gammaValue,
+                                                             resource->deviceInput2().get(),
+                                                             &descC,
+                                                             modeC.data(),
+                                                             resource->deviceOutput().get(),
+                                                             &descD,
+                                                             modeD.data(),
+                                                             ACop,
+                                                             computeDataType,
+                                                             0 /* stream */));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
@@ -455,48 +462,49 @@ namespace hiptensor
 
                 if(dataType == HIP_R_64F)
                 {
-                    CHECK_HIPTENSOR_ERROR(
-                        hiptensorElementwiseBianryOpReference(handle,
-                                                      &alphaValue,
-                                                      (const double*)resource->hostInput1().get(),
-                                                      &descA,
-                                                      modeA.data(),
-                                                      &gammaValue,
-                                                      (const double*)resource->hostInput2().get(),
-                                                      &descC,
-                                                      modeC.data(),
-                                                      (double*)resource->hostReference().get(),
-                                                      &descD,
-                                                      modeD.data(),
-													  ACop,
-                                                      computeDataType,
-                                                      0 /* stream */));
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBianryOpReference(
+                        handle,
+                        &alphaValue,
+                        (const double*)resource->hostInput1().get(),
+                        &descA,
+                        modeA.data(),
+                        &gammaValue,
+                        (const double*)resource->hostInput2().get(),
+                        &descC,
+                        modeC.data(),
+                        (double*)resource->hostReference().get(),
+                        &descD,
+                        modeD.data(),
+                        ACop,
+                        computeDataType,
+                        0 /* stream */));
 
                     resource->copyReferenceToDevice();
                     std::tie(mValidationResult, mMaxRelativeError)
-                        = compareEqualLaunchKernel<double>((double*)resource->deviceOutput().get(),
-                                                          (double*)resource->deviceReference().get(),
-                                                          resource->getCurrentMatrixElement(),
-                                                          convertToComputeType(computeDataType));
+                        = compareEqualLaunchKernel<double>(
+                            (double*)resource->deviceOutput().get(),
+                            (double*)resource->deviceReference().get(),
+                            resource->getCurrentMatrixElement(),
+                            convertToComputeType(computeDataType));
                 }
                 else if(dataType == HIP_R_32F)
                 {
-                    CHECK_HIPTENSOR_ERROR(
-                        hiptensorElementwiseBianryOpReference(handle,
-                                                      &alphaValue,
-                                                      (const float*)resource->hostInput1().get(),
-                                                      &descA,
-                                                      modeA.data(),
-                                                      &gammaValue,
-                                                      (const float*)resource->hostInput2().get(),
-                                                      &descC,
-                                                      modeC.data(),
-                                                      (float*)resource->hostReference().get(),
-                                                      &descD,
-                                                      modeD.data(),
-													  ACop,
-                                                      computeDataType,
-                                                      0 /* stream */));
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBianryOpReference(
+                        handle,
+                        &alphaValue,
+                        (const float*)resource->hostInput1().get(),
+                        &descA,
+                        modeA.data(),
+                        &gammaValue,
+                        (const float*)resource->hostInput2().get(),
+                        &descC,
+                        modeC.data(),
+                        (float*)resource->hostReference().get(),
+                        &descD,
+                        modeD.data(),
+                        ACop,
+                        computeDataType,
+                        0 /* stream */));
 
                     resource->copyReferenceToDevice();
                     std::tie(mValidationResult, mMaxRelativeError)
@@ -507,22 +515,22 @@ namespace hiptensor
                 }
                 else if(dataType == HIP_R_16F)
                 {
-                    CHECK_HIPTENSOR_ERROR(
-                        hiptensorElementwiseBianryOpReference(handle,
-                                                      &alphaValue,
-                                                      (const _Float16*)resource->hostInput1().get(),
-                                                      &descA,
-                                                      modeA.data(),
-                                                      &gammaValue,
-                                                      (const _Float16*)resource->hostInput2().get(),
-                                                      &descC,
-                                                      modeC.data(),
-                                                      (_Float16*)resource->hostReference().get(),
-                                                      &descD,
-                                                      modeD.data(),
-													  ACop,
-                                                      computeDataType,
-                                                      0 /* stream */));
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBianryOpReference(
+                        handle,
+                        &alphaValue,
+                        (const _Float16*)resource->hostInput1().get(),
+                        &descA,
+                        modeA.data(),
+                        &gammaValue,
+                        (const _Float16*)resource->hostInput2().get(),
+                        &descC,
+                        modeC.data(),
+                        (_Float16*)resource->hostReference().get(),
+                        &descD,
+                        modeD.data(),
+                        ACop,
+                        computeDataType,
+                        0 /* stream */));
 
                     resource->copyReferenceToDevice();
 

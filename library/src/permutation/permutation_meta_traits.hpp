@@ -51,8 +51,9 @@ namespace hiptensor
         ck::tensor_operation::element_wise::UnaryCombinedOp<Aop, Scale>,
         NumDim>>
     {
-        constexpr static ck::index_t    NDim         = NumDim;
-        constexpr static ElementwiseInstanceType_t InstanceType = ElementwiseInstanceType_t::PERMUTATION;
+        constexpr static ck::index_t               NDim = NumDim;
+        constexpr static ElementwiseInstanceType_t InstanceType
+            = ElementwiseInstanceType_t::PERMUTATION;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
@@ -75,8 +76,9 @@ namespace hiptensor
         ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
         NumDim>>
     {
-        constexpr static ck::index_t    NDim         = NumDim;
-        constexpr static ElementwiseInstanceType_t InstanceType = ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP;
+        constexpr static ck::index_t               NDim = NumDim;
+        constexpr static ElementwiseInstanceType_t InstanceType
+            = ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;

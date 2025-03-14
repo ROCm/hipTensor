@@ -69,28 +69,31 @@ namespace hiptensor
     }
 
     // suppose that all input and output data types are same.
-    void ElementwiseResource::setupStorage(ProblemDims const& dimSizes, hipDataType dataType, ElementwiseOp opType)
+    void ElementwiseResource::setupStorage(ProblemDims const& dimSizes,
+                                           hipDataType        dataType,
+                                           ElementwiseOp      opType)
     {
-		mOpType = opType;
+        mOpType                   = opType;
         auto requiredElementCount = getProduct(dimSizes);
         auto requiredMemorySize   = requiredElementCount * hipDataTypeSize(dataType);
 
         bool needFillData = false;
         if(requiredMemorySize > mCurrentAllocByte)
         {
-			switch(mOpType) {
-				case ElementwiseOp::TRINARY_OP:
-					Base::reallocDeviceHostPair(mDeviceInput3, mHostInput3, requiredMemorySize);
-					// no break;
-				case ElementwiseOp::BINARY_OP:
-					Base::reallocDeviceHostPair(mDeviceInput2, mHostInput2, requiredMemorySize);
-					// no break;
-				case ElementwiseOp::PERMUTATION:
-					Base::reallocDeviceHostPair(mDeviceInput1, mHostInput1, requiredMemorySize);
-					break;
-				default:
-					break;
-			}
+            switch(mOpType)
+            {
+            case ElementwiseOp::TRINARY_OP:
+                Base::reallocDeviceHostPair(mDeviceInput3, mHostInput3, requiredMemorySize);
+                // no break;
+            case ElementwiseOp::BINARY_OP:
+                Base::reallocDeviceHostPair(mDeviceInput2, mHostInput2, requiredMemorySize);
+                // no break;
+            case ElementwiseOp::PERMUTATION:
+                Base::reallocDeviceHostPair(mDeviceInput1, mHostInput1, requiredMemorySize);
+                break;
+            default:
+                break;
+            }
             Base::reallocDeviceHostPair(mDeviceOutput, mHostOutput, requiredMemorySize);
             Base::reallocDeviceHostPair(mDeviceReference, mHostReference, requiredMemorySize);
             mCurrentAllocByte = requiredMemorySize;
@@ -104,20 +107,21 @@ namespace hiptensor
         mCurrentDataType      = dataType;
         if(needFillData)
         {
-			switch(mOpType) {
-				case ElementwiseOp::TRINARY_OP:
-					fillRandToInput3();
-					// no break;
-				case ElementwiseOp::BINARY_OP:
-					fillRandToInput2();
-					// no break;
-				case ElementwiseOp::PERMUTATION:
-					fillRandToInput1();
-					break;
-				default:
-					break;
-			}
-		}
+            switch(mOpType)
+            {
+            case ElementwiseOp::TRINARY_OP:
+                fillRandToInput3();
+                // no break;
+            case ElementwiseOp::BINARY_OP:
+                fillRandToInput2();
+                // no break;
+            case ElementwiseOp::PERMUTATION:
+                fillRandToInput1();
+                break;
+            default:
+                break;
+            }
+        }
     }
 
     void ElementwiseResource::reset()
@@ -128,7 +132,7 @@ namespace hiptensor
         Base::reallocDeviceHostPair(mDeviceOutput, mHostOutput, 0);
         Base::reallocDeviceHostPair(mDeviceReference, mHostReference, 0);
         mCurrentMatrixElement = 0;
-        mOpType = ElementwiseOp::PERMUTATION;
+        mOpType               = ElementwiseOp::PERMUTATION;
         mCurrentDataType      = HIP_R_32F;
         mCurrentAllocByte     = 0;
     }
@@ -149,19 +153,19 @@ namespace hiptensor
     }
 
     void ElementwiseResource::fillRandToInput1()
-	{
-		fillRandToInput(hostInput1(), deviceInput1());
-	}
+    {
+        fillRandToInput(hostInput1(), deviceInput1());
+    }
 
     void ElementwiseResource::fillRandToInput2()
-	{
-		fillRandToInput(hostInput2(), deviceInput2());
-	}
+    {
+        fillRandToInput(hostInput2(), deviceInput2());
+    }
 
     void ElementwiseResource::fillRandToInput3()
-	{
-		fillRandToInput(hostInput3(), deviceInput3());
-	}
+    {
+        fillRandToInput(hostInput3(), deviceInput3());
+    }
 
     void ElementwiseResource::copyOutputToHost()
     {

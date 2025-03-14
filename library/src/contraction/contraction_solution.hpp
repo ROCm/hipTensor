@@ -52,9 +52,9 @@ namespace hiptensor
         // Due to unique_ptr ownership of members,
         // ContractionSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        ContractionSolution()                                      = delete;
-        ContractionSolution(ContractionSolution const&)            = delete;
-        virtual ~ContractionSolution()                             = default;
+        ContractionSolution()                           = delete;
+        ContractionSolution(ContractionSolution const&) = delete;
+        virtual ~ContractionSolution()                  = default;
         ContractionSolution& operator=(ContractionSolution const&) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from

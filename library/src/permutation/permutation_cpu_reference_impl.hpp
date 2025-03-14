@@ -112,7 +112,7 @@ namespace hiptensor
                 });
             }
 
-            Argument(Argument const&)            = default;
+            Argument(Argument const&) = default;
             Argument& operator=(Argument const&) = default;
             ~Argument()                          = default;
 
@@ -279,14 +279,13 @@ namespace hiptensor
             = std::make_unique<PermutationSolutionImpl<BaseOp>>(std::make_unique<ReferenceOp>());
 
         constexpr hiptensor::PermutationOpId_t opType
-            = std::is_same_v<ElementwiseOperation,
-                                          CkPermutationPassThroughCombinedOp>
+            = std::is_same_v<ElementwiseOperation, CkPermutationPassThroughCombinedOp>
                   ? hiptensor::PermutationOpId_t::PASS_THROUGH
                   : hiptensor::PermutationOpId_t::SCALE;
-        auto params = ck::tensor_operation::device::instance::
-            DeviceElementwiseParams::Gen<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>();
+        auto params = ck::tensor_operation::device::instance::DeviceElementwiseParams::
+            Gen<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>();
         auto hashCode = hiptensor::Hash{}(params);
-        auto result = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();
+        auto result   = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();
         result.insert({hashCode, std::move(solution)});
 
         return result;

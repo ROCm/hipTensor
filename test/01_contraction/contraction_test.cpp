@@ -865,7 +865,7 @@ namespace hiptensor
                 size_t elementsCD = sizeD / hipDataTypeSize(ADataType);
 
                 auto   eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
-                                                                           : HIPTENSOR_COMPUTE_32F);
+                                                                             : HIPTENSOR_COMPUTE_32F);
                 double tolerance = 2 * nelems_k * eps;
 
                 // use the same default tolerance value as CK

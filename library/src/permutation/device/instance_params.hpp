@@ -55,110 +55,110 @@ namespace ck::tensor_operation::device::instance
     {
         std::vector<hipDataType> hipDataTypeVector;
         ck::static_for<0, DataTypeTuple::Size(), 1>{}([&hipDataTypeVector](auto i) {
-                hipDataTypeVector.push_back( hiptensor::HipDataType_v<typename ck::tuple_element_t<i, DataTypeTuple>>);
-                });
+            hipDataTypeVector.push_back(
+                hiptensor::HipDataType_v<typename ck::tuple_element_t<i, DataTypeTuple>>);
+        });
         return hipDataTypeVector;
     }
 
     class DeviceElementwiseParams
     {
-        public:
-            constexpr static hiptensor::Uid hashCode(DeviceElementwiseParams const & params)
-            {
-                return hiptensor::Hash{}(
-                        params.mInDataTypes,
-                        params.mOutDataTypes,
-                        params.mScale,
-                        params.mNumDim,
-                        params.mInstanceHyperParams.mBlockSize,
-                        params.mInstanceHyperParams.mM0PerBlock,
-                        params.mInstanceHyperParams.mM1PerBlock,
-                        params.mInstanceHyperParams.mM0PerThread,
-                        params.mInstanceHyperParams.mM1PerThread,
-                        params.mInstanceHyperParams.mThreadClusterArrangeOrder,
-                        params.mInstanceHyperParams.mInScalarPerVectorSeq,
-                        params.mInstanceHyperParams.mOutScalarPerVectorSeq);
-            }
+    public:
+        constexpr static hiptensor::Uid hashCode(DeviceElementwiseParams const& params)
+        {
+            return hiptensor::Hash{}(params.mInDataTypes,
+                                     params.mOutDataTypes,
+                                     params.mScale,
+                                     params.mNumDim,
+                                     params.mInstanceHyperParams.mBlockSize,
+                                     params.mInstanceHyperParams.mM0PerBlock,
+                                     params.mInstanceHyperParams.mM1PerBlock,
+                                     params.mInstanceHyperParams.mM0PerThread,
+                                     params.mInstanceHyperParams.mM1PerThread,
+                                     params.mInstanceHyperParams.mThreadClusterArrangeOrder,
+                                     params.mInstanceHyperParams.mInScalarPerVectorSeq,
+                                     params.mInstanceHyperParams.mOutScalarPerVectorSeq);
+        }
 
-            template <typename InDataTypeTuple,
-                     typename OutDataTypeTuple,
-                     hiptensor::PermutationOpId_t Scale,
-                     index_t                      NumDim,
-                     index_t                      BlockSize,
-                     index_t                      M0PerBlock,
-                     index_t                      M1PerBlock,
-                     index_t                      M0PerThread,
-                     index_t                      M1PerThread,
-                     typename ThreadClusterArrangeOrder,
-                     typename InScalarPerVectorSeq,
-                     typename OutScalarPerVectorSeq>
-                         static auto Gen()
-                         {
-                             DeviceElementwiseParams params;
-                             params.mInDataTypes =  convertTypeTupleToHipDataTypeVector<InDataTypeTuple>();
-                             params.mOutDataTypes =  convertTypeTupleToHipDataTypeVector<OutDataTypeTuple>();
-                             params.mScale =  Scale;
-                             params.mNumDim =  NumDim;
-                             params.mInstanceHyperParams.mBlockSize =  BlockSize;
-                             params.mInstanceHyperParams.mM0PerBlock =  M0PerBlock;
-                             params.mInstanceHyperParams.mM1PerBlock =  M1PerBlock;
-                             params.mInstanceHyperParams.mM0PerThread =  M0PerThread;
-                             params.mInstanceHyperParams.mM1PerThread =  M1PerThread;
-                             params.mInstanceHyperParams.mThreadClusterArrangeOrder = { ThreadClusterArrangeOrder::At(0),
-                                 ThreadClusterArrangeOrder::At(1)};
-                             ck::static_for<0, InScalarPerVectorSeq::Size(), 1>{}([&params](auto i) {
-                                     params.mInstanceHyperParams.mInScalarPerVectorSeq.push_back(InScalarPerVectorSeq::At(i));
-                                     });
-                             params.mInstanceHyperParams.mOutScalarPerVectorSeq =  {OutScalarPerVectorSeq::At(0)};
-                             return params;
-                         }
-            template <typename InDataTypeTuple,
-                     typename OutDataTypeTuple,
-                     hiptensor::PermutationOpId_t Scale,
-                     index_t                      NumDim>
-                         static auto Gen()
-                         {
-                             DeviceElementwiseParams params;
-                             params.mInDataTypes =  convertTypeTupleToHipDataTypeVector<InDataTypeTuple>();
-                             params.mOutDataTypes =  convertTypeTupleToHipDataTypeVector<OutDataTypeTuple>();
-                             params.mScale =  Scale;
-                             params.mNumDim =  NumDim;
+        template <typename InDataTypeTuple,
+                  typename OutDataTypeTuple,
+                  hiptensor::PermutationOpId_t Scale,
+                  index_t                      NumDim,
+                  index_t                      BlockSize,
+                  index_t                      M0PerBlock,
+                  index_t                      M1PerBlock,
+                  index_t                      M0PerThread,
+                  index_t                      M1PerThread,
+                  typename ThreadClusterArrangeOrder,
+                  typename InScalarPerVectorSeq,
+                  typename OutScalarPerVectorSeq>
+        static auto Gen()
+        {
+            DeviceElementwiseParams params;
+            params.mInDataTypes  = convertTypeTupleToHipDataTypeVector<InDataTypeTuple>();
+            params.mOutDataTypes = convertTypeTupleToHipDataTypeVector<OutDataTypeTuple>();
+            params.mScale        = Scale;
+            params.mNumDim       = NumDim;
+            params.mInstanceHyperParams.mBlockSize   = BlockSize;
+            params.mInstanceHyperParams.mM0PerBlock  = M0PerBlock;
+            params.mInstanceHyperParams.mM1PerBlock  = M1PerBlock;
+            params.mInstanceHyperParams.mM0PerThread = M0PerThread;
+            params.mInstanceHyperParams.mM1PerThread = M1PerThread;
+            params.mInstanceHyperParams.mThreadClusterArrangeOrder
+                = {ThreadClusterArrangeOrder::At(0), ThreadClusterArrangeOrder::At(1)};
+            ck::static_for<0, InScalarPerVectorSeq::Size(), 1>{}([&params](auto i) {
+                params.mInstanceHyperParams.mInScalarPerVectorSeq.push_back(
+                    InScalarPerVectorSeq::At(i));
+            });
+            params.mInstanceHyperParams.mOutScalarPerVectorSeq = {OutScalarPerVectorSeq::At(0)};
+            return params;
+        }
+        template <typename InDataTypeTuple,
+                  typename OutDataTypeTuple,
+                  hiptensor::PermutationOpId_t Scale,
+                  index_t                      NumDim>
+        static auto Gen()
+        {
+            DeviceElementwiseParams params;
+            params.mInDataTypes  = convertTypeTupleToHipDataTypeVector<InDataTypeTuple>();
+            params.mOutDataTypes = convertTypeTupleToHipDataTypeVector<OutDataTypeTuple>();
+            params.mScale        = Scale;
+            params.mNumDim       = NumDim;
 
-                             // This function is only used for reference instance.
-                             // Referenece instances are not affected by member variables below. So set them to
-                             // default values.
-                             //
-                             // Important: Need to use `InstanceHyperParams{}`, the default value of InstanceHyperParams,
-                             // to query a reference instance since `InstanceHyperParams{}` matches InstanceHyperParams value
-                             // return from this function.
-                             params.mInstanceHyperParams = {};
-                             return params;
-                         }
-            static auto Gen(
-                    std::vector<hipDataType>  const & inDataTypes,
-                    std::vector<hipDataType>  const & outDataTypes,
-                    hiptensor::PermutationOpId_t scale,
-                    index_t                      numDim,
-                    hiptensor::InstanceHyperParams const & instanceHyperParams
-                    ){
-                DeviceElementwiseParams params;
-                params.mInDataTypes =  inDataTypes;
-                params.mOutDataTypes =  outDataTypes;
-                params.mScale =  scale;
-                params.mNumDim =  numDim;
-                params.mInstanceHyperParams = instanceHyperParams;
-                return params;
-            }
+            // This function is only used for reference instance.
+            // Referenece instances are not affected by member variables below. So set them to
+            // default values.
+            //
+            // Important: Need to use `InstanceHyperParams{}`, the default value of InstanceHyperParams,
+            // to query a reference instance since `InstanceHyperParams{}` matches InstanceHyperParams value
+            // return from this function.
+            params.mInstanceHyperParams = {};
+            return params;
+        }
+        static auto Gen(std::vector<hipDataType> const&       inDataTypes,
+                        std::vector<hipDataType> const&       outDataTypes,
+                        hiptensor::PermutationOpId_t          scale,
+                        index_t                               numDim,
+                        hiptensor::InstanceHyperParams const& instanceHyperParams)
+        {
+            DeviceElementwiseParams params;
+            params.mInDataTypes         = inDataTypes;
+            params.mOutDataTypes        = outDataTypes;
+            params.mScale               = scale;
+            params.mNumDim              = numDim;
+            params.mInstanceHyperParams = instanceHyperParams;
+            return params;
+        }
 
-        private:
-            DeviceElementwiseParams() = default;
+    private:
+        DeviceElementwiseParams() = default;
 
-            std::vector<hipDataType>  mInDataTypes;
-            std::vector<hipDataType>  mOutDataTypes;
-            hiptensor::PermutationOpId_t mScale;
-            index_t                      mNumDim;
+        std::vector<hipDataType>     mInDataTypes;
+        std::vector<hipDataType>     mOutDataTypes;
+        hiptensor::PermutationOpId_t mScale;
+        index_t                      mNumDim;
 
-			hiptensor::InstanceHyperParams  mInstanceHyperParams;
+        hiptensor::InstanceHyperParams mInstanceHyperParams;
     };
 
     // `getHashCodeOfBestPerfInstances` generates a hash code based on the arguments. This hash code represents
@@ -184,9 +184,11 @@ namespace std
     template <>
     struct hash<ck::tensor_operation::device::instance::DeviceElementwiseParams>
     {
-        constexpr std::size_t operator()(ck::tensor_operation::device::instance::DeviceElementwiseParams const & params) const
+        constexpr std::size_t operator()(
+            ck::tensor_operation::device::instance::DeviceElementwiseParams const& params) const
         {
-            return ck::tensor_operation::device::instance::DeviceElementwiseParams::hashCode(params);
+            return ck::tensor_operation::device::instance::DeviceElementwiseParams::hashCode(
+                params);
         }
     };
 }

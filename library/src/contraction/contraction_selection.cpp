@@ -105,11 +105,11 @@ namespace hiptensor
         std::string          best_op_name;
         ContractionSolution* bestSolution = nullptr;
         PerfMetrics          bestMetrics  = {
-                      0,
-                      "",
-                      0,
-                      0,
-                      0,
+            0,
+            "",
+            0,
+            0,
+            0,
         };
 
         for(auto* solution : candidates)
