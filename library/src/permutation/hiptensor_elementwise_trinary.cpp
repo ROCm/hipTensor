@@ -32,21 +32,26 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
-                                             const void*                        alpha,
-                                             const void*                        A,
-                                             const hiptensorTensorDescriptor_t* descA,
-                                             const int32_t                      modeA[],
-                                             const void*                        gamma,
-                                             const void*                        C,
-                                             const hiptensorTensorDescriptor_t* descC,
-                                             const int32_t                      modeC[],
-                                             void*                              D,
-                                             const hiptensorTensorDescriptor_t* descD,
-                                             const int32_t                      modeD[],
-                                             hiptensorOperator_t                opAC,
-                                             hipDataType                        typeScalar,
-                                             hipStream_t                        stream)
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*           handle,
+                                              const void*                        alpha,
+                                              const void*                        A,
+                                              const hiptensorTensorDescriptor_t* descA,
+                                              const int32_t                      modeA[],
+                                              const void*                        beta,
+                                              const void*                        B,
+                                              const hiptensorTensorDescriptor_t* descB,
+                                              const int32_t                      modeB[],
+                                              const void*                        gamma,
+                                              const void*                        C,
+                                              const hiptensorTensorDescriptor_t* descC,
+                                              const int32_t                      modeC[],
+                                              void*                              D,
+                                              const hiptensorTensorDescriptor_t* descD,
+                                              const int32_t                      modeD[],
+                                              hiptensorOperator_t                opAB,
+                                              hiptensorOperator_t                opABC,
+                                              hipDataType                     typeScalar,
+                                              const hipStream_t                 stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -56,14 +61,19 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
     snprintf(msg,
              sizeof(msg),
              "handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, "
+             "beta=%p, B=%p, descB=%p, modeB=%p, "
              "gamma=%p, C=%p, descC=%p, modeC=%p, "
              "D=%p, descD=%p, modeD=%p, "
-             "opAC=0x%02X, typeScalar=0x%02X, stream=%p",
+             "opAB=0x%02X, opABC=0x%02X, typeScalar=0x%02X, stream=%p",
              handle,
              alpha,
              A,
              descA,
              modeA,
+             beta,
+             B,
+             descB,
+             modeB,
              gamma,
              C,
              descC,
@@ -71,16 +81,21 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
              D,
              descD,
              modeD,
-             opAC,
+             opAB,
+             opABC,
              (unsigned int)typeScalar,
              stream);
 
-    logger->logAPITrace("hiptensorElementwiseBinary", msg);
+    logger->logAPITrace("hiptensorElementwiseTrinary", msg);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, alpha);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, A);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeA);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, beta);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, B);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descB);
+    CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeB);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, gamma);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, C);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descC);
@@ -89,15 +104,14 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descD);
     CheckApiParams(*logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeD);
 
-    constexpr std::array<std::array<hipDataType, 3>, 3> validDataTypes
-        = {{// typeA, typeC, typeScalar
-            {HIP_R_16F, HIP_R_16F, HIP_R_16F},
-            {HIP_R_32F, HIP_R_32F, HIP_R_32F},
-            {HIP_R_64F, HIP_R_64F, HIP_R_64F}}};
+    constexpr std::array<std::array<hipDataType, 4>, 3> validDataTypes
+        = {{// typeA, typeB, typeC, typeScalar
+            {HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_16F},
+            {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F},
+            {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}}};
 
-    std::array<hipDataType, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
-    if(descC->mType != descD->mType
-       || std::none_of(validDataTypes.cbegin(),
+    std::array<hipDataType, 4> inputTensorTypes = {descA->mType, descB->mType, descC->mType, typeScalar};
+    if(std::none_of(validDataTypes.cbegin(),
                        validDataTypes.cend(),
                        [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))
     {
@@ -105,7 +119,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
         snprintf(msg,
                  sizeof(msg),
                  "Unsupported Data Type Error : The combination of data types for input tensors A, "
-                 "C, and D is not supported. "
+                 "B, C, and D is not supported. "
                  "See the link for details "
                  "https://rocm.docs.amd.com/projects/hipTensor/en/docs-6.5.0/api-reference/"
                  "api-reference.html "
@@ -120,6 +134,11 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
     {
         alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
+    float betaF;
+    if(beta != nullptr)
+    {
+        betaF = hiptensor::readVal<float>(beta, hiptensor::convertToComputeType(typeScalar));
+    }
     float gammaF;
     if(gamma != nullptr)
     {
@@ -128,28 +147,29 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
 
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
     auto  solutions = instances->query(
-        {alphaF, gammaF},
+        {alphaF, betaF, gammaF},
         descA->mLengths,
-        {descA->mType, descC->mType},
+        {descA->mType, descB->mType, descC->mType},
         {descD->mType},
-        {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
+        {{modeA, modeA + descA->mLengths.size()}, {modeB, modeB + descB->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
-        {descA->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
+        {descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
         hiptensor::ElementwiseExecutionSpaceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun = pSolution->initArgs({alphaF, gammaF},
-                                     {descA->mLengths, descC->mLengths},
-                                     {descA->mStrides, descC->mStrides},
+        canRun = pSolution->initArgs({alphaF, betaF, gammaF},
+                                     {descA->mLengths, descB->mLengths, descC->mLengths},
+                                     {descA->mStrides, descB->mStrides, descC->mStrides},
                                      {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                                      std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
                                       std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
                                      {descD->mLengths},
                                      {descD->mStrides},
                                      {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                     {opAC, descA->mUnaryOp, descC->mUnaryOp},
-                                     {A, C},
+                                     {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
+                                     {A, B, C},
                                      {D});
 
         if(canRun)

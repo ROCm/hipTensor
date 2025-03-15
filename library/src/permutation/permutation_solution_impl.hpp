@@ -169,26 +169,34 @@ namespace hiptensor
             else if constexpr(Traits::InstanceType
                               == ElementwiseInstanceType_t::ELEMENTWISE_BINARY_OP)
             {
-                using Scale   = ck::tensor_operation::element_wise::Scale;
-                using UnaryOp = ck::tensor_operation::element_wise::HiptensorUnaryOp;
-                using ScaleUnaryOp
-                    = ck::tensor_operation::element_wise::UnaryCombinedOp<UnaryOp, Scale>;
                 Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
                     deviceInputLengths,
                     deviceInputStrides,
                     deviceOutputStrides,
                     deviceInBuffers,
                     deviceOutBuffers,
-                    // ck::tensor_operation::element_wise::PassThrough{}));
                     typename Traits::CombinedOp{
-                        typename Traits::BinaryOp{operators[2]},
-                        typename Traits::AOp{UnaryOp{operators[0]}, Scale{scalarValues[0]}},
-                        typename Traits::COp{UnaryOp{operators[1]}, Scale{scalarValues[1]}},
+                        typename Traits::BinaryOp{operators[0]},
+                        typename Traits::AOp{CkHiptensorUnaryOp{operators[1]}, CkScale{scalarValues[0]}},
+                        typename Traits::COp{CkHiptensorUnaryOp{operators[2]}, CkScale{scalarValues[1]}},
                     })); // ignore opB since none operation should be applied on output
             }
             else if constexpr(Traits::InstanceType
                               == ElementwiseInstanceType_t::ELEMENTWISE_TRINARY_OP)
             {
+                Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
+                    deviceInputLengths,
+                    deviceInputStrides,
+                    deviceOutputStrides,
+                    deviceInBuffers,
+                    deviceOutBuffers,
+                    typename Traits::CombinedOp{
+                        typename Traits::ABCOp{operators[0]},
+                        typename Traits::ABOp{operators[1]},
+                        typename Traits::AOp{CkHiptensorUnaryOp{operators[2]}, CkScale{scalarValues[0]}},
+                        typename Traits::AOp{CkHiptensorUnaryOp{operators[3]}, CkScale{scalarValues[1]}},
+                        typename Traits::COp{CkHiptensorUnaryOp{operators[4]}, CkScale{scalarValues[2]}},
+                    })); // ignore opB since none operation should be applied on output
             }
             else
             {

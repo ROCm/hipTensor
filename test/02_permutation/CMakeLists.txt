@@ -36,13 +36,14 @@
      )
 
 #  tests
-set (PermutationTestSources
+set (CpuTestSources
     ${PermutationCommonSources}
     ${CMAKE_CURRENT_SOURCE_DIR}/permutation_cpu_impl_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_binary_cpu_impl_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_trinary_cpu_impl_test.cpp
     )
 
-add_hiptensor_unit_test(permutation_cpu_test ${PermutationTestSources})
+add_hiptensor_unit_test(elementwise_cpu_test ${CpuTestSources})
 
 # Rank 2 tests
 set (PermutationRank2TestSources ${PermutationCommonSources}

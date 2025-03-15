@@ -332,6 +332,13 @@ namespace ck
                             addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<4, 4>  , ck::Sequence<4>>(opPtrs);
                             addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<2, 2>  , ck::Sequence<2>>(opPtrs);
                             addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<1, 1>  , ck::Sequence<1>>(opPtrs);
+                        } else if  constexpr(InDataTypeTuple::Size() == 3){
+                            // We haven't yet determined the optimal hyper-parameters for element-wise trinary
+                            // operations. We're currently using these specific hyper-parameters as they performed best across the
+                            // majority of our previous tests.
+                            addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<4, 4, 4>  , ck::Sequence<4>>(opPtrs);
+                            addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<2, 2, 2>  , ck::Sequence<2>>(opPtrs);
+                            addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<1, 1, 1>  , ck::Sequence<1>>(opPtrs);
                         }
                         // clang-format on
                         return opPtrs;

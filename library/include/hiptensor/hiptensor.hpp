@@ -97,9 +97,9 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                        const hipDataType                  typeScalar,
                                        const hipStream_t                  stream);
 
-//! \brief Element-wise tensor operation for two input tensors
+//! @brief Element-wise tensor operation for two input tensors
 //!
-//! \details This function performs a element-wise tensor operation of the form:
+//! @details This function performs a element-wise tensor operation of the form:
 //! \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
 //!
 //! @param[in] handle Opaque handle holding hipTensor's library context.
@@ -136,6 +136,70 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                                              hiptensorOperator_t                opAC,
                                              hipDataType                        typeScalar,
                                              hipStream_t                        stream);
+
+//!
+//! @brief Element-wise tensor operation with three inputs
+//!
+//! @details This function performs a element-wise tensor operation of the form:
+//! \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{ABC}(\Phi_{AB}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \beta \Psi_B(B_{\Pi^B(i_0,i_1,...,i_n)})), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+//!
+//! Where
+//!    - A,B,C,D are multi-mode tensors (of arbitrary data types).
+//!    - \f$\Pi^A, \Pi^B, \Pi^C \f$ are permutation operators that permute the modes of A, B, and C respectively.
+//!    - \f$\Psi_{A},\Psi_{B},\Psi_{C}\f$ are unary element-wise operators (e.g., IDENTITY, CONJUGATE).
+//!    - \f$\Phi_{ABC}, \Phi_{AB}\f$ are binary element-wise operators (e.g., ADD, MUL, MAX, MIN).
+//!
+//! Moreover, modes may appear in any order, giving users a greater flexibility. The only <b>restrictions</b> are:
+//!    - modes that appear in A or B _must_ also appear in the output tensor; a mode that only appears in the input would be contracted and such an operation would be covered by either hiptensorContraction or hiptensorReduction.
+//!    - each mode may appear in each tensor at most once.
+//!
+//! @param[in] handle Opaque handle holding hipTensor's library context.
+//! @param[in] alpha Scaling factor for A (see equation above) of the type typeScalar. Pointer to the host memory. If alpha is zero, A is not read and the corresponding unary operator is not applied.
+//! @param[in] A Multi-mode tensor of type typeA with nmodeA modes. Pointer to the GPU-accessible memory.
+//! @param[in] descA A descriptor that holds the information about the data type, modes, and strides of A.
+//! @param[in] modeA Array (in host memory) of size descA->numModes that holds the names of the modes of A (e.g., if A_{a,b,c} => modeA = {'a','b','c'}). The modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor.
+//! @param[in] beta Scaling factor for B (see equation above) of the type typeScalar. Pointer to the host memory. If beta is zero, B is not read and the corresponding unary operator is not applied.
+//! @param[in] B Multi-mode tensor of type typeB with nmodeB many modes. Pointer to the GPU-accessible memory.
+//! @param[in] descB The B descriptor that holds information about the data type, modes, and strides of B.
+//! @param[in] modeB Array (in host memory) of size descB->numModes that holds the names of the modes of B. modeB[i] corresponds to extent[i] and stride[i] of the hiptensorInitTensorDescriptor
+//! @param[in] gamma Scaling factor for C (see equation above) of type typeScalar. Pointer to the host memory. If gamma is zero, C is not read and the corresponding unary operator is not applied.
+//! @param[in] C Multi-mode tensor of type typeC with nmodeC many modes. Pointer to the GPU-accessible memory.
+//! @param[in] descC The C descriptor that holds information about the data type, modes, and strides of C.
+//! @param[in] modeC Array (in host memory) of size descC->numModes that holds the names of the modes of C. The modeC[i] corresponds to extent[i] and stride[i] of the hiptensorInitTensorDescriptor.
+//! @param[out] D Multi-mode output tensor of type typeC with nmodeC modes that are ordered according to modeD. Pointer to the GPU-accessible memory. Notice that D may alias any input tensor if they share the same memory layout (i.e., same tensor descriptor).
+//! @param[in] descD The D descriptor that holds information about the data type, modes, and strides of D. Notice that we currently request descD and descC to be identical.
+//! @param[in] modeD Array (in host memory) of size descD->numModes that holds the names of the modes of D. The modeD[i] corresponds to extent[i] and stride[i] of the hiptensorInitTensorDescriptor.
+//! @param[in] opAB Element-wise binary operator (see \f$\Phi_{AB}\f$ above).
+//! @param[in] opABC Element-wise binary operator (see \f$\Phi_{ABC}\f$ above).
+//! @param[in] typeScalar Denotes the data type for the scalars alpha, beta, and gamma. Moreover, typeScalar determines the data type that is used throughout the computation.
+//! @param[in] stream The stream.
+//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
+//! @retval HIPTENSOR_STATUS_ARCH_MISMATCH if the device is either not ready, or the target architecture is not supported.
+//! @remarks calls asynchronous functions, no reentrant, and thread-safe
+//!
+//!
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*           handle,
+                                              const void*                        alpha,
+                                              const void*                        A,
+                                              const hiptensorTensorDescriptor_t* descA,
+                                              const int32_t                      modeA[],
+                                              const void*                        beta,
+                                              const void*                        B,
+                                              const hiptensorTensorDescriptor_t* descB,
+                                              const int32_t                      modeB[],
+                                              const void*                        gamma,
+                                              const void*                        C,
+                                              const hiptensorTensorDescriptor_t* descC,
+                                              const int32_t                      modeC[],
+                                              void*                              D,
+                                              const hiptensorTensorDescriptor_t* descD,
+                                              const int32_t                      modeD[],
+                                              hiptensorOperator_t                opAB,
+                                              hiptensorOperator_t                opABC,
+                                              hipDataType                     typeScalar,
+                                              const hipStream_t                 stream);
 
 //! @brief Computes the alignment requirement for a given pointer and descriptor.
 //! @param[in] handle Opaque handle holding hipTensor's library context.

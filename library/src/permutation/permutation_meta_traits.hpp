@@ -89,6 +89,37 @@ namespace hiptensor
         using CombinedOp
             = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>;
     };
+
+    // Meta traits for Scalar elementwise_trinary
+    template <typename InDataTypeTuple,
+              typename OutDataTypeTuple,
+              typename Aop,
+              typename Bop,
+              typename Cop,
+              typename ABop,
+              typename ABCop,
+              ck::index_t NumDim>
+    struct MetaTraits<ck::tensor_operation::device::DeviceElementwise<
+        InDataTypeTuple,
+        OutDataTypeTuple,
+        ck::tensor_operation::element_wise::TrinaryWithUnaryCombinedOp<ABop, ABCop, Aop, Bop, Cop>,
+        NumDim>>
+    {
+        constexpr static ck::index_t               NDim = NumDim;
+        constexpr static ElementwiseInstanceType_t InstanceType
+            = ElementwiseInstanceType_t::ELEMENTWISE_TRINARY_OP;
+
+        using InDataT  = InDataTypeTuple;
+        using OutDataT = OutDataTypeTuple;
+
+        using AOp      = Aop;
+        using BOp      = Bop;
+        using COp      = Cop;
+        using ABOp      = ABop;
+        using ABCOp      = ABCop;
+        using CombinedOp
+            = ck::tensor_operation::element_wise::TrinaryWithUnaryCombinedOp<ABop, ABCop, Aop, Bop, Cop>;
+    };
 } // namespace hiptensor
 
 #endif // HIPTENSOR_PERMUTATION_META_TRAITS_HPP

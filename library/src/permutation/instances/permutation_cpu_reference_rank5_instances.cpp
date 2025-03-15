@@ -59,5 +59,20 @@ namespace hiptensor
                                                       ck::Tuple<ck::half_t>,
                                                       CkBinaryWithUnaryCombinedOp,
                                                       5>());
+
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<double, double, double>,
+                                                      ck::Tuple<double>,
+                                                      CkTrinaryWithUnaryCombinedOp,
+                                                      5>());
+
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<float, float, float>,
+                                                      ck::Tuple<float>,
+                                                      CkTrinaryWithUnaryCombinedOp,
+                                                      5>());
+
+        registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t, ck::half_t>,
+                                                      ck::Tuple<ck::half_t>,
+                                                      CkTrinaryWithUnaryCombinedOp,
+                                                      5>());
     }
 } // namespace hiptensor

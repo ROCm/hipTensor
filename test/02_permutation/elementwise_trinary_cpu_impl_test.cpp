@@ -33,7 +33,7 @@
 #include "utils.hpp"
 
 template <typename InputType, typename OutputType, typename ComputeType>
-auto elementaryBinaryOpWithCpu(hipDataType inputType,
+auto elementaryTrinaryOpWithCpu(hipDataType inputType,
                                hipDataType outputType,
                                hipDataType typeCompute)
 {
@@ -79,6 +79,7 @@ auto elementaryBinaryOpWithCpu(hipDataType inputType,
 
     std::vector<InputType> aArray(inElements);
     std::iota(aArray.begin(), aArray.end(), 0);
+    std::vector<InputType>  bArray(aArray);
     std::vector<InputType>  cArray(aArray);
     std::vector<OutputType> dArray(outputElements);
     std::vector<OutputType> referenceArray;
@@ -89,39 +90,57 @@ auto elementaryBinaryOpWithCpu(hipDataType inputType,
     if(options->isColMajorStrides())
     {
         referenceArray
-            = {0.,    19.8,  39.6,  59.4,  79.2,  99.,   118.8, 138.6, 158.4, 178.2, 198.,  217.8,
-               237.6, 257.4, 277.2, 297.,  316.8, 336.6, 356.4, 376.2, 9.9,   29.7,  49.5,  69.3,
-               89.1,  108.9, 128.7, 148.5, 168.3, 188.1, 207.9, 227.7, 247.5, 267.3, 287.1, 306.9,
-               326.7, 346.5, 366.3, 386.1, 3.3,   23.1,  42.9,  62.7,  82.5,  102.3, 122.1, 141.9,
-               161.7, 181.5, 201.3, 221.1, 240.9, 260.7, 280.5, 300.3, 320.1, 339.9, 359.7, 379.5,
-               13.2,  33.,   52.8,  72.6,  92.4,  112.2, 132.,  151.8, 171.6, 191.4, 211.2, 231.,
-               250.8, 270.6, 290.4, 310.2, 330.,  349.8, 369.6, 389.4, 6.6,   26.4,  46.2,  66.,
-               85.8,  105.6, 125.4, 145.2, 165.,  184.8, 204.6, 224.4, 244.2, 264.,  283.8, 303.6,
-               323.4, 343.2, 363.,  382.8, 16.5,  36.3,  56.1,  75.9,  95.7,  115.5, 135.3, 155.1,
-               174.9, 194.7, 214.5, 234.3, 254.1, 273.9, 293.7, 313.5, 333.3, 353.1, 372.9, 392.7};
+            = {0. ,  21.6,  43.2,  64.8,  86.4, 108. , 129.6, 151.2, 172.8,
+       194.4, 216. , 237.6, 259.2, 280.8, 302.4, 324. , 345.6, 367.2,
+       388.8, 410.4,  10.8,  32.4,  54. ,  75.6,  97.2, 118.8, 140.4,
+       162. , 183.6, 205.2, 226.8, 248.4, 270. , 291.6, 313.2, 334.8,
+       356.4, 378. , 399.6, 421.2,   3.6,  25.2,  46.8,  68.4,  90. ,
+       111.6, 133.2, 154.8, 176.4, 198. , 219.6, 241.2, 262.8, 284.4,
+       306. , 327.6, 349.2, 370.8, 392.4, 414. ,  14.4,  36. ,  57.6,
+        79.2, 100.8, 122.4, 144. , 165.6, 187.2, 208.8, 230.4, 252. ,
+       273.6, 295.2, 316.8, 338.4, 360. , 381.6, 403.2, 424.8,   7.2,
+        28.8,  50.4,  72. ,  93.6, 115.2, 136.8, 158.4, 180. , 201.6,
+       223.2, 244.8, 266.4, 288. , 309.6, 331.2, 352.8, 374.4, 396. ,
+       417.6,  18. ,  39.6,  61.2,  82.8, 104.4, 126. , 147.6, 169.2,
+       190.8, 212.4, 234. , 255.6, 277.2, 298.8, 320.4, 342. , 363.6,
+       385.2, 406.8, 428.4};
     }
     else
     {
         referenceArray
-            = {0.,   84.,   168.,  42.,  126.,  210.,  2.1,  86.1,  170.1, 44.1, 128.1, 212.1,
-               4.2,  88.2,  172.2, 46.2, 130.2, 214.2, 6.3,  90.3,  174.3, 48.3, 132.3, 216.3,
-               8.4,  92.4,  176.4, 50.4, 134.4, 218.4, 10.5, 94.5,  178.5, 52.5, 136.5, 220.5,
-               12.6, 96.6,  180.6, 54.6, 138.6, 222.6, 14.7, 98.7,  182.7, 56.7, 140.7, 224.7,
-               16.8, 100.8, 184.8, 58.8, 142.8, 226.8, 18.9, 102.9, 186.9, 60.9, 144.9, 228.9,
-               21.,  105.,  189.,  63.,  147.,  231.,  23.1, 107.1, 191.1, 65.1, 149.1, 233.1,
-               25.2, 109.2, 193.2, 67.2, 151.2, 235.2, 27.3, 111.3, 195.3, 69.3, 153.3, 237.3,
-               29.4, 113.4, 197.4, 71.4, 155.4, 239.4, 31.5, 115.5, 199.5, 73.5, 157.5, 241.5,
-               33.6, 117.6, 201.6, 75.6, 159.6, 243.6, 35.7, 119.7, 203.7, 77.7, 161.7, 245.7,
-               37.8, 121.8, 205.8, 79.8, 163.8, 247.8, 39.9, 123.9, 207.9, 81.9, 165.9, 249.9};
+            = {  0. , 144. , 288. ,  72. , 216. , 360. ,   3.6, 147.6, 291.6,
+        75.6, 219.6, 363.6,   7.2, 151.2, 295.2,  79.2, 223.2, 367.2,
+        10.8, 154.8, 298.8,  82.8, 226.8, 370.8,  14.4, 158.4, 302.4,
+        86.4, 230.4, 374.4,  18. , 162. , 306. ,  90. , 234. , 378. ,
+        21.6, 165.6, 309.6,  93.6, 237.6, 381.6,  25.2, 169.2, 313.2,
+        97.2, 241.2, 385.2,  28.8, 172.8, 316.8, 100.8, 244.8, 388.8,
+        32.4, 176.4, 320.4, 104.4, 248.4, 392.4,  36. , 180. , 324. ,
+       108. , 252. , 396. ,  39.6, 183.6, 327.6, 111.6, 255.6, 399.6,
+        43.2, 187.2, 331.2, 115.2, 259.2, 403.2,  46.8, 190.8, 334.8,
+       118.8, 262.8, 406.8,  50.4, 194.4, 338.4, 122.4, 266.4, 410.4,
+        54. , 198. , 342. , 126. , 270. , 414. ,  57.6, 201.6, 345.6,
+       129.6, 273.6, 417.6,  61.2, 205.2, 349.2, 133.2, 277.2, 421.2,
+        64.8, 208.8, 352.8, 136.8, 280.8, 424.8,  68.4, 212.4, 356.4,
+       140.4, 284.4, 428.4};
     }
 
-    const ComputeType  alphaValue = 2.1f;
+    const ComputeType  alphaValue = 0.3f;
+    const ComputeType  betaValue = 2.1f;
     const ComputeType  gammaValue = 1.2f;
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
                                                         &descA,
+                                                        ninMode,
+                                                        inExtent.data(),
+                                                        NULL /* stride */,
+                                                        inputType,
+                                                        HIPTENSOR_OP_IDENTITY));
+
+    hiptensorTensorDescriptor_t descB;
+    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
+                                                        &descB,
                                                         ninMode,
                                                         inExtent.data(),
                                                         NULL /* stride */,
@@ -145,10 +164,14 @@ auto elementaryBinaryOpWithCpu(hipDataType inputType,
                                                         outputType,
                                                         HIPTENSOR_OP_IDENTITY));
 
-    hiptensorElementwiseBinaryOpReference(handle,
+    hiptensorElementwiseTrinaryOpReference(handle,
                                           &alphaValue,
                                           aArray.data(),
                                           &descA,
+                                          inMode.data(),
+                                          &betaValue,
+                                          bArray.data(),
+                                          &descB,
                                           inMode.data(),
                                           &gammaValue,
                                           cArray.data(),
@@ -157,6 +180,7 @@ auto elementaryBinaryOpWithCpu(hipDataType inputType,
                                           dArray.data(),
                                           &descD,
                                           outputMode.data(),
+                                          HIPTENSOR_OP_ADD,
                                           HIPTENSOR_OP_ADD,
                                           typeCompute,
                                           0);
@@ -168,7 +192,7 @@ auto elementaryBinaryOpWithCpu(hipDataType inputType,
                         0);
 }
 
-TEST(ElementaryBinaryOpCpuImplTest, CompareF32ResultWithReference)
+TEST(ElementaryTrinaryOpCpuImplTest, CompareF32ResultWithReference)
 {
     typedef float InputType;
     typedef float OutputType;
@@ -178,12 +202,12 @@ TEST(ElementaryBinaryOpCpuImplTest, CompareF32ResultWithReference)
     hipDataType outputType  = HIP_R_32F;
     hipDataType typeCompute = HIP_R_32F;
 
-    auto [result, maxRelativeError] = elementaryBinaryOpWithCpu<InputType, OutputType, ComputeType>(
+    auto [result, maxRelativeError] = elementaryTrinaryOpWithCpu<InputType, OutputType, ComputeType>(
         inputType, outputType, typeCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
 
-TEST(ElementaryBinaryOpCpuImplTest, CompareF16ResultWithReference)
+TEST(ElementaryTrinaryOpCpuImplTest, CompareF16ResultWithReference)
 {
     typedef _Float16 InputType;
     typedef _Float16 OutputType;
@@ -193,7 +217,7 @@ TEST(ElementaryBinaryOpCpuImplTest, CompareF16ResultWithReference)
     hipDataType outputType  = HIP_R_16F;
     hipDataType typeCompute = HIP_R_16F;
 
-    auto [result, maxRelativeError] = elementaryBinaryOpWithCpu<InputType, OutputType, ComputeType>(
+    auto [result, maxRelativeError] = elementaryTrinaryOpWithCpu<InputType, OutputType, ComputeType>(
         inputType, outputType, typeCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
