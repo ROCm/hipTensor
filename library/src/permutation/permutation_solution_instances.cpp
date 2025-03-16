@@ -46,7 +46,11 @@ namespace hiptensor
         ElementwiseBinarySolution6DFloatInstances();
         ElementwiseBinarySolution6DHalfInstances();
         ElementwiseTrinarySolution2DDoubleInstances();
+        ElementwiseTrinarySolution2DFloatInstances();
+        ElementwiseTrinarySolution2DHalfInstances();
         ElementwiseTrinarySolution3DDoubleInstances();
+        ElementwiseTrinarySolution3DFloatInstances();
+        ElementwiseTrinarySolution3DHalfInstances();
         ElementwiseTrinarySolution4DDoubleInstances();
         ElementwiseTrinarySolution4DFloatInstances();
         ElementwiseTrinarySolution4DHalfInstances();

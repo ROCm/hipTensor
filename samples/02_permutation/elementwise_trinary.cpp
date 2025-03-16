@@ -140,7 +140,7 @@ int main()
     hiptensorStatus_t  err;
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
-    CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
+	CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,

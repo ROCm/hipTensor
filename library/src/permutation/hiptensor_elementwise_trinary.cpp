@@ -153,7 +153,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
         {descD->mType},
         {{modeA, modeA + descA->mLengths.size()}, {modeB, modeB + descB->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
-        {descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp, descD->mUnaryOp},
+        {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
         hiptensor::ElementwiseExecutionSpaceType_t::Device);
 
     bool canRun = false;

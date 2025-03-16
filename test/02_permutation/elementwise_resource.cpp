@@ -141,7 +141,11 @@ namespace hiptensor
     {
         uint32_t seed = static_cast<uint32_t>(256);
 
-        if(mCurrentDataType == HIP_R_32F)
+        if(mCurrentDataType == HIP_R_64F)
+        {
+            fillLaunchKernel<double>((double*)devicePtr.get(), mCurrentMatrixElement, seed);
+        }
+        else if(mCurrentDataType == HIP_R_32F)
         {
             fillLaunchKernel<float>((float*)devicePtr.get(), mCurrentMatrixElement, seed);
         }

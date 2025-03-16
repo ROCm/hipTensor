@@ -117,7 +117,7 @@ namespace hiptensor
         ElementwiseOp mOpType;
         size_t        mCurrentMatrixElement; /**< Element count of Input[1,2,3]/Output */
         hipDataType
-               mCurrentDataType; /**< Type size of element of Input[1,2,3]/Output, only support HIP_R_16F, HIP_R_32F */
+               mCurrentDataType; /**< Type size of element of Input[1,2,3]/Output, only support HIP_R_16F, HIP_R_32F, HIP_R_64F */
         size_t mCurrentAllocByte; /**< Allocated size of memory */
     };
 

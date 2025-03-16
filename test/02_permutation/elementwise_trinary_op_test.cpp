@@ -26,7 +26,7 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
-#include "elementwise_binary_op_test.hpp"
+#include "elementwise_trinary_op_test.hpp"
 #include "hiptensor_options.hpp"
 #include "logger.hpp"
 #include "permutation/permutation_cpu_reference.hpp"
@@ -34,39 +34,42 @@
 
 namespace hiptensor
 {
-    /*static*/ bool              ElementwiseBinaryOpTest::mHeaderPrinted = false;
-    /*static*/ std::stringstream ElementwiseBinaryOpTest::sAPILogBuff    = std::stringstream();
+    /*static*/ bool              ElementwiseTrinaryOpTest::mHeaderPrinted = false;
+    /*static*/ std::stringstream ElementwiseTrinaryOpTest::sAPILogBuff    = std::stringstream();
 
     static void logMessage(int32_t logLevel, const char* funcName /*=""*/, const char* msg /*=""*/)
     {
-        ElementwiseBinaryOpTest::sAPILogBuff << msg;
+        ElementwiseTrinaryOpTest::sAPILogBuff << msg;
     }
 
-    ElementwiseBinaryOpTest::ElementwiseBinaryOpTest()
+    ElementwiseTrinaryOpTest::ElementwiseTrinaryOpTest()
         : Base()
     {
+        using hiptensor::Logger;
+        auto& logger = Logger::instance();
+        logger->setLogMask(0x1F);
         reset();
 
         // Handle our own outputs
-        hiptensorLoggerOpenFile("/dev/null");
-        hiptensorLoggerSetCallback(logMessage);
+        // hiptensorLoggerOpenFile("/dev/null");
+        // hiptensorLoggerSetCallback(logMessage);
     }
 
-    // Kernel run checks. Virtual as different ElementwiseBinaryOp kernels have different requirements
+    // Kernel run checks. Virtual as different ElementwiseTrinaryOp kernels have different requirements
     // True = run test
     // False = skip test
-    bool ElementwiseBinaryOpTest::checkDevice(hipDataType datatype) const
+    bool ElementwiseTrinaryOpTest::checkDevice(hipDataType datatype) const
     {
         return (isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F)))
                || (isF64Supported() && (datatype == HIP_R_64F));
     }
 
-    bool ElementwiseBinaryOpTest::checkSizes() const
+    bool ElementwiseTrinaryOpTest::checkSizes() const
     {
         return true;
     }
 
-    void ElementwiseBinaryOpTest::reset()
+    void ElementwiseTrinaryOpTest::reset()
     {
         handle = nullptr;
 
@@ -82,7 +85,7 @@ namespace hiptensor
         mGBytesPerSec         = 0.0;
     }
 
-    std::ostream& ElementwiseBinaryOpTest::printHeader(std::ostream& stream /* = std::cout */) const
+    std::ostream& ElementwiseTrinaryOpTest::printHeader(std::ostream& stream /* = std::cout */) const
     {
         // clang-format off
         return stream << "TypeIn, "     // 1
@@ -92,18 +95,19 @@ namespace hiptensor
             << "Lengths, "              // 5
             << "PermutedOrder, "        // 6
             << "Alpha, "                // 7
-            << "Gamma, "                // 8
-            << "ElapsedMs, "            // 9
-            << "Problem Size(GFlops), " // 10
-            << "TFlops/s, "             // 11
-            << "TotalGBytes, "          // 12
-            << "GBytes/s, "             // 13
-            << "Result"                 // 14
+            << "Beta, "                 // 8
+            << "Gamma, "                // 9
+            << "ElapsedMs, "            // 10
+            << "Problem Size(GFlops), " // 11
+            << "TFlops/s, "             // 12
+            << "TotalGBytes, "          // 13
+            << "GBytes/s, "             // 14
+            << "Result"                 // 15
             << std::endl;
         // clang-format on
     }
 
-    std::ostream& ElementwiseBinaryOpTest::printKernel(std::ostream& stream) const
+    std::ostream& ElementwiseTrinaryOpTest::printKernel(std::ostream& stream) const
     {
         auto param        = Base::GetParam();
         auto testType     = std::get<0>(param);
@@ -111,29 +115,31 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
-        auto gamma        = std::get<5>(param);
-        auto operators    = std::get<6>(param);
+        auto beta         = std::get<5>(param);
+        auto gamma        = std::get<6>(param);
+        auto operators    = std::get<7>(param);
 
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                                              // 1
             << computeTypeToString(convertToComputeType(testType[1])) << ", "                       // 2
-            << "[ " << opTypeToString(operators[0]) << " " << opTypeToString(operators[1]) << " " << opTypeToString(operators[2]) << "], " // 3
+            << "[ " << opTypeToString(operators[0]) << " " << opTypeToString(operators[1]) << " " << opTypeToString(operators[2]) << " " << opTypeToString(operators[3]) << " " << opTypeToString(operators[4]) << "], " // 3
             << logLevelToString(logLevel) << ", ";                                                  // 4
         printContainerInCsv(lengths, stream) << ", ";                                               // 5
         printContainerInCsv(permutedDims, stream) << ", ";                                          // 6
         stream << alpha << ", ";                                                                    // 7
-        stream << gamma << ", ";                                                                    // 8
+        stream << beta << ", ";                                                                     // 8
+        stream << gamma << ", ";                                                                    // 9
         // clang-format on
 
         if(!mRunFlag)
         {
             // clang-format off
-            stream << "n/a" << ", " // 9
-                << "n/a" << ", "    // 10
+            stream << "n/a" << ", " // 10
                 << "n/a" << ", "    // 11
                 << "n/a" << ", "    // 12
                 << "n/a" << ", "    // 13
-                << "SKIPPED"        // 14
+                << "n/a" << ", "    // 14
+                << "SKIPPED"        // 15
                 << std::endl;
             // clang-format on
         }
@@ -143,12 +149,12 @@ namespace hiptensor
             auto result = isPerformValidation ? (mValidationResult ? "PASSED" : "FAILED") : "BENCH";
 
             // clang-format off
-            stream << mElapsedTimeMs << ", "     // 9
-                << mTotalGFlops << ", "          // 10
-                << mMeasuredTFlopsPerSec << ", " // 11
-                << mTotalGBytes << ", "          // 12
-                << mGBytesPerSec << ", "         // 13
-                << result                        // 14
+            stream << mElapsedTimeMs << ", "     // 10
+                << mTotalGFlops << ", "          // 11
+                << mMeasuredTFlopsPerSec << ", " // 12
+                << mTotalGBytes << ", "          // 13
+                << mGBytesPerSec << ", "         // 14
+                << result                        // 15
                 << std::endl;
             // clang-format on
         }
@@ -156,12 +162,12 @@ namespace hiptensor
         return stream;
     }
 
-    ElementwiseResource* ElementwiseBinaryOpTest::getResource() const
+    ElementwiseResource* ElementwiseTrinaryOpTest::getResource() const
     {
         return DataStorage::instance().get();
     }
 
-    void ElementwiseBinaryOpTest::SetUp()
+    void ElementwiseTrinaryOpTest::SetUp()
     {
         // reset API log buffer
         sAPILogBuff.str(std::string());
@@ -172,16 +178,19 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
-        auto gamma        = std::get<5>(param);
-        auto operators    = std::get<6>(param);
+        auto beta         = std::get<5>(param);
+        auto gamma        = std::get<6>(param);
+        auto operators    = std::get<7>(param);
 
         EXPECT_TRUE((lengths.size() > 1) && (lengths.size() <= 6));
         EXPECT_TRUE((permutedDims.size() > 1) && (permutedDims.size() <= 6));
 
-        EXPECT_EQ(operators.size(), 3);
+        EXPECT_EQ(operators.size(), 5);
         EXPECT_TRUE((operators[0] == HIPTENSOR_OP_IDENTITY) || (operators[0] == HIPTENSOR_OP_NEG));
         EXPECT_TRUE((operators[1] == HIPTENSOR_OP_IDENTITY) || (operators[1] == HIPTENSOR_OP_NEG));
-        EXPECT_TRUE(operators[2] == HIPTENSOR_OP_ADD);
+        EXPECT_TRUE((operators[2] == HIPTENSOR_OP_IDENTITY) || (operators[2] == HIPTENSOR_OP_NEG));
+        EXPECT_TRUE(operators[3] == HIPTENSOR_OP_ADD);
+        EXPECT_TRUE(operators[4] == HIPTENSOR_OP_ADD);
 
         EXPECT_EQ(dataTypes.size(), 2);
         auto dataType = dataTypes[0];
@@ -195,14 +204,14 @@ namespace hiptensor
         else
         {
             getResource()->setupStorage(
-                lengths, dataType, ElementwiseResource::ElementwiseOp::BINARY_OP);
+                lengths, dataType, ElementwiseResource::ElementwiseOp::TRINARY_OP);
 
             // set mPrintElements to true to print element
             mPrintElements = false;
         }
     }
 
-    void ElementwiseBinaryOpTest::reportResults(std::ostream& stream,
+    void ElementwiseTrinaryOpTest::reportResults(std::ostream& stream,
                                                 hipDataType   dataType,
                                                 bool          omitHeader,
                                                 bool          omitSkipped,
@@ -218,7 +227,7 @@ namespace hiptensor
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
-            stream << ElementwiseBinaryOpTest::sAPILogBuff.str();
+            stream << ElementwiseTrinaryOpTest::sAPILogBuff.str();
 
             printKernel(stream);
 
@@ -227,6 +236,7 @@ namespace hiptensor
                 auto resource = getResource();
 
                 size_t elementsA   = resource->getCurrentMatrixElement();
+                size_t elementsB   = elementsA;
                 size_t elementsC   = elementsA;
                 size_t elementsD   = elementsA;
                 size_t elementsRef = elementsA;
@@ -238,9 +248,14 @@ namespace hiptensor
                         stream, (double*)resource->hostInput1().get(), elementsA);
                     stream << std::endl;
 
+                    stream << "Tensor B elements (" << elementsB << "):\n";
+                    hiptensorPrintArrayElements<double>(
+                        stream, (double*)resource->hostInput2().get(), elementsB);
+                    stream << std::endl;
+
                     stream << "Tensor C elements (" << elementsC << "):\n";
                     hiptensorPrintArrayElements<double>(
-                        stream, (double*)resource->hostInput2().get(), elementsC);
+                        stream, (double*)resource->hostInput3().get(), elementsC);
                     stream << std::endl;
 
                     stream << "Tensor D elements (" << elementsD << "):\n";
@@ -260,9 +275,14 @@ namespace hiptensor
                         stream, (float*)resource->hostInput1().get(), elementsA);
                     stream << std::endl;
 
+                    stream << "Tensor B elements (" << elementsB << "):\n";
+                    hiptensorPrintArrayElements<float>(
+                        stream, (float*)resource->hostInput2().get(), elementsB);
+                    stream << std::endl;
+
                     stream << "Tensor C elements (" << elementsC << "):\n";
                     hiptensorPrintArrayElements<float>(
-                        stream, (float*)resource->hostInput2().get(), elementsC);
+                        stream, (float*)resource->hostInput3().get(), elementsC);
                     stream << std::endl;
 
                     stream << "Tensor D elements (" << elementsD << "):\n";
@@ -275,16 +295,21 @@ namespace hiptensor
                         stream, (float*)resource->hostReference().get(), elementsRef);
                     stream << std::endl;
                 }
-                else
+                else if(dataType == HIP_R_16F)
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<_Float16>(
                         stream, (_Float16*)resource->hostInput1().get(), elementsA);
                     stream << std::endl;
 
+                    stream << "Tensor B elements (" << elementsB << "):\n";
+                    hiptensorPrintArrayElements<_Float16>(
+                        stream, (_Float16*)resource->hostInput2().get(), elementsB);
+                    stream << std::endl;
+
                     stream << "Tensor C elements (" << elementsC << "):\n";
                     hiptensorPrintArrayElements<_Float16>(
-                        stream, (_Float16*)resource->hostInput2().get(), elementsC);
+                        stream, (_Float16*)resource->hostInput3().get(), elementsC);
                     stream << std::endl;
 
                     stream << "Tensor D elements (" << elementsD << "):\n";
@@ -301,7 +326,7 @@ namespace hiptensor
         }
     }
 
-    void ElementwiseBinaryOpTest::RunKernel()
+    void ElementwiseTrinaryOpTest::RunKernel()
     {
         auto param        = Base::GetParam();
         auto dataTypes    = std::get<0>(param);
@@ -309,15 +334,18 @@ namespace hiptensor
         auto lengths      = std::get<2>(param);
         auto permutedDims = std::get<3>(param);
         auto alpha        = std::get<4>(param);
-        auto gamma        = std::get<5>(param);
-        auto operators    = std::get<6>(param);
+        auto beta         = std::get<5>(param);
+        auto gamma        = std::get<6>(param);
+        auto operators    = std::get<7>(param);
 
         auto dataType        = dataTypes[0];
         auto computeDataType = dataTypes[1];
 
         auto Aop  = operators[0];
-        auto Cop  = operators[1];
-        auto ACop = operators[2];
+        auto Bop  = operators[1];
+        auto Cop  = operators[2];
+        auto ABop = operators[3];
+        auto ABCop = operators[4];
 
         if(!mRunFlag)
         {
@@ -335,6 +363,7 @@ namespace hiptensor
             int arrDim[] = {'n', 'c', 'w', 'h', 'd', 'm'};
 
             std::vector<int> modeA(arrDim, arrDim + nDim);
+            std::vector<int> modeB(arrDim, arrDim + nDim);
             std::vector<int> modeC(arrDim, arrDim + nDim);
             std::vector<int> modeD;
             for(auto dim : permutedDims)
@@ -343,6 +372,7 @@ namespace hiptensor
             }
 
             int                              nmodeA = modeA.size();
+            int                              nmodeB = modeB.size();
             int                              nmodeC = modeC.size();
             int                              nmodeD = modeD.size();
             std::unordered_map<int, int64_t> extent;
@@ -354,6 +384,7 @@ namespace hiptensor
             std::vector<int64_t> extentA;
             for(auto mode : modeA)
                 extentA.push_back(extent[mode]);
+            std::vector<int64_t> extentB = extentA;
             std::vector<int64_t> extentC = extentA;
             std::vector<int64_t> extentD;
             for(auto mode : modeD)
@@ -366,6 +397,10 @@ namespace hiptensor
             hiptensorTensorDescriptor_t descA;
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
                 handle, &descA, nmodeA, extentA.data(), NULL /* stride */, dataType, Aop));
+
+            hiptensorTensorDescriptor_t descB;
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, dataType, Bop));
 
             hiptensorTensorDescriptor_t descC;
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
@@ -393,6 +428,19 @@ namespace hiptensor
             {
                 *(reinterpret_cast<double*>(&alphaValue)) = static_cast<double>(alpha);
             }
+			float betaValue{};
+            if(computeDataType == HIP_R_16F)
+            {
+                *(reinterpret_cast<_Float16*>(&betaValue)) = static_cast<_Float16>(beta);
+            }
+            else if(computeDataType == HIP_R_32F)
+            {
+                *(reinterpret_cast<float*>(&betaValue)) = static_cast<float>(beta);
+            }
+            else if(computeDataType == HIP_R_64F)
+            {
+                *(reinterpret_cast<double*>(&betaValue)) = static_cast<double>(beta);
+            }
             float gammaValue{};
             if(computeDataType == HIP_R_16F)
             {
@@ -412,19 +460,24 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(handle,
                                                              &alphaValue,
                                                              resource->deviceInput1().get(),
                                                              &descA,
                                                              modeA.data(),
-                                                             &gammaValue,
+                                                             &betaValue,
                                                              resource->deviceInput2().get(),
+                                                             &descB,
+                                                             modeB.data(),
+                                                             &gammaValue,
+                                                             resource->deviceInput3().get(),
                                                              &descC,
                                                              modeC.data(),
                                                              resource->deviceOutput().get(),
                                                              &descD,
                                                              modeD.data(),
-                                                             ACop,
+                                                             ABop,
+                                                             ABCop,
                                                              computeDataType,
                                                              0 /* stream */));
 
@@ -436,6 +489,11 @@ namespace hiptensor
 
             size_t sizeA = std::accumulate(extentA.begin(),
                                            extentA.end(),
+                                           hipDataTypeSize(dataType),
+                                           std::multiplies<size_t>());
+
+            size_t sizeB = std::accumulate(extentB.begin(),
+                                           extentB.end(),
                                            hipDataTypeSize(dataType),
                                            std::multiplies<size_t>());
 
@@ -453,7 +511,7 @@ namespace hiptensor
             mTotalGFlops          = 5.0 * (resource->getCurrentMatrixElement()) * 1e-9;
             mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
 
-            mTotalGBytes = sizeA + sizeC + sizeD;
+            mTotalGBytes = sizeA + sizeB +sizeC + sizeD;
             mTotalGBytes /= 1e9;
             mGBytesPerSec = mTotalGBytes / (mElapsedTimeMs * 1e-3);
 
@@ -470,20 +528,25 @@ namespace hiptensor
 
                 if(dataType == HIP_R_64F)
                 {
-                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryOpReference(
                         handle,
                         &alphaValue,
                         (const double*)resource->hostInput1().get(),
                         &descA,
                         modeA.data(),
-                        &gammaValue,
+                        &betaValue,
                         (const double*)resource->hostInput2().get(),
+                        &descB,
+                        modeB.data(),
+                        &gammaValue,
+                        (const double*)resource->hostInput3().get(),
                         &descC,
                         modeC.data(),
                         (double*)resource->hostReference().get(),
                         &descD,
                         modeD.data(),
-                        ACop,
+                        ABop,
+                        ABCop,
                         computeDataType,
                         0 /* stream */));
 
@@ -497,20 +560,25 @@ namespace hiptensor
                 }
                 else if(dataType == HIP_R_32F)
                 {
-                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryOpReference(
                         handle,
                         &alphaValue,
                         (const float*)resource->hostInput1().get(),
                         &descA,
                         modeA.data(),
-                        &gammaValue,
+                        &betaValue,
                         (const float*)resource->hostInput2().get(),
+                        &descB,
+                        modeB.data(),
+                        &gammaValue,
+                        (const float*)resource->hostInput3().get(),
                         &descC,
                         modeC.data(),
                         (float*)resource->hostReference().get(),
                         &descD,
                         modeD.data(),
-                        ACop,
+                        ABop,
+                        ABCop,
                         computeDataType,
                         0 /* stream */));
 
@@ -523,20 +591,25 @@ namespace hiptensor
                 }
                 else if(dataType == HIP_R_16F)
                 {
-                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryOpReference(
                         handle,
                         &alphaValue,
                         (const _Float16*)resource->hostInput1().get(),
                         &descA,
                         modeA.data(),
-                        &gammaValue,
+                        &betaValue,
                         (const _Float16*)resource->hostInput2().get(),
+                        &descB,
+                        modeB.data(),
+                        &gammaValue,
+                        (const _Float16*)resource->hostInput3().get(),
                         &descC,
                         modeC.data(),
                         (_Float16*)resource->hostReference().get(),
                         &descD,
                         modeD.data(),
-                        ACop,
+                        ABop,
+                        ABCop,
                         computeDataType,
                         0 /* stream */));
 
@@ -585,7 +658,7 @@ namespace hiptensor
         }
     }
 
-    void ElementwiseBinaryOpTest::TearDown()
+    void ElementwiseTrinaryOpTest::TearDown()
     {
         if(mRunFlag)
         {

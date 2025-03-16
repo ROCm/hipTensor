@@ -74,9 +74,6 @@ auto elementaryTrinaryOpWithCpu(hipDataType inputType,
         outputElements *= extent[mode];
     }
 
-    // size_t sizeA = sizeof(InputType) * inElements;
-    // size_t sizeB = sizeof(OutputType) * outputElements;
-
     std::vector<InputType> aArray(inElements);
     std::iota(aArray.begin(), aArray.end(), 0);
     std::vector<InputType>  bArray(aArray);
@@ -127,8 +124,10 @@ auto elementaryTrinaryOpWithCpu(hipDataType inputType,
     const ComputeType  alphaValue = 0.3f;
     const ComputeType  betaValue = 2.1f;
     const ComputeType  gammaValue = 1.2f;
+
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
                                                         &descA,

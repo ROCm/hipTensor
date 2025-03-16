@@ -111,6 +111,7 @@ namespace ck::tensor_operation::device::instance
                     InScalarPerVectorSeq::At(i));
             });
             params.mInstanceHyperParams.mOutScalarPerVectorSeq = {OutScalarPerVectorSeq::At(0)};
+params.print();
             return params;
         }
         template <typename InDataTypeTuple,
@@ -133,6 +134,7 @@ namespace ck::tensor_operation::device::instance
             // to query a reference instance since `InstanceHyperParams{}` matches InstanceHyperParams value
             // return from this function.
             params.mInstanceHyperParams = {};
+params.print();
             return params;
         }
         static auto Gen(std::vector<hipDataType> const&       inDataTypes,
@@ -147,9 +149,22 @@ namespace ck::tensor_operation::device::instance
             params.mScale               = scale;
             params.mNumDim              = numDim;
             params.mInstanceHyperParams = instanceHyperParams;
+params.print();
             return params;
         }
 
+void print()
+{
+printf("InstanceHyperParams: ");
+printf("[");
+for (auto v:  mInDataTypes) printf("%d, ", v);
+printf("], [");
+for (auto v:  mOutDataTypes) printf("%d, ", v);
+printf("], ");
+printf("%d, %d, ",  mScale, mNumDim);
+mInstanceHyperParams.print();
+printf("\n");
+}
     private:
         DeviceElementwiseParams() = default;
 

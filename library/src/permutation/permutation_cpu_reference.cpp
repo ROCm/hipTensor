@@ -181,7 +181,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const hiptensorHandle_t
     }
 
     auto refCandidates = instances->query(
-        {alphaF, gammaF},
+        {alphaF, betaF, gammaF},
         descA->mLengths,
         {descA->mType, descB->mType, descC->mType},
         {descD->mType},
@@ -193,16 +193,17 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const hiptensorHandle_t
     for(auto refCandidate : refCandidates)
     {
         if(refCandidate->initArgs({alphaF, betaF, gammaF},
-                                  {descA->mLengths, descC->mLengths},
-                                  {descA->mStrides, descC->mStrides},
-                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
-                                   std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
-                                  {descD->mLengths},
-                                  {descD->mStrides},
-                                  {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                                  {A, B, C},
-                                  {D}))
+                                     {descA->mLengths, descB->mLengths, descC->mLengths},
+                                     {descA->mStrides, descB->mStrides, descC->mStrides},
+                                     {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                                      std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
+                                      std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+                                     {descD->mLengths},
+                                     {descD->mStrides},
+                                     {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+                                     {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
+                                     {A, B, C},
+                                     {D}))
         {
             (*refCandidate)();
             return HIPTENSOR_STATUS_SUCCESS;
