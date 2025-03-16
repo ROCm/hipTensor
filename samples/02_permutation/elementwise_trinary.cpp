@@ -140,7 +140,7 @@ int main()
     hiptensorStatus_t  err;
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
-	CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
+    CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
@@ -183,29 +183,29 @@ int main()
     options->setColdRuns(5);
     options->setHotRuns(50);
     const floatTypeCompute alpha = 1.0f;
-    const floatTypeCompute beta = 1.0f;
+    const floatTypeCompute beta  = 1.0f;
     const floatTypeCompute gamma = 2.0f;
 
     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(handle,
-                                                     &alpha,
-                                                     A_d,
-                                                     &descA,
-                                                     modeA.data(),
-                                                     &beta,
-                                                     B_d,
-                                                     &descB,
-                                                     modeB.data(),
-                                                     &gamma,
-                                                     C_d,
-                                                     &descC,
-                                                     modeC.data(),
-                                                     D_d,
-                                                     &descD,
-                                                     modeD.data(),
-                                                     HIPTENSOR_OP_ADD,
-                                                     HIPTENSOR_OP_ADD,
-                                                     typeCompute,
-                                                     0 /* stream */));
+                                                      &alpha,
+                                                      A_d,
+                                                      &descA,
+                                                      modeA.data(),
+                                                      &beta,
+                                                      B_d,
+                                                      &descB,
+                                                      modeB.data(),
+                                                      &gamma,
+                                                      C_d,
+                                                      &descC,
+                                                      modeC.data(),
+                                                      D_d,
+                                                      &descD,
+                                                      modeD.data(),
+                                                      HIPTENSOR_OP_ADD,
+                                                      HIPTENSOR_OP_ADD,
+                                                      typeCompute,
+                                                      0 /* stream */));
 
 #if !NDEBUG
     bool printElements = false;

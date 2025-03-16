@@ -112,13 +112,13 @@ namespace hiptensor
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
 
-        using AOp      = Aop;
-        using BOp      = Bop;
-        using COp      = Cop;
-        using ABOp      = ABop;
+        using AOp        = Aop;
+        using BOp        = Bop;
+        using COp        = Cop;
+        using ABOp       = ABop;
         using ABCOp      = ABCop;
-        using CombinedOp
-            = ck::tensor_operation::element_wise::TrinaryWithUnaryCombinedOp<ABop, ABCop, Aop, Bop, Cop>;
+        using CombinedOp = ck::tensor_operation::element_wise::
+            TrinaryWithUnaryCombinedOp<ABop, ABCop, Aop, Bop, Cop>;
     };
 } // namespace hiptensor
 

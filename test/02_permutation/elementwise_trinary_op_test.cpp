@@ -85,7 +85,8 @@ namespace hiptensor
         mGBytesPerSec         = 0.0;
     }
 
-    std::ostream& ElementwiseTrinaryOpTest::printHeader(std::ostream& stream /* = std::cout */) const
+    std::ostream&
+        ElementwiseTrinaryOpTest::printHeader(std::ostream& stream /* = std::cout */) const
     {
         // clang-format off
         return stream << "TypeIn, "     // 1
@@ -212,11 +213,11 @@ namespace hiptensor
     }
 
     void ElementwiseTrinaryOpTest::reportResults(std::ostream& stream,
-                                                hipDataType   dataType,
-                                                bool          omitHeader,
-                                                bool          omitSkipped,
-                                                bool          omitFailed,
-                                                bool          omitPassed) const
+                                                 hipDataType   dataType,
+                                                 bool          omitHeader,
+                                                 bool          omitSkipped,
+                                                 bool          omitFailed,
+                                                 bool          omitPassed) const
     {
         if(!omitHeader)
         {
@@ -341,10 +342,10 @@ namespace hiptensor
         auto dataType        = dataTypes[0];
         auto computeDataType = dataTypes[1];
 
-        auto Aop  = operators[0];
-        auto Bop  = operators[1];
-        auto Cop  = operators[2];
-        auto ABop = operators[3];
+        auto Aop   = operators[0];
+        auto Bop   = operators[1];
+        auto Cop   = operators[2];
+        auto ABop  = operators[3];
         auto ABCop = operators[4];
 
         if(!mRunFlag)
@@ -428,7 +429,7 @@ namespace hiptensor
             {
                 *(reinterpret_cast<double*>(&alphaValue)) = static_cast<double>(alpha);
             }
-			float betaValue{};
+            float betaValue{};
             if(computeDataType == HIP_R_16F)
             {
                 *(reinterpret_cast<_Float16*>(&betaValue)) = static_cast<_Float16>(beta);
@@ -461,25 +462,25 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
             CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(handle,
-                                                             &alphaValue,
-                                                             resource->deviceInput1().get(),
-                                                             &descA,
-                                                             modeA.data(),
-                                                             &betaValue,
-                                                             resource->deviceInput2().get(),
-                                                             &descB,
-                                                             modeB.data(),
-                                                             &gammaValue,
-                                                             resource->deviceInput3().get(),
-                                                             &descC,
-                                                             modeC.data(),
-                                                             resource->deviceOutput().get(),
-                                                             &descD,
-                                                             modeD.data(),
-                                                             ABop,
-                                                             ABCop,
-                                                             computeDataType,
-                                                             0 /* stream */));
+                                                              &alphaValue,
+                                                              resource->deviceInput1().get(),
+                                                              &descA,
+                                                              modeA.data(),
+                                                              &betaValue,
+                                                              resource->deviceInput2().get(),
+                                                              &descB,
+                                                              modeB.data(),
+                                                              &gammaValue,
+                                                              resource->deviceInput3().get(),
+                                                              &descC,
+                                                              modeC.data(),
+                                                              resource->deviceOutput().get(),
+                                                              &descD,
+                                                              modeD.data(),
+                                                              ABop,
+                                                              ABCop,
+                                                              computeDataType,
+                                                              0 /* stream */));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
@@ -511,7 +512,7 @@ namespace hiptensor
             mTotalGFlops          = 5.0 * (resource->getCurrentMatrixElement()) * 1e-9;
             mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
 
-            mTotalGBytes = sizeA + sizeB +sizeC + sizeD;
+            mTotalGBytes = sizeA + sizeB + sizeC + sizeD;
             mTotalGBytes /= 1e9;
             mGBytesPerSec = mTotalGBytes / (mElapsedTimeMs * 1e-3);
 

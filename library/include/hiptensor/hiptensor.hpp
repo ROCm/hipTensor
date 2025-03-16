@@ -198,8 +198,8 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
                                               const int32_t                      modeD[],
                                               hiptensorOperator_t                opAB,
                                               hiptensorOperator_t                opABC,
-                                              hipDataType                     typeScalar,
-                                              const hipStream_t                 stream);
+                                              hipDataType                        typeScalar,
+                                              const hipStream_t                  stream);
 
 //! @brief Computes the alignment requirement for a given pointer and descriptor.
 //! @param[in] handle Opaque handle holding hipTensor's library context.

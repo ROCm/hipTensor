@@ -37,9 +37,10 @@ namespace hiptensor
     {
         // Register all the solutions exactly once
         // 4d ElementwiseTrinary
-        registerSolutions(enumeratePermutationSolutions<ck::Tuple<ck::half_t, ck::half_t, ck::half_t>,
-                                                        ck::Tuple<ck::half_t>,
-                                                        CkTrinaryWithUnaryCombinedOp,
-                                                        4>());
+        registerSolutions(
+            enumeratePermutationSolutions<ck::Tuple<ck::half_t, ck::half_t, ck::half_t>,
+                                          ck::Tuple<ck::half_t>,
+                                          CkTrinaryWithUnaryCombinedOp,
+                                          4>());
     }
 } // namespace hiptensor

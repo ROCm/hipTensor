@@ -50,8 +50,8 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
                                               const int32_t                      modeD[],
                                               hiptensorOperator_t                opAB,
                                               hiptensorOperator_t                opABC,
-                                              hipDataType                     typeScalar,
-                                              const hipStream_t                 stream)
+                                              hipDataType                        typeScalar,
+                                              const hipStream_t                  stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -110,10 +110,11 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
             {HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F},
             {HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F}}};
 
-    std::array<hipDataType, 4> inputTensorTypes = {descA->mType, descB->mType, descC->mType, typeScalar};
+    std::array<hipDataType, 4> inputTensorTypes
+        = {descA->mType, descB->mType, descC->mType, typeScalar};
     if(std::none_of(validDataTypes.cbegin(),
-                       validDataTypes.cend(),
-                       [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))
+                    validDataTypes.cend(),
+                    [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))
     {
         auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
         snprintf(msg,
@@ -146,31 +147,34 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
     }
 
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
-    auto  solutions = instances->query(
-        {alphaF, betaF, gammaF},
-        descA->mLengths,
-        {descA->mType, descB->mType, descC->mType},
-        {descD->mType},
-        {{modeA, modeA + descA->mLengths.size()}, {modeB, modeB + descB->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
-        {{modeD, modeD + descD->mLengths.size()}},
-        {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-        hiptensor::ElementwiseExecutionSpaceType_t::Device);
+    auto  solutions
+        = instances->query({alphaF, betaF, gammaF},
+                           descA->mLengths,
+                           {descA->mType, descB->mType, descC->mType},
+                           {descD->mType},
+                           {{modeA, modeA + descA->mLengths.size()},
+                            {modeB, modeB + descB->mLengths.size()},
+                            {modeC, modeC + descC->mLengths.size()}},
+                           {{modeD, modeD + descD->mLengths.size()}},
+                           {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
+                           hiptensor::ElementwiseExecutionSpaceType_t::Device);
 
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun = pSolution->initArgs({alphaF, betaF, gammaF},
-                                     {descA->mLengths, descB->mLengths, descC->mLengths},
-                                     {descA->mStrides, descB->mStrides, descC->mStrides},
-                                     {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
-                                      std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
-                                      std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
-                                     {descD->mLengths},
-                                     {descD->mStrides},
-                                     {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                     {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                                     {A, B, C},
-                                     {D});
+        canRun
+            = pSolution->initArgs({alphaF, betaF, gammaF},
+                                  {descA->mLengths, descB->mLengths, descC->mLengths},
+                                  {descA->mStrides, descB->mStrides, descC->mStrides},
+                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                                   std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
+                                   std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+                                  {descD->mLengths},
+                                  {descD->mStrides},
+                                  {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+                                  {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
+                                  {A, B, C},
+                                  {D});
 
         if(canRun)
         {

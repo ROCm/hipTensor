@@ -49,8 +49,12 @@ namespace hiptensor
         = ck::tensor_operation::element_wise::UnaryCombinedOp<CkPassThrough, CkPassThrough>;
     using CkBinaryWithUnaryCombinedOp = ck::tensor_operation::element_wise::
         BinaryWithUnaryCombinedOp<CkHiptensorBinaryOp, CkUnaryCombinedOp, CkUnaryCombinedOp>;
-    using CkTrinaryWithUnaryCombinedOp = ck::tensor_operation::element_wise::
-        TrinaryWithUnaryCombinedOp<CkHiptensorBinaryOp, CkHiptensorBinaryOp, CkUnaryCombinedOp, CkUnaryCombinedOp, CkUnaryCombinedOp>;
+    using CkTrinaryWithUnaryCombinedOp
+        = ck::tensor_operation::element_wise::TrinaryWithUnaryCombinedOp<CkHiptensorBinaryOp,
+                                                                         CkHiptensorBinaryOp,
+                                                                         CkUnaryCombinedOp,
+                                                                         CkUnaryCombinedOp,
+                                                                         CkUnaryCombinedOp>;
 }
 
 #endif // HIPTENSOR_CK_TYPES_HPP

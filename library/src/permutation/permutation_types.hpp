@@ -84,17 +84,6 @@ namespace hiptensor
         std::vector<int> mThreadClusterArrangeOrder;
         std::vector<int> mInScalarPerVectorSeq;
         std::vector<int> mOutScalarPerVectorSeq;
-void print() {
-printf("InstanceHyperParams: %d, %d, %d, %d, %d, ",  mBlockSize, mM0PerBlock, mM1PerBlock, mM0PerThread, mM1PerThread);
-printf("[");
-for (auto v:  mThreadClusterArrangeOrder) printf("%d, ", v);
-printf("], [");
-for (auto v:  mInScalarPerVectorSeq) printf("%d, ", v);
-printf("], [");
-for (auto v:  mOutScalarPerVectorSeq) printf("%d, ", v);
-printf("]");
-printf("\n");
-}
     };
 } // namespace hiptensor
 

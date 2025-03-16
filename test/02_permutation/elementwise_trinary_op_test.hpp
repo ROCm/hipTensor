@@ -50,7 +50,8 @@ namespace hiptensor
                      typename PermutationTestParams::BetaT,
                      typename PermutationTestParams::GammaT,
                      typename PermutationTestParams::OperatorT>;
-    class ElementwiseTrinaryOpTest : public ::testing::TestWithParam<ElementwiseTrinaryOpTestParams_t>
+    class ElementwiseTrinaryOpTest
+        : public ::testing::TestWithParam<ElementwiseTrinaryOpTestParams_t>
     {
     protected: // Types
         using Base = ::testing::TestWithParam<ElementwiseTrinaryOpTestParams_t>;

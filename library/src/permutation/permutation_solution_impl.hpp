@@ -177,8 +177,10 @@ namespace hiptensor
                     deviceOutBuffers,
                     typename Traits::CombinedOp{
                         typename Traits::BinaryOp{operators[0]},
-                        typename Traits::AOp{CkHiptensorUnaryOp{operators[1]}, CkScale{scalarValues[0]}},
-                        typename Traits::COp{CkHiptensorUnaryOp{operators[2]}, CkScale{scalarValues[1]}},
+                        typename Traits::AOp{CkHiptensorUnaryOp{operators[1]},
+                                             CkScale{scalarValues[0]}},
+                        typename Traits::COp{CkHiptensorUnaryOp{operators[2]},
+                                             CkScale{scalarValues[1]}},
                     })); // ignore opB since none operation should be applied on output
             }
             else if constexpr(Traits::InstanceType
@@ -193,9 +195,12 @@ namespace hiptensor
                     typename Traits::CombinedOp{
                         typename Traits::ABCOp{operators[0]},
                         typename Traits::ABOp{operators[1]},
-                        typename Traits::AOp{CkHiptensorUnaryOp{operators[2]}, CkScale{scalarValues[0]}},
-                        typename Traits::AOp{CkHiptensorUnaryOp{operators[3]}, CkScale{scalarValues[1]}},
-                        typename Traits::COp{CkHiptensorUnaryOp{operators[4]}, CkScale{scalarValues[2]}},
+                        typename Traits::AOp{CkHiptensorUnaryOp{operators[2]},
+                                             CkScale{scalarValues[0]}},
+                        typename Traits::AOp{CkHiptensorUnaryOp{operators[3]},
+                                             CkScale{scalarValues[1]}},
+                        typename Traits::COp{CkHiptensorUnaryOp{operators[4]},
+                                             CkScale{scalarValues[2]}},
                     })); // ignore opB since none operation should be applied on output
             }
             else
