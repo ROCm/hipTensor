@@ -42,7 +42,7 @@ namespace hiptensor
     private: // No public instantiation except make_unique.
              // No copy
         HiptensorOptions();
-        HiptensorOptions(HiptensorOptions const&) = delete;
+        HiptensorOptions(HiptensorOptions const&)            = delete;
         HiptensorOptions& operator=(HiptensorOptions const&) = delete;
 
     public:

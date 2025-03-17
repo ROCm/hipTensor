@@ -43,10 +43,10 @@ namespace hiptensor
     {
     protected:
         // Move only
-        PermutationSolutionRegistry()                              = default;
-        PermutationSolutionRegistry(PermutationSolutionRegistry&&) = default;
-        PermutationSolutionRegistry& operator=(PermutationSolutionRegistry&&) = default;
-        PermutationSolutionRegistry(PermutationSolutionRegistry const&)       = delete;
+        PermutationSolutionRegistry()                                              = default;
+        PermutationSolutionRegistry(PermutationSolutionRegistry&&)                 = default;
+        PermutationSolutionRegistry& operator=(PermutationSolutionRegistry&&)      = default;
+        PermutationSolutionRegistry(PermutationSolutionRegistry const&)            = delete;
         PermutationSolutionRegistry& operator=(PermutationSolutionRegistry const&) = delete;
 
         // Import permutation solutions for the registry to manage

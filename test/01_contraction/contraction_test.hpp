@@ -79,9 +79,9 @@ namespace hiptensor
         virtual ~ContractionTest() = default;
 
     protected: // Functions
-        ContractionTest(ContractionTest&&)      = delete;
-        ContractionTest(ContractionTest const&) = delete;
-        ContractionTest& operator=(ContractionTest&) = delete;
+        ContractionTest(ContractionTest&&)            = delete;
+        ContractionTest(ContractionTest const&)       = delete;
+        ContractionTest& operator=(ContractionTest&)  = delete;
         ContractionTest& operator=(ContractionTest&&) = delete;
 
         bool checkDevice(hipDataType datatype) const;

@@ -100,15 +100,15 @@ auto inline load_sequence_config_params()
     auto betas          = testParams.betas();
 
     std::vector<size_t> lengths   = {dataTypes.size(),
-                                   algorithms.size(),
-                                   operators.size(),
-                                   workSizePrefrences.size(),
-                                   logLevelMask.size(),
-                                   problemLengths.size(),
-                                   problemStrides.size(),
-                                   problemModes.size(),
-                                   alphas.size(),
-                                   betas.size()};
+                                     algorithms.size(),
+                                     operators.size(),
+                                     workSizePrefrences.size(),
+                                     logLevelMask.size(),
+                                     problemLengths.size(),
+                                     problemStrides.size(),
+                                     problemModes.size(),
+                                     alphas.size(),
+                                     betas.size()};
     auto                maxLength = *std::max_element(lengths.begin(), lengths.end());
 
     dataTypes.resize(maxLength, dataTypes.back());

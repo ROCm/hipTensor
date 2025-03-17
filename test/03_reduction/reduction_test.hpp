@@ -63,9 +63,9 @@ namespace hiptensor
         virtual ~ReductionTest() = default;
 
     protected: // Functions
-        ReductionTest(ReductionTest&&)      = delete;
-        ReductionTest(ReductionTest const&) = delete;
-        ReductionTest& operator=(ReductionTest&) = delete;
+        ReductionTest(ReductionTest&&)            = delete;
+        ReductionTest(ReductionTest const&)       = delete;
+        ReductionTest& operator=(ReductionTest&)  = delete;
         ReductionTest& operator=(ReductionTest&&) = delete;
 
         bool checkDevice(hipDataType datatype, hiptensorComputeType_t computeDataType) const;

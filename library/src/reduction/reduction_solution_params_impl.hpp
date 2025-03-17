@@ -55,12 +55,12 @@ namespace hiptensor
     template <typename DeviceOp>
     struct ReductionSolutionParamsImpl : public ReductionSolutionParams
     {
-        ReductionSolutionParamsImpl()                                   = default;
-        ~ReductionSolutionParamsImpl()                                  = default;
-        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl const&) = default;
-        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl&&)      = default;
+        ReductionSolutionParamsImpl()                                              = default;
+        ~ReductionSolutionParamsImpl()                                             = default;
+        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl const&)            = default;
+        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl&&)                 = default;
         ReductionSolutionParamsImpl& operator=(ReductionSolutionParamsImpl const&) = default;
-        ReductionSolutionParamsImpl& operator=(ReductionSolutionParamsImpl&&) = default;
+        ReductionSolutionParamsImpl& operator=(ReductionSolutionParamsImpl&&)      = default;
 
         using MetaTraitsT = MetaTraits<DeviceOp>;
 

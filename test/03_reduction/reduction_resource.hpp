@@ -65,7 +65,7 @@ namespace hiptensor
     private: // No public instantiation except make_unique.
              // No copy
         ReductionResource();
-        ReductionResource(const ReductionResource&) = delete;
+        ReductionResource(const ReductionResource&)            = delete;
         ReductionResource& operator=(const ReductionResource&) = delete;
 
     public:

@@ -43,8 +43,8 @@ namespace hiptensor
         HipResource() = default;
 
     private: // No Copy
-        HipResource(HipResource&&)      = delete;
-        HipResource(const HipResource&) = delete;
+        HipResource(HipResource&&)                 = delete;
+        HipResource(const HipResource&)            = delete;
         HipResource& operator=(const HipResource&) = delete;
 
     public:

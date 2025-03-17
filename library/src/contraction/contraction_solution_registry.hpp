@@ -144,10 +144,10 @@ namespace hiptensor
 
     protected:
         // Move only
-        ContractionSolutionRegistry()                              = default;
-        ContractionSolutionRegistry(ContractionSolutionRegistry&&) = default;
-        ContractionSolutionRegistry& operator=(ContractionSolutionRegistry&&) = default;
-        ContractionSolutionRegistry(ContractionSolutionRegistry const&)       = delete;
+        ContractionSolutionRegistry()                                              = default;
+        ContractionSolutionRegistry(ContractionSolutionRegistry&&)                 = default;
+        ContractionSolutionRegistry& operator=(ContractionSolutionRegistry&&)      = default;
+        ContractionSolutionRegistry(ContractionSolutionRegistry const&)            = delete;
         ContractionSolutionRegistry& operator=(ContractionSolutionRegistry const&) = delete;
 
         // Import contraction solutions for the registry to manage

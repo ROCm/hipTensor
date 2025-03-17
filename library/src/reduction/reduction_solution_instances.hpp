@@ -81,10 +81,10 @@ namespace hiptensor
     private:
         // Singleton: only one instance
         ReductionSolutionInstances();
-        ReductionSolutionInstances(ReductionSolutionInstances const&) = delete;
-        ReductionSolutionInstances(ReductionSolutionInstances&&)      = delete;
+        ReductionSolutionInstances(ReductionSolutionInstances const&)            = delete;
+        ReductionSolutionInstances(ReductionSolutionInstances&&)                 = delete;
         ReductionSolutionInstances& operator=(ReductionSolutionInstances const&) = delete;
-        ReductionSolutionInstances& operator=(ReductionSolutionInstances&&) = delete;
+        ReductionSolutionInstances& operator=(ReductionSolutionInstances&&)      = delete;
 
         void genReductionSolution1x1BF16F32Instances();
         void genReductionSolution2x1BF16F32Instances();

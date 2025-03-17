@@ -112,7 +112,7 @@ namespace hiptensor
                 });
             }
 
-            Argument(Argument const&) = default;
+            Argument(Argument const&)            = default;
             Argument& operator=(Argument const&) = default;
             ~Argument()                          = default;
 

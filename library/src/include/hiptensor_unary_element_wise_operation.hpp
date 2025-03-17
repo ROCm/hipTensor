@@ -385,7 +385,7 @@ namespace ck
                 }
                 __host__ __device__ HiptensorBinaryOp(const HiptensorBinaryOp& dynamic_op)
                     = default;
-                __host__            __device__ ~HiptensorBinaryOp() = default;
+                __host__                               __device__ ~HiptensorBinaryOp() = default;
                 __host__ __device__ HiptensorBinaryOp& operator=(const HiptensorBinaryOp& other)
                     = default;
 

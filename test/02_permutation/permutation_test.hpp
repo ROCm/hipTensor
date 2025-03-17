@@ -62,9 +62,9 @@ namespace hiptensor
         virtual ~PermutationTest() = default;
 
     protected: // Functions
-        PermutationTest(PermutationTest&&)      = delete;
-        PermutationTest(PermutationTest const&) = delete;
-        PermutationTest& operator=(PermutationTest&) = delete;
+        PermutationTest(PermutationTest&&)            = delete;
+        PermutationTest(PermutationTest const&)       = delete;
+        PermutationTest& operator=(PermutationTest&)  = delete;
         PermutationTest& operator=(PermutationTest&&) = delete;
 
         bool checkDevice(hipDataType datatype) const;

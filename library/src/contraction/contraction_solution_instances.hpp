@@ -47,10 +47,10 @@ namespace hiptensor
     private:
         // Singleton: only one instance
         ContractionSolutionInstances();
-        ContractionSolutionInstances(ContractionSolutionInstances const&) = delete;
-        ContractionSolutionInstances(ContractionSolutionInstances&&)      = delete;
+        ContractionSolutionInstances(ContractionSolutionInstances const&)            = delete;
+        ContractionSolutionInstances(ContractionSolutionInstances&&)                 = delete;
         ContractionSolutionInstances& operator=(ContractionSolutionInstances const&) = delete;
-        ContractionSolutionInstances& operator=(ContractionSolutionInstances&&) = delete;
+        ContractionSolutionInstances& operator=(ContractionSolutionInstances&&)      = delete;
     };
 
 } // namespace hiptensor

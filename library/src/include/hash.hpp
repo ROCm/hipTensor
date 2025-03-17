@@ -42,7 +42,7 @@ namespace hiptensor
         std::size_t operator()(Ts const&... ts) const
         {
             std::size_t seed = 0;
-                        operator()(seed, ts...);
+            operator()(seed, ts...);
             return seed;
         }
 

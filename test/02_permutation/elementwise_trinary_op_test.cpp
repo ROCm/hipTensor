@@ -45,14 +45,11 @@ namespace hiptensor
     ElementwiseTrinaryOpTest::ElementwiseTrinaryOpTest()
         : Base()
     {
-        using hiptensor::Logger;
-        auto& logger = Logger::instance();
-        logger->setLogMask(0x1F);
         reset();
 
         // Handle our own outputs
-        // hiptensorLoggerOpenFile("/dev/null");
-        // hiptensorLoggerSetCallback(logMessage);
+        hiptensorLoggerOpenFile("/dev/null");
+        hiptensorLoggerSetCallback(logMessage);
     }
 
     // Kernel run checks. Virtual as different ElementwiseTrinaryOp kernels have different requirements

@@ -97,10 +97,10 @@ namespace hiptensor
         void PermutationSolution6DHalfNoopInstances();
         // Singleton: only one instance
         PermutationSolutionInstances();
-        PermutationSolutionInstances(PermutationSolutionInstances const&) = delete;
-        PermutationSolutionInstances(PermutationSolutionInstances&&)      = delete;
+        PermutationSolutionInstances(PermutationSolutionInstances const&)            = delete;
+        PermutationSolutionInstances(PermutationSolutionInstances&&)                 = delete;
         PermutationSolutionInstances& operator=(PermutationSolutionInstances const&) = delete;
-        PermutationSolutionInstances& operator=(PermutationSolutionInstances&&) = delete;
+        PermutationSolutionInstances& operator=(PermutationSolutionInstances&&)      = delete;
     };
 
 } // namespace hiptensor

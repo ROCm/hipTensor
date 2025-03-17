@@ -45,9 +45,9 @@ namespace hiptensor
         // Due to unique_ptr ownership of members,
         // ReductionSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        ReductionSolution()                         = delete;
-        ReductionSolution(ReductionSolution const&) = delete;
-        virtual ~ReductionSolution()                = default;
+        ReductionSolution()                                    = delete;
+        ReductionSolution(ReductionSolution const&)            = delete;
+        virtual ~ReductionSolution()                           = default;
         ReductionSolution& operator=(ReductionSolution const&) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from

@@ -113,10 +113,10 @@ namespace hiptensor
 
     protected:
         // Move only
-        ReductionSolutionRegistry()                            = default;
-        ReductionSolutionRegistry(ReductionSolutionRegistry&&) = default;
-        ReductionSolutionRegistry& operator=(ReductionSolutionRegistry&&) = default;
-        ReductionSolutionRegistry(ReductionSolutionRegistry const&)       = delete;
+        ReductionSolutionRegistry()                                            = default;
+        ReductionSolutionRegistry(ReductionSolutionRegistry&&)                 = default;
+        ReductionSolutionRegistry& operator=(ReductionSolutionRegistry&&)      = default;
+        ReductionSolutionRegistry(ReductionSolutionRegistry const&)            = delete;
         ReductionSolutionRegistry& operator=(ReductionSolutionRegistry const&) = delete;
 
         // Import reduction solutions for the registry to manage

@@ -66,9 +66,9 @@ namespace hiptensor
         virtual ~ElementwiseTrinaryOpTest() = default;
 
     protected: // Functions
-        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest&&)      = delete;
-        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest const&) = delete;
-        ElementwiseTrinaryOpTest& operator=(ElementwiseTrinaryOpTest&) = delete;
+        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest&&)            = delete;
+        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest const&)       = delete;
+        ElementwiseTrinaryOpTest& operator=(ElementwiseTrinaryOpTest&)  = delete;
         ElementwiseTrinaryOpTest& operator=(ElementwiseTrinaryOpTest&&) = delete;
 
         bool checkDevice(hipDataType datatype) const;

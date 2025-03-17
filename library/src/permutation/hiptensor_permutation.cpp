@@ -156,11 +156,11 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
     auto  solutions = instances->query({alphaF},
                                       descA->mLengths,
-                                      {descA->mType},
-                                      {descB->mType},
-                                      {{modeA, modeA + descA->mLengths.size()}},
-                                      {{modeB, modeB + descB->mLengths.size()}},
-                                      {descA->mUnaryOp, descB->mUnaryOp},
+                                       {descA->mType},
+                                       {descB->mType},
+                                       {{modeA, modeA + descA->mLengths.size()}},
+                                       {{modeB, modeB + descB->mLengths.size()}},
+                                       {descA->mUnaryOp, descB->mUnaryOp},
                                       hiptensor::ElementwiseExecutionSpaceType_t::Device);
 
     bool canRun = false;

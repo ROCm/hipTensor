@@ -52,10 +52,10 @@ namespace hiptensor
         void ReductionCpuReference6DInstances();
         // Singleton: only one instance
         ReductionCpuReferenceInstances();
-        ReductionCpuReferenceInstances(ReductionCpuReferenceInstances const&) = delete;
-        ReductionCpuReferenceInstances(ReductionCpuReferenceInstances&&)      = delete;
+        ReductionCpuReferenceInstances(ReductionCpuReferenceInstances const&)            = delete;
+        ReductionCpuReferenceInstances(ReductionCpuReferenceInstances&&)                 = delete;
         ReductionCpuReferenceInstances& operator=(ReductionCpuReferenceInstances const&) = delete;
-        ReductionCpuReferenceInstances& operator=(ReductionCpuReferenceInstances&&) = delete;
+        ReductionCpuReferenceInstances& operator=(ReductionCpuReferenceInstances&&)      = delete;
     };
 
 } // namespace hiptensor
