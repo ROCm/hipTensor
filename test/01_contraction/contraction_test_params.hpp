@@ -53,7 +53,7 @@ namespace hiptensor
         using ModesT   = std::vector<std::vector<int32_t>>;
         using AlphaT   = std::vector<double>;
         using BetaT    = std::vector<double>;
-        using RangesT  = std::vector<size_t>;
+        using RangesT  = std::vector<std::size_t>;
 
     public:
         std::vector<DataTypesT>& dataTypes()

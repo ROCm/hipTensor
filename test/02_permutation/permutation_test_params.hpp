@@ -49,7 +49,7 @@ namespace hiptensor
         using GammaT        = double;
         using PermutedDimsT = std::vector<std::size_t>;
         using OperatorT     = std::vector<hiptensorOperator_t>;
-        using RangesT       = std::vector<size_t>;
+        using RangesT       = std::vector<std::size_t>;
 
     public:
         std::vector<DataTypesT>& dataTypes()

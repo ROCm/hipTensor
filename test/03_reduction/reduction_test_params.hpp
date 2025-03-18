@@ -48,7 +48,7 @@ namespace hiptensor
         using BetaT       = double;
         using OutputDimsT = std::vector<std::size_t>;
         using OperatorT   = hiptensorOperator_t;
-        using RangesT     = std::vector<size_t>;
+        using RangesT     = std::vector<std::size_t>;
 
     public:
         std::vector<DataTypesT>& dataTypes()
