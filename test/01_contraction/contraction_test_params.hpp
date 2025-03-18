@@ -111,6 +111,11 @@ namespace hiptensor
             return mProblemRanges;
         }
 
+        std::vector<RangesT>& problemRandRanges()
+        {
+            return mProblemRandRanges;
+        }
+
         void printParams()
         {
             std::cout << "DataTypes: " << mDataTypes << std::endl
@@ -139,6 +144,7 @@ namespace hiptensor
         std::vector<AlphaT>        mAlphas;
         std::vector<BetaT>         mBetas;
         std::vector<RangesT>       mProblemRanges;
+        std::vector<RangesT>       mProblemRandRanges;
     };
 
 } // namespace hiptensor

@@ -16,7 +16,7 @@ Lengths:
   - [ 13 ]
   - [ 6 ]
 Ranges:
-  - [2, 2147483648, 2]
+  - [2, 134217728, 2, 64]
 Operators:
   - HIPTENSOR_OP_ADD
   - HIPTENSOR_OP_MUL

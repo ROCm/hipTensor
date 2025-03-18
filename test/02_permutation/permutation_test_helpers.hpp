@@ -30,6 +30,7 @@
 #include <gtest/gtest.h>
 
 #include "hiptensor_options.hpp"
+#include "hiptensor_length_generation.hpp"
 #include "llvm/yaml_parser.hpp"
 
 #ifdef HIPTENSOR_TEST_YAML_INCLUDE
@@ -68,108 +69,52 @@ auto inline load_config_params()
     return testParams;
 }
 
-bool checkMemoryLimit(uint64_t minMemory,
-                      uint64_t maxMemory,
-                      uint64_t rank,
-                      uint64_t i = 1,
-                      uint64_t j = 1,
-                      uint64_t k = 1,
-                      uint64_t x = 1,
-                      uint64_t y = 1,
-                      uint64_t z = 1)
-{
-    uint64_t size = 2 * pow(i * j * k * x * y * z, 2);
-
-    return (size >= minMemory) && (size <= maxMemory);
-}
-
-void generate_lengths(std::vector<std::vector<size_t>>  ranges,
-                      std::vector<std::vector<size_t>>& lengths,
-                      uint32_t                          rank)
-{
-    // Minimum and maximum memory footprint of each tensor
-    uint64_t minMemory = 64;
-    uint64_t maxMemory = 268435456;
-
-    for(auto r = 0; r < ranges.size(); r++)
-    {
-        uint64_t i, j, k, x, y, z = 1;
-        uint64_t minVal = ranges[r][0];
-        uint64_t maxVal = ranges[r][1];
-        uint64_t step   = ranges[r][2];
-
-        // set loop limits basaed on rank
-        uint64_t min_i = rank > 0 ? minVal : 1;
-        uint64_t min_j = rank > 1 ? minVal : 1;
-        uint64_t min_k = rank > 2 ? minVal : 1;
-        uint64_t min_x = rank > 3 ? minVal : 1;
-        uint64_t min_y = rank > 4 ? minVal : 1;
-        uint64_t min_z = rank > 5 ? minVal : 1;
-
-        uint64_t max_i = rank > 0 ? maxVal : 1;
-        uint64_t max_j = rank > 1 ? maxVal : 1;
-        uint64_t max_k = rank > 2 ? maxVal : 1;
-        uint64_t max_x = rank > 3 ? maxVal : 1;
-        uint64_t max_y = rank > 4 ? maxVal : 1;
-        uint64_t max_z = rank > 5 ? maxVal : 1;
-
-        for(z = min_z; z <= max_z; z *= step)
-        {
-            for(y = min_y; y <= max_y; y *= step)
-            {
-                for(x = min_x; x <= max_x; x *= step)
-                {
-                    for(k = min_k; k <= max_k; k *= step)
-                    {
-                        for(j = min_j; j <= max_j; j *= step)
-                        {
-                            for(i = min_i; i <= max_i; i *= step)
-                            {
-                                if(checkMemoryLimit(minMemory, maxMemory, rank, i, j, k, x, y, z))
-                                {
-                                    if(rank == 1)
-                                    {
-                                        lengths.push_back({i});
-                                    }
-                                    else if(rank == 2)
-                                    {
-                                        lengths.push_back({j, i});
-                                    }
-                                    else if(rank == 3)
-                                    {
-                                        lengths.push_back({k, j, i});
-                                    }
-                                    else if(rank == 4)
-                                    {
-                                        lengths.push_back({x, k, j, i});
-                                    }
-                                    else if(rank == 5)
-                                    {
-                                        lengths.push_back({y, x, k, j, i});
-                                    }
-                                    else if(rank == 6)
-                                    {
-                                        lengths.push_back({z, y, x, k, j, i});
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 auto inline load_config_helper()
 {
     auto testParams = load_config_params();
 
-    // Append sizes to problemLengths if problemRanges are given
+    // Append sizes generated from lower/upper/step parameters to problemLengths
     if(!testParams.problemRanges().empty())
     {
         uint32_t rank = testParams.permutedDims()[0].size();
-        generate_lengths(testParams.problemRanges(), testParams.problemLengths(), rank);
+
+        for (int i = 0; i < testParams.problemRanges().size(); i++)
+        {
+            auto ranges = testParams.problemRanges()[i];
+            std::size_t lower = ranges[0];
+            std::size_t upper = ranges[1];
+            std::size_t step  = ranges[2];
+            std::size_t maxElements = 134217728;
+
+            std::size_t totalSizes = 0;
+            if (ranges.size() == 4)
+            {
+                totalSizes = ranges[3];
+            }
+            std::vector<std::vector<std::size_t>> generatedLengths;
+            hiptensor::generate2DLengths(generatedLengths, lower, upper, step, rank, maxElements, totalSizes);
+            testParams.problemLengths().insert(testParams.problemLengths().end(),
+                                            generatedLengths.begin(), generatedLengths.end());
+        }
+    }
+    // Append sizes generated randomly from [lower, upper] to problemLengths
+    if(!testParams.problemRandRanges().empty())
+    {
+        uint32_t rank = testParams.permutedDims()[0].size();
+
+        for (int i = 0; i < testParams.problemRandRanges().size(); i++)
+        {
+            auto ranges = testParams.problemRandRanges()[i];
+            std::size_t lower = ranges[0];
+            std::size_t upper = ranges[1];
+            std::size_t totalSizes = ranges[2];
+            std::size_t maxElements = 134217728;
+
+            std::vector<std::vector<std::size_t>> generatedRandLengths;
+            hiptensor::generate2DLengths(generatedRandLengths, lower, upper, upper, rank, maxElements, totalSizes, true);
+            testParams.problemLengths().insert(testParams.problemLengths().end(),
+                                            generatedRandLengths.begin(), generatedRandLengths.end());
+        }
     }
 
     // testParams.printParams();

@@ -91,6 +91,11 @@ namespace hiptensor
             return mProblemRanges;
         }
 
+        std::vector<RangesT>& problemRandRanges()
+        {
+            return mProblemRandRanges;
+        }
+
         void printParams()
         {
             std::cout << "DataTypes: " << mDataTypes << "\n"
@@ -113,6 +118,7 @@ namespace hiptensor
         std::vector<OperatorT>   mOperators;
         std::vector<OutputDimsT> mOutputDims;
         std::vector<RangesT>     mProblemRanges;
+        std::vector<RangesT>     mProblemRandRanges;
     };
 
 } // namespace hiptensor

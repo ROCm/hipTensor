@@ -290,9 +290,9 @@ namespace llvm
                                (std::vector<std::vector<double>>&)(doc.betas()),
                                std::vector<std::vector<double>>(doc.alphas().size()));
                 io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
-
+                io.mapOptional("Random Ranges", (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
                 // If problem ranges are given then problem lengths are optional
-                if(doc.problemRanges().size() != 0)
+                if(doc.problemRanges().size() != 0 && doc.problemRandRanges().size() != 0)
                 {
                     io.mapOptional(
                         "Lengths",
@@ -327,7 +327,8 @@ namespace llvm
             static std::string validate(IO& io, hiptensor::ContractionTestParams& doc)
             {
 
-                if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0)
+                if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0
+                    && doc.problemRandRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
@@ -389,14 +390,21 @@ namespace llvm
                 io.mapOptional("Gammas",
                                (std::vector<GammaT>&)(doc.gammas()),
                                std::vector<GammaT>(doc.alphas().size()));
-                io.mapOptional("Ranges", doc.problemRanges());
-                if(!doc.problemRanges().empty())
+
+                io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
+                io.mapOptional("Random Ranges", (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
+                // If problem ranges are given then problem lengths are optional
+                if(doc.problemRanges().size() != 0 && doc.problemRandRanges().size() != 0)
                 {
-                    io.mapOptional("Lengths", doc.problemLengths());
+                    io.mapOptional(
+                        "Lengths",
+                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 else
                 {
-                    io.mapRequired("Lengths", doc.problemLengths());
+                    io.mapRequired(
+                        "Lengths",
+                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 io.mapRequired("Permuted Dims", doc.permutedDims());
                 io.mapRequired("Operators", (doc.operators()));
@@ -406,7 +414,8 @@ namespace llvm
             static std::string validate(IO& io, hiptensor::PermutationTestParams& doc)
             {
 
-                if(doc.problemLengths().size() == 0)
+                if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0
+                    && doc.problemRandRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
@@ -455,14 +464,20 @@ namespace llvm
                 io.mapRequired("Tensor Data Types", doc.dataTypes());
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
-                io.mapOptional("Ranges", doc.problemRanges());
-                if(!doc.problemRanges().empty())
+                io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
+                io.mapOptional("Random Ranges", (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
+                // If problem ranges are given then problem lengths are optional
+                if(doc.problemRanges().size() != 0 && doc.problemRandRanges().size() != 0)
                 {
-                    io.mapOptional("Lengths", doc.problemLengths());
+                    io.mapOptional(
+                        "Lengths",
+                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 else
                 {
-                    io.mapRequired("Lengths", doc.problemLengths());
+                    io.mapRequired(
+                        "Lengths",
+                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 io.mapRequired("Output Dims", doc.outputDims());
                 io.mapRequired("Operators", (doc.operators()));
@@ -472,7 +487,8 @@ namespace llvm
             static std::string validate(IO& io, hiptensor::ReductionTestParams& doc)
             {
 
-                if(doc.problemLengths().size() == 0)
+                if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0
+                    && doc.problemRandRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
