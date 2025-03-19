@@ -201,7 +201,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
                               + hiptensor::hipDataTypeSize(descB->mType)
                               + hiptensor::hipDataTypeSize(descC->mType)
                               + hiptensor::hipDataTypeSize(descD->mType))
-                             * pSolution->problemBytes();
+                             * pSolution->problemSize();
 
                 hiptensor::PerfMetrics metrics = {
                     pSolution->uid(), // id

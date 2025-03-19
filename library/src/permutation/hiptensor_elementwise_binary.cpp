@@ -176,7 +176,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                 auto bytes = (hiptensor::hipDataTypeSize(descA->mType)
                               + hiptensor::hipDataTypeSize(descC->mType)
                               + hiptensor::hipDataTypeSize(descD->mType))
-                             * pSolution->problemBytes();
+                             * pSolution->problemSize();
 
                 hiptensor::PerfMetrics metrics = {
                     pSolution->uid(), // id

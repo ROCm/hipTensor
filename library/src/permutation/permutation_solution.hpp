@@ -92,9 +92,6 @@ namespace hiptensor
         // Problem size
         ck::index_t problemSize() const;
 
-        // Byte count
-        ck::index_t problemBytes() const;
-
         // Kernel's name encoding
         std::string kernelName() const;
 
