@@ -454,24 +454,18 @@ namespace hiptensor
     std::ostream& printContainerInCsv(Container const& container, std::ostream& outStream)
     {
         outStream << "[";
-        for(const auto& element : container)
+        for(int i = 0; i < container.size(); i++)
         {
             if constexpr(is_container<typename Container::value_type>::value)
             {
-                printContainerInCsv(element, outStream);
+                printContainerInCsv(container[i], outStream);
             }
             else
             {
-                auto it = container.begin();
-                if(it != container.end())
+                outStream << container[i];
+                if(i != container.size() - 1)
                 {
-                    outStream << *it; // Print the first element
-                    ++it;
-                }
-                while(it != container.end())
-                {
-                    outStream << " " << *it; // Print space and then the element
-                    ++it;
+                    outStream << ' ';
                 }
             }
         }
