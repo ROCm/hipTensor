@@ -49,7 +49,7 @@ namespace hiptensor
 
         // TODO Only handle A, B have the same types here. Need to handle A, B are different types
         auto instanceParams
-            = instanceType == ElementwiseExecutionSpaceType_t::Device
+            = instanceType == ElementwiseExecutionSpaceType_t::DEVICE
                   ? selectInstanceParams(lengths, outputDims, inDataTypes, outDataTypes, nDims)
                   : InstanceHyperParams{};
 
@@ -59,21 +59,15 @@ namespace hiptensor
         ///
         /// Do not use PermutationOpId_t::PASS_THROUGH when instanceType is Host since no such special
         /// instances have been created.
-        auto allEquals = [](auto&& container, auto value) {
-            for(auto&& item : container)
-            {
-                if(item != value)
-                {
-                    return false;
-                }
-            }
-            return true;
-        };
         bool usePassThroughIfAlphaIsOne
-            = (allEquals(scalarValues, 1.0F) && allEquals(operators, HIPTENSOR_OP_IDENTITY)
-               && instanceType == ElementwiseExecutionSpaceType_t::Device);
-        auto scale     = usePassThroughIfAlphaIsOne ? hiptensor::PermutationOpId_t::PASS_THROUGH
-                                                    : hiptensor::PermutationOpId_t::SCALE;
+            = (std::all_of(
+                   scalarValues.cbegin(), scalarValues.cend(), [](auto v) { return v == 1.0F; })
+               && std::all_of(operators.cbegin(),
+                              operators.cend(),
+                              [](auto v) { return v == HIPTENSOR_OP_IDENTITY; })
+               && instanceType == ElementwiseExecutionSpaceType_t::DEVICE);
+        auto scale = usePassThroughIfAlphaIsOne ? hiptensor::PermutationOpId_t::PASS_THROUGH
+                                                : hiptensor::PermutationOpId_t::SCALE;
         auto hashCodes = ck::tensor_operation::device::instance::getHashCodeOfBestPerfInstances(
             inDataTypes, outDataTypes, scale, nDims, instanceParams);
 

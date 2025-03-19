@@ -69,8 +69,8 @@ namespace hiptensor
      */
     enum struct ElementwiseExecutionSpaceType_t : int32_t
     {
-        Device,
-        Host,
+        DEVICE,
+        HOST,
         UNKNOWN,
     };
 

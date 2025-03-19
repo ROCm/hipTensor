@@ -33,7 +33,6 @@ namespace hiptensor
         std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp)
         : mDim(0)
         , mSize(0)
-        , mBytes(0)
         , mValid(false)
         , mDeviceOp(std::move(deviceOp))
     {
@@ -42,7 +41,6 @@ namespace hiptensor
     PermutationSolution::PermutationSolution(PermutationSolution&& other)
         : mDim(other.mDim)
         , mSize(other.mSize)
-        , mBytes(other.mBytes)
         , mValid(other.mValid)
         , mDeviceOp(std::move(other.mDeviceOp))
         , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
@@ -57,7 +55,6 @@ namespace hiptensor
             mDim = other.mDim;
 
             mSize  = other.mSize;
-            mBytes = other.mBytes;
             mValid = other.mValid;
 
             mDeviceOp      = std::move(other.mDeviceOp);
@@ -117,11 +114,6 @@ namespace hiptensor
         return mSize;
     }
 
-    ck::index_t PermutationSolution::problemBytes() const
-    {
-        return mBytes;
-    }
-
     std::string PermutationSolution::kernelName() const
     {
         return mDeviceOp->GetTypeString();
@@ -141,9 +133,8 @@ namespace hiptensor
 
     void PermutationSolution::resetArgs()
     {
-        mDim   = 0;
-        mSize  = 0;
-        mBytes = 0;
+        mDim  = 0;
+        mSize = 0;
 
         mInvokerArgPtr.reset(nullptr);
         mInvokerPtr.reset(nullptr);

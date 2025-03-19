@@ -157,7 +157,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
                             {modeC, modeC + descC->mLengths.size()}},
                            {{modeD, modeD + descD->mLengths.size()}},
                            {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                           hiptensor::ElementwiseExecutionSpaceType_t::Device);
+                           hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
     for(auto pSolution : solutions)
@@ -196,9 +196,12 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
                     return HIPTENSOR_STATUS_CK_ERROR;
                 }
 
-                // TODO update flops
-                auto flops = std::size_t(2) * pSolution->problemSize();
-                auto bytes = pSolution->problemBytes();
+                auto flops = std::size_t(8) * pSolution->problemSize();
+                auto bytes = (hiptensor::hipDataTypeSize(descA->mType)
+                              + hiptensor::hipDataTypeSize(descB->mType)
+                              + hiptensor::hipDataTypeSize(descC->mType)
+                              + hiptensor::hipDataTypeSize(descD->mType))
+                             * pSolution->problemBytes();
 
                 hiptensor::PerfMetrics metrics = {
                     pSolution->uid(), // id

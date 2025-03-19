@@ -372,7 +372,7 @@ namespace hiptensor
                                            std::multiplies<size_t>());
 
             mElapsedTimeMs        = float64_t(timeMs);
-            mTotalGFlops          = 2.0 * ((sizeA * sizeB) / hipDataTypeSize(abDataType)) * 1e-9;
+            mTotalGFlops          = 2.0 * (resource->getCurrentMatrixElement()) * 1e-9;
             mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
 
             mTotalGBytes = sizeA + sizeB;

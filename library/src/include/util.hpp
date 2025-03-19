@@ -134,6 +134,12 @@ namespace hiptensor
         static_for_impl<N>(std::forward<Func>(func), std::make_index_sequence<N>{});
     }
 
+    template <typename T, typename U, size_t N>
+    void convertVectorToCkArray(std::vector<T> const& v, std::array<U, N>& a)
+    {
+        std::copy_n(v.begin(), N, a.begin());
+    }
+
 // define a macro since it can convert `paramName` to a string
 #define CheckApiParams(logger, errorCode, paramName)      \
     if(!paramName)                                        \

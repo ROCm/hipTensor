@@ -55,7 +55,7 @@ hiptensorStatus_t hiptensorPermutationReference(const hiptensorHandle_t*        
                                           {{modeA, modeA + descA->mLengths.size()}},
                                           {{modeB, modeB + descB->mLengths.size()}},
                                           {descA->mUnaryOp, descB->mUnaryOp},
-                                          hiptensor::ElementwiseExecutionSpaceType_t::Host);
+                                          hiptensor::ElementwiseExecutionSpaceType_t::HOST);
 
     for(auto refCandidate : refCandidates)
     {
@@ -116,7 +116,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const hiptensorHandle_t*
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
         {descA->mUnaryOp, descC->mUnaryOp},
-        hiptensor::ElementwiseExecutionSpaceType_t::Host);
+        hiptensor::ElementwiseExecutionSpaceType_t::HOST);
 
     for(auto refCandidate : refCandidates)
     {
@@ -190,7 +190,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const hiptensorHandle_t
                             {modeC, modeC + descC->mLengths.size()}},
                            {{modeD, modeD + descD->mLengths.size()}},
                            {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                           hiptensor::ElementwiseExecutionSpaceType_t::Host);
+                           hiptensor::ElementwiseExecutionSpaceType_t::HOST);
 
     for(auto refCandidate : refCandidates)
     {

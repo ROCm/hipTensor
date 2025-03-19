@@ -89,9 +89,6 @@ namespace hiptensor
                 return 1;
             };
 
-            auto convertVectorToCkArray
-                = [](auto const& v, auto& a) { std::copy_n(v.begin(), Traits::NDim, a.begin()); };
-
             auto isColMajorStrides = HiptensorOptions::instance()->isColMajorStrides();
 
             std::array<index_t, Traits::NDim> deviceInputLengths;
@@ -176,7 +173,7 @@ namespace hiptensor
                     deviceInBuffers,
                     deviceOutBuffers,
                     typename Traits::CombinedOp{
-                        typename Traits::BinaryOp{operators[0]},
+                        typename Traits::ACOp{operators[0]},
                         typename Traits::AOp{CkHiptensorUnaryOp{operators[1]},
                                              CkScale{scalarValues[0]}},
                         typename Traits::COp{CkHiptensorUnaryOp{operators[2]},
@@ -217,10 +214,6 @@ namespace hiptensor
             // Size count
             Base::mSize = std::accumulate(
                 inLengthsArray[0].cbegin(), inLengthsArray[0].cend(), 1, std::multiplies{});
-
-            // Byte count
-            Base::mBytes = (sizeof(typename Traits::InDataT) + sizeof(typename Traits::OutDataT))
-                           * Base::mSize;
 
             // Arg test
             Base::mValid = deviceOp->IsSupportedArgument(Base::mInvokerArgPtr.get());

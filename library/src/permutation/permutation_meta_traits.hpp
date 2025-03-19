@@ -68,12 +68,12 @@ namespace hiptensor
               typename OutDataTypeTuple,
               typename Aop,
               typename Cop,
-              typename Binaryop,
+              typename ACop,
               ck::index_t NumDim>
     struct MetaTraits<ck::tensor_operation::device::DeviceElementwise<
         InDataTypeTuple,
         OutDataTypeTuple,
-        ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>,
+        ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<ACop, Aop, Cop>,
         NumDim>>
     {
         constexpr static ck::index_t               NDim = NumDim;
@@ -83,11 +83,11 @@ namespace hiptensor
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;
 
-        using AOp      = Aop;
-        using COp      = Cop;
-        using BinaryOp = Binaryop;
+        using AOp  = Aop;
+        using COp  = Cop;
+        using ACOp = ACop;
         using CombinedOp
-            = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<Binaryop, Aop, Cop>;
+            = ck::tensor_operation::element_wise::BinaryWithUnaryCombinedOp<ACop, Aop, Cop>;
     };
 
     // Meta traits for Scalar elementwise_trinary
