@@ -2,7 +2,21 @@
 
 Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-## (Unreleased) hipTensor 1.5.0 for ROCm 6.4.0
+## (Unreleased) hipTensor 1.6.0 for ROCm 6.5.0
+
+### Added
+
+* Added element-wise binary operation support.
+* Added element-wise ternary operation support.
+* Added support for new GPU target gfx950.
+* Added support for dynamic unary and binary operators.
+* Added CMake check for f8 datatype availability
+
+### Changed
+
+* Used `GPU_TARGETS` instead of `AMDGPU_TARGETS` in `cmakelists.txt`
+
+## hipTensor 1.5.0 for ROCm 6.4.0
 
 ### Added
 
