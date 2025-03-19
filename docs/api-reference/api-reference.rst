@@ -222,6 +222,24 @@ hiptensorContractionGetWorkspaceSize
 
 .. doxygenfunction::  hiptensorContractionGetWorkspaceSize
 
+Element-wise operations
+=======================
+
+hiptensorPermutation 
+----------------------------------
+
+.. doxygenfunction:: hiptensorPermutation
+
+hiptensorElementwiseBinary
+----------------------------------
+
+.. doxygenfunction:: hiptensorElementwiseBinary
+
+hiptensorElementwiseTrinary
+----------------------------------
+
+.. doxygenfunction:: hiptensorElementwiseTrinary
+
 Reduction operations
 ======================
 
