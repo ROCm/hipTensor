@@ -10,7 +10,7 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * Added element-wise ternary operation support.
 * Added support for new GPU target gfx950.
 * Added support for dynamic unary and binary operators.
-* Added CMake check for f8 datatype availability
+* Added a CMake check for `f8` datatype availability
 
 ## hipTensor 1.5.0 for ROCm 6.4.0
 
