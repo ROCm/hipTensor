@@ -23,6 +23,10 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 
 * For CMake bug workaround, set `CMAKE_NO_BUILTIN_CHRPATH` when `BUILD_OFFLOAD_COMPRESS` is unset
 
+### Upcoming changes
+
+* hipTensor 2.x will enhance performance and usability while unifying the API design across all operations (elementwise, reductions, and tensor contractions), enabling consistent multi-stage execution and plan reuse. As part of this change, the API functions `hiptensorInitTensorDescriptor`, `hiptensorContractionDescriptor_t` , `hiptensorInitContractionDescriptor`, `hiptensorInitContractionFind`, `hiptensorContractionGetWorkspaceSize`, `hiptensorInitContractionPlan`, `hiptensorContraction`, `hiptensorElementwiseBinary`, `hiptensorElementwiseTrinary`, `hiptensorPermutation`, and `hiptensorReduction` will be deprecated in a future ROCm release.
+
 ## hipTensor 1.4.0 for ROCm 6.3.0
 
 ### Added
