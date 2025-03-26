@@ -43,7 +43,7 @@ namespace hiptensor
         std::size_t operator()(Ts const&... ts) const
         {
             std::size_t seed = 0;
-            operator()(seed, ts...);
+                        operator()(seed, ts...);
             return seed;
         }
 
@@ -61,11 +61,9 @@ namespace hiptensor
         template <typename T>
         void operator()(std::size_t& seed, std::vector<T> const& vec) const
         {
-            std::size_t tempSeed = 0;
-            for (const auto& element : vec)
+            for(const auto& element : vec)
             {
-                operator()(tempSeed, element);
-                seed ^= tempSeed;
+                operator()(seed, element);
             }
         }
 
