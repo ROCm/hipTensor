@@ -1,5 +1,5 @@
 .. meta::
-   :description: A high-performance HIP library for tensor primitives
+   :description: installation instructions for the hipTensor library
    :keywords: hipTensor, ROCm, library, API, tool, installation
 
 .. _installation:
