@@ -22,6 +22,11 @@ subtrees:
   - file: contribution/contributors-guide
     title: Contribute to hipTensor
 
+- caption: Examples
+  entries:
+  - url: https://github.com/ROCm/hipTensor/tree/develop/samples
+    title: Samples
+
 - caption: API reference
   entries:
   - file: api-reference/api-reference
