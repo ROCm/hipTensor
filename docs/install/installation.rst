@@ -24,7 +24,7 @@ Prerequisites
 
 hipTensor requires a ROCm-enabled platform, using ROCm version 6.0 or later.
 For more information, see :doc:`ROCm installation <rocm-install-on-linux:index>`
-and the `ROCm Github <https://github.com/ROCm/ROCm>`_.
+and the `ROCm GitHub <https://github.com/ROCm/ROCm>`_.
 
 Installing prebuilt packages
 ============================
@@ -62,7 +62,7 @@ To build hipTensor from source, follow the instructions in this section.
 System requirements
 -------------------------------------------
 
-As a general rule, 8GB of system memory is required for a full hipTensor build.
+8GB of system memory is required for a full hipTensor build.
 This value might be lower if hipTensor is built without tests.
 
 GPU support
