@@ -236,9 +236,9 @@ Executable name                                                    Description
 ``simple_scale_contraction_f64_f64_f64_compute_f32``               A simple scale contraction [D = alpha * (A x B) ] using double-precision floating point input and output and single-precision floating point compute types
 ``simple_scale_contraction_f64_f64_f64_compute_f64``               A simple scale contraction [D = alpha * (A x B) ] using double-precision floating point input, output, and compute types
 ``simple_permutation``                                             A simple permutation using single-precision floating point input and output types
-``simple_reduction``                                               A simple reduction using single-precision floating point input and output types
 ``simple_elementwise_binary``                                      A simple element-wise binary operation using single-precision floating point input and output types
 ``simple_elementwise_trinary``                                     A simple element-wise trinary operation using single-precision floating point input and output types
+``simple_reduction``                                               A simple reduction using single-precision floating point input and output types
 ================================================================== =======================================================================================================================================================================
 
 Building the library and tests
@@ -295,12 +295,6 @@ Executable name                                  Description
 ``rank4_permutation_test``                       Permutation test with half and single precision datatypes of rank 4
 ``rank5_permutation_test``                       Permutation test with half and single precision datatypes of rank 5
 ``rank6_permutation_test``                       Permutation test with half and single precision datatypes of rank 6
-``rank1_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 1
-``rank2_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 2
-``rank3_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 3
-``rank4_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 4
-``rank5_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 5
-``rank6_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 6
 ``rank2_elementwise_binary_op_test``             Element-wise binary operation test with half, single, and double precision datatypes of rank 2
 ``rank3_elementwise_binary_op_test``             Element-wise binary operation test with half, single, and double precision datatypes of rank 3
 ``rank4_elementwise_binary_op_test``             Element-wise binary operation test with half, single, and double precision datatypes of rank 4
@@ -311,6 +305,12 @@ Executable name                                  Description
 ``rank4_elementwise_trinary_op_test``            Element-wise trinary operation test with half, single, and double precision datatypes of rank 4
 ``rank5_elementwise_trinary_op_test``            Element-wise trinary operation test with half, single, and double precision datatypes of rank 5
 ``rank6_elementwise_trinary_op_test``            Element-wise trinary operation test with half, single, and double precision datatypes of rank 6
+``rank1_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 1
+``rank2_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 2
+``rank3_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 3
+``rank4_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 4
+``rank5_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 5
+``rank6_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 6
 ================================================ ===========================================================================================================================
 
 Make targets list
@@ -357,11 +357,11 @@ The following table highlights the relationships between high-level grouped targ
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``simple_permutation``                                                           |
 |                                   +---------------------------------------------------------------------------------+
-|                                   |``simple_reduction``                                                             |
-|                                   +---------------------------------------------------------------------------------+
 |                                   |``simple_elementwise_binary``                                                    |
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``simple_elementwise_trinary``                                                   |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``simple_reduction``                                                             |
 +-----------------------------------+---------------------------------------------------------------------------------+
 |                                   |``logger_test``                                                                  |
 |                                   +---------------------------------------------------------------------------------+
@@ -425,18 +425,6 @@ The following table highlights the relationships between high-level grouped targ
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``rank6_permutation_test``                                                       |
 |                                   +---------------------------------------------------------------------------------+
-|                                   |``rank1_reduction_test``                                                         |
-|                                   +---------------------------------------------------------------------------------+
-|                                   |``rank2_reduction_test``                                                         |
-|                                   +---------------------------------------------------------------------------------+
-|                                   |``rank3_reduction_test``                                                         |
-|                                   +---------------------------------------------------------------------------------+
-|                                   |``rank4_reduction_test``                                                         |
-|                                   +---------------------------------------------------------------------------------+
-|                                   |``rank5_reduction_test``                                                         |
-|                                   +---------------------------------------------------------------------------------+
-|                                   |``rank6_reduction_test``                                                         |
-|                                   +---------------------------------------------------------------------------------+
 |                                   |``rank2_elementwise_binary_op_test``                                             |
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``rank3_elementwise_binary_op_test``                                             |
@@ -456,6 +444,18 @@ The following table highlights the relationships between high-level grouped targ
 |                                   |``rank5_elementwise_trinary_op_test``                                            |
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``rank6_elementwise_trinary_op_test``                                            |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``rank1_reduction_test``                                                         |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``rank2_reduction_test``                                                         |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``rank3_reduction_test``                                                         |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``rank4_reduction_test``                                                         |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``rank5_reduction_test``                                                         |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``rank6_reduction_test``                                                         |
 +-----------------------------------+---------------------------------------------------------------------------------+
 
 Benchmarking scripts
