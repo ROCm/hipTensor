@@ -170,7 +170,7 @@ Below are the project options available to build hipTensor library with or witho
     *   -   HIPTENSOR_BUILD_COMPRESSED_DBG
         -   Enable compressed debug symbols
         -   ON
-    *   -   HIPTENSOR_DATA_LAYOUT_COL_MAJOR
+    *   -   HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR
         -   Set hiptensor default data layout to column major
         -   ON
 
@@ -249,6 +249,8 @@ Executable Name                                                    Description
 ``simple_scale_contraction_f64_f64_f64_compute_f32``               A simple scale contraction [D = alpha * (A x B) ] using double-precision floating point input, output and single precision floating point compute types
 ``simple_scale_contraction_f64_f64_f64_compute_f64``               A simple scale contraction [D = alpha * (A x B) ] using double-precision floating point input, output and compute types
 ``simple_permutation``                                             A simple permutation using single-precision floating point input and output types
+``simple_elementwise_binary``                                      A simple elementwise binary operation using single-precision floating point input and output types
+``simple_elementwise_trinary``                                     A simple elementwise trinary operation using single-precision floating point input and output types
 ``simple_reduction``                                               A simple reduction using single-precision floating point input and output types
 ================================================================== =====================================================================================================================================================================
 
@@ -306,6 +308,16 @@ Executable name                                  Description
 ``rank4_permutation_test``                       Permutation test with half and single precision datatypes of rank 4
 ``rank5_permutation_test``                       Permutation test with half and single precision datatypes of rank 5
 ``rank6_permutation_test``                       Permutation test with half and single precision datatypes of rank 6
+``rank2_elementwise_binary_op_test``             Elementwise binary operation test with half, single and double precision datatypes of rank 2
+``rank3_elementwise_binary_op_test``             Elementwise binary operation test with half, single and double precision datatypes of rank 3
+``rank4_elementwise_binary_op_test``             Elementwise binary operation test with half, single and double precision datatypes of rank 4
+``rank5_elementwise_binary_op_test``             Elementwise binary operation test with half, single and double precision datatypes of rank 5
+``rank6_elementwise_binary_op_test``             Elementwise binary operation test with half, single and double precision datatypes of rank 6
+``rank2_elementwise_trinary_op_test``            Elementwise trinary operation test with half, single and double precision datatypes of rank 2
+``rank3_elementwise_trinary_op_test``            Elementwise trinary operation test with half, single and double precision datatypes of rank 3
+``rank4_elementwise_trinary_op_test``            Elementwise trinary operation test with half, single and double precision datatypes of rank 4
+``rank5_elementwise_trinary_op_test``            Elementwise trinary operation test with half, single and double precision datatypes of rank 5
+``rank6_elementwise_trinary_op_test``            Elementwise trinary operation test with half, single and double precision datatypes of rank 6
 ``rank1_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 1
 ``rank2_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 2
 ``rank3_reduction_test``                         Reduction test with half, single and double precision datatypes of rank 3
@@ -358,6 +370,11 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   |simple_scale_contraction_f64_f64_f64_compute_f64                             |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |simple_permutation                                                           |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |simple_elementwise_binary                                                    |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |simple_elementwise_trinary                                                   |
+|                                   +-----------------------------------------------------------------------------+
 |                                   |simple_reduction                                                             |
 +-----------------------------------+-----------------------------------------------------------------------------+
 |                                   |logger_test                                                                  |
@@ -421,6 +438,26 @@ When building hipTensor during the ``make`` step, we can specify make targets in
 |                                   |rank5_permutation_test                                                       |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |rank6_permutation_test                                                       |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank2_elementwise_binary_op_test                                             |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank3_elementwise_binary_op_test                                             |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank4_elementwise_binary_op_test                                             |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank5_elementwise_binary_op_test                                             |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank6_elementwise_binary_op_test                                             |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank2_elementwise_trinary_op_test                                            |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank3_elementwise_trinary_op_test                                            |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank4_elementwise_trinary_op_test                                            |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank5_elementwise_trinary_op_test                                            |
+|                                   +-----------------------------------------------------------------------------+
+|                                   |rank6_elementwise_trinary_op_test                                            |
 |                                   +-----------------------------------------------------------------------------+
 |                                   |rank1_reduction_test                                                         |
 |                                   +-----------------------------------------------------------------------------+
