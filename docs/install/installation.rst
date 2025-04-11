@@ -22,7 +22,7 @@ The available ROCm packages are:
 Prerequisites
 =============
 
-hipTensor requires a ROCm-enabled platform, using ROCm version 6.0 or later.
+hipTensor requires a ROCm-enabled platform, using ROCm version 6.4 or later.
 For more information, see :doc:`ROCm installation <rocm-install-on-linux:index>`
 and the `ROCm GitHub <https://github.com/ROCm/ROCm>`_.
 
@@ -86,7 +86,7 @@ The following dependencies are required:
 *  `ROCm <https://github.com/ROCm/ROCm>`_ (Version 6.4 or later)
 *  `CMake <https://cmake.org/>`_ (Version 3.14 or later)
 *  `rocm-cmake <https://github.com/ROCm/rocm-cmake>`_ (Version 0.8.0 or later)
-*  `HIP runtime <https://github.com/ROCm/hip>`_ (Version 4.3.0 or later) (Or the ROCm hip-runtime-amd package)
+*  `HIP runtime <https://github.com/ROCm/hip>`_ (Version 6.4.0 or later) (Or the ROCm hip-runtime-amd package)
 *  LLVM dev package (Version 7.0 or later) (Also available as the ROCm rocm-llvm-dev package)
 *  `composable kernel <https://github.com/ROCm/composable_kernel>`_ (hipTensor uses the amd-master branch, which is a stable and widely adopted version for development.)
 
