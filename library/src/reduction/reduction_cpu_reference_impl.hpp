@@ -34,7 +34,7 @@
 #include <vector>
 
 // CK includes
-#include "ck/library/reference_tensor_operation/cpu/reference_reduce.hpp"
+#include "device/hiptensor_reference_reduce.hpp"
 
 #include "reduction_meta_traits.hpp"
 #include "reduction_solution.hpp"
@@ -49,19 +49,22 @@ namespace hiptensor
               ck::index_t NumReduceDim,
               typename ReduceOperation,
               typename InElementwiseOperation,
+              typename PriorDestElementwiseOperation,
               typename AccElementwiseOperation,
               bool PropagateNan,
               bool OutputIndex>
-    using ReferenceReduction = ck::tensor_operation::host::ReferenceReduce<InDataType,
-                                                                           AccDataType,
-                                                                           OutDataType,
-                                                                           Rank,
-                                                                           NumReduceDim,
-                                                                           ReduceOperation,
-                                                                           InElementwiseOperation,
-                                                                           AccElementwiseOperation,
-                                                                           PropagateNan,
-                                                                           OutputIndex>;
+    using ReferenceReduction
+        = ck::tensor_operation::host::ReferenceReduce<InDataType,
+                                                      AccDataType,
+                                                      OutDataType,
+                                                      Rank,
+                                                      NumReduceDim,
+                                                      ReduceOperation,
+                                                      InElementwiseOperation,
+                                                      PriorDestElementwiseOperation,
+                                                      AccElementwiseOperation,
+                                                      PropagateNan,
+                                                      OutputIndex>;
 
     // Partial specialize for reference reduction
     template <typename InDataType,
@@ -71,6 +74,7 @@ namespace hiptensor
               ck::index_t NumReduceDim,
               typename ReduceOperation,
               typename InElementwiseOperation,
+              typename PriorDestElementwiseOperation,
               typename AccElementwiseOperation,
               bool PropagateNan,
               bool OutputIndex>
@@ -81,19 +85,22 @@ namespace hiptensor
                                          NumReduceDim,
                                          ReduceOperation,
                                          InElementwiseOperation,
+                                         PriorDestElementwiseOperation,
                                          AccElementwiseOperation,
                                          PropagateNan,
                                          OutputIndex>>
-        : public MetaTraits<ck::tensor_operation::device::DeviceReduce<InDataType,
-                                                                       AccDataType,
-                                                                       OutDataType,
-                                                                       Rank,
-                                                                       NumReduceDim,
-                                                                       ReduceOperation,
-                                                                       InElementwiseOperation,
-                                                                       AccElementwiseOperation,
-                                                                       PropagateNan,
-                                                                       OutputIndex>>
+        : public MetaTraits<
+              ck::tensor_operation::device::HipTensorDeviceReduce<InDataType,
+                                                                  AccDataType,
+                                                                  OutDataType,
+                                                                  Rank,
+                                                                  NumReduceDim,
+                                                                  ReduceOperation,
+                                                                  InElementwiseOperation,
+                                                                  PriorDestElementwiseOperation,
+                                                                  AccElementwiseOperation,
+                                                                  PropagateNan,
+                                                                  OutputIndex>>
     {
     };
 
@@ -109,18 +116,18 @@ namespace hiptensor
     {
         constexpr auto ReduceOpId = convertHiptensorReduceOperatorToCk<opReduce>();
 
-        using ReduceOperation = typename ck::reduce_binary_operator<ReduceOpId>::opType;
-        using InElementwiseOperation =
-            typename ck::reduce_unary_operator<ReduceOpId, true, true>::InElementwiseOperation;
-        using AccElementwiseOperation =
-            typename ck::reduce_unary_operator<ReduceOpId, true, true>::AccElementwiseOperation;
-        using ReferenceOp = ReferenceReduction<InDataType,
+        using ReduceOperation        = typename ck::reduce_binary_operator<ReduceOpId>::opType;
+        using InElementwiseOperation = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+        using PriorDestElementwiseOperation = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+        using AccElementwiseOperation       = ck::tensor_operation::element_wise::PassThrough;
+        using ReferenceOp                   = ReferenceReduction<InDataType,
                                                AccDataType,
                                                OutDataType,
                                                Rank,
                                                NumReduceDim,
                                                ReduceOperation,
                                                InElementwiseOperation,
+                                               PriorDestElementwiseOperation,
                                                AccElementwiseOperation,
                                                PropagateNan,
                                                OutputIndex>;

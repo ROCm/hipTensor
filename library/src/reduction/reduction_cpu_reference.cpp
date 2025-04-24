@@ -119,6 +119,8 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                                 descD->mLengths,
                                                 descD->mStrides,
                                                 {modeD, modeD + descD->mLengths.size()},
+                                                descA->mUnaryOp,
+                                                descD->mUnaryOp,
                                                 alphaD,
                                                 betaD,
                                                 A,

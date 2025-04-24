@@ -27,10 +27,13 @@
 #ifndef HIPTENSOR_REDUCTION_META_TRAITS_HPP
 #define HIPTENSOR_REDUCTION_META_TRAITS_HPP
 
-#include <device_reduce.hpp>
 #include <hiptensor/internal/types.hpp>
 
-#include "ck/tensor_operation/gpu/device/impl/device_reduce_multiblock.hpp"
+#include "ck/ck.hpp"
+#include "ck/tensor_operation/gpu/device/impl/device_reduce_common.hpp"
+#include "ck/utility/data_type.hpp"
+
+#include "device/hiptensor_device_reduce.hpp"
 #include "meta_traits.hpp"
 
 namespace hiptensor
@@ -43,19 +46,22 @@ namespace hiptensor
               ck::index_t NumReduceDim,
               typename ReduceOperation,
               typename InElementwiseOp,
+              typename PriorDestElementwiseOperation,
               typename AccElementwiseOp,
               bool PropagateNan,
               bool OutputIndex>
-    struct MetaTraits<ck::tensor_operation::device::DeviceReduce<InDataType,
-                                                                 AccDataType,
-                                                                 OutDataType,
-                                                                 Rank,
-                                                                 NumReduceDim,
-                                                                 ReduceOperation,
-                                                                 InElementwiseOp,
-                                                                 AccElementwiseOp,
-                                                                 PropagateNan,
-                                                                 OutputIndex>>
+    struct MetaTraits<
+        ck::tensor_operation::device::HipTensorDeviceReduce<InDataType,
+                                                            AccDataType,
+                                                            OutDataType,
+                                                            Rank,
+                                                            NumReduceDim,
+                                                            ReduceOperation,
+                                                            InElementwiseOp,
+                                                            PriorDestElementwiseOperation,
+                                                            AccElementwiseOp,
+                                                            PropagateNan,
+                                                            OutputIndex>>
     {
         constexpr static ck::index_t TensorRank         = Rank;
         constexpr static ck::index_t TensorNumReduceDim = NumReduceDim;
@@ -70,18 +76,19 @@ namespace hiptensor
          * When creating a solution, ck::bhalf_t was passed in to create ck instance.
          * When registering the solution, MetaTraits will returen hip_bfloat16 to create key.
          */
-        using TensorInDataType       = std::conditional_t<std::is_same_v<InDataType, ck::bhalf_t>,
-                                                          hiptensor::bfloat16_t,
-                                                          InDataType>;
-        using TensorAccDataType      = std::conditional_t<std::is_same_v<AccDataType, ck::bhalf_t>,
-                                                          hiptensor::bfloat16_t,
-                                                          AccDataType>;
-        using TensorOutDataType      = std::conditional_t<std::is_same_v<OutDataType, ck::bhalf_t>,
-                                                          hiptensor::bfloat16_t,
-                                                          OutDataType>;
-        using TensorReduceOperation  = ReduceOperation;
-        using TensorInElementwiseOp  = InElementwiseOp;
-        using TensorAccElementwiseOp = AccElementwiseOp;
+        using TensorInDataType      = std::conditional_t<std::is_same_v<InDataType, ck::bhalf_t>,
+                                                    hiptensor::bfloat16_t,
+                                                    InDataType>;
+        using TensorAccDataType     = std::conditional_t<std::is_same_v<AccDataType, ck::bhalf_t>,
+                                                     hiptensor::bfloat16_t,
+                                                     AccDataType>;
+        using TensorOutDataType     = std::conditional_t<std::is_same_v<OutDataType, ck::bhalf_t>,
+                                                     hiptensor::bfloat16_t,
+                                                     OutDataType>;
+        using TensorReduceOperation = ReduceOperation;
+        using TensorInElementwiseOp = InElementwiseOp;
+        using TensorPriorDestElementwiseOperation = PriorDestElementwiseOperation;
+        using TensorAccElementwiseOp              = AccElementwiseOp;
         static_assert((std::is_same_v<TensorReduceOperation, typename ck::reduce::Add>)
                           || (std::is_same_v<TensorReduceOperation, typename ck::reduce::Mul>)
                           || (std::is_same_v<TensorReduceOperation, typename ck::reduce::Min>)

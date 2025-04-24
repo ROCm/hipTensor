@@ -32,23 +32,10 @@
 
 #include "hash.hpp"
 
+#include "device/hiptensor_device_reduce_multiblock.hpp"
 #include "hiptensor_options.hpp"
-
-#include "ck/ck.hpp"
-#include "ck/library/reference_tensor_operation/cpu/reference_reduce.hpp"
-#include "ck/library/tensor_operation_instance/gpu/reduce/device_reduce_instance_blockwise.hpp"
-#include "ck/tensor_operation/gpu/device/reduction_operator_mapping.hpp"
-#include "ck/utility/reduction_enums.hpp"
-
-#include "ck/library/utility/algorithm.hpp"
-#include "ck/library/utility/check_err.hpp"
-#include "ck/library/utility/device_memory.hpp"
-#include "ck/library/utility/host_common_util.hpp"
-#include "ck/library/utility/host_tensor.hpp"
-#include "ck/library/utility/host_tensor_generator.hpp"
-#include "ck/utility/reduction_enums.hpp"
-
-#include "ck_device_reduce_multiblock.hpp"
+#include <hiptensor_element_wise_operation.hpp>
+// #include "ck_device_reduce_multiblock.hpp"
 
 namespace std
 {
@@ -83,6 +70,8 @@ namespace hiptensor
                       std::vector<std::size_t> const& c_lengths,
                       std::vector<std::size_t> const& c_strides,
                       std::vector<int32_t> const&     c_modes,
+                      hiptensorOperator_t             aOp,
+                      hiptensorOperator_t             cOp,
                       double                          alpha,
                       double                          beta,
                       void const*                     A,
@@ -152,24 +141,26 @@ namespace hiptensor
                     arrOutStrides);
             toCKArr(findReduceModes(a_modes, c_modes), reduceDims);
 
-            auto [in_elementwise_op, acc_elementwise_op]
-                = reductionUnaryOperators(opReduce,
-                                          hiptensor::elementsFromLengths(a_lengths)
-                                              / hiptensor::elementsFromLengths(ckCLengths));
+            auto in_elementwise_op = ck::tensor_operation::element_wise::HiptensorUnaryOp(aOp);
+            auto prior_dest_elementwise_op
+                = ck::tensor_operation::element_wise::HiptensorUnaryOp(cOp);
+            auto acc_elementwise_op = ck::tensor_operation::element_wise::PassThrough{};
 
-            Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(arrInLengths,
-                                                                           arrInStrides,
-                                                                           arrOutLengths,
-                                                                           arrOutStrides,
-                                                                           reduceDims,
-                                                                           alpha,
-                                                                           beta,
-                                                                           A,
-                                                                           nullptr,
-                                                                           C,
-                                                                           nullptr,
-                                                                           in_elementwise_op,
-                                                                           acc_elementwise_op));
+            Base::mInvokerArgPtr
+                = std::move(deviceOp->MakeArgumentPointer(arrInLengths,
+                                                          arrInStrides,
+                                                          arrOutLengths,
+                                                          arrOutStrides,
+                                                          reduceDims,
+                                                          alpha,
+                                                          beta,
+                                                          A,
+                                                          nullptr,
+                                                          C,
+                                                          nullptr,
+                                                          in_elementwise_op,
+                                                          prior_dest_elementwise_op,
+                                                          acc_elementwise_op));
 
             // Initialize the invoker
             Base::mInvokerPtr = std::move(deviceOp->MakeInvokerPointer());
@@ -203,35 +194,38 @@ namespace hiptensor
     {
         constexpr auto ReduceOpId = convertHiptensorReduceOperatorToCk<opReduce>();
 
-        using ReduceOperation = typename ck::reduce_binary_operator<ReduceOpId>::opType;
-        using InElementwiseOperation =
-            typename ck::reduce_unary_operator<ReduceOpId, true, true>::InElementwiseOperation;
-        using AccElementwiseOperation =
-            typename ck::reduce_unary_operator<ReduceOpId, true, true>::AccElementwiseOperation;
+        using ReduceOperation        = typename ck::reduce_binary_operator<ReduceOpId>::opType;
+        using InElementwiseOperation = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+        using PriorDestElementwiseOperation = ck::tensor_operation::element_wise::HiptensorUnaryOp;
+        using AccElementwiseOperation       = ck::tensor_operation::element_wise::PassThrough;
 
-        using DeviceOp    = ck::tensor_operation::device::DeviceReduce<InDataType,
-                                                                       AccDataType,
-                                                                       OutDataType,
-                                                                       Rank,
-                                                                       NumReduceDim,
-                                                                       ReduceOperation,
-                                                                       InElementwiseOperation,
-                                                                       AccElementwiseOperation,
-                                                                       PropagateNan,
-                                                                       OutputIndex>;
-        using DeviceOpPtr = ck::tensor_operation::device::DeviceReducePtr<InDataType,
-                                                                          AccDataType,
-                                                                          OutDataType,
-                                                                          Rank,
-                                                                          NumReduceDim,
-                                                                          ReduceOperation,
-                                                                          InElementwiseOperation,
-                                                                          AccElementwiseOperation,
-                                                                          PropagateNan,
-                                                                          OutputIndex>;
+        using DeviceOp
+            = ck::tensor_operation::device::HipTensorDeviceReduce<InDataType,
+                                                                  AccDataType,
+                                                                  OutDataType,
+                                                                  Rank,
+                                                                  NumReduceDim,
+                                                                  ReduceOperation,
+                                                                  InElementwiseOperation,
+                                                                  PriorDestElementwiseOperation,
+                                                                  AccElementwiseOperation,
+                                                                  PropagateNan,
+                                                                  OutputIndex>;
+        using DeviceOpPtr
+            = ck::tensor_operation::device::HipTensorDeviceReducePtr<InDataType,
+                                                                     AccDataType,
+                                                                     OutDataType,
+                                                                     Rank,
+                                                                     NumReduceDim,
+                                                                     ReduceOperation,
+                                                                     InElementwiseOperation,
+                                                                     PriorDestElementwiseOperation,
+                                                                     AccElementwiseOperation,
+                                                                     PropagateNan,
+                                                                     OutputIndex>;
 
         using ReduceOpInstance_InSrcVectorDim0
-            = ck::tensor_operation::device::DeviceReduceMultiBlock<
+            = ck::tensor_operation::device::HipTensorDeviceReduceMultiBlock<
                 InDataType,
                 AccDataType,
                 OutDataType,
@@ -239,6 +233,7 @@ namespace hiptensor
                 NumReduceDim,
                 ReduceOperation,
                 InElementwiseOperation,
+                PriorDestElementwiseOperation,
                 AccElementwiseOperation,
                 ck::InMemoryDataOperationEnum::Set,
                 PropagateNan,
@@ -253,7 +248,7 @@ namespace hiptensor
                 1, // InSrceVectorSize
                 1>; // OutDstVectorSize
         using ReduceOpInstance_InSrcVectorDim1
-            = ck::tensor_operation::device::DeviceReduceMultiBlock<
+            = ck::tensor_operation::device::HipTensorDeviceReduceMultiBlock<
                 InDataType,
                 AccDataType,
                 OutDataType,
@@ -261,6 +256,7 @@ namespace hiptensor
                 NumReduceDim,
                 ReduceOperation,
                 InElementwiseOperation,
+                PriorDestElementwiseOperation,
                 AccElementwiseOperation,
                 ck::InMemoryDataOperationEnum::Set,
                 PropagateNan,

@@ -45,9 +45,9 @@ namespace hiptensor
         // Due to unique_ptr ownership of members,
         // ReductionSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        ReductionSolution()                                    = delete;
-        ReductionSolution(ReductionSolution const&)            = delete;
-        virtual ~ReductionSolution()                           = default;
+        ReductionSolution()                         = delete;
+        ReductionSolution(ReductionSolution const&) = delete;
+        virtual ~ReductionSolution()                = default;
         ReductionSolution& operator=(ReductionSolution const&) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from
@@ -64,6 +64,8 @@ namespace hiptensor
                               std::vector<std::size_t> const& c_lengths,
                               std::vector<std::size_t> const& c_strides,
                               std::vector<int32_t> const&     c_modes,
+                              hiptensorOperator_t             aOp,
+                              hiptensorOperator_t             cOp,
                               double                          alpha,
                               double                          beta,
                               void const*                     A,
@@ -77,6 +79,8 @@ namespace hiptensor
                                           std::vector<std::size_t> const& c_lengths,
                                           std::vector<std::size_t> const& c_strides,
                                           std::vector<int32_t> const&     c_modes,
+                                          hiptensorOperator_t             aOp,
+                                          hiptensorOperator_t             cOp,
                                           double                          alpha,
                                           double                          beta,
                                           void const*                     A,
