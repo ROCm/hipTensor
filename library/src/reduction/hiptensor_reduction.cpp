@@ -113,7 +113,14 @@ namespace
 
         auto modeSetA = std::set<int32_t>(modeA, modeA + descA->mLengths.size());
         auto modeSetC = std::set<int32_t>(modeC, modeC + descC->mLengths.size());
-        if(descA->mLengths.size() < descC->mLengths.size() || !(*descC == *descD)
+
+        auto compareDescCD = [](auto&& left, auto&& right) {
+            auto copyLeft     = left;
+            copyLeft.mUnaryOp = right.mUnaryOp; // compare these 2 desc except mUnaryOp
+            return copyLeft == right;
+        };
+
+        if(descA->mLengths.size() < descC->mLengths.size() || !compareDescCD(*descC, *descD)
            || !std::includes(
                modeSetA.cbegin(), modeSetA.cend(), modeSetC.cbegin(), modeSetC.cend()))
         {
@@ -307,11 +314,11 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         auto [isSupported, time] = (*pSolution)(descA->mLengths,
                                                 descA->mStrides,
                                                 {modeA, modeA + descA->mLengths.size()},
-                                                descD->mLengths,
-                                                descD->mStrides,
-                                                {modeD, modeD + descD->mLengths.size()},
+                                                descC->mLengths,
+                                                descC->mStrides,
+                                                {modeC, modeC + descC->mLengths.size()},
                                                 descA->mUnaryOp,
-                                                descD->mUnaryOp,
+                                                descC->mUnaryOp,
                                                 alphaD,
                                                 betaD,
                                                 A,

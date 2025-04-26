@@ -35,7 +35,6 @@
 #include "device/hiptensor_device_reduce_multiblock.hpp"
 #include "hiptensor_options.hpp"
 #include <hiptensor_element_wise_operation.hpp>
-// #include "ck_device_reduce_multiblock.hpp"
 
 namespace std
 {

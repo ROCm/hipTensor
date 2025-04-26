@@ -167,7 +167,8 @@ namespace ck
 
             struct HiptensorUnaryOp
             {
-                __host__ __device__ HiptensorUnaryOp(hiptensorOperator_t operator_type)
+                __host__ __device__ HiptensorUnaryOp() = default;
+                __host__ __device__ explicit HiptensorUnaryOp(hiptensorOperator_t operator_type)
                     : op_type(operator_type)
                 {
                 }

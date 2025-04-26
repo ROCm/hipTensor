@@ -11,6 +11,8 @@
 #include "ck/utility/reduction_functions_accumulate.hpp"
 #include "ck/utility/reduction_operator.hpp"
 
+#include "hiptensor_dynamic_buffer.hpp"
+
 namespace ck
 {
 
@@ -162,8 +164,9 @@ namespace ck
             // LDS
             __shared__ AccDataType p_reduce_work_buffer[BlockSize];
 
-            const auto in_global_val_buf = make_dynamic_buffer<AddressSpaceEnum::Global>(
+            const auto in_global_val_buf = make_hiptensor_dynamic_buffer<AddressSpaceEnum::Global>(
                 p_in_value_global,
+                in_elementwise_op,
                 in_grid_desc_m_k.GetElementSpaceSize(),
                 ReduceOperation::template GetIdentityValue<InDataType>());
             auto out_global_val_buf = make_dynamic_buffer<AddressSpaceEnum::Global>(
@@ -233,8 +236,6 @@ namespace ck
                     static_for<0, KThreadSliceSize, 1>{}([&](auto iK) {
                         constexpr auto offset
                             = thread_buffer_desc.CalculateOffset(make_tuple(iM, iK));
-                        in_elementwise_op(in_thread_buf(Number<offset>{}),
-                                          in_thread_buf(Number<offset>{}));
                     });
                 });
 
@@ -254,7 +255,6 @@ namespace ck
                 if(thread_k_cluster_id == 0)
                 {
                     acc_elementwise_op(accu_value_buf(I), accu_value_buf(I));
-
                     accu_value_buf(I) *= alpha;
                 }
             });

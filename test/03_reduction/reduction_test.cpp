@@ -143,27 +143,32 @@ namespace hiptensor
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
         auto op         = std::get<6>(param);
+        auto aOp        = op[0];
+        auto cOp        = op[1];
+        auto reduceOp   = op[2];
 
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                           //1
                << computeTypeToString(convertToComputeType(testType[1])) << ", " //2
-               << opTypeToString(op) << ", "                                     //3
-               << logLevelToString(logLevel) << ", ";                            //4
-        printContainerInCsv(lengths, stream) << ", ";                            //5
-        printContainerInCsv(outputDims, stream) << ", ";                         //6
-        stream << alpha << ", "                                                  //7
-            << beta << ", ";                                                     //8
+               << opTypeToString(aOp) << ", "                                    //3
+               << opTypeToString(cOp) << ", "                                    //4
+               << opTypeToString(reduceOp) << ", "                               //5
+               << logLevelToString(logLevel) << ", ";                            //6
+        printContainerInCsv(lengths, stream) << ", ";                            //7
+        printContainerInCsv(outputDims, stream) << ", ";                         //8
+        stream << alpha << ", "                                                  //9
+            << beta << ", ";                                                     //10
         // clang-format on
 
         if(!mRunFlag)
         {
             // clang-format off
-            stream << "n/a" << ", " //9
-                   << "n/a" << ", " //10
-                   << "n/a" << ", " //11
+            stream << "n/a" << ", " //11
                    << "n/a" << ", " //12
                    << "n/a" << ", " //13
-                   << "SKIPPED"     //14
+                   << "n/a" << ", " //14
+                   << "n/a" << ", " //15
+                   << "SKIPPED"     //16
                    << std::endl;
             // clang-format on
         }
@@ -173,12 +178,12 @@ namespace hiptensor
             auto result = isPerformValidation ? (mValidationResult ? "PASSED" : "FAILED") : "BENCH";
 
             // clang-format off
-            stream << mElapsedTimeMs << ", "     // 9
-                << mTotalGFlops << ", "          // 10
-                << mMeasuredTFlopsPerSec << ", " // 11
-                << mTotalGBytes << ", "          // 12
-                << mGBytesPerSec << ", "         // 13
-                << result                        //14
+            stream << mElapsedTimeMs << ", "     // 11
+                << mTotalGFlops << ", "          // 12
+                << mMeasuredTFlopsPerSec << ", " // 13
+                << mTotalGBytes << ", "          // 14
+                << mGBytesPerSec << ", "         // 15
+                << result                        // 16
                 << std::endl;
             // clang-format on
         }
@@ -199,12 +204,15 @@ namespace hiptensor
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
         auto op         = std::get<6>(param);
+        auto aOp        = op[0];
+        auto cOp        = op[1];
+        auto reduceOp   = op[2];
 
         EXPECT_TRUE((lengths.size() > 0) && (lengths.size() <= 6));
         EXPECT_TRUE((outputDims.size() >= 0) && (outputDims.size() <= 6));
 
-        EXPECT_TRUE((op == HIPTENSOR_OP_ADD) || (op == HIPTENSOR_OP_MUL) || (op == HIPTENSOR_OP_MAX)
-                    || (op == HIPTENSOR_OP_MIN));
+        EXPECT_TRUE((reduceOp == HIPTENSOR_OP_ADD) || (reduceOp == HIPTENSOR_OP_MUL)
+                    || (reduceOp == HIPTENSOR_OP_MAX) || (reduceOp == HIPTENSOR_OP_MIN));
 
         EXPECT_EQ(dataTypes.size(), 2); // HIP_R_16F or HIP_R_32F
         auto acDataType      = dataTypes[0];
@@ -269,9 +277,14 @@ namespace hiptensor
                 auto alpha      = std::get<4>(param);
                 auto beta       = std::get<5>(param);
                 auto op         = std::get<6>(param);
+                auto aOp        = op[0];
+                auto cOp        = op[1];
+                auto reduceOp   = op[2];
+
                 stream << "Input [type: " << dataTypes << ", lengths: " << lengths
                        << ", outputDims: " << outputDims << ", alpha: " << alpha
-                       << ", beta: " << beta << ", opReduce: " << op << "]\n";
+                       << ", beta: " << beta << ", opReduce: [" << aOp << ", " << cOp << ", "
+                       << reduceOp << "]\n";
 
                 size_t elementsA = resource->getCurrentInputElementCount();
                 size_t elementsC = resource->getCurrentOutputElementCount();
@@ -310,7 +323,10 @@ namespace hiptensor
         auto outputDims = std::get<3>(param);
         auto alpha      = std::get<4>(param);
         auto beta       = std::get<5>(param);
-        auto opReduce   = std::get<6>(param);
+        auto op         = std::get<6>(param);
+        auto aOp        = op[0];
+        auto cOp        = op[1];
+        auto reduceOp   = op[2];
 
         auto acDataType      = dataTypes[0];
         auto computeDataType = convertToComputeType(dataTypes[1]);
@@ -396,22 +412,12 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
             hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descA,
-                                                                nmodeA,
-                                                                extentA.data(),
-                                                                NULL /* stride */,
-                                                                acDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, acDataType, aOp));
 
             hiptensorTensorDescriptor_t descC;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descC,
-                                                                nmodeC,
-                                                                extentC.data(),
-                                                                strideC.data(),
-                                                                acDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
+                handle, &descC, nmodeC, extentC.data(), strideC.data(), acDataType, cOp));
 
             hiptensorTensorDescriptor_t descD;
             CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
@@ -433,7 +439,7 @@ namespace hiptensor
                                                                      resource->deviceD().get(),
                                                                      &descD,
                                                                      modeD.data(),
-                                                                     opReduce,
+                                                                     reduceOp,
                                                                      computeDataType,
                                                                      &worksize));
             resource->setupWorkspace(worksize);
@@ -461,7 +467,7 @@ namespace hiptensor
                                                      resource->deviceD().get(),
                                                      &descD,
                                                      modeD.data(),
-                                                     opReduce,
+                                                     reduceOp,
                                                      computeDataType,
                                                      work,
                                                      worksize,
@@ -513,7 +519,7 @@ namespace hiptensor
                                                                   resource->hostReference().get(),
                                                                   &descD,
                                                                   modeD.data(),
-                                                                  opReduce,
+                                                                  reduceOp,
                                                                   computeDataType,
                                                                   0 /* stream */));
                 resource->copyReferenceToDevice();
