@@ -1,7 +1,30 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2018-2023, Advanced Micro Devices, Inc. All rights reserved.
-
-#pragma once
+/*******************************************************************************
+ *
+ * MIT License
+ *
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ *******************************************************************************/
+#ifndef REDUCTION_DEVICE_HIPTENSOR_REFERENCE_REDUCE
+#define REDUCTION_DEVICE_HIPTENSOR_REFERENCE_REDUCE
 
 #include <algorithm>
 #include <array>
@@ -463,7 +486,7 @@ namespace ck
                     auto str = std::stringstream();
 
                     // clang-format off
-        str << "Reference_Reduce<" << std::endl;
+                    str << "Reference_Reduce<" << std::endl;
                     // clang-format on
 
                     return str.str();
@@ -473,3 +496,4 @@ namespace ck
         } // namespace host
     } // namespace tensor_operation
 } // namespace ck
+#endif // REDUCTION_DEVICE_HIPTENSOR_REFERENCE_REDUCE

@@ -1,7 +1,31 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2018-2024, Advanced Micro Devices, Inc. All rights reserved.
+/*******************************************************************************
+ *
+ * MIT License
+ *
+ * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ *******************************************************************************/
 
-#pragma once
+#ifndef REDUCTION_DEVICE_HIPTENSOR_DEVICE_REDUCE_MULTIBLOCK
+#define REDUCTION_DEVICE_HIPTENSOR_DEVICE_REDUCE_MULTIBLOCK
 
 #include <array>
 #include <iostream>
@@ -476,6 +500,7 @@ namespace ck
 
                 static bool IsSupportedArgument(const Argument* pArg)
                 {
+                    // The check was changed for LWPHIPTENS-371
                     if constexpr(use_multiblock)
                     {
                         if(static_cast<float>(pArg->beta_) != 0.0f)
@@ -563,10 +588,10 @@ namespace ck
                     auto str = std::stringstream();
 
                     // clang-format off
-        str << (OutMemoryDataOperation == InMemoryDataOperationEnum::Set? "DeviceReduceBlockWise<" : "HipTensorDeviceReduceMultiBlock<") << BlockSize << ",";
-        str << "M_C" << MThreadClusterSize << "_S" << MThreadSliceSize << ",";
-        str << "K_C" << KThreadClusterSize << "_S" << KThreadSliceSize << ",";
-        str << "InSrcVectorDim_" << InSrcVectorDim << "_InSrcVectorSize_" << InSrcVectorSize << "_OutDstVectorSize_" << OutDstVectorSize << ">";
+					str << (OutMemoryDataOperation == InMemoryDataOperationEnum::Set? "DeviceReduceBlockWise<" : "HipTensorDeviceReduceMultiBlock<") << BlockSize << ",";
+					str << "M_C" << MThreadClusterSize << "_S" << MThreadSliceSize << ",";
+					str << "K_C" << KThreadClusterSize << "_S" << KThreadSliceSize << ",";
+					str << "InSrcVectorDim_" << InSrcVectorDim << "_InSrcVectorSize_" << InSrcVectorSize << "_OutDstVectorSize_" << OutDstVectorSize << ">";
                     // clang-format on
 
                     return str.str();
@@ -576,3 +601,4 @@ namespace ck
         } // namespace device
     } // namespace tensor_operation
 } // namespace ck
+#endif // REDUCTION_DEVICE_HIPTENSOR_DEVICE_REDUCE_MULTIBLOCK

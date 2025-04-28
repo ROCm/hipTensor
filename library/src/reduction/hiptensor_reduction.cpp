@@ -273,15 +273,15 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         return errorCode;
     }
 
-    double alphaD;
+    double alphaValue;
     if(alpha != nullptr)
     {
-        alphaD = hiptensor::readVal<double>(alpha, typeCompute);
+        alphaValue = hiptensor::readVal<double>(alpha, typeCompute);
     }
-    double betaD;
+    double betaValue;
     if(beta != nullptr)
     {
-        betaD = hiptensor::readVal<double>(beta, typeCompute);
+        betaValue = hiptensor::readVal<double>(beta, typeCompute);
     }
 
     if(C && C != D)
@@ -319,8 +319,8 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
                                                 {modeC, modeC + descC->mLengths.size()},
                                                 descA->mUnaryOp,
                                                 descC->mUnaryOp,
-                                                alphaD,
-                                                betaD,
+                                                alphaValue,
+                                                betaValue,
                                                 A,
                                                 D,
                                                 opReduce,
