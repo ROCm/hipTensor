@@ -15,7 +15,7 @@ Lengths:
   - [ 13, 11, 8, 5]
   - [ 3, 5, 6, 4]
 Operators:
-  - HIPTENSOR_OP_ADD
+  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_ADD]
 Output Dims:
   - [1, 2, 3]
   - [0, 2, 3]
