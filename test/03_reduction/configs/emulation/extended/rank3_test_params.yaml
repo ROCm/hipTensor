@@ -15,8 +15,8 @@ Lengths:
   - [ 11, 8, 5]
   - [ 5, 6, 4]
 Operators:
-  - HIPTENSOR_OP_MIN
-  - HIPTENSOR_OP_MAX
+  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MIN]
+  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MAX]
 Output Dims:
   - [0, 1]
   - [0, 2]

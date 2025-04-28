@@ -11,7 +11,7 @@ Betas:
 Lengths:
   - [ 13, 11]
 Operators:
-  - HIPTENSOR_OP_MUL
+  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MUL]
 Output Dims:
   - [0]
 
