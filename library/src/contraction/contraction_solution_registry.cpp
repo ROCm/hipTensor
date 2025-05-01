@@ -25,7 +25,6 @@
  *******************************************************************************/
 
 #include "contraction_solution_registry.hpp"
-#include "contraction_solution.hpp"
 
 namespace hiptensor
 {
@@ -38,18 +37,6 @@ namespace hiptensor
         : mAllSolutions(other.mAllSolutions)
         , mSolutionHash(other.mSolutionHash)
     {
-    }
-
-    ContractionSolutionRegistry::Query&
-        ContractionSolutionRegistry::Query::operator=(Query const& other)
-    {
-        if(&other != this)
-        {
-            mAllSolutions = other.mAllSolutions;
-            mSolutionHash = other.mSolutionHash;
-        }
-
-        return *this;
     }
 
     ContractionSolutionRegistry::Query
@@ -77,12 +64,6 @@ namespace hiptensor
     }
 
     ContractionSolutionRegistry::Query
-        ContractionSolutionRegistry::Query::query(int32_t dimsM, int32_t dimsN, int32_t dimsK) const
-    {
-        return query(hashDimsMNK(dimsM, dimsN, dimsK));
-    }
-
-    ContractionSolutionRegistry::Query
         ContractionSolutionRegistry::Query::query(hipDataType            typeA,
                                                   hipDataType            typeB,
                                                   hipDataType            typeC,
@@ -93,42 +74,9 @@ namespace hiptensor
     }
 
     ContractionSolutionRegistry::Query
-        ContractionSolutionRegistry::Query::query(hiptensorOperator_t opA,
-                                                  hiptensorOperator_t opB) const
-    {
-        return query(hashElementOps(opA, opB));
-    }
-
-    ContractionSolutionRegistry::Query
         ContractionSolutionRegistry::Query::query(ContractionOpId_t opCDE) const
     {
         return query(hashContractionOps(opCDE));
-    }
-
-    ContractionSolutionRegistry::Query
-        ContractionSolutionRegistry::Query::operator||(Query const& other) const
-    {
-        auto newQuery = *this;
-        newQuery.addSolutions(other.mAllSolutions);
-        return newQuery;
-    }
-
-    ContractionSolutionRegistry::Query
-        ContractionSolutionRegistry::Query::operator&&(Query const& other) const
-    {
-        auto newQuery = Query();
-
-        // Add only if both queries have the solution
-        for(auto& solutionPair : other.mAllSolutions)
-        {
-            if(auto solution = mAllSolutions.find(solutionPair.first);
-               solution != mAllSolutions.end())
-            {
-                newQuery.addSolution(solutionPair.second);
-            }
-        }
-
-        return newQuery;
     }
 
     std::unordered_map<ContractionSolutionRegistry::Query::Uid, ContractionSolution*> const&
@@ -272,15 +220,6 @@ namespace hiptensor
         }
     }
 
-    void ContractionSolutionRegistry::Query::addSolutions(
-        std::unordered_map<Uid, ContractionSolution*> const& solutions)
-    {
-        for(auto& solutionPair : solutions)
-        {
-            addSolution(solutionPair.second);
-        }
-    }
-
     /////////////////////////////////////////
     /// Class ContractionSolutionRegistry ///
     /////////////////////////////////////////
@@ -301,9 +240,9 @@ namespace hiptensor
         return mSolutionQuery;
     }
 
-    uint32_t ContractionSolutionRegistry::solutionCount() const
+    void ContractionSolutionRegistry::clear()
     {
-        return mSolutionStorage.size();
+        mSolutionStorage.clear();
     }
     // @endcond
 

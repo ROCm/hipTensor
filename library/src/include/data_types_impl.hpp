@@ -126,11 +126,7 @@ namespace hiptensor
     template <typename T>
     T readVal(void const* value, hipDataType id)
     {
-        if(id == HIP_R_16BF)
-        {
-            return static_cast<T>(*(hip_bfloat16*)value);
-        }
-        else if(id == HIP_R_16F)
+        if(id == HIP_R_16F)
         {
             return static_cast<T>(*(_Float16*)value);
         }
@@ -141,38 +137,6 @@ namespace hiptensor
         else if(id == HIP_R_64F)
         {
             return static_cast<T>(*(double*)value);
-        }
-        else if(id == HIP_R_8I)
-        {
-            return static_cast<T>(*(int8_t*)value);
-        }
-        else if(id == HIP_R_8U)
-        {
-            return static_cast<T>(*(uint8_t*)value);
-        }
-        else if(id == HIP_R_16I)
-        {
-            return static_cast<T>(*(int16_t*)value);
-        }
-        else if(id == HIP_R_16U)
-        {
-            return static_cast<T>(*(uint16_t*)value);
-        }
-        else if(id == HIP_R_32I)
-        {
-            return static_cast<T>(*(int32_t*)value);
-        }
-        else if(id == HIP_R_32U)
-        {
-            return static_cast<T>(*(uint32_t*)value);
-        }
-        else if(id == HIP_R_64I)
-        {
-            return static_cast<T>(*(int64_t*)value);
-        }
-        else if(id == HIP_R_64U)
-        {
-            return static_cast<T>(*(uint64_t*)value);
         }
         else if constexpr(std::is_same_v<T, hipFloatComplex> && id == HIP_C_32F)
         {
@@ -198,10 +162,6 @@ namespace hiptensor
         {
             return static_cast<T>(*(_Float16*)value);
         }
-        else if(id == HIPTENSOR_COMPUTE_16BF)
-        {
-            return static_cast<T>(*(hip_bfloat16*)value);
-        }
         else if(id == HIPTENSOR_COMPUTE_32F)
         {
             return static_cast<T>(*(float*)value);
@@ -209,22 +169,6 @@ namespace hiptensor
         else if(id == HIPTENSOR_COMPUTE_64F)
         {
             return static_cast<T>(*(double*)value);
-        }
-        else if(id == HIPTENSOR_COMPUTE_8U)
-        {
-            return static_cast<T>(*(uint8_t*)value);
-        }
-        else if(id == HIPTENSOR_COMPUTE_8I)
-        {
-            return static_cast<T>(*(int8_t*)value);
-        }
-        else if(id == HIPTENSOR_COMPUTE_32U)
-        {
-            return static_cast<T>(*(uint32_t*)value);
-        }
-        else if(id == HIPTENSOR_COMPUTE_32I)
-        {
-            return static_cast<T>(*(int32_t*)value);
         }
         else
         {

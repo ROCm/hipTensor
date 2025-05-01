@@ -52,17 +52,17 @@ namespace hiptensor
         // Due to unique_ptr ownership of members,
         // ContractionSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        ContractionSolution()                                      = delete;
-        ContractionSolution(ContractionSolution const&)            = delete;
-        virtual ~ContractionSolution()                             = default;
-        ContractionSolution& operator=(ContractionSolution const&) = delete;
+        ContractionSolution()                                       = delete;
+        ContractionSolution(ContractionSolution const&)             = delete;
+        virtual ~ContractionSolution()                              = default;
+        ContractionSolution& operator=(ContractionSolution const&)  = delete;
+        ContractionSolution(ContractionSolution&& other)            = delete;
+        ContractionSolution& operator=(ContractionSolution&& other) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from
         // the CK generator and take ownership.
         ContractionSolution(std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
                             std::unique_ptr<ContractionSolutionParams>&&                  params);
-        ContractionSolution(ContractionSolution&& other);
-        ContractionSolution& operator=(ContractionSolution&& other);
 
         // Must specialize incoming arg handling
         virtual bool initArgs(void const*              alpha,

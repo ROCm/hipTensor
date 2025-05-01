@@ -45,17 +45,17 @@ namespace hiptensor
         // Due to unique_ptr ownership of members,
         // ReductionSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        ReductionSolution()                         = delete;
-        ReductionSolution(ReductionSolution const&) = delete;
-        virtual ~ReductionSolution()                = default;
+        ReductionSolution()                                    = delete;
+        ReductionSolution(ReductionSolution const&)            = delete;
+        virtual ~ReductionSolution()                           = default;
         ReductionSolution& operator=(ReductionSolution const&) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from
         // the CK generator and take ownership.
         ReductionSolution(std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp,
                           std::unique_ptr<ReductionSolutionParams>&&                    params);
-        ReductionSolution(ReductionSolution&& other);
-        ReductionSolution& operator=(ReductionSolution&& other);
+        ReductionSolution(ReductionSolution&& other)            = delete;
+        ReductionSolution& operator=(ReductionSolution&& other) = delete;
 
         // Must specialize incoming arg handling
         virtual bool initArgs(std::vector<std::size_t> const& a_lengths,
@@ -90,17 +90,11 @@ namespace hiptensor
 
         /// Accessors
 
-        // Problem can be solved with this kernel
-        bool isValid() const;
-
         // Run-time solution parameters
         std::unique_ptr<ReductionSolutionParams> const& params() const;
 
         // Unique ID for the kernel
         size_t uid() const;
-
-        // Get Number of threads across dimension
-        uint32_t threadDim() const;
 
         // Problem dimension
         ck::index_t problemDim() const;
@@ -110,9 +104,6 @@ namespace hiptensor
 
         // Kernel's name encoding
         std::string kernelName() const;
-
-        // Kernel's required workspace size
-        size_t workspaceSize() const;
 
         // Reset all arguments
         void resetArgs();

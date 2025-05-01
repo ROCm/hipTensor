@@ -38,32 +38,6 @@ namespace hiptensor
     {
     }
 
-    PermutationSolution::PermutationSolution(PermutationSolution&& other)
-        : mDim(other.mDim)
-        , mSize(other.mSize)
-        , mValid(other.mValid)
-        , mDeviceOp(std::move(other.mDeviceOp))
-        , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
-        , mInvokerPtr(std::move(other.mInvokerPtr))
-    {
-    }
-
-    PermutationSolution& PermutationSolution::operator=(PermutationSolution&& other)
-    {
-        if(this != &other)
-        {
-            mDim = other.mDim;
-
-            mSize  = other.mSize;
-            mValid = other.mValid;
-
-            mDeviceOp      = std::move(other.mDeviceOp);
-            mInvokerArgPtr = std::move(other.mInvokerArgPtr);
-            mInvokerPtr    = std::move(other.mInvokerPtr);
-        }
-        return *this;
-    }
-
     float PermutationSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
         if(!mInvokerArgPtr || !mInvokerPtr)
@@ -85,11 +59,6 @@ namespace hiptensor
         return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
-    bool PermutationSolution::isValid() const
-    {
-        return mValid;
-    }
-
     size_t PermutationSolution::uid() const
     {
         // Convert CK uid string into binary.
@@ -97,16 +66,6 @@ namespace hiptensor
         size_t             value;
         converter >> std::hex >> value;
         return value;
-    }
-
-    uint32_t PermutationSolution::threadDim() const
-    {
-        return mThreadDim;
-    }
-
-    ck::index_t PermutationSolution::problemDim() const
-    {
-        return mDim;
     }
 
     ck::index_t PermutationSolution::problemSize() const
@@ -117,18 +76,6 @@ namespace hiptensor
     std::string PermutationSolution::kernelName() const
     {
         return mDeviceOp->GetTypeString();
-    }
-
-    size_t PermutationSolution::workspaceSize() const
-    {
-        if(mValid)
-        {
-            return mDeviceOp->GetWorkSpaceSize(mInvokerArgPtr.get());
-        }
-        else
-        {
-            return 0;
-        }
     }
 
     void PermutationSolution::resetArgs()

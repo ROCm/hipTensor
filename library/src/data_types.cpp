@@ -41,22 +41,6 @@ namespace hiptensor
             return sizeof(float);
         case HIP_R_64F:
             return sizeof(double);
-        case HIP_R_8I:
-            return sizeof(int8_t);
-        case HIP_R_8U:
-            return sizeof(uint8_t);
-        case HIP_R_16I:
-            return sizeof(int16_t);
-        case HIP_R_16U:
-            return sizeof(uint16_t);
-        case HIP_R_32I:
-            return sizeof(int32_t);
-        case HIP_R_32U:
-            return sizeof(uint32_t);
-        case HIP_R_64I:
-            return sizeof(int64_t);
-        case HIP_R_64U:
-            return sizeof(uint64_t);
         case HIP_C_32F:
             return sizeof(hipFloatComplex);
         case HIP_C_64F:
@@ -85,14 +69,6 @@ namespace hiptensor
             return HIPTENSOR_COMPUTE_32F;
         case HIP_R_64F:
             return HIPTENSOR_COMPUTE_64F;
-        case HIP_R_8I:
-            return HIPTENSOR_COMPUTE_8I;
-        case HIP_R_8U:
-            return HIPTENSOR_COMPUTE_8U;
-        case HIP_R_32I:
-            return HIPTENSOR_COMPUTE_32I;
-        case HIP_R_32U:
-            return HIPTENSOR_COMPUTE_32U;
         case HIP_C_32F:
             return HIPTENSOR_COMPUTE_C32F;
         case HIP_C_64F:
@@ -114,14 +90,6 @@ namespace hiptensor
             return HIP_R_32F;
         case HIPTENSOR_COMPUTE_64F:
             return HIP_R_64F;
-        case HIPTENSOR_COMPUTE_8I:
-            return HIP_R_8I;
-        case HIPTENSOR_COMPUTE_8U:
-            return HIP_R_8U;
-        case HIPTENSOR_COMPUTE_32I:
-            return HIP_R_32I;
-        case HIPTENSOR_COMPUTE_32U:
-            return HIP_R_32U;
         case HIPTENSOR_COMPUTE_C32F:
             return HIP_C_32F;
         case HIPTENSOR_COMPUTE_C64F:
@@ -152,22 +120,6 @@ namespace hiptensor
         case HIPTENSOR_COMPUTE_64F:
         {
             return ScalarData(id, *(double*)value);
-        }
-        case HIPTENSOR_COMPUTE_8U:
-        {
-            return ScalarData(id, *(uint8_t*)value);
-        }
-        case HIPTENSOR_COMPUTE_8I:
-        {
-            return ScalarData(id, *(int8_t*)value);
-        }
-        case HIPTENSOR_COMPUTE_32U:
-        {
-            return ScalarData(id, *(uint32_t*)value);
-        }
-        case HIPTENSOR_COMPUTE_32I:
-        {
-            return ScalarData(id, *(int32_t*)value);
         }
         case HIPTENSOR_COMPUTE_C32F:
         {
@@ -214,26 +166,6 @@ namespace hiptensor
             *(double*)addr = value.mReal;
             return;
         }
-        case HIPTENSOR_COMPUTE_8U:
-        {
-            *(uint8_t*)addr = (uint8_t)value.mReal;
-            return;
-        }
-        case HIPTENSOR_COMPUTE_8I:
-        {
-            *(int8_t*)addr = (int8_t)value.mReal;
-            return;
-        }
-        case HIPTENSOR_COMPUTE_32U:
-        {
-            *(uint32_t*)addr = (uint32_t)value.mReal;
-            return;
-        }
-        case HIPTENSOR_COMPUTE_32I:
-        {
-            *(int32_t*)addr = (int32_t)value.mReal;
-            return;
-        }
         case HIPTENSOR_COMPUTE_C32F:
         {
             *(hipFloatComplex*)addr = hipComplexDoubleToFloat(value.mComplex);
@@ -266,14 +198,6 @@ namespace hiptensor
             return "HIPTENSOR_COMPUTE_32F";
         case HIPTENSOR_COMPUTE_64F:
             return "HIPTENSOR_COMPUTE_64F";
-        case HIPTENSOR_COMPUTE_8I:
-            return "HIPTENSOR_COMPUTE_8I";
-        case HIPTENSOR_COMPUTE_8U:
-            return "HIPTENSOR_COMPUTE_8U";
-        case HIPTENSOR_COMPUTE_32I:
-            return "HIPTENSOR_COMPUTE_32I";
-        case HIPTENSOR_COMPUTE_32U:
-            return "HIPTENSOR_COMPUTE_32U";
         case HIPTENSOR_COMPUTE_C32F:
             return "HIPTENSOR_COMPUTE_C32F";
         case HIPTENSOR_COMPUTE_C64F:
@@ -295,14 +219,6 @@ namespace hiptensor
             return "HIP_R_32F";
         case HIP_R_64F:
             return "HIP_R_64F";
-        case HIP_R_8I:
-            return "HIP_R_8I";
-        case HIP_R_8U:
-            return "HIP_R_8U";
-        case HIP_R_32I:
-            return "HIP_R_32I";
-        case HIP_R_32U:
-            return "HIP_R_32U";
         case HIP_C_32F:
             return "HIP_C_32F";
         case HIP_C_64F:
@@ -448,38 +364,6 @@ bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
     {
         return (computeType == HIPTENSOR_COMPUTE_64F);
     }
-    else if(hipType == HIP_R_8I)
-    {
-        return (computeType == HIPTENSOR_COMPUTE_8I);
-    }
-    else if(hipType == HIP_R_8U)
-    {
-        return (computeType == HIPTENSOR_COMPUTE_8U);
-    }
-    else if(hipType == HIP_R_16I)
-    {
-        return false;
-    }
-    else if(hipType == HIP_R_16U)
-    {
-        return false;
-    }
-    else if(hipType == HIP_R_32I)
-    {
-        return (computeType == HIPTENSOR_COMPUTE_32I);
-    }
-    else if(hipType == HIP_R_32U)
-    {
-        return (computeType == HIPTENSOR_COMPUTE_32U);
-    }
-    else if(hipType == HIP_R_64I)
-    {
-        return false;
-    }
-    else if(hipType == HIP_R_64U)
-    {
-        return false;
-    }
     else
     {
 #if !NDEBUG
@@ -492,16 +376,6 @@ bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
 bool operator==(hiptensorComputeType_t computeType, hipDataType hipType)
 {
     return hipType == computeType;
-}
-
-bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType)
-{
-    return !(hipType == computeType);
-}
-
-bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType)
-{
-    return !(computeType == hipType);
 }
 
 namespace std

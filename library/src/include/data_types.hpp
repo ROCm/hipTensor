@@ -72,14 +72,6 @@ namespace hiptensor
         {
             return static_cast<float>(mReal);
         }
-        operator double() const
-        {
-            return mReal;
-        }
-        operator hipFloatComplex() const
-        {
-            return hipComplexDoubleToFloat(mComplex);
-        }
         operator hipDoubleComplex() const
         {
             return mComplex;
@@ -121,9 +113,6 @@ namespace hiptensor
 
 bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);
 bool operator==(hiptensorComputeType_t computeType, hipDataType hipType);
-
-bool operator!=(hipDataType hipType, hiptensorComputeType_t computeType);
-bool operator!=(hiptensorComputeType_t computeType, hipDataType hipType);
 
 namespace std
 {

@@ -172,38 +172,6 @@ namespace hiptensor
     {
     }
 
-    ContractionSolution::ContractionSolution(ContractionSolution&& other)
-        : mM(other.mM)
-        , mN(other.mN)
-        , mK(other.mK)
-        , mBytes(other.mBytes)
-        , mValid(other.mValid)
-        , mDeviceOp(std::move(other.mDeviceOp))
-        , mParams(std::move(other.mParams))
-        , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
-        , mInvokerPtr(std::move(other.mInvokerPtr))
-    {
-    }
-
-    ContractionSolution& ContractionSolution::operator=(ContractionSolution&& other)
-    {
-        if(this != &other)
-        {
-            mM = other.mM;
-            mN = other.mN;
-            mK = other.mK;
-
-            mBytes = other.mBytes;
-            mValid = other.mValid;
-
-            mParams        = std::move(other.mParams);
-            mDeviceOp      = std::move(other.mDeviceOp);
-            mInvokerArgPtr = std::move(other.mInvokerArgPtr);
-            mInvokerPtr    = std::move(other.mInvokerPtr);
-        }
-        return *this;
-    }
-
     std::tuple<hiptensorStatus_t, float>
         ContractionSolution::operator()(void const*              alpha,
                                         void const*              A,

@@ -26,6 +26,7 @@
 
 #ifndef HIPTENSOR_SAMPLES_CONTRACTION_COMMON_HPP
 #define HIPTENSOR_SAMPLES_CONTRACTION_COMMON_HPP
+#include "../test/utils.hpp"
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
 
@@ -40,36 +41,5 @@
     {                                      \
         CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
-
-inline bool isF32Supported()
-{
-    hipDevice_t     mHandle;
-    hipDeviceProp_t mProps;
-
-    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
-    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
-
-    std::string deviceName(mProps.gcnArchName);
-
-    return (deviceName.find("gfx908") != std::string::npos)
-           || (deviceName.find("gfx90a") != std::string::npos)
-           || (deviceName.find("gfx942") != std::string::npos)
-           || (deviceName.find("gfx950") != std::string::npos);
-}
-
-inline bool isF64Supported()
-{
-    hipDevice_t     mHandle;
-    hipDeviceProp_t mProps;
-
-    CHECK_HIP_ERROR(hipGetDevice(&mHandle));
-    CHECK_HIP_ERROR(hipGetDeviceProperties(&mProps, mHandle));
-
-    std::string deviceName(mProps.gcnArchName);
-
-    return (deviceName.find("gfx90a") != std::string::npos)
-           || (deviceName.find("gfx942") != std::string::npos)
-           || (deviceName.find("gfx950") != std::string::npos);
-}
 
 #endif // HIPTENSOR_SAMPLES_CONTRACTION_COMMON_HPP

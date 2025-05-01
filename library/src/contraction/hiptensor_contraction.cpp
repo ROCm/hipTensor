@@ -32,6 +32,7 @@
 #include "handle.hpp"
 #include "hip_device.hpp"
 #include "logger.hpp"
+#include "util.hpp"
 
 #include "hiptensor_options.hpp"
 
@@ -51,13 +52,6 @@ inline auto toContractionSolutionVec(
 {
     auto result = std::vector<hiptensor::ContractionSolution*>(map.size());
     transform(map.begin(), map.end(), result.begin(), [](auto p) { return p.second; });
-    return result;
-}
-
-inline auto toVoidVec(std::vector<hiptensor::ContractionSolution*> const& v)
-{
-    auto result = std::vector<void*>(v.size());
-    transform(v.begin(), v.end(), result.begin(), [](auto* p) { return (void*)p; });
     return result;
 }
 
@@ -116,32 +110,15 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
 
     logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
 
-    if(!handle || !desc || !descA || !descB || !descD)
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descB);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descD);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        if(!handle)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : handle = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else if(!desc)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : contraction descriptor = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : Tensor descriptors = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorInitContractionDescriptor", msg);
-        return errorCode;
+        return checkResult;
     }
 
     if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY || descB->mUnaryOp != HIPTENSOR_OP_IDENTITY
@@ -237,25 +214,12 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
 
     logger->logAPITrace("hiptensorInitContractionFind", msg);
 
-    if(handle == nullptr || find == nullptr)
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        if(handle == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : handle = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : contraction find = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorInitContractionFind", msg);
-        return errorCode;
+        return checkResult;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
@@ -337,39 +301,14 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
              (unsigned long)*workspaceSize);
     logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
 
-    if(handle == nullptr || desc == nullptr || find == nullptr || workspaceSize == nullptr)
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, workspaceSize);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        if(handle == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : handle = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else if(desc == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : contraction descriptor = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else if(find == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : contraction find = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else if(workspaceSize == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : workspace size = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorContractionGetWorkspaceSize", msg);
-        return errorCode;
+        return checkResult;
     }
 
     *workspaceSize = 0u;
@@ -441,39 +380,14 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
              (unsigned long)workspaceSize);
     logger->logAPITrace("hiptensorInitContractionPlan", msg);
 
-    if(handle == nullptr || plan == nullptr || desc == nullptr || find == nullptr)
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        if(handle == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : handle = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else if(plan == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : plan = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else if(desc == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : contraction descriptor = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : contraction find = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorInitContractionPlan", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
+        return checkResult;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
@@ -675,57 +589,17 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
 
     logger->logAPITrace("hiptensorContraction", msg);
 
-    if(handle == nullptr || plan == nullptr)
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, alpha);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, A);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, B);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, D);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INTERNAL_ERROR, plan->mSolution);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        if(handle == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : handle = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Initialization Error : plan = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorContraction", msg);
-        return errorCode;
-    }
-
-    if(alpha == nullptr || A == nullptr || B == nullptr || D == nullptr)
-    {
-        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        if(alpha == nullptr)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Input Parameter Error : alpha = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Input Parameter Error : A/B/D = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorContraction", msg);
-        return errorCode;
-    }
-
-    if(plan->mSolution == nullptr)
-    {
-        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Internal Error : solution = nullptr (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorContraction", msg);
-        return errorCode;
+        return checkResult;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);

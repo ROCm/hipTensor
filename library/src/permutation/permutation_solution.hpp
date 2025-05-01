@@ -57,8 +57,6 @@ namespace hiptensor
         // the CK generator and take ownership.
         explicit PermutationSolution(
             std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp);
-        PermutationSolution(PermutationSolution&& other);
-        PermutationSolution& operator=(PermutationSolution&& other);
 
         // Must specialize incoming arg handling
         virtual bool initArgs(std::vector<float> const&                    scalarValues,
@@ -77,26 +75,14 @@ namespace hiptensor
 
         /// Accessors
 
-        // Problem can be solved with this kernel
-        bool isValid() const;
-
         // Unique ID for the kernel
         size_t uid() const;
-
-        // Get Number of threads across dimension
-        uint32_t threadDim() const;
-
-        // Problem dimension
-        ck::index_t problemDim() const;
 
         // Problem size
         ck::index_t problemSize() const;
 
         // Kernel's name encoding
         std::string kernelName() const;
-
-        // Kernel's required workspace size
-        size_t workspaceSize() const;
 
         // Reset all arguments
         void resetArgs();

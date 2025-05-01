@@ -26,6 +26,7 @@
 
 #ifndef HIPTENSOR_TEST_CONTRACTION_DEVICE_COMMON_HPP
 #define HIPTENSOR_TEST_CONTRACTION_DEVICE_COMMON_HPP
+#include "../type_traits.hpp"
 
 template <typename T>
 __device__ inline double toDouble(T const& val)

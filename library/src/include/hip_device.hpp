@@ -52,15 +52,10 @@ namespace hiptensor
         HipDevice();
         ~HipDevice() = default;
 
-        hipDevice_t     getDeviceId() const;
-        hipDeviceProp_t getDeviceProps() const;
-        hipDeviceArch_t getDeviceArch() const;
-        hipGcnArch_t    getGcnArch() const;
+        hipDevice_t  getDeviceId() const;
+        hipGcnArch_t getGcnArch() const;
 
         int warpSize() const;
-        int sharedMemSize() const;
-        int cuCount() const;
-        int maxFreqMhz() const;
 
         bool supportsF64() const;
 

@@ -24,5 +24,3 @@
  *
  *******************************************************************************/
 #include "native_types.hpp"
-#include "type_traits.hpp"
-#include "types_ext.hpp"
