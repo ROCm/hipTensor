@@ -500,7 +500,7 @@ namespace ck
 
                 static bool IsSupportedArgument(const Argument* pArg)
                 {
-                    // The check was changed for LWPHIPTENS-371
+                    // workaround for fixed InSrcVectorSize
                     if constexpr(use_multiblock)
                     {
                         if(static_cast<float>(pArg->beta_) != 0.0f)
