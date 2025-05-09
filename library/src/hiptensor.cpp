@@ -466,3 +466,22 @@ hiptensorStatus_t hiptensorLoggerForceDisable()
     logger->disable();
     return HIPTENSOR_STATUS_SUCCESS;
 }
+
+int hiptensorGetHiprtVersion()
+{
+    // Log API trace
+    auto& logger = hiptensor::Logger::instance();
+    logger->logAPITrace("hiptensorGetHiprtVersion", "");
+
+    int  version   = 0;
+    auto hipResult = hipRuntimeGetVersion(&version);
+    if(hipResult != hipError_t::hipSuccess)
+    {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "Hip error: (%s)", hipGetErrorString(hipResult));
+        logger->logError("hiptensorGetHiprtVersion", msg);
+        return -1;
+    }
+
+    return version;
+}
