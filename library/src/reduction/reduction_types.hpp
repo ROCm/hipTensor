@@ -35,20 +35,31 @@ namespace hiptensor
 {
 
     template <hiptensorOperator_t opReduce>
-    constexpr inline auto convertHiptensorReduceOperatorToCk()
-    {
-        static_assert((opReduce == HIPTENSOR_OP_ADD) || (opReduce == HIPTENSOR_OP_MUL)
-                          || (opReduce == HIPTENSOR_OP_MIN) || (opReduce == HIPTENSOR_OP_MAX),
-                      "opReduce is not supported");
+    struct convert_to_ck_reduce_operator;
 
-        constexpr auto reduceOpId = (opReduce == HIPTENSOR_OP_ADD)
-                                        ? ck::ReduceTensorOp::ADD
-                                        : (opReduce == HIPTENSOR_OP_MUL)
-                                              ? ck::ReduceTensorOp::MUL
-                                              : (opReduce == HIPTENSOR_OP_MIN)
-                                                    ? ck::ReduceTensorOp::MIN
-                                                    : ck::ReduceTensorOp::MAX;
-        return reduceOpId;
-    }
+    template <hiptensorOperator_t opReduce>
+    using convert_to_ck_reduce_operator_v = typename convert_to_ck_reduce_operator<opReduce>::value;
+
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_ADD>
+    {
+        static constexpr auto value = ck::ReduceTensorOp::ADD;
+    };
+
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_MUL>
+    {
+        static constexpr auto value = ck::ReduceTensorOp::MUL;
+    };
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_MIN>
+    {
+        static constexpr auto value = ck::ReduceTensorOp::MIN;
+    };
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_MAX>
+    {
+        static constexpr auto value = ck::ReduceTensorOp::MAX;
+    };
 } // namespace hiptensor
 #endif // HIPTENSOR_REDUCTION_TYPES_HPP

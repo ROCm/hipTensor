@@ -191,7 +191,7 @@ namespace hiptensor
               bool                OutputIndex>
     auto enumerateReductionSolutions()
     {
-        constexpr auto ReduceOpId = convertHiptensorReduceOperatorToCk<opReduce>();
+        constexpr auto ReduceOpId = convert_to_ck_reduce_operator<opReduce>::value;
 
         using ReduceOperation        = typename ck::reduce_binary_operator<ReduceOpId>::opType;
         using InElementwiseOperation = ck::tensor_operation::element_wise::HiptensorUnaryOp;

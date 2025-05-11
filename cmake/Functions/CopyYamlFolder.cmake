@@ -110,10 +110,8 @@ function(copy_code_coverage_config_files SOURCE_FOLDER DEST_FOLDER)
                 "${SOURCE_FOLDER}/${PATTERN}/configs/emulation/smoke/binary_op"
                 "${SOURCE_FOLDER}/${PATTERN}/configs/emulation/smoke/trinary_op"
                 )
-        else()
-            # The config files of smoke and code coverage are the same for permution and reduction
-            # reuse the smoke config files to avoid duplicated files
-            set(SOURCE_PATHS "${SOURCE_FOLDER}/${PATTERN}/configs/emulation/smoke")
+        elseif(PATTERN STREQUAL "03_reduction")
+            set(SOURCE_PATHS "${SOURCE_FOLDER}/${PATTERN}/configs/code_coverage/")
         endif()
 
         foreach(SOURCE_PATH ${SOURCE_PATHS})
