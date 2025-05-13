@@ -78,16 +78,6 @@ namespace hiptensor
         return mDeviceId;
     }
 
-    hipDeviceProp_t HipDevice::getDeviceProps() const
-    {
-        return mProps;
-    }
-
-    hipDeviceArch_t HipDevice::getDeviceArch() const
-    {
-        return mArch;
-    }
-
     HipDevice::hipGcnArch_t HipDevice::getGcnArch() const
     {
         return mGcnArch;
@@ -96,21 +86,6 @@ namespace hiptensor
     int HipDevice::warpSize() const
     {
         return mWarpSize;
-    }
-
-    int HipDevice::sharedMemSize() const
-    {
-        return mSharedMemSize;
-    }
-
-    int HipDevice::cuCount() const
-    {
-        return mCuCount;
-    }
-
-    int HipDevice::maxFreqMhz() const
-    {
-        return mMaxFreqMhz;
     }
 
     bool HipDevice::supportsF64() const

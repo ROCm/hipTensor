@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,9 +89,6 @@ namespace hiptensor
 
 // Add in some extensions to basic type support.
 // Some of these are required for vector implementations.
-// #include "type_traits.hpp"
-// #include "types_ext.hpp"
-
 #include "native_types_impl.hpp"
 
 #endif // HIPTENSOR_NATIVE_TYPES_HPP

@@ -35,56 +35,31 @@ namespace hiptensor
 {
 
     template <hiptensorOperator_t opReduce>
-    constexpr inline auto convertHiptensorReduceOperatorToCk()
+    struct convert_to_ck_reduce_operator;
+
+    template <hiptensorOperator_t opReduce>
+    using convert_to_ck_reduce_operator_v = typename convert_to_ck_reduce_operator<opReduce>::value;
+
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_ADD>
     {
-        static_assert((opReduce == HIPTENSOR_OP_ADD) || (opReduce == HIPTENSOR_OP_MUL)
-                          || (opReduce == HIPTENSOR_OP_MIN) || (opReduce == HIPTENSOR_OP_MAX),
-                      "opReduce is not supported");
+        static constexpr auto value = ck::ReduceTensorOp::ADD;
+    };
 
-        constexpr auto reduceOpId = (opReduce == HIPTENSOR_OP_ADD)   ? ck::ReduceTensorOp::ADD
-                                    : (opReduce == HIPTENSOR_OP_MUL) ? ck::ReduceTensorOp::MUL
-                                    : (opReduce == HIPTENSOR_OP_MIN) ? ck::ReduceTensorOp::MIN
-                                                                     : ck::ReduceTensorOp::MAX;
-        return reduceOpId;
-    }
-
-    template <ck::ReduceTensorOp opReduce>
-    constexpr inline auto convertCkReduceOperatorToHiptensor()
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_MUL>
     {
-        static_assert((opReduce == ck::ReduceTensorOp::ADD) || (opReduce == ck::ReduceTensorOp::MUL)
-                          || (opReduce == ck::ReduceTensorOp::MIN)
-                          || (opReduce == ck::ReduceTensorOp::MAX),
-                      "opReduce is not supported");
-
-        constexpr auto reduceOpId = (opReduce == ck::ReduceTensorOp::ADD)   ? HIPTENSOR_OP_ADD
-                                    : (opReduce == ck::ReduceTensorOp::MUL) ? HIPTENSOR_OP_MUL
-                                    : (opReduce == ck::ReduceTensorOp::MIN) ? HIPTENSOR_OP_MIN
-                                                                            : HIPTENSOR_OP_MAX;
-        return reduceOpId;
-    }
-    inline auto reductionUnaryOperators(hiptensorOperator_t opReduce, int32_t reduceLength)
+        static constexpr auto value = ck::ReduceTensorOp::MUL;
+    };
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_MIN>
     {
-        if(opReduce == HIPTENSOR_OP_ADD)
-        {
-            return ck::reduce_unary_operator<ck::ReduceTensorOp::ADD, true, true>::
-                GetElementwiseOperator(reduceLength);
-        }
-        else if(opReduce == HIPTENSOR_OP_MUL)
-        {
-            return ck::reduce_unary_operator<ck::ReduceTensorOp::MUL, true, true>::
-                GetElementwiseOperator(reduceLength);
-        }
-        else if(opReduce == HIPTENSOR_OP_MIN)
-        {
-            return ck::reduce_unary_operator<ck::ReduceTensorOp::MIN, true, true>::
-                GetElementwiseOperator(reduceLength);
-        }
-        else
-        {
-            return ck::reduce_unary_operator<ck::ReduceTensorOp::MAX, true, true>::
-                GetElementwiseOperator(reduceLength);
-        }
-    }
-
+        static constexpr auto value = ck::ReduceTensorOp::MIN;
+    };
+    template <>
+    struct convert_to_ck_reduce_operator<HIPTENSOR_OP_MAX>
+    {
+        static constexpr auto value = ck::ReduceTensorOp::MAX;
+    };
 } // namespace hiptensor
 #endif // HIPTENSOR_REDUCTION_TYPES_HPP

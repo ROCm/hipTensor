@@ -31,6 +31,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "contraction_solution.hpp"
 #include "contraction_types.hpp"
 #include "data_types.hpp"
 #include "singleton.hpp"
@@ -38,7 +39,7 @@
 namespace hiptensor
 {
     // @cond
-    class ContractionSolution;
+    // class ContractionSolution;
 
     class ContractionSolutionRegistry
     {
@@ -53,7 +54,6 @@ namespace hiptensor
             Query()  = default;
             ~Query() = default;
             Query(Query const& other);
-            Query& operator=(Query const& other);
 
             /// Subsequent queries that may be performed on the current query object.
             /// E.g. in this context, query further parameters.
@@ -71,9 +71,6 @@ namespace hiptensor
                         ContractionOpId_t      opCDE,
                         hiptensorComputeType_t typeCompute) const;
 
-            // By dimensions
-            Query query(int32_t dimsM, int32_t dimsN, int32_t dimsK) const;
-
             // By data types
             Query query(hipDataType            typeA,
                         hipDataType            typeB,
@@ -81,17 +78,8 @@ namespace hiptensor
                         hipDataType            typeD,
                         hiptensorComputeType_t typeCompute) const;
 
-            // By element-wise operations
-            Query query(hiptensorOperator_t opA, hiptensorOperator_t opB) const;
-
             // By contraction operation
             Query query(ContractionOpId_t opCDE) const;
-
-            // union
-            Query operator||(Query const& other) const;
-
-            // intersection
-            Query operator&&(Query const& other) const;
 
             // Full map of Uid to ContractionSolution*
             std::unordered_map<Uid, ContractionSolution*> const& solutions() const;
@@ -130,7 +118,6 @@ namespace hiptensor
             // Adding solutions to the query
             void addSolution(ContractionSolution* solution);
             void addSolutions(std::vector<ContractionSolution*> const& solutions);
-            void addSolutions(std::unordered_map<Uid, ContractionSolution*> const& solutions);
 
         private: // members
             // This is the has of all solutions, by unique Uid
@@ -144,10 +131,10 @@ namespace hiptensor
 
     protected:
         // Move only
-        ContractionSolutionRegistry()                                              = default;
-        ContractionSolutionRegistry(ContractionSolutionRegistry&&)                 = default;
-        ContractionSolutionRegistry& operator=(ContractionSolutionRegistry&&)      = default;
-        ContractionSolutionRegistry(ContractionSolutionRegistry const&)            = delete;
+        ContractionSolutionRegistry()                              = default;
+        ContractionSolutionRegistry(ContractionSolutionRegistry&&) = default;
+        ContractionSolutionRegistry& operator=(ContractionSolutionRegistry&&) = default;
+        ContractionSolutionRegistry(ContractionSolutionRegistry const&)       = delete;
         ContractionSolutionRegistry& operator=(ContractionSolutionRegistry const&) = delete;
 
         // Import contraction solutions for the registry to manage
@@ -163,8 +150,7 @@ namespace hiptensor
         }
 
         Query const& allSolutions() const;
-
-        uint32_t solutionCount() const;
+        void         clear();
 
     private:
         std::vector<std::unique_ptr<ContractionSolution>> mSolutionStorage;

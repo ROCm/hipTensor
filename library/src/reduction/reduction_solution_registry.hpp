@@ -50,10 +50,10 @@ namespace hiptensor
             using Uid    = std::size_t;
             using HashId = std::size_t;
 
-            Query()  = default;
-            ~Query() = default;
-            Query(Query const& other);
-            Query& operator=(Query const& other);
+            Query()                              = default;
+            ~Query()                             = default;
+            Query(Query const& other)            = default;
+            Query& operator=(Query const& other) = default;
 
             /// Subsequent queries that may be performed on the current query object.
             /// E.g. in this context, query further parameters.
@@ -68,12 +68,6 @@ namespace hiptensor
                         bool                   propagateNan,
                         bool                   outputIndex) const;
 
-            // union
-            Query operator||(Query const& other) const;
-
-            // intersection
-            Query operator&&(Query const& other) const;
-
             // Full map of Uid to ReductionSolution*
             std::unordered_map<Uid, ReductionSolution*> const& solutions() const;
 
@@ -83,9 +77,6 @@ namespace hiptensor
             Query(std::vector<ReductionSolution*> const& solutions);
 
         private:
-            // Query by explicit hash
-            Query query(HashId queryHash) const;
-
             // Hashing helpers
             static HashId hashSolution(hipDataType            typeIn,
                                        hiptensorComputeType_t typeAcc,
@@ -99,7 +90,6 @@ namespace hiptensor
             // Adding solutions to the query
             void addSolution(ReductionSolution* solution);
             void addSolutions(std::vector<ReductionSolution*> const& solutions);
-            void addSolutions(std::unordered_map<Uid, ReductionSolution*> const& solutions);
 
         private: // members
             // This is the has of all solutions, by unique Uid
@@ -114,8 +104,8 @@ namespace hiptensor
     protected:
         // Move only
         ReductionSolutionRegistry()                                            = default;
-        ReductionSolutionRegistry(ReductionSolutionRegistry&&)                 = default;
-        ReductionSolutionRegistry& operator=(ReductionSolutionRegistry&&)      = default;
+        ReductionSolutionRegistry(ReductionSolutionRegistry&&)                 = delete;
+        ReductionSolutionRegistry& operator=(ReductionSolutionRegistry&&)      = delete;
         ReductionSolutionRegistry(ReductionSolutionRegistry const&)            = delete;
         ReductionSolutionRegistry& operator=(ReductionSolutionRegistry const&) = delete;
 
@@ -132,6 +122,7 @@ namespace hiptensor
         }
 
         uint32_t solutionCount() const;
+        void     clear();
 
     private:
         std::vector<std::unique_ptr<ReductionSolution>> mSolutionStorage;

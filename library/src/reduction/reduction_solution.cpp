@@ -40,34 +40,6 @@ namespace hiptensor
     {
     }
 
-    ReductionSolution::ReductionSolution(ReductionSolution&& other)
-        : mDim(other.mDim)
-        , mBytes(other.mBytes)
-        , mValid(other.mValid)
-        , mDeviceOp(std::move(other.mDeviceOp))
-        , mParams(std::move(other.mParams))
-        , mInvokerArgPtr(std::move(other.mInvokerArgPtr))
-        , mInvokerPtr(std::move(other.mInvokerPtr))
-    {
-    }
-
-    ReductionSolution& ReductionSolution::operator=(ReductionSolution&& other)
-    {
-        if(this != &other)
-        {
-            mDim = other.mDim;
-
-            mBytes = other.mBytes;
-            mValid = other.mValid;
-
-            mParams        = std::move(other.mParams);
-            mDeviceOp      = std::move(other.mDeviceOp);
-            mInvokerArgPtr = std::move(other.mInvokerArgPtr);
-            mInvokerPtr    = std::move(other.mInvokerPtr);
-        }
-        return *this;
-    }
-
     std::pair<bool, float> ReductionSolution::operator()(std::vector<std::size_t> const& a_lengths,
                                                          std::vector<std::size_t> const& a_strides,
                                                          std::vector<int32_t> const&     a_modes,
@@ -106,11 +78,6 @@ namespace hiptensor
         return {true, mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig)};
     }
 
-    bool ReductionSolution::isValid() const
-    {
-        return mValid;
-    }
-
     std::unique_ptr<ReductionSolutionParams> const& ReductionSolution::params() const
     {
         return mParams;
@@ -123,11 +90,6 @@ namespace hiptensor
         size_t             value;
         converter >> std::hex >> value;
         return value;
-    }
-
-    uint32_t ReductionSolution::threadDim() const
-    {
-        return mThreadDim;
     }
 
     ck::index_t ReductionSolution::problemDim() const
@@ -143,18 +105,6 @@ namespace hiptensor
     std::string ReductionSolution::kernelName() const
     {
         return mDeviceOp->GetTypeString();
-    }
-
-    size_t ReductionSolution::workspaceSize() const
-    {
-        if(mValid)
-        {
-            return mDeviceOp->GetWorkSpaceSize(mInvokerArgPtr.get());
-        }
-        else
-        {
-            return 0;
-        }
     }
 
     void ReductionSolution::resetArgs()

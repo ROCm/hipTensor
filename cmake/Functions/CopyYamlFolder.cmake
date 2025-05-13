@@ -1,5 +1,5 @@
 # Function to copy multiple folders with path transformation
-function(copy_config_folders)
+function(copy_emulation_config_folders)
     # Function arguments
     set(options "")                            # Optional arguments
     set(oneValueArgs DESTINATION_PREFIX)       # Single-value arguments
@@ -85,10 +85,60 @@ function(copy_config_folders)
         )
     endforeach()
 
-    # Print status message for each file
-    message(STATUS "Copying emulation test files")
+    message(STATUS "Copying emulation test config files")
 
     # Create a custom target to track the copied files
-    add_custom_target(copy_config_files DEPENDS ${source_files} ${COPY_SOURCE_SCRIPTS})
+    add_custom_target(copy_emulation_config_files DEPENDS ${source_files} ${COPY_SOURCE_SCRIPTS})
+endfunction()
+
+function(copy_code_coverage_config_files SOURCE_FOLDER DEST_FOLDER)
+    # Define the patterns to process
+    set(PATTERNS "01_contraction" "02_permutation" "03_reduction")
+    # Initialize variable to track copied files
+    set(COPIED_FILES_LIST "")
+
+    # Process each pattern
+    foreach(PATTERN ${PATTERNS})
+        # Create the source path
+        if(PATTERN STREQUAL "01_contraction")
+            set(SOURCE_PATHS "${SOURCE_FOLDER}/${PATTERN}/configs/code_coverage/")
+        elseif(PATTERN STREQUAL "02_permutation")
+            # The config files of smoke and code coverage are the same for permution and reduction
+            # reuse the smoke config files to avoid duplicated files
+            set(SOURCE_PATHS
+                "${SOURCE_FOLDER}/${PATTERN}/configs/emulation/smoke/permutation"
+                "${SOURCE_FOLDER}/${PATTERN}/configs/emulation/smoke/binary_op"
+                "${SOURCE_FOLDER}/${PATTERN}/configs/emulation/smoke/trinary_op"
+                )
+        elseif(PATTERN STREQUAL "03_reduction")
+            set(SOURCE_PATHS "${SOURCE_FOLDER}/${PATTERN}/configs/code_coverage/")
+        endif()
+
+        foreach(SOURCE_PATH ${SOURCE_PATHS})
+            # Check if the source directory exists
+            if(EXISTS "${SOURCE_PATH}")
+                # Create destination directory if it doesn't exist
+                file(MAKE_DIRECTORY "${DEST_FOLDER}/${PATTERN}")
+
+                # Find all yaml files in the source directory
+                file(GLOB YAML_FILES "${SOURCE_PATH}/*.yaml")
+
+                # Copy each yaml file to the destination
+                foreach(YAML_FILE ${YAML_FILES})
+                    get_filename_component(FILE_NAME ${YAML_FILE} NAME)
+                    file(COPY "${YAML_FILE}" DESTINATION "${DEST_FOLDER}/${PATTERN}")
+                    message(VERBOSE "Copied ${FILE_NAME} to ${DEST_FOLDER}/${PATTERN}/")
+                    list(APPEND COPIED_FILES_LIST "${SOURCE_PATH}/${FILE_NAME}")
+                endforeach()
+            else()
+                message(WARNING "Source directory ${SOURCE_PATH} does not exist.")
+            endif()
+        endforeach()
+    endforeach()
+
+    message(STATUS "Copying code coverage config files")
+
+    # Create a custom target to track the copied files
+    add_custom_target(copy_code_coverage_config_files DEPENDS ${COPIED_FILES_LIST})
 endfunction()
 

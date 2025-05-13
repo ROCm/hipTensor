@@ -55,17 +55,16 @@ namespace ck
         T                invalid_element_value_ = T{0};
         InElementOp      in_op_{};
 
-        __host__ __device__ constexpr HiptensorDynamicBuffer(T*               p_data,
-                                                             ElementSpaceSize element_space_size)
+        __device__ constexpr HiptensorDynamicBuffer(T* p_data, ElementSpaceSize element_space_size)
             : p_data_{p_data}
             , element_space_size_{element_space_size}
         {
         }
 
-        __host__ __device__ constexpr HiptensorDynamicBuffer(T*               p_data,
-                                                             InElementOp      in_op,
-                                                             ElementSpaceSize element_space_size,
-                                                             T                invalid_element_value)
+        __device__ constexpr HiptensorDynamicBuffer(T*               p_data,
+                                                    InElementOp      in_op,
+                                                    ElementSpaceSize element_space_size,
+                                                    T                invalid_element_value)
             : p_data_{p_data}
             , element_space_size_{element_space_size}
             , in_op_(in_op)
@@ -73,17 +72,17 @@ namespace ck
         {
         }
 
-        __host__ __device__ static constexpr AddressSpaceEnum GetAddressSpace()
+        __device__ static constexpr AddressSpaceEnum GetAddressSpace()
         {
             return BufferAddressSpace;
         }
 
-        __host__ __device__ constexpr const T& operator[](index_t i) const
+        __device__ constexpr const T& operator[](index_t i) const
         {
             return p_data_[i];
         }
 
-        __host__ __device__ constexpr T& operator()(index_t i)
+        __device__ constexpr T& operator()(index_t i)
         {
             return p_data_[i];
         }
@@ -94,7 +93,7 @@ namespace ck
                                          || !is_native_type<X>(),
                                      bool>::type
                   = false>
-        __host__ __device__ constexpr auto Get(index_t i, bool is_valid_element) const
+        __device__ constexpr auto Get(index_t i, bool is_valid_element) const
         {
             // X contains multiple T
             constexpr index_t scalar_per_t_vector = scalar_type<remove_cvref_t<T>>::vector_size;
@@ -174,7 +173,7 @@ namespace ck
                                              typename scalar_type<remove_cvref_t<T>>::type>::value,
                                      bool>::type
                   = false>
-        __host__ __device__ void Update(index_t i, bool is_valid_element, const X& x)
+        __device__ void Update(index_t i, bool is_valid_element, const X& x)
         {
             if constexpr(Op == InMemoryDataOperationEnum::Set)
             {
@@ -224,10 +223,10 @@ namespace ck
         }
 
         template <typename DstBuffer, index_t NumElemsPerThread>
-        __host__ __device__ void DirectCopyToLds(DstBuffer& dst_buf,
-                                                 index_t    src_offset,
-                                                 index_t    dst_offset,
-                                                 bool       is_valid_element) const
+        __device__ void DirectCopyToLds(DstBuffer& dst_buf,
+                                        index_t    src_offset,
+                                        index_t    dst_offset,
+                                        bool       is_valid_element) const
         {
             // Copy data from global to LDS memory using direct loads.
             static_assert(GetAddressSpace() == AddressSpaceEnum::Global,
@@ -249,7 +248,7 @@ namespace ck
                                          || !is_native_type<X>(),
                                      bool>::type
                   = false>
-        __host__ __device__ void Set(index_t i, bool is_valid_element, const X& x)
+        __device__ void Set(index_t i, bool is_valid_element, const X& x)
         {
             // X contains multiple T
             constexpr index_t scalar_per_t_vector = scalar_type<remove_cvref_t<T>>::vector_size;
@@ -394,7 +393,7 @@ namespace ck
                                              typename scalar_type<remove_cvref_t<T>>::type>::value,
                                      bool>::type
                   = false>
-        __host__ __device__ void AtomicAdd(index_t i, bool is_valid_element, const X& x)
+        __device__ void AtomicAdd(index_t i, bool is_valid_element, const X& x)
         {
             using scalar_t = typename scalar_type<remove_cvref_t<T>>::type;
 
@@ -447,7 +446,7 @@ namespace ck
                                              typename scalar_type<remove_cvref_t<T>>::type>::value,
                                      bool>::type
                   = false>
-        __host__ __device__ void AtomicMax(index_t i, bool is_valid_element, const X& x)
+        __device__ void AtomicMax(index_t i, bool is_valid_element, const X& x)
         {
             // X contains multiple T
             constexpr index_t scalar_per_t_vector = scalar_type<remove_cvref_t<T>>::vector_size;
@@ -479,12 +478,12 @@ namespace ck
             }
         }
 
-        __host__ __device__ static constexpr bool IsStaticBuffer()
+        __device__ static constexpr bool IsStaticBuffer()
         {
             return false;
         }
 
-        __host__ __device__ static constexpr bool IsDynamicBuffer()
+        __device__ static constexpr bool IsDynamicBuffer()
         {
             return true;
         }
@@ -495,7 +494,7 @@ namespace ck
               typename T,
               typename InElementOp,
               typename ElementSpaceSize>
-    __host__ __device__ constexpr auto
+    __device__ constexpr auto
         make_hiptensor_dynamic_buffer(T* p, InElementOp in_op, ElementSpaceSize element_space_size)
     {
         return HiptensorDynamicBuffer<BufferAddressSpace,
@@ -514,8 +513,10 @@ namespace ck
               typename X,
               typename enable_if<is_same<remove_cvref_t<T>, remove_cvref_t<X>>::value, bool>::type
               = false>
-    __host__ __device__ constexpr auto make_hiptensor_dynamic_buffer(
-        T* p, InElementOp in_op, ElementSpaceSize element_space_size, X invalid_element_value)
+    __device__ constexpr auto make_hiptensor_dynamic_buffer(T*               p,
+                                                            InElementOp      in_op,
+                                                            ElementSpaceSize element_space_size,
+                                                            X                invalid_element_value)
     {
         return HiptensorDynamicBuffer<BufferAddressSpace,
                                       T,

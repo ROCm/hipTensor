@@ -30,6 +30,7 @@
 #include <ck/utility/data_type.hpp>
 #include <ck/utility/tuple.hpp>
 #include <hiptensor/hiptensor.hpp>
+#include <hiptensor/internal/types.hpp>
 #include <logger.hpp>
 #include <type_traits>
 #include <vector>

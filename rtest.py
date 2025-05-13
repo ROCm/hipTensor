@@ -67,7 +67,7 @@ def parse_args():
     """)
     parser.add_argument('-t', '--test', required=False, type=str, default=[], action='append',
                         help='Test set to run from rtest.xml (required, e.g. osdb)')
-    parser.add_argument(      '--emulation', required=False, type=str, default=[], action='append', choices=['smoke', 'regression', 'extended'],
+    parser.add_argument(      '--emulation', required=False, type=str, default=[], action='append', choices=['smoke', 'regression', 'extended', 'codecoverage'],
                         help='Emulation set to run from rtest.xml (required, e.g. smoke)')
     parser.add_argument(      '--name', required=False, type=str, default=[], action='append',
                         help='Specifies tests to run from the set (optional, run all tests in the set by default)')

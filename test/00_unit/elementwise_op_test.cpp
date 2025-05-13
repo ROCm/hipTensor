@@ -324,7 +324,7 @@ TEST(UnaryOpTest, HostAndDeviceUnaryOpTest)
     EXPECT_FLOAT_EQ(y, ref);
 }
 
-TEST(BinaryOpTest, HostAndDeviceBinaryOpTest)
+TEST(BinaryOpFloatTest, HostAndDeviceBinaryOpTest)
 {
     float x1  = 3.3F;
     float x2  = 1.2F;
@@ -353,6 +353,41 @@ TEST(BinaryOpTest, HostAndDeviceBinaryOpTest)
     x1  = 3.3F;
     x2  = 1.2F;
     ref = 1.2F; // min(3.3, 1.2)
+    y   = binaryOpOnHostTest(x1, x2, HIPTENSOR_OP_MIN);
+    EXPECT_FLOAT_EQ(y, ref);
+    y = binaryOpOnDeviceTest(x1, x2, HIPTENSOR_OP_MIN);
+    EXPECT_FLOAT_EQ(y, ref);
+}
+
+TEST(BinaryOpDoubleTest, HostAndDeviceBinaryOpTest)
+{
+    double x1  = 3.3;
+    double x2  = 1.2;
+    double ref = 4.5; // 3.3 + 1.2
+    double y   = binaryOpOnHostTest(x1, x2, HIPTENSOR_OP_ADD);
+    EXPECT_FLOAT_EQ(y, ref);
+    y = binaryOpOnDeviceTest(x1, x2, HIPTENSOR_OP_ADD);
+    EXPECT_FLOAT_EQ(y, ref);
+
+    x1  = 3.3;
+    x2  = 1.2;
+    ref = 3.96; // 3.3 * 1.2
+    y   = binaryOpOnHostTest(x1, x2, HIPTENSOR_OP_MUL);
+    EXPECT_FLOAT_EQ(y, ref);
+    y = binaryOpOnDeviceTest(x1, x2, HIPTENSOR_OP_MUL);
+    EXPECT_FLOAT_EQ(y, ref);
+
+    x1  = 3.3;
+    x2  = 1.2;
+    ref = 3.3; // max(3.3, 1.2)
+    y   = binaryOpOnHostTest(x1, x2, HIPTENSOR_OP_MAX);
+    EXPECT_FLOAT_EQ(y, ref);
+    y = binaryOpOnDeviceTest(x1, x2, HIPTENSOR_OP_MAX);
+    EXPECT_FLOAT_EQ(y, ref);
+
+    x1  = 3.3;
+    x2  = 1.2;
+    ref = 1.2; // min(3.3, 1.2)
     y   = binaryOpOnHostTest(x1, x2, HIPTENSOR_OP_MIN);
     EXPECT_FLOAT_EQ(y, ref);
     y = binaryOpOnDeviceTest(x1, x2, HIPTENSOR_OP_MIN);

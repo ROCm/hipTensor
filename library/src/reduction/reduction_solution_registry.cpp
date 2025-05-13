@@ -34,24 +34,6 @@ namespace hiptensor
     ////////////////////////////////////////////////
 
     // @cond
-    ReductionSolutionRegistry::Query::Query(Query const& other)
-        : mAllSolutions(other.mAllSolutions)
-        , mSolutionHash(other.mSolutionHash)
-    {
-    }
-
-    ReductionSolutionRegistry::Query&
-        ReductionSolutionRegistry::Query::operator=(Query const& other)
-    {
-        if(&other != this)
-        {
-            mAllSolutions = other.mAllSolutions;
-            mSolutionHash = other.mSolutionHash;
-        }
-
-        return *this;
-    }
-
     ReductionSolutionRegistry::Query
         ReductionSolutionRegistry::Query::query(hipDataType            typeIn,
                                                 hiptensorComputeType_t typeAcc,
@@ -73,32 +55,6 @@ namespace hiptensor
         return Query();
     }
 
-    ReductionSolutionRegistry::Query
-        ReductionSolutionRegistry::Query::operator||(Query const& other) const
-    {
-        auto newQuery = *this;
-        newQuery.addSolutions(other.mAllSolutions);
-        return newQuery;
-    }
-
-    ReductionSolutionRegistry::Query
-        ReductionSolutionRegistry::Query::operator&&(Query const& other) const
-    {
-        auto newQuery = Query();
-
-        // Add only if both queries have the solution
-        for(auto& solutionPair : other.mAllSolutions)
-        {
-            if(auto solution = mAllSolutions.find(solutionPair.first);
-               solution != mAllSolutions.end())
-            {
-                newQuery.addSolution(solutionPair.second);
-            }
-        }
-
-        return newQuery;
-    }
-
     std::unordered_map<ReductionSolutionRegistry::Query::Uid, ReductionSolution*> const&
         ReductionSolutionRegistry::Query::solutions() const
     {
@@ -117,16 +73,6 @@ namespace hiptensor
     ReductionSolutionRegistry::Query::Query(std::vector<ReductionSolution*> const& solutions)
     {
         addSolutions(solutions);
-    }
-
-    ReductionSolutionRegistry::Query ReductionSolutionRegistry::Query::query(HashId queryHash) const
-    {
-        if(auto solutions = mSolutionHash.find(queryHash); solutions != mSolutionHash.end())
-        {
-            return Query(mSolutionHash.at(queryHash));
-        }
-
-        return Query();
     }
 
     /* static */
@@ -172,15 +118,6 @@ namespace hiptensor
         }
     }
 
-    void ReductionSolutionRegistry::Query::addSolutions(
-        std::unordered_map<Uid, ReductionSolution*> const& solutions)
-    {
-        for(auto& solutionPair : solutions)
-        {
-            addSolution(solutionPair.second);
-        }
-    }
-
     /////////////////////////////////////////
     /// Class ReductionSolutionRegistry ///
     /////////////////////////////////////////
@@ -199,6 +136,12 @@ namespace hiptensor
     uint32_t ReductionSolutionRegistry::solutionCount() const
     {
         return mSolutionStorage.size();
+    }
+
+    void ReductionSolutionRegistry::clear()
+    {
+        mSolutionStorage.clear();
+        mSolutionQuery = Query();
     }
     // @endcond
 
