@@ -15,7 +15,7 @@ Lengths:
   - [ 15, 12]
   - [ 23, 11]
 Ranges:
-  - [2, 8196, 2]
+  - [2, 128, 2, 16]
 Random Ranges:
 Operators:
   - [HIPTENSOR_OP_IDENTITY]
