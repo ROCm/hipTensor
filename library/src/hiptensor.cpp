@@ -109,7 +109,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
                                                 const int64_t                strides[],
-                                                hipDataType                  dataType,
+                                                hiptensorDataType_t          dataType,
                                                 hiptensorOperator_t          unaryOp)
 {
     using hiptensor::Logger;
@@ -153,8 +153,9 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     }
 
     if((lens == nullptr && strides != nullptr)
-       || ((dataType != HIP_R_16F) && (dataType != HIP_R_16BF) && (dataType != HIP_R_32F)
-           && (dataType != HIP_R_64F) && (dataType != HIP_C_32F) && (dataType != HIP_C_64F))
+       || ((dataType != HIPTENSOR_R_16F) && (dataType != HIPTENSOR_R_16BF)
+           && (dataType != HIPTENSOR_R_32F) && (dataType != HIPTENSOR_R_64F)
+           && (dataType != HIPTENSOR_C_32F) && (dataType != HIPTENSOR_C_64F))
        || ((unaryOp == HIPTENSOR_OP_ADD) || (unaryOp == HIPTENSOR_OP_MUL)
            || (unaryOp == HIPTENSOR_OP_MIN) || (unaryOp == HIPTENSOR_OP_MAX)
            || (unaryOp == HIPTENSOR_OP_UNKNOWN)))
@@ -188,7 +189,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
-    if(dataType == HIP_R_64F && !realHandle->getDevice().supportsF64())
+    if(dataType == HIPTENSOR_R_64F && !realHandle->getDevice().supportsF64())
     {
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }

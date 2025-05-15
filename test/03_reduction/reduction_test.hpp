@@ -63,12 +63,13 @@ namespace hiptensor
         virtual ~ReductionTest() = default;
 
     protected: // Functions
-        ReductionTest(ReductionTest&&)            = delete;
-        ReductionTest(ReductionTest const&)       = delete;
-        ReductionTest& operator=(ReductionTest&)  = delete;
+        ReductionTest(ReductionTest&&)      = delete;
+        ReductionTest(ReductionTest const&) = delete;
+        ReductionTest& operator=(ReductionTest&) = delete;
         ReductionTest& operator=(ReductionTest&&) = delete;
 
-        bool checkDevice(hipDataType datatype, hiptensorComputeType_t computeDataType) const;
+        bool checkDevice(hiptensorDataType_t    datatype,
+                         hiptensorComputeType_t computeDataType) const;
         bool checkSizes() const;
         void reset();
 
@@ -83,12 +84,12 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream& stream,
-                           hipDataType   DDataType,
-                           bool          omitHeader,
-                           bool          omitSkipped,
-                           bool          omitFailed,
-                           bool          omitPassed) const;
+        void reportResults(std::ostream&       stream,
+                           hiptensorDataType_t DDataType,
+                           bool                omitHeader,
+                           bool                omitSkipped,
+                           bool                omitFailed,
+                           bool                omitPassed) const;
 
     protected:
         // Workspace items

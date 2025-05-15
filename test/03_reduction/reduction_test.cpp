@@ -82,11 +82,13 @@ namespace hiptensor
     // Kernel run checks. Virtual as different Reduction kernels have different requirements
     // True = run test
     // False = skip test
-    bool ReductionTest::checkDevice(hipDataType            datatype,
+    bool ReductionTest::checkDevice(hiptensorDataType_t    datatype,
                                     hiptensorComputeType_t computeDataType) const
     {
-        return !(((datatype == HIP_R_32F || computeDataType == HIP_R_32F) && !isF32Supported())
-                 || ((datatype == HIP_R_64F || computeDataType == HIP_R_64F) && !isF64Supported()));
+        return !(((datatype == HIPTENSOR_R_32F || computeDataType == HIPTENSOR_R_32F)
+                  && !isF32Supported())
+                 || ((datatype == HIPTENSOR_R_64F || computeDataType == HIPTENSOR_R_64F)
+                     && !isF64Supported()));
     }
 
     bool ReductionTest::checkSizes() const
@@ -214,15 +216,15 @@ namespace hiptensor
         EXPECT_TRUE((reduceOp == HIPTENSOR_OP_ADD) || (reduceOp == HIPTENSOR_OP_MUL)
                     || (reduceOp == HIPTENSOR_OP_MAX) || (reduceOp == HIPTENSOR_OP_MIN));
 
-        EXPECT_EQ(dataTypes.size(), 2); // HIP_R_16F or HIP_R_32F
+        EXPECT_EQ(dataTypes.size(), 2); // HIPTENSOR_R_16F or HIPTENSOR_R_32F
         auto acDataType      = dataTypes[0];
         auto computeDataType = convertToComputeType(dataTypes[1]);
-        EXPECT_TRUE((acDataType == HIP_R_16F && computeDataType == HIPTENSOR_COMPUTE_16F)
-                    || (acDataType == HIP_R_16F && computeDataType == HIPTENSOR_COMPUTE_32F)
-                    || (acDataType == HIP_R_16BF && computeDataType == HIPTENSOR_COMPUTE_16BF)
-                    || (acDataType == HIP_R_16BF && computeDataType == HIPTENSOR_COMPUTE_32F)
-                    || (acDataType == HIP_R_32F && computeDataType == HIPTENSOR_COMPUTE_32F)
-                    || (acDataType == HIP_R_64F && computeDataType == HIPTENSOR_COMPUTE_64F));
+        EXPECT_TRUE((acDataType == HIPTENSOR_R_16F && computeDataType == HIPTENSOR_COMPUTE_16F)
+                    || (acDataType == HIPTENSOR_R_16F && computeDataType == HIPTENSOR_COMPUTE_32F)
+                    || (acDataType == HIPTENSOR_R_16BF && computeDataType == HIPTENSOR_COMPUTE_16BF)
+                    || (acDataType == HIPTENSOR_R_16BF && computeDataType == HIPTENSOR_COMPUTE_32F)
+                    || (acDataType == HIPTENSOR_R_32F && computeDataType == HIPTENSOR_COMPUTE_32F)
+                    || (acDataType == HIPTENSOR_R_64F && computeDataType == HIPTENSOR_COMPUTE_64F));
 
         mRunFlag &= checkDevice(acDataType, computeDataType);
         mRunFlag &= lengths.size() >= outputDims.size();
@@ -245,12 +247,12 @@ namespace hiptensor
         }
     }
 
-    void ReductionTest::reportResults(std::ostream& stream,
-                                      hipDataType   dataType,
-                                      bool          omitHeader,
-                                      bool          omitSkipped,
-                                      bool          omitFailed,
-                                      bool          omitPassed) const
+    void ReductionTest::reportResults(std::ostream&       stream,
+                                      hiptensorDataType_t dataType,
+                                      bool                omitHeader,
+                                      bool                omitSkipped,
+                                      bool                omitFailed,
+                                      bool                omitPassed) const
     {
         if(!omitHeader)
         {
@@ -290,22 +292,22 @@ namespace hiptensor
                 size_t elementsC = resource->getCurrentOutputElementCount();
                 size_t elementsD = elementsC;
 
-                if(dataType == HIP_R_16BF)
+                if(dataType == HIPTENSOR_R_16BF)
                 {
                     printReductionTestInputOutput<bfloat16_t>(
                         stream, resource, elementsA, elementsC, elementsD);
                 }
-                else if(dataType == HIP_R_16F)
+                else if(dataType == HIPTENSOR_R_16F)
                 {
                     printReductionTestInputOutput<float16_t>(
                         stream, resource, elementsA, elementsC, elementsD);
                 }
-                else if(dataType == HIP_R_32F)
+                else if(dataType == HIPTENSOR_R_32F)
                 {
                     printReductionTestInputOutput<float32_t>(
                         stream, resource, elementsA, elementsC, elementsD);
                 }
-                else if(dataType == HIP_R_64F)
+                else if(dataType == HIPTENSOR_R_64F)
                 {
                     printReductionTestInputOutput<float64_t>(
                         stream, resource, elementsA, elementsC, elementsD);
@@ -524,7 +526,7 @@ namespace hiptensor
                                                                   0 /* stream */));
                 resource->copyReferenceToDevice();
 
-                if(acDataType == HIP_R_16F)
+                if(acDataType == HIPTENSOR_R_16F)
                 {
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<float16_t>(
@@ -533,7 +535,7 @@ namespace hiptensor
                             resource->getCurrentOutputElementCount(),
                             computeDataType);
                 }
-                else if(acDataType == HIP_R_16BF)
+                else if(acDataType == HIPTENSOR_R_16BF)
                 {
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<bfloat16_t>(
@@ -542,7 +544,7 @@ namespace hiptensor
                             resource->getCurrentOutputElementCount(),
                             computeDataType);
                 }
-                else if(acDataType == HIP_R_32F)
+                else if(acDataType == HIPTENSOR_R_32F)
                 {
                     auto reducedSize = resource->getCurrentInputElementCount()
                                        / resource->getCurrentOutputElementCount();
@@ -555,7 +557,7 @@ namespace hiptensor
                             computeDataType,
                             tolerance);
                 }
-                else if(acDataType == HIP_R_64F)
+                else if(acDataType == HIPTENSOR_R_64F)
                 {
                     auto reducedSize = resource->getCurrentInputElementCount()
                                        / resource->getCurrentOutputElementCount();

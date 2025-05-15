@@ -50,9 +50,9 @@ int main()
     typedef float floatTypeC;
     typedef float floatTypeCompute;
 
-    hipDataType typeA       = HIP_R_32F;
-    hipDataType typeC       = HIP_R_32F;
-    hipDataType typeCompute = HIP_R_32F;
+    hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeC       = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeCompute = HIPTENSOR_R_32F;
 
     /**********************
       B_{w, h, c, n} = 1.0 *  \textsl{IDENTITY}(A_{c, n, h, w})

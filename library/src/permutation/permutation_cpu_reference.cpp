@@ -35,7 +35,7 @@ hiptensorStatus_t hiptensorPermutationReference(const void*                     
                                                 void*                              B,
                                                 const hiptensorTensorDescriptor_t* descB,
                                                 const int32_t                      modeB[],
-                                                const hipDataType                  typeScalar,
+                                                const hiptensorDataType_t          typeScalar,
                                                 const hipStream_t                  stream)
 {
     const int32_t dim       = descA->mLengths.size();
@@ -89,8 +89,8 @@ hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*             
                                                         const hiptensorTensorDescriptor_t* descD,
                                                         const int32_t                      modeD[],
                                                         hiptensorOperator_t                opAC,
-                                                        hipDataType typeScalar,
-                                                        hipStream_t stream)
+                                                        hiptensorDataType_t typeScalar,
+                                                        hipStream_t         stream)
 {
     const int32_t dim       = descA->mLengths.size();
     auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
@@ -155,8 +155,8 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const void*            
                                                          const int32_t                      modeD[],
                                                          hiptensorOperator_t                opAB,
                                                          hiptensorOperator_t                opABC,
-                                                         hipDataType typeScalar,
-                                                         hipStream_t stream)
+                                                         hiptensorDataType_t typeScalar,
+                                                         hipStream_t         stream)
 {
     const int32_t dim       = descA->mLengths.size();
     auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();

@@ -42,9 +42,9 @@ int main(int argc, char* argv[])
     typedef float DDataType;
     typedef float floatTypeCompute;
 
-    constexpr hipDataType            typeA       = HIP_R_32F;
-    constexpr hipDataType            typeB       = HIP_R_32F;
-    constexpr hipDataType            typeD       = HIP_R_32F;
+    constexpr hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
+    constexpr hiptensorDataType_t    typeB       = HIPTENSOR_R_32F;
+    constexpr hiptensorDataType_t    typeD       = HIPTENSOR_R_32F;
     constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
     floatTypeCompute alpha = 1;

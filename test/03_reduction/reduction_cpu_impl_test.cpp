@@ -33,7 +33,9 @@
 #include "utils.hpp"
 
 template <typename floatTypeA, typename floatTypeC, typename floatTypeCompute>
-auto reduceWithCpu(hipDataType typeA, hipDataType typeC, hiptensorComputeType_t typeCompute)
+auto reduceWithCpu(hiptensorDataType_t    typeA,
+                   hiptensorDataType_t    typeC,
+                   hiptensorComputeType_t typeCompute)
 {
     floatTypeCompute alpha = (floatTypeCompute)1.2f;
     floatTypeCompute beta  = (floatTypeCompute)2.1f;
@@ -143,8 +145,8 @@ TEST(ReductionCpuImplTest, CompareF32ResultWithReference)
     using floatTypeC       = hiptensor::float32_t;
     using floatTypeCompute = hiptensor::float32_t;
 
-    hipDataType            typeA       = HIP_R_32F;
-    hipDataType            typeC       = HIP_R_32F;
+    hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t    typeC       = HIPTENSOR_R_32F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
 
     auto [result, maxRelativeError]
@@ -158,8 +160,8 @@ TEST(ReductionCpuImplTest, CompareF64ResultWithReference)
     using floatTypeC       = hiptensor::float64_t;
     using floatTypeCompute = hiptensor::float64_t;
 
-    hipDataType            typeA       = HIP_R_64F;
-    hipDataType            typeC       = HIP_R_64F;
+    hiptensorDataType_t    typeA       = HIPTENSOR_R_64F;
+    hiptensorDataType_t    typeC       = HIPTENSOR_R_64F;
     hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_64F;
 
     auto [result, maxRelativeError]
@@ -173,8 +175,8 @@ TEST(ReductionCpuImplTest, CompareF64ResultWithReference)
 // typedef _Float16 floatTypeC;
 // typedef _Float16 floatTypeCompute;
 //
-// hipDataType typeA       = HIP_R_16F;
-// hipDataType typeC       = HIP_R_16F;
+// hiptensorDataType_t typeA       = HIPTENSOR_R_16F;
+// hiptensorDataType_t typeC       = HIPTENSOR_R_16F;
 // hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_16F;
 //
 // auto [result, maxRelativeError]

@@ -62,7 +62,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
                                                 const int64_t                strides[],
-                                                hipDataType                  dataType,
+                                                hiptensorDataType_t          dataType,
                                                 hiptensorOperator_t          unaryOp);
 
 //! @brief Returns the description string for an error code
@@ -98,7 +98,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                        void*                              B,
                                        const hiptensorTensorDescriptor_t* descB,
                                        const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar,
+                                       const hiptensorDataType_t          typeScalar,
                                        const hipStream_t                  stream);
 
 //! @brief Performs an element-wise tensor operation on two input tensors.
@@ -127,7 +127,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 //! @param[out] D Output tensor D (GPU memory).
 //! @param[in] descD Descriptor for tensor D (must match descC).
 //! @param[in] modeD Array of mode names for tensor D (host memory).
-//! @param[in] opAC Element-wise binary operator \f$\Phi_{AC}\f$. 
+//! @param[in] opAC Element-wise binary operator \f$\Phi_{AC}\f$.
 //! @param[in] typeScalar Scalar data type for intermediate computations.
 //! @param[in] stream stream for execution.
 //! @return HIPTENSOR_STATUS_NOT_SUPPORTED if data type or operation combination is unsupported.
@@ -147,7 +147,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                                              const hiptensorTensorDescriptor_t* descD,
                                              const int32_t                      modeD[],
                                              hiptensorOperator_t                opAC,
-                                             hipDataType                        typeScalar,
+                                             hiptensorDataType_t                typeScalar,
                                              hipStream_t                        stream);
 
 //! @brief Performs an element-wise tensor operation with three input tensors.
@@ -201,7 +201,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
                                               const int32_t                      modeD[],
                                               hiptensorOperator_t                opAB,
                                               hiptensorOperator_t                opABC,
-                                              hipDataType                        typeScalar,
+                                              hiptensorDataType_t                typeScalar,
                                               const hipStream_t                  stream);
 
 //! @brief Computes the alignment requirement for a given pointer and descriptor.

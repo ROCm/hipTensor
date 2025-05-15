@@ -66,12 +66,12 @@ namespace hiptensor
         virtual ~ElementwiseTrinaryOpTest() = default;
 
     protected: // Functions
-        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest&&)            = delete;
-        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest const&)       = delete;
-        ElementwiseTrinaryOpTest& operator=(ElementwiseTrinaryOpTest&)  = delete;
+        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest&&)      = delete;
+        ElementwiseTrinaryOpTest(ElementwiseTrinaryOpTest const&) = delete;
+        ElementwiseTrinaryOpTest& operator=(ElementwiseTrinaryOpTest&) = delete;
         ElementwiseTrinaryOpTest& operator=(ElementwiseTrinaryOpTest&&) = delete;
 
-        bool checkDevice(hipDataType datatype) const;
+        bool checkDevice(hiptensorDataType_t datatype) const;
         bool checkSizes() const;
         void reset();
 
@@ -86,12 +86,12 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream& stream,
-                           hipDataType   DDataType,
-                           bool          omitHeader,
-                           bool          omitSkipped,
-                           bool          omitFailed,
-                           bool          omitPassed) const;
+        void reportResults(std::ostream&       stream,
+                           hiptensorDataType_t DDataType,
+                           bool                omitHeader,
+                           bool                omitSkipped,
+                           bool                omitFailed,
+                           bool                omitPassed) const;
 
     protected:
         // Workspace items

@@ -51,10 +51,10 @@ int main()
     typedef float floatTypeD;
     typedef float floatTypeCompute;
 
-    hipDataType typeA       = HIP_R_32F;
-    hipDataType typeC       = HIP_R_32F;
-    hipDataType typeD       = HIP_R_32F;
-    hipDataType typeCompute = HIP_R_32F;
+    hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeC       = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeD       = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeCompute = HIPTENSOR_R_32F;
 
     /**********************
 	  \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]

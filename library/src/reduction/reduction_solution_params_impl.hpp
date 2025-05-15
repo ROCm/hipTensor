@@ -55,12 +55,12 @@ namespace hiptensor
     template <typename DeviceOp>
     struct ReductionSolutionParamsImpl : public ReductionSolutionParams
     {
-        ReductionSolutionParamsImpl()                                              = default;
-        ~ReductionSolutionParamsImpl()                                             = default;
-        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl const&)            = default;
-        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl&&)                 = default;
+        ReductionSolutionParamsImpl()                                   = default;
+        ~ReductionSolutionParamsImpl()                                  = default;
+        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl const&) = default;
+        ReductionSolutionParamsImpl(ReductionSolutionParamsImpl&&)      = default;
         ReductionSolutionParamsImpl& operator=(ReductionSolutionParamsImpl const&) = default;
-        ReductionSolutionParamsImpl& operator=(ReductionSolutionParamsImpl&&)      = default;
+        ReductionSolutionParamsImpl& operator=(ReductionSolutionParamsImpl&&) = default;
 
         using MetaTraitsT = MetaTraits<DeviceOp>;
 
@@ -85,7 +85,7 @@ namespace hiptensor
             return MetaTraitsT::TensorOutputIndex;
         }
 
-        hipDataType typeIn() const override
+        hiptensorDataType_t typeIn() const override
         {
             return HipDataType_v<typename MetaTraitsT::TensorInDataType>;
         }
@@ -93,7 +93,7 @@ namespace hiptensor
         {
             return convertToComputeType(HipDataType_v<typename MetaTraitsT::TensorAccDataType>);
         }
-        hipDataType typeOut() const override
+        hiptensorDataType_t typeOut() const override
         {
             return HipDataType_v<typename MetaTraitsT::TensorOutDataType>;
         }

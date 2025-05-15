@@ -29,21 +29,37 @@
 namespace hiptensor
 {
     // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id)
+    uint32_t hipDataTypeSize(hiptensorDataType_t id)
     {
         switch(id)
         {
-        case HIP_R_16BF:
+        case HIPTENSOR_R_16BF:
             return sizeof(hip_bfloat16);
-        case HIP_R_16F:
+        case HIPTENSOR_R_16F:
             return sizeof(_Float16);
-        case HIP_R_32F:
+        case HIPTENSOR_R_32F:
             return sizeof(float);
-        case HIP_R_64F:
+        case HIPTENSOR_R_64F:
             return sizeof(double);
-        case HIP_C_32F:
+        case HIPTENSOR_R_8I:
+            return sizeof(int8_t);
+        case HIPTENSOR_R_8U:
+            return sizeof(uint8_t);
+        case HIPTENSOR_R_16I:
+            return sizeof(int16_t);
+        case HIPTENSOR_R_16U:
+            return sizeof(uint16_t);
+        case HIPTENSOR_R_32I:
+            return sizeof(int32_t);
+        case HIPTENSOR_R_32U:
+            return sizeof(uint32_t);
+        case HIPTENSOR_R_64I:
+            return sizeof(int64_t);
+        case HIPTENSOR_R_64U:
+            return sizeof(uint64_t);
+        case HIPTENSOR_C_32F:
             return sizeof(hipFloatComplex);
-        case HIP_C_64F:
+        case HIPTENSOR_C_64F:
             return sizeof(hipDoubleComplex);
         case NONE_TYPE:
             return 0;
@@ -57,21 +73,29 @@ namespace hiptensor
         }
     }
 
-    hiptensorComputeType_t convertToComputeType(hipDataType hipType)
+    hiptensorComputeType_t convertToComputeType(hiptensorDataType_t hipType)
     {
         switch(hipType)
         {
-        case HIP_R_16BF:
+        case HIPTENSOR_R_16BF:
             return HIPTENSOR_COMPUTE_16BF;
-        case HIP_R_16F:
+        case HIPTENSOR_R_16F:
             return HIPTENSOR_COMPUTE_16F;
-        case HIP_R_32F:
+        case HIPTENSOR_R_32F:
             return HIPTENSOR_COMPUTE_32F;
-        case HIP_R_64F:
+        case HIPTENSOR_R_64F:
             return HIPTENSOR_COMPUTE_64F;
-        case HIP_C_32F:
+        case HIPTENSOR_R_8I:
+            return HIPTENSOR_COMPUTE_8I;
+        case HIPTENSOR_R_8U:
+            return HIPTENSOR_COMPUTE_8U;
+        case HIPTENSOR_R_32I:
+            return HIPTENSOR_COMPUTE_32I;
+        case HIPTENSOR_R_32U:
+            return HIPTENSOR_COMPUTE_32U;
+        case HIPTENSOR_C_32F:
             return HIPTENSOR_COMPUTE_C32F;
-        case HIP_C_64F:
+        case HIPTENSOR_C_64F:
             return HIPTENSOR_COMPUTE_C64F;
         default:
             return HIPTENSOR_COMPUTE_NONE;
@@ -207,22 +231,30 @@ namespace hiptensor
         }
     }
 
-    std::string hipTypeToString(hipDataType hipType)
+    std::string hipTypeToString(hiptensorDataType_t hipType)
     {
         switch(hipType)
         {
-        case HIP_R_16BF:
-            return "HIP_R_16BF";
-        case HIP_R_16F:
-            return "HIP_R_16F";
-        case HIP_R_32F:
-            return "HIP_R_32F";
-        case HIP_R_64F:
-            return "HIP_R_64F";
-        case HIP_C_32F:
-            return "HIP_C_32F";
-        case HIP_C_64F:
-            return "HIP_C_64F";
+        case HIPTENSOR_R_16BF:
+            return "HIPTENSOR_R_16BF";
+        case HIPTENSOR_R_16F:
+            return "HIPTENSOR_R_16F";
+        case HIPTENSOR_R_32F:
+            return "HIPTENSOR_R_32F";
+        case HIPTENSOR_R_64F:
+            return "HIPTENSOR_R_64F";
+        case HIPTENSOR_R_8I:
+            return "HIPTENSOR_R_8I";
+        case HIPTENSOR_R_8U:
+            return "HIPTENSOR_R_8U";
+        case HIPTENSOR_R_32I:
+            return "HIPTENSOR_R_32I";
+        case HIPTENSOR_R_32U:
+            return "HIPTENSOR_R_32U";
+        case HIPTENSOR_C_32F:
+            return "HIPTENSOR_C_32F";
+        case HIPTENSOR_C_64F:
+            return "HIPTENSOR_C_64F";
         default:
             return "HIP_TYPE_NONE";
         }
@@ -346,23 +378,55 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
+bool operator==(hiptensorDataType_t hipType, hiptensorComputeType_t computeType)
 {
-    if(hipType == HIP_R_16BF)
+    if(hipType == HIPTENSOR_R_16BF)
     {
         return (computeType == HIPTENSOR_COMPUTE_16BF);
     }
-    else if(hipType == HIP_R_16F)
+    else if(hipType == HIPTENSOR_R_16F)
     {
         return (computeType == HIPTENSOR_COMPUTE_16F);
     }
-    else if(hipType == HIP_R_32F || hipType == HIP_C_32F)
+    else if(hipType == HIPTENSOR_R_32F || hipType == HIPTENSOR_C_32F)
     {
         return (computeType == HIPTENSOR_COMPUTE_32F);
     }
-    else if(hipType == HIP_R_64F || hipType == HIP_C_64F)
+    else if(hipType == HIPTENSOR_R_64F || hipType == HIPTENSOR_C_64F)
     {
         return (computeType == HIPTENSOR_COMPUTE_64F);
+    }
+    else if(hipType == HIPTENSOR_R_8I)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_8I);
+    }
+    else if(hipType == HIPTENSOR_R_8U)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_8U);
+    }
+    else if(hipType == HIPTENSOR_R_16I)
+    {
+        return false;
+    }
+    else if(hipType == HIPTENSOR_R_16U)
+    {
+        return false;
+    }
+    else if(hipType == HIPTENSOR_R_32I)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_32I);
+    }
+    else if(hipType == HIPTENSOR_R_32U)
+    {
+        return (computeType == HIPTENSOR_COMPUTE_32U);
+    }
+    else if(hipType == HIPTENSOR_R_64I)
+    {
+        return false;
+    }
+    else if(hipType == HIPTENSOR_R_64U)
+    {
+        return false;
     }
     else
     {
@@ -373,9 +437,19 @@ bool operator==(hipDataType hipType, hiptensorComputeType_t computeType)
     }
 }
 
-bool operator==(hiptensorComputeType_t computeType, hipDataType hipType)
+bool operator==(hiptensorComputeType_t computeType, hiptensorDataType_t hipType)
 {
     return hipType == computeType;
+}
+
+bool operator!=(hiptensorDataType_t hipType, hiptensorComputeType_t computeType)
+{
+    return !(hipType == computeType);
+}
+
+bool operator!=(hiptensorComputeType_t computeType, hiptensorDataType_t hipType)
+{
+    return !(computeType == hipType);
 }
 
 namespace std

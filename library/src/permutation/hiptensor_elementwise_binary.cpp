@@ -45,7 +45,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                                              const hiptensorTensorDescriptor_t* descD,
                                              const int32_t                      modeD[],
                                              hiptensorOperator_t                opAC,
-                                             hipDataType                        typeScalar,
+                                             hiptensorDataType_t                typeScalar,
                                              hipStream_t                        stream)
 {
     using hiptensor::Logger;
@@ -96,16 +96,16 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
         return checkResult;
     }
 
-    constexpr std::array<std::array<hipDataType, 3>, 6> validDataTypes
+    constexpr std::array<std::array<hiptensorDataType_t, 3>, 6> validDataTypes
         = {{// typeA, typeC, typeScalar
-            {HIP_R_16F, HIP_R_16F, HIP_R_16F},
-            {HIP_R_16F, HIP_R_16F, HIP_R_32F},
-            {HIP_R_16BF, HIP_R_16BF, HIP_R_16BF},
-            {HIP_R_16BF, HIP_R_16BF, HIP_R_32F},
-            {HIP_R_32F, HIP_R_32F, HIP_R_32F},
-            {HIP_R_64F, HIP_R_64F, HIP_R_64F}}};
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F},
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF},
+            {HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F}}};
 
-    std::array<hipDataType, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
+    std::array<hiptensorDataType_t, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
     if(descC->mType != descD->mType
        || std::none_of(validDataTypes.cbegin(),
                        validDataTypes.cend(),

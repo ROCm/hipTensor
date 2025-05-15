@@ -55,12 +55,13 @@ namespace hiptensor
     // Kernel run checks. Virtual as different Contraction kernels have different requirements
     // True = run test
     // False = skip test
-    bool ContractionTest::checkDevice(hipDataType datatype) const
+    bool ContractionTest::checkDevice(hiptensorDataType_t datatype) const
     {
         return (isF32Supported()
-                && (datatype == HIP_R_32F || datatype == HIP_R_16F || datatype == HIP_R_16BF
-                    || datatype == HIP_C_32F))
-               || (isF64Supported() && (datatype == HIP_R_64F || datatype == HIP_C_64F));
+                && (datatype == HIPTENSOR_R_32F || datatype == HIPTENSOR_R_16F
+                    || datatype == HIPTENSOR_R_16BF || datatype == HIPTENSOR_C_32F))
+               || (isF64Supported()
+                   && (datatype == HIPTENSOR_R_64F || datatype == HIPTENSOR_C_64F));
     }
 
     bool ContractionTest::checkSizes() const
@@ -226,19 +227,19 @@ namespace hiptensor
         auto CDataType = dataTypes[2];
         auto DDataType = dataTypes[3];
 
-        EXPECT_TRUE((ADataType == HIP_R_16F) || (ADataType == HIP_R_16BF)
-                    || (ADataType == HIP_R_32F) || (ADataType == HIP_R_64F)
-                    || (ADataType == HIP_C_32F) || (ADataType == HIP_C_64F));
-        EXPECT_TRUE((BDataType == HIP_R_16F) || (BDataType == HIP_R_16BF)
-                    || (BDataType == HIP_R_32F) || (BDataType == HIP_R_64F)
-                    || (BDataType == HIP_C_32F) || (BDataType == HIP_C_64F));
-        EXPECT_TRUE((CDataType == HIP_R_16F) || (CDataType == HIP_R_16BF)
-                    || (CDataType == HIP_R_32F) || (CDataType == HIP_R_64F)
-                    || (CDataType == HIP_C_32F) || (CDataType == HIP_C_64F)
+        EXPECT_TRUE((ADataType == HIPTENSOR_R_16F) || (ADataType == HIPTENSOR_R_16BF)
+                    || (ADataType == HIPTENSOR_R_32F) || (ADataType == HIPTENSOR_R_64F)
+                    || (ADataType == HIPTENSOR_C_32F) || (ADataType == HIPTENSOR_C_64F));
+        EXPECT_TRUE((BDataType == HIPTENSOR_R_16F) || (BDataType == HIPTENSOR_R_16BF)
+                    || (BDataType == HIPTENSOR_R_32F) || (BDataType == HIPTENSOR_R_64F)
+                    || (BDataType == HIPTENSOR_C_32F) || (BDataType == HIPTENSOR_C_64F));
+        EXPECT_TRUE((CDataType == HIPTENSOR_R_16F) || (CDataType == HIPTENSOR_R_16BF)
+                    || (CDataType == HIPTENSOR_R_32F) || (CDataType == HIPTENSOR_R_64F)
+                    || (CDataType == HIPTENSOR_C_32F) || (CDataType == HIPTENSOR_C_64F)
                     || (CDataType == NONE_TYPE));
-        EXPECT_TRUE((DDataType == HIP_R_16F) || (DDataType == HIP_R_16BF)
-                    || (DDataType == HIP_R_32F) || (DDataType == HIP_R_64F)
-                    || (DDataType == HIP_C_32F) || (DDataType == HIP_C_64F));
+        EXPECT_TRUE((DDataType == HIPTENSOR_R_16F) || (DDataType == HIPTENSOR_R_16BF)
+                    || (DDataType == HIPTENSOR_R_32F) || (DDataType == HIPTENSOR_R_64F)
+                    || (DDataType == HIPTENSOR_C_32F) || (DDataType == HIPTENSOR_C_64F));
         EXPECT_TRUE(
             (computeType == HIPTENSOR_COMPUTE_16F) || (computeType == HIPTENSOR_COMPUTE_16BF)
             || (computeType == HIPTENSOR_COMPUTE_32F) || (computeType == HIPTENSOR_COMPUTE_64F)
@@ -355,13 +356,14 @@ namespace hiptensor
 
             uint32_t seed = static_cast<uint32_t>(256);
 
-            if(ADataType == HIP_R_16F && BDataType == HIP_R_16F && DDataType == HIP_R_16F)
+            if(ADataType == HIPTENSOR_R_16F && BDataType == HIPTENSOR_R_16F
+               && DDataType == HIPTENSOR_R_16F)
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<_Float16>(
                     (_Float16*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<_Float16>((_Float16*)resource->deviceB().get(), elementsB, seed);
-                if(CDataType == HIP_R_16F)
+                if(CDataType == HIPTENSOR_R_16F)
                 {
                     fillLaunchKernel<_Float16>(
                         (_Float16*)resource->deviceC().get(), elementsCD, seed + 1);
@@ -370,14 +372,15 @@ namespace hiptensor
                                               elementsCD,
                                               std::numeric_limits<_Float16>::signaling_NaN());
             }
-            else if(ADataType == HIP_R_16BF && BDataType == HIP_R_16BF && DDataType == HIP_R_16BF)
+            else if(ADataType == HIPTENSOR_R_16BF && BDataType == HIPTENSOR_R_16BF
+                    && DDataType == HIPTENSOR_R_16BF)
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<hip_bfloat16>(
                     (hip_bfloat16*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<hip_bfloat16>(
                     (hip_bfloat16*)resource->deviceB().get(), elementsB, seed);
-                if(CDataType == HIP_R_16BF)
+                if(CDataType == HIPTENSOR_R_16BF)
                 {
                     fillLaunchKernel<hip_bfloat16>(
                         (hip_bfloat16*)resource->deviceC().get(), elementsCD, seed + 1);
@@ -387,12 +390,13 @@ namespace hiptensor
                     elementsCD,
                     std::numeric_limits<hip_bfloat16>::signaling_NaN());
             }
-            else if(ADataType == HIP_R_32F && BDataType == HIP_R_32F && DDataType == HIP_R_32F)
+            else if(ADataType == HIPTENSOR_R_32F && BDataType == HIPTENSOR_R_32F
+                    && DDataType == HIPTENSOR_R_32F)
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<float>((float*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<float>((float*)resource->deviceB().get(), elementsB, seed);
-                if(CDataType == HIP_R_32F)
+                if(CDataType == HIPTENSOR_R_32F)
                 {
                     fillLaunchKernel<float>(
                         (float*)resource->deviceC().get(), elementsCD, seed + 1);
@@ -401,12 +405,13 @@ namespace hiptensor
                                            elementsCD,
                                            std::numeric_limits<float>::signaling_NaN());
             }
-            else if(ADataType == HIP_R_64F && BDataType == HIP_R_64F && DDataType == HIP_R_64F)
+            else if(ADataType == HIPTENSOR_R_64F && BDataType == HIPTENSOR_R_64F
+                    && DDataType == HIPTENSOR_R_64F)
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<double>((double*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<double>((double*)resource->deviceB().get(), elementsB, seed);
-                if(CDataType == HIP_R_64F)
+                if(CDataType == HIPTENSOR_R_64F)
                 {
                     fillLaunchKernel<double>(
                         (double*)resource->deviceC().get(), elementsCD, seed + 1);
@@ -415,14 +420,15 @@ namespace hiptensor
                                             elementsCD,
                                             std::numeric_limits<double>::signaling_NaN());
             }
-            else if(ADataType == HIP_C_32F && BDataType == HIP_C_32F && DDataType == HIP_C_32F)
+            else if(ADataType == HIPTENSOR_C_32F && BDataType == HIPTENSOR_C_32F
+                    && DDataType == HIPTENSOR_C_32F)
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<hipFloatComplex>(
                     (hipFloatComplex*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<hipFloatComplex>(
                     (hipFloatComplex*)resource->deviceB().get(), elementsB, seed);
-                if(CDataType == HIP_C_32F)
+                if(CDataType == HIPTENSOR_C_32F)
                 {
                     fillLaunchKernel<hipFloatComplex>(
                         (hipFloatComplex*)resource->deviceC().get(), elementsCD, seed + 1);
@@ -432,14 +438,15 @@ namespace hiptensor
                     elementsCD,
                     std::numeric_limits<hipFloatComplex>::signaling_NaN());
             }
-            else if(ADataType == HIP_C_64F && BDataType == HIP_C_64F && DDataType == HIP_C_64F)
+            else if(ADataType == HIPTENSOR_C_64F && BDataType == HIPTENSOR_C_64F
+                    && DDataType == HIPTENSOR_C_64F)
             {
                 // Initialize matrix data on device
                 fillLaunchKernel<hipDoubleComplex>(
                     (hipDoubleComplex*)resource->deviceA().get(), elementsA, seed - 1);
                 fillLaunchKernel<hipDoubleComplex>(
                     (hipDoubleComplex*)resource->deviceB().get(), elementsB, seed);
-                if(CDataType == HIP_C_64F)
+                if(CDataType == HIPTENSOR_C_64F)
                 {
                     fillLaunchKernel<hipDoubleComplex>(
                         (hipDoubleComplex*)resource->deviceC().get(), elementsCD, seed + 1);
@@ -507,7 +514,7 @@ namespace hiptensor
     }
 
     void ContractionTest::reportResults(std::ostream&          stream,
-                                        hipDataType            DDataType,
+                                        hiptensorDataType_t    DDataType,
                                         hiptensorComputeType_t computeType,
                                         bool                   omitHeader,
                                         bool                   omitSkipped,
@@ -551,7 +558,7 @@ namespace hiptensor
 
                 auto& references = resource->hostD();
 
-                if(DDataType == HIP_R_16F)
+                if(DDataType == HIPTENSOR_R_16F)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<_Float16>(
@@ -577,7 +584,7 @@ namespace hiptensor
                         stream, (_Float16*)references.get(), elementsCD);
                     stream << std::endl;
                 }
-                else if(DDataType == HIP_R_16BF)
+                else if(DDataType == HIPTENSOR_R_16BF)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<hip_bfloat16>(
@@ -604,7 +611,7 @@ namespace hiptensor
                         stream, (hip_bfloat16*)references.get(), elementsCD);
                     stream << std::endl;
                 }
-                else if(DDataType == HIP_R_32F)
+                else if(DDataType == HIPTENSOR_R_32F)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<float>(
@@ -630,7 +637,7 @@ namespace hiptensor
                         stream, (float*)references.get(), elementsCD);
                     stream << std::endl;
                 }
-                else if(DDataType == HIP_R_64F)
+                else if(DDataType == HIPTENSOR_R_64F)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<double>(
@@ -656,7 +663,7 @@ namespace hiptensor
                         stream, (double*)references.get(), elementsCD);
                     stream << std::endl;
                 }
-                else if(DDataType == HIP_C_32F)
+                else if(DDataType == HIPTENSOR_C_32F)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<hipFloatComplex>(
@@ -683,7 +690,7 @@ namespace hiptensor
                         stream, (hipFloatComplex*)references.get(), elementsCD);
                     stream << std::endl;
                 }
-                else if(DDataType == HIP_C_64F)
+                else if(DDataType == HIPTENSOR_C_64F)
                 {
                     stream << "Tensor A elements:\n";
                     hiptensorPrintArrayElements<hipDoubleComplex>(
@@ -869,18 +876,18 @@ namespace hiptensor
                 double tolerance = 2 * nelems_k * eps;
 
                 // use the same default tolerance value as CK
-                if(computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIP_R_16BF)
+                if(computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIPTENSOR_R_16BF)
                 {
                     const double epsilon = std::pow(2, -7);
                     tolerance += epsilon * 2;
                 }
-                else if(computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIP_R_16F)
+                else if(computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIPTENSOR_R_16F)
                 {
                     const double epsilon = std::pow(2, -10);
                     tolerance += epsilon * 2;
                 }
 
-                if(DDataType == HIP_R_16F)
+                if(DDataType == HIPTENSOR_R_16F)
                 {
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<_Float16>((_Float16*)resource->deviceD().get(),
@@ -889,7 +896,7 @@ namespace hiptensor
                                                              computeType,
                                                              tolerance);
                 }
-                else if(DDataType == HIP_R_16BF)
+                else if(DDataType == HIPTENSOR_R_16BF)
                 {
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<hip_bfloat16>(
@@ -899,7 +906,7 @@ namespace hiptensor
                             computeType,
                             tolerance);
                 }
-                else if(DDataType == HIP_R_32F || DDataType == HIP_C_32F)
+                else if(DDataType == HIPTENSOR_R_32F || DDataType == HIPTENSOR_C_32F)
                 {
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<float>((float*)resource->deviceD().get(),
@@ -908,7 +915,7 @@ namespace hiptensor
                                                           computeType,
                                                           tolerance);
                 }
-                else if(DDataType == HIP_R_64F || DDataType == HIP_C_64F)
+                else if(DDataType == HIPTENSOR_R_64F || DDataType == HIPTENSOR_C_64F)
                 {
                     std::tie(mValidationResult, mMaxRelativeError)
                         = compareEqualLaunchKernel<double>((double*)resource->deviceD().get(),

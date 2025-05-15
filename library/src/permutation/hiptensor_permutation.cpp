@@ -40,7 +40,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                        void*                              B,
                                        const hiptensorTensorDescriptor_t* descB,
                                        const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar,
+                                       const hiptensorDataType_t          typeScalar,
                                        const hipStream_t                  stream)
 {
     using hiptensor::Logger;
@@ -80,13 +80,13 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return checkResult;
     }
 
-    constexpr std::array<std::array<hipDataType, 2>, 3> validDataTypes
+    constexpr std::array<std::array<hiptensorDataType_t, 2>, 3> validDataTypes
         = {{// typeA, typeC, typeScalar
-            {HIP_R_16F, HIP_R_16F},
-            {HIP_R_16F, HIP_R_32F},
-            {HIP_R_32F, HIP_R_32F}}};
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F},
+            {HIPTENSOR_R_16F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_32F, HIPTENSOR_R_32F}}};
 
-    std::array<hipDataType, 2> inputTensorTypes = {descA->mType, typeScalar};
+    std::array<hiptensorDataType_t, 2> inputTensorTypes = {descA->mType, typeScalar};
     if(std::none_of(validDataTypes.cbegin(),
                     validDataTypes.cend(),
                     [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))

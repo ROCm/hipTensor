@@ -79,12 +79,12 @@ namespace hiptensor
         virtual ~ContractionTest() = default;
 
     protected: // Functions
-        ContractionTest(ContractionTest&&)            = delete;
-        ContractionTest(ContractionTest const&)       = delete;
-        ContractionTest& operator=(ContractionTest&)  = delete;
+        ContractionTest(ContractionTest&&)      = delete;
+        ContractionTest(ContractionTest const&) = delete;
+        ContractionTest& operator=(ContractionTest&) = delete;
         ContractionTest& operator=(ContractionTest&&) = delete;
 
-        bool checkDevice(hipDataType datatype) const;
+        bool checkDevice(hiptensorDataType_t datatype) const;
         bool checkSizes() const;
         void reset();
 
@@ -100,7 +100,7 @@ namespace hiptensor
         void RunKernel();
 
         void reportResults(std::ostream&          stream,
-                           hipDataType            DDataType,
+                           hiptensorDataType_t    DDataType,
                            hiptensorComputeType_t computeType,
                            bool                   omitHeader,
                            bool                   omitSkipped,

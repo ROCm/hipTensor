@@ -35,9 +35,9 @@ namespace hiptensor
 
     // @cond
     ReductionSolutionRegistry::Query
-        ReductionSolutionRegistry::Query::query(hipDataType            typeIn,
+        ReductionSolutionRegistry::Query::query(hiptensorDataType_t    typeIn,
                                                 hiptensorComputeType_t typeAcc,
-                                                hipDataType            typeOut,
+                                                hiptensorDataType_t    typeOut,
                                                 int                    rank,
                                                 int                    numReduceDim,
                                                 hiptensorOperator_t    opReduce,
@@ -77,9 +77,9 @@ namespace hiptensor
 
     /* static */
     ReductionSolutionRegistry::Query::HashId
-        ReductionSolutionRegistry::Query::hashSolution(hipDataType            typeIn,
+        ReductionSolutionRegistry::Query::hashSolution(hiptensorDataType_t    typeIn,
                                                        hiptensorComputeType_t typeAcc,
-                                                       hipDataType            typeOut,
+                                                       hiptensorDataType_t    typeOut,
                                                        int                    rank,
                                                        int                    numReduceDim,
                                                        hiptensorOperator_t    opReduce,

@@ -40,7 +40,7 @@ namespace hiptensor
 
     struct PermutationTestParams
     {
-        using DataTypesT = std::vector<hipDataType>;
+        using DataTypesT = std::vector<hiptensorDataType_t>;
 
         using LogLevelT     = hiptensorLogLevel_t;
         using LengthsT      = std::vector<std::size_t>;

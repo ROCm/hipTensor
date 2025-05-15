@@ -90,12 +90,14 @@ namespace
 
         const hiptensor::Hash            hashGenerator;
         const std::unordered_set<size_t> supportedTypes = {
-            hashGenerator(HIP_R_16F, HIP_R_16F, HIP_R_16F, HIPTENSOR_COMPUTE_16F),
-            hashGenerator(HIP_R_16F, HIP_R_16F, HIP_R_16F, HIPTENSOR_COMPUTE_32F),
-            hashGenerator(HIP_R_16BF, HIP_R_16BF, HIP_R_16BF, HIPTENSOR_COMPUTE_16BF),
-            hashGenerator(HIP_R_16BF, HIP_R_16BF, HIP_R_16BF, HIPTENSOR_COMPUTE_32F),
-            hashGenerator(HIP_R_32F, HIP_R_32F, HIP_R_32F, HIPTENSOR_COMPUTE_32F),
-            hashGenerator(HIP_R_64F, HIP_R_64F, HIP_R_64F, HIPTENSOR_COMPUTE_64F),
+            hashGenerator(HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_COMPUTE_16F),
+            hashGenerator(HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_COMPUTE_32F),
+            hashGenerator(
+                HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_COMPUTE_16BF),
+            hashGenerator(
+                HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_COMPUTE_32F),
+            hashGenerator(HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_COMPUTE_32F),
+            hashGenerator(HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_COMPUTE_64F),
         };
 
         if(supportedTypes.find(hashGenerator(descA->mType, descC->mType, descD->mType, typeCompute))

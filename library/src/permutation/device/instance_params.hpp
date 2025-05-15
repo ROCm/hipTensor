@@ -56,7 +56,7 @@ namespace ck::tensor_operation::device::instance
     {
         using HiptensorDataTypeTuple
             = hiptensor::tuple_ck_type_tuple_to_hiptensor_type_tuple_t<DataTypeTuple>;
-        std::vector<hipDataType> hipDataTypeVector;
+        std::vector<hiptensorDataType_t> hipDataTypeVector;
         ck::static_for<0, HiptensorDataTypeTuple::Size(), 1>{}([&hipDataTypeVector](auto i) {
             hipDataTypeVector.push_back(
                 hiptensor::HipDataType_v<typename ck::tuple_element_t<i, HiptensorDataTypeTuple>>);
@@ -138,11 +138,11 @@ namespace ck::tensor_operation::device::instance
             params.mInstanceHyperParams = {};
             return params;
         }
-        static auto Gen(std::vector<hipDataType> const&       inDataTypes,
-                        std::vector<hipDataType> const&       outDataTypes,
-                        hiptensor::PermutationOpId_t          scale,
-                        index_t                               numDim,
-                        hiptensor::InstanceHyperParams const& instanceHyperParams)
+        static auto Gen(std::vector<hiptensorDataType_t> const& inDataTypes,
+                        std::vector<hiptensorDataType_t> const& outDataTypes,
+                        hiptensor::PermutationOpId_t            scale,
+                        index_t                                 numDim,
+                        hiptensor::InstanceHyperParams const&   instanceHyperParams)
         {
             DeviceElementwiseParams params;
             params.mInDataTypes         = inDataTypes;
@@ -156,10 +156,10 @@ namespace ck::tensor_operation::device::instance
     private:
         DeviceElementwiseParams() = default;
 
-        std::vector<hipDataType>     mInDataTypes;
-        std::vector<hipDataType>     mOutDataTypes;
-        hiptensor::PermutationOpId_t mScale;
-        index_t                      mNumDim;
+        std::vector<hiptensorDataType_t> mInDataTypes;
+        std::vector<hiptensorDataType_t> mOutDataTypes;
+        hiptensor::PermutationOpId_t     mScale;
+        index_t                          mNumDim;
 
         hiptensor::InstanceHyperParams mInstanceHyperParams;
     };
@@ -174,11 +174,11 @@ namespace ck::tensor_operation::device::instance
 
     // The caller should test the returned hash code in order since earlier instances have better perf.
     std::vector<hiptensor::Uid>
-        getHashCodeOfBestPerfInstances(std::vector<hipDataType> const&       typeIn,
-                                       std::vector<hipDataType> const&       typeOut,
-                                       hiptensor::PermutationOpId_t          scale,
-                                       index_t                               numDim,
-                                       hiptensor::InstanceHyperParams const& hyperParams);
+        getHashCodeOfBestPerfInstances(std::vector<hiptensorDataType_t> const& typeIn,
+                                       std::vector<hiptensorDataType_t> const& typeOut,
+                                       hiptensor::PermutationOpId_t            scale,
+                                       index_t                                 numDim,
+                                       hiptensor::InstanceHyperParams const&   hyperParams);
 
 }
 

@@ -47,17 +47,17 @@ hiptensorStatus_t hiptensorContractionReference(const hiptensorContractionPlan_t
                                                 std::vector<size_t> const&        d_ms_ns_lengths,
                                                 std::vector<size_t> const&        d_ms_ns_strides,
                                                 std::vector<int32_t> const&       d_ms_ns_modes,
-                                                hipDataType                       typeA,
-                                                hipDataType                       typeB,
-                                                hipDataType                       typeC,
-                                                hipDataType                       typeD,
+                                                hiptensorDataType_t               typeA,
+                                                hiptensorDataType_t               typeB,
+                                                hiptensorDataType_t               typeC,
+                                                hiptensorDataType_t               typeD,
                                                 void*                             workspace)
 {
     auto& instances   = hiptensor::ContractionCpuReferenceInstances::instance();
     auto  computeType = plan->mContractionDesc.mComputeType;
     auto  candidates
         = (C == nullptr) ? instances->allSolutions().query(
-                               typeA, typeB, hiptensor::NONE_TYPE, typeD, computeType)
+              typeA, typeB, hiptensor::NONE_TYPE, typeD, computeType)
                          : instances->allSolutions().query(typeA, typeB, typeC, typeD, computeType);
 
     auto toCKVec

@@ -51,10 +51,10 @@ hiptensorStatus_t hiptensorContractionReference(const hiptensorContractionPlan_t
                                                 std::vector<size_t> const&        d_ms_ns_lengths,
                                                 std::vector<size_t> const&        d_ms_ns_strides,
                                                 std::vector<int32_t> const&       d_ms_ns_modes,
-                                                hipDataType                       typeA,
-                                                hipDataType                       typeB,
-                                                hipDataType                       typeC,
-                                                hipDataType                       typeD,
+                                                hiptensorDataType_t               typeA,
+                                                hiptensorDataType_t               typeB,
+                                                hiptensorDataType_t               typeC,
+                                                hiptensorDataType_t               typeD,
                                                 void*                             workspace);
 
 #endif // HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP

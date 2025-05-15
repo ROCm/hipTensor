@@ -37,9 +37,9 @@
 template <typename ADataType,
           typename BDataType,
           typename CDataType,
-          hipDataType            typeA,
-          hipDataType            typeB,
-          hipDataType            typeC,
+          hiptensorDataType_t    typeA,
+          hiptensorDataType_t    typeB,
+          hiptensorDataType_t    typeC,
           hiptensorComputeType_t typeCompute>
 int bilinearContractionSample(void* alpha, void* beta)
 {

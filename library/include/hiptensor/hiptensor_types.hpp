@@ -37,6 +37,45 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
+//! @breif hipTensor data types
+typedef enum hiptensorDataType_t
+{
+    HIPTENSOR_R_32F      = 0,
+    HIPTENSOR_R_64F      = 1,
+    HIPTENSOR_R_16F      = 2,
+    HIPTENSOR_R_8I       = 3,
+    HIPTENSOR_C_32F      = 4,
+    HIPTENSOR_C_64F      = 5,
+    HIPTENSOR_C_16F      = 6,
+    HIPTENSOR_C_8I       = 7,
+    HIPTENSOR_R_8U       = 8,
+    HIPTENSOR_C_8U       = 9,
+    HIPTENSOR_R_32I      = 10,
+    HIPTENSOR_C_32I      = 11,
+    HIPTENSOR_R_32U      = 12,
+    HIPTENSOR_C_32U      = 13,
+    HIPTENSOR_R_16BF     = 14,
+    HIPTENSOR_C_16BF     = 15,
+    HIPTENSOR_R_4I       = 16,
+    HIPTENSOR_C_4I       = 17,
+    HIPTENSOR_R_4U       = 18,
+    HIPTENSOR_C_4U       = 19,
+    HIPTENSOR_R_16I      = 20,
+    HIPTENSOR_C_16I      = 21,
+    HIPTENSOR_R_16U      = 22,
+    HIPTENSOR_C_16U      = 23,
+    HIPTENSOR_R_64I      = 24,
+    HIPTENSOR_C_64I      = 25,
+    HIPTENSOR_R_64U      = 26,
+    HIPTENSOR_C_64U      = 27,
+    HIPTENSOR_R_8F_E4M3  = 28,
+    HIPTENSOR_R_8F_E5M2  = 29,
+    HIPTENSOR_R_8F_UE8M0 = 30,
+    HIPTENSOR_R_6F_E2M3  = 31,
+    HIPTENSOR_R_6F_E3M2  = 32,
+    HIPTENSOR_R_4F_E2M1  = 33,
+} hiptensorDataType_t;
+
 //! @brief hipTensor status type enumeration
 //! @details The type is used to indicate the resulting status of hipTensor library function calls
 typedef enum
@@ -192,7 +231,7 @@ struct hiptensorHandle_t
 struct hiptensorTensorDescriptor_t
 {
     //! Data type of the tensors enum selection
-    hipDataType mType;
+    hiptensorDataType_t mType;
     //! Lengths of the tensor
     std::vector<std::size_t> mLengths;
     //! Strides of the tensor

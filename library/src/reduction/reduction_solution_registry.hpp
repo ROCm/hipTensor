@@ -50,18 +50,18 @@ namespace hiptensor
             using Uid    = std::size_t;
             using HashId = std::size_t;
 
-            Query()                              = default;
-            ~Query()                             = default;
-            Query(Query const& other)            = default;
+            Query()                   = default;
+            ~Query()                  = default;
+            Query(Query const& other) = default;
             Query& operator=(Query const& other) = default;
 
             /// Subsequent queries that may be performed on the current query object.
             /// E.g. in this context, query further parameters.
 
             // By solution type
-            Query query(hipDataType            typeIn,
+            Query query(hiptensorDataType_t    typeIn,
                         hiptensorComputeType_t typeAcc,
-                        hipDataType            typeOut,
+                        hiptensorDataType_t    typeOut,
                         int                    rank,
                         int                    numReduceDim,
                         hiptensorOperator_t    opReduce,
@@ -78,9 +78,9 @@ namespace hiptensor
 
         private:
             // Hashing helpers
-            static HashId hashSolution(hipDataType            typeIn,
+            static HashId hashSolution(hiptensorDataType_t    typeIn,
                                        hiptensorComputeType_t typeAcc,
-                                       hipDataType            typeOut,
+                                       hiptensorDataType_t    typeOut,
                                        int                    rank,
                                        int                    numReduceDim,
                                        hiptensorOperator_t    opReduce,
@@ -103,10 +103,10 @@ namespace hiptensor
 
     protected:
         // Move only
-        ReductionSolutionRegistry()                                            = default;
-        ReductionSolutionRegistry(ReductionSolutionRegistry&&)                 = delete;
-        ReductionSolutionRegistry& operator=(ReductionSolutionRegistry&&)      = delete;
-        ReductionSolutionRegistry(ReductionSolutionRegistry const&)            = delete;
+        ReductionSolutionRegistry()                            = default;
+        ReductionSolutionRegistry(ReductionSolutionRegistry&&) = delete;
+        ReductionSolutionRegistry& operator=(ReductionSolutionRegistry&&) = delete;
+        ReductionSolutionRegistry(ReductionSolutionRegistry const&)       = delete;
         ReductionSolutionRegistry& operator=(ReductionSolutionRegistry const&) = delete;
 
         // Import reduction solutions for the registry to manage

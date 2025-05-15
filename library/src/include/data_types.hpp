@@ -78,7 +78,7 @@ namespace hiptensor
         }
     };
 
-    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
+    static constexpr hiptensorDataType_t NONE_TYPE = (hiptensorDataType_t)31;
 
     // Map type to runtime HipDataType
     template <typename T>
@@ -88,15 +88,15 @@ namespace hiptensor
     static constexpr auto HipDataType_v = HipDataType<T>::value;
 
     // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hipDataType id);
+    uint32_t hipDataTypeSize(hiptensorDataType_t id);
 
-    // Convert hipDataType to hiptensorComputeType_t
-    hiptensorComputeType_t     convertToComputeType(hipDataType hipType);
-    std::optional<hipDataType> convertToHipDataType(hiptensorComputeType_t computeType);
+    // Convert hiptensorDataType_t to hiptensorComputeType_t
+    hiptensorComputeType_t             convertToComputeType(hiptensorDataType_t hipType);
+    std::optional<hiptensorDataType_t> convertToHipDataType(hiptensorComputeType_t computeType);
 
     // Read a single value from void pointer, casted to T
     template <typename T>
-    T readVal(void const* value, hipDataType id);
+    T readVal(void const* value, hiptensorDataType_t id);
 
     template <typename T>
     T readVal(void const* value, hiptensorComputeType_t id);
@@ -104,15 +104,18 @@ namespace hiptensor
     void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value);
 
     std::string computeTypeToString(hiptensorComputeType_t computeType);
-    std::string hipTypeToString(hipDataType hipType);
+    std::string hipTypeToString(hiptensorDataType_t hipType);
     std::string opTypeToString(hiptensorOperator_t opType);
     std::string algoTypeToString(hiptensorAlgo_t algoType);
     std::string logLevelToString(hiptensorLogLevel_t);
     std::string workSizePrefToString(hiptensorWorksizePreference_t workSize);
 } // namespace hiptensor
 
-bool operator==(hipDataType hipType, hiptensorComputeType_t computeType);
-bool operator==(hiptensorComputeType_t computeType, hipDataType hipType);
+bool operator==(hiptensorDataType_t hipType, hiptensorComputeType_t computeType);
+bool operator==(hiptensorComputeType_t computeType, hiptensorDataType_t hipType);
+
+bool operator!=(hiptensorDataType_t hipType, hiptensorComputeType_t computeType);
+bool operator!=(hiptensorComputeType_t computeType, hiptensorDataType_t hipType);
 
 namespace std
 {

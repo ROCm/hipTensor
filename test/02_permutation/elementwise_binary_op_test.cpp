@@ -55,10 +55,11 @@ namespace hiptensor
     // Kernel run checks. Virtual as different ElementwiseBinaryOp kernels have different requirements
     // True = run test
     // False = skip test
-    bool ElementwiseBinaryOpTest::checkDevice(hipDataType datatype) const
+    bool ElementwiseBinaryOpTest::checkDevice(hiptensorDataType_t datatype) const
     {
-        return (isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F)))
-               || (isF64Supported() && (datatype == HIP_R_64F));
+        return (isF32Supported()
+                && ((datatype == HIPTENSOR_R_32F) || (datatype == HIPTENSOR_R_16F)))
+               || (isF64Supported() && (datatype == HIPTENSOR_R_64F));
     }
 
     bool ElementwiseBinaryOpTest::checkSizes() const
@@ -202,12 +203,12 @@ namespace hiptensor
         }
     }
 
-    void ElementwiseBinaryOpTest::reportResults(std::ostream& stream,
-                                                hipDataType   dataType,
-                                                bool          omitHeader,
-                                                bool          omitSkipped,
-                                                bool          omitFailed,
-                                                bool          omitPassed) const
+    void ElementwiseBinaryOpTest::reportResults(std::ostream&       stream,
+                                                hiptensorDataType_t dataType,
+                                                bool                omitHeader,
+                                                bool                omitSkipped,
+                                                bool                omitFailed,
+                                                bool                omitPassed) const
     {
         if(!omitHeader)
         {
@@ -231,7 +232,7 @@ namespace hiptensor
                 size_t elementsD   = elementsA;
                 size_t elementsRef = elementsA;
 
-                if(dataType == HIP_R_64F)
+                if(dataType == HIPTENSOR_R_64F)
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<double>(
@@ -253,7 +254,7 @@ namespace hiptensor
                         stream, (double*)resource->hostReference().get(), elementsRef);
                     stream << std::endl;
                 }
-                else if(dataType == HIP_R_32F)
+                else if(dataType == HIPTENSOR_R_32F)
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<float>(
@@ -381,28 +382,28 @@ namespace hiptensor
                                                                 HIPTENSOR_OP_IDENTITY));
 
             float alphaValue{};
-            if(computeDataType == HIP_R_16F)
+            if(computeDataType == HIPTENSOR_R_16F)
             {
                 *(reinterpret_cast<_Float16*>(&alphaValue)) = static_cast<_Float16>(alpha);
             }
-            else if(computeDataType == HIP_R_32F)
+            else if(computeDataType == HIPTENSOR_R_32F)
             {
                 *(reinterpret_cast<float*>(&alphaValue)) = static_cast<float>(alpha);
             }
-            else if(computeDataType == HIP_R_64F)
+            else if(computeDataType == HIPTENSOR_R_64F)
             {
                 *(reinterpret_cast<double*>(&alphaValue)) = static_cast<double>(alpha);
             }
             float gammaValue{};
-            if(computeDataType == HIP_R_16F)
+            if(computeDataType == HIPTENSOR_R_16F)
             {
                 *(reinterpret_cast<_Float16*>(&gammaValue)) = static_cast<_Float16>(gamma);
             }
-            else if(computeDataType == HIP_R_32F)
+            else if(computeDataType == HIPTENSOR_R_32F)
             {
                 *(reinterpret_cast<float*>(&gammaValue)) = static_cast<float>(gamma);
             }
-            else if(computeDataType == HIP_R_64F)
+            else if(computeDataType == HIPTENSOR_R_64F)
             {
                 *(reinterpret_cast<double*>(&gammaValue)) = static_cast<double>(gamma);
             }
@@ -468,7 +469,7 @@ namespace hiptensor
             {
                 resource->copyOutputToHost();
 
-                if(dataType == HIP_R_64F)
+                if(dataType == HIPTENSOR_R_64F)
                 {
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
                         &alphaValue,
@@ -494,7 +495,7 @@ namespace hiptensor
                             resource->getCurrentMatrixElement(),
                             convertToComputeType(computeDataType));
                 }
-                else if(dataType == HIP_R_32F)
+                else if(dataType == HIPTENSOR_R_32F)
                 {
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
                         &alphaValue,
@@ -519,7 +520,7 @@ namespace hiptensor
                                                           resource->getCurrentMatrixElement(),
                                                           convertToComputeType(computeDataType));
                 }
-                else if(dataType == HIP_R_16F)
+                else if(dataType == HIPTENSOR_R_16F)
                 {
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
                         &alphaValue,

@@ -55,9 +55,9 @@ namespace hiptensor
     // Kernel run checks. Virtual as different Permutation kernels have different requirements
     // True = run test
     // False = skip test
-    bool PermutationTest::checkDevice(hipDataType datatype) const
+    bool PermutationTest::checkDevice(hiptensorDataType_t datatype) const
     {
-        return isF32Supported() && ((datatype == HIP_R_32F) || (datatype == HIP_R_16F));
+        return isF32Supported() && ((datatype == HIPTENSOR_R_32F) || (datatype == HIPTENSOR_R_16F));
     }
 
     bool PermutationTest::checkSizes() const
@@ -173,9 +173,9 @@ namespace hiptensor
         auto op = operators[0];
         EXPECT_TRUE((op == HIPTENSOR_OP_IDENTITY) || (op == HIPTENSOR_OP_NEG));
 
-        EXPECT_EQ(dataTypes.size(), 2); // HIP_R_16F or HIP_R_32F
+        EXPECT_EQ(dataTypes.size(), 2); // HIPTENSOR_R_16F or HIPTENSOR_R_32F
         auto abDataType = dataTypes[0];
-        EXPECT_TRUE((abDataType == HIP_R_16F) || (abDataType == HIP_R_32F));
+        EXPECT_TRUE((abDataType == HIPTENSOR_R_16F) || (abDataType == HIPTENSOR_R_32F));
 
         mRunFlag &= checkDevice(abDataType);
 
@@ -193,12 +193,12 @@ namespace hiptensor
         }
     }
 
-    void PermutationTest::reportResults(std::ostream& stream,
-                                        hipDataType   dataType,
-                                        bool          omitHeader,
-                                        bool          omitSkipped,
-                                        bool          omitFailed,
-                                        bool          omitPassed) const
+    void PermutationTest::reportResults(std::ostream&       stream,
+                                        hiptensorDataType_t dataType,
+                                        bool                omitHeader,
+                                        bool                omitSkipped,
+                                        bool                omitFailed,
+                                        bool                omitPassed) const
     {
         if(!omitHeader)
         {
@@ -221,7 +221,7 @@ namespace hiptensor
                 size_t elementsB   = elementsA;
                 size_t elementsRef = elementsA;
 
-                if(dataType == HIP_R_32F)
+                if(dataType == HIPTENSOR_R_32F)
                 {
                     stream << "Tensor A elements (" << elementsA << "):\n";
                     hiptensorPrintArrayElements<float>(
@@ -330,7 +330,7 @@ namespace hiptensor
                                                                 HIPTENSOR_OP_IDENTITY));
 
             float alphaValue{};
-            if(computeDataType == HIP_R_16F)
+            if(computeDataType == HIPTENSOR_R_16F)
             {
                 *(reinterpret_cast<_Float16*>(&alphaValue)) = static_cast<_Float16>(alpha);
             }
@@ -390,7 +390,7 @@ namespace hiptensor
             {
                 resource->copyOutputToHost();
 
-                if(abDataType == HIP_R_32F)
+                if(abDataType == HIPTENSOR_R_32F)
                 {
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(&alphaValue,
@@ -410,7 +410,7 @@ namespace hiptensor
                                                           resource->getCurrentMatrixElement(),
                                                           convertToComputeType(computeDataType));
                 }
-                else if(abDataType == HIP_R_16F)
+                else if(abDataType == HIPTENSOR_R_16F)
                 {
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(&alphaValue,
