@@ -80,19 +80,20 @@ namespace hiptensor
 
     static constexpr hiptensorDataType_t NONE_TYPE = (hiptensorDataType_t)31;
 
-    // Map type to runtime HipDataType
+    // Map type to runtime HipTensorDataType
     template <typename T>
-    struct HipDataType;
+    struct HipTensorDataType;
 
     template <typename T>
-    static constexpr auto HipDataType_v = HipDataType<T>::value;
+    static constexpr auto HipTensorDataType_v = HipTensorDataType<T>::value;
 
     // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hiptensorDataType_t id);
+    uint32_t hiptensorDataTypeSize(hiptensorDataType_t id);
 
     // Convert hiptensorDataType_t to hiptensorComputeType_t
-    hiptensorComputeType_t             convertToComputeType(hiptensorDataType_t hipType);
-    std::optional<hiptensorDataType_t> convertToHipDataType(hiptensorComputeType_t computeType);
+    hiptensorComputeType_t convertToComputeType(hiptensorDataType_t hipType);
+    std::optional<hiptensorDataType_t>
+        convertToHipTensorDataType(hiptensorComputeType_t computeType);
 
     // Read a single value from void pointer, casted to T
     template <typename T>

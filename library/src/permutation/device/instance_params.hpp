@@ -56,12 +56,13 @@ namespace ck::tensor_operation::device::instance
     {
         using HiptensorDataTypeTuple
             = hiptensor::tuple_ck_type_tuple_to_hiptensor_type_tuple_t<DataTypeTuple>;
-        std::vector<hiptensorDataType_t> hipDataTypeVector;
-        ck::static_for<0, HiptensorDataTypeTuple::Size(), 1>{}([&hipDataTypeVector](auto i) {
-            hipDataTypeVector.push_back(
-                hiptensor::HipDataType_v<typename ck::tuple_element_t<i, HiptensorDataTypeTuple>>);
+        std::vector<hiptensorDataType_t> hiptensorDataTypeVector;
+        ck::static_for<0, HiptensorDataTypeTuple::Size(), 1>{}([&hiptensorDataTypeVector](auto i) {
+            hiptensorDataTypeVector.push_back(
+                hiptensor::HipTensorDataType_v<
+                    typename ck::tuple_element_t<i, HiptensorDataTypeTuple>>);
         });
-        return hipDataTypeVector;
+        return hiptensorDataTypeVector;
     }
 
     class DeviceElementwiseParams

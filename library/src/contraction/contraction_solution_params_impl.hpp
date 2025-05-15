@@ -85,27 +85,27 @@ namespace hiptensor
 
         hiptensorDataType_t typeA() const override
         {
-            return HipDataType_v<typename MetaTraitsT::ADataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::ADataT>;
         }
 
         hiptensorDataType_t typeB() const override
         {
-            return HipDataType_v<typename MetaTraitsT::BDataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::BDataT>;
         }
 
         hiptensorDataType_t typeC() const override
         {
-            return HipDataType_v<typename MetaTraitsT::DDataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::DDataT>;
         }
 
         hiptensorDataType_t typeD() const override
         {
-            return HipDataType_v<typename MetaTraitsT::EDataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::EDataT>;
         }
 
         hiptensorComputeType_t typeCompute() const override
         {
-            return convertToComputeType(HipDataType_v<typename MetaTraitsT::ComputeDataT>);
+            return convertToComputeType(HipTensorDataType_v<typename MetaTraitsT::ComputeDataT>);
         }
 
         hiptensorOperator_t opA() const override

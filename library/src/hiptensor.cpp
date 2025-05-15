@@ -307,7 +307,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
     }
 
     *alignmentRequirement = 0u;
-    for(auto i = hiptensor::hipDataTypeSize(desc->mType); i <= 16u; i *= 2)
+    for(auto i = hiptensor::hiptensorDataTypeSize(desc->mType); i <= 16u; i *= 2)
     {
         if((std::size_t)ptr % (std::size_t)i == 0)
         {

@@ -156,8 +156,8 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                 }
 
                 auto flops = std::size_t(2) * pSolution->problemSize();
-                auto bytes = (hiptensor::hipDataTypeSize(descA->mType)
-                              + hiptensor::hipDataTypeSize(descB->mType))
+                auto bytes = (hiptensor::hiptensorDataTypeSize(descA->mType)
+                              + hiptensor::hiptensorDataTypeSize(descB->mType))
                              * pSolution->problemSize();
 
                 hiptensor::PerfMetrics metrics = {

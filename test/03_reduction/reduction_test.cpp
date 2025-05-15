@@ -483,16 +483,16 @@ namespace hiptensor
 
             size_t sizeA = std::accumulate(extentA.begin(),
                                            extentA.end(),
-                                           hipDataTypeSize(acDataType),
+                                           hiptensorDataTypeSize(acDataType),
                                            std::multiplies<size_t>());
 
             size_t sizeCD = std::accumulate(extentC.begin(),
                                             extentC.end(),
-                                            hipDataTypeSize(acDataType),
+                                            hiptensorDataTypeSize(acDataType),
                                             std::multiplies<size_t>());
 
             mElapsedTimeMs        = float64_t(timeMs);
-            mTotalGFlops          = sizeA / hipDataTypeSize(acDataType) * 1e-9;
+            mTotalGFlops          = sizeA / hiptensorDataTypeSize(acDataType) * 1e-9;
             mMeasuredTFlopsPerSec = mTotalGFlops / mElapsedTimeMs;
 
             mTotalGBytes = sizeA + sizeCD;

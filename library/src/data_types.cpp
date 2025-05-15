@@ -29,7 +29,7 @@
 namespace hiptensor
 {
     // Get data size in bytes from id
-    uint32_t hipDataTypeSize(hiptensorDataType_t id)
+    uint32_t hiptensorDataTypeSize(hiptensorDataType_t id)
     {
         switch(id)
         {
@@ -102,24 +102,25 @@ namespace hiptensor
         }
     }
 
-    std::optional<hipDataType> convertToHipDataType(hiptensorComputeType_t computeType)
+    std::optional<hiptensorDataType_t>
+        convertToHipTensorDataType(hiptensorComputeType_t computeType)
     {
         switch(computeType)
         {
         case HIPTENSOR_COMPUTE_16BF:
-            return HIP_R_16BF;
+            return HIPTENSOR_R_16BF;
         case HIPTENSOR_COMPUTE_16F:
-            return HIP_R_16F;
+            return HIPTENSOR_R_16F;
         case HIPTENSOR_COMPUTE_32F:
-            return HIP_R_32F;
+            return HIPTENSOR_R_32F;
         case HIPTENSOR_COMPUTE_64F:
-            return HIP_R_64F;
+            return HIPTENSOR_R_64F;
         case HIPTENSOR_COMPUTE_C32F:
-            return HIP_C_32F;
+            return HIPTENSOR_C_32F;
         case HIPTENSOR_COMPUTE_C64F:
-            return HIP_C_64F;
+            return HIPTENSOR_C_64F;
         default:
-            return {}; // There is no invalid hipDataType value
+            return {}; // There is no invalid hiptensorDataType_t value
         }
     }
 

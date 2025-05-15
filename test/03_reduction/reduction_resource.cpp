@@ -72,7 +72,7 @@ namespace hiptensor
     {
         // check buffer for A
         auto requiredInputElementCount = getProduct(dimSizes);
-        auto requiredInputMemorySize   = requiredInputElementCount * hipDataTypeSize(dataType);
+        auto requiredInputMemorySize = requiredInputElementCount * hiptensorDataTypeSize(dataType);
 
         bool needFillDataA = false;
         if(requiredInputMemorySize > mCurrentInputAllocByte)
@@ -91,7 +91,8 @@ namespace hiptensor
         bool needFillDataC = false;
         auto requiredOutputElementCount
             = getProduct(outputSizes); // returns 1 for empty container which is correct
-        auto requiredOutputMemorySize = requiredOutputElementCount * hipDataTypeSize(dataType);
+        auto requiredOutputMemorySize
+            = requiredOutputElementCount * hiptensorDataTypeSize(dataType);
         if(requiredOutputMemorySize > mCurrentOutputAllocByte)
         {
             Base::reallocDeviceHostPair(mDeviceC, mHostC, requiredOutputMemorySize);
@@ -163,7 +164,7 @@ namespace hiptensor
         {
             fillLaunchKernel<float64_t>((float64_t*)deviceBuf.get(), elementCount, seed);
         }
-        Base::copyData(hostBuf, deviceBuf, elementCount * hipDataTypeSize(dataType));
+        Base::copyData(hostBuf, deviceBuf, elementCount * hiptensorDataTypeSize(dataType));
     }
 
     void ReductionResource::fillConstant(HostPtrT&           hostBuf,
@@ -192,7 +193,7 @@ namespace hiptensor
             fillValLaunchKernel<float64_t>(
                 (float64_t*)deviceBuf.get(), elementCount, (float64_t)value);
         }
-        Base::copyData(hostBuf, deviceBuf, elementCount * hipDataTypeSize(dataType));
+        Base::copyData(hostBuf, deviceBuf, elementCount * hiptensorDataTypeSize(dataType));
     }
 
     void ReductionResource::copyOutputToHost()
@@ -212,7 +213,7 @@ namespace hiptensor
 
     size_t ReductionResource::getCurrentInputMemorySize() const
     {
-        return mCurrentInputElementCount * hipDataTypeSize(mCurrentDataType);
+        return mCurrentInputElementCount * hiptensorDataTypeSize(mCurrentDataType);
     }
 
     size_t ReductionResource::getCurrentOutputElementCount() const
@@ -222,7 +223,7 @@ namespace hiptensor
 
     size_t ReductionResource::getCurrentOutputMemorySize() const
     {
-        return mCurrentOutputElementCount * hipDataTypeSize(mCurrentDataType);
+        return mCurrentOutputElementCount * hiptensorDataTypeSize(mCurrentDataType);
     }
 
     auto ReductionResource::hostA() -> HostPtrT&

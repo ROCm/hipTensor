@@ -226,7 +226,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
                                           descD,
                                           modeD,
                                           HIPTENSOR_OP_ADD,
-                                          *hiptensor::convertToHipDataType(typeCompute),
+                                          *hiptensor::convertToHipTensorDataType(typeCompute),
                                           stream);
     }
 
@@ -293,7 +293,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
         CHECK_HIP_ERROR(hipMemcpy(D,
                                   C,
                                   hiptensor::elementsFromLengths(descC->mLengths)
-                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                      * hiptensor::hiptensorDataTypeSize(descC->mType),
                                   hipMemcpyDeviceToDevice));
     }
 

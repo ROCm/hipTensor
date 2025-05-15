@@ -39,13 +39,13 @@ TEST(hiptensorInitTensorDescriptorTest, UtilTest)
 {
     // fail for handle == nullptr
     auto output = hiptensorInitTensorDescriptor(
-        nullptr, nullptr, 0, nullptr, nullptr, HIP_R_32F, HIPTENSOR_OP_IDENTITY);
+        nullptr, nullptr, 0, nullptr, nullptr, HIPTENSOR_R_32F, HIPTENSOR_OP_IDENTITY);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED);
 
     // fail for desc == nullptr
     hiptensorHandle_t handle;
     output = hiptensorInitTensorDescriptor(
-        &handle, nullptr, 0, nullptr, nullptr, HIP_R_32F, HIPTENSOR_OP_IDENTITY);
+        &handle, nullptr, 0, nullptr, nullptr, HIPTENSOR_R_32F, HIPTENSOR_OP_IDENTITY);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED);
 
     hiptensorTensorDescriptor_t desc;
@@ -54,18 +54,18 @@ TEST(hiptensorInitTensorDescriptorTest, UtilTest)
 
     // fail for (lens == nullptr && strides != nullptr)
     output = hiptensorInitTensorDescriptor(
-        &handle, &desc, 1, nullptr, strides, HIP_R_32F, HIPTENSOR_OP_IDENTITY);
+        &handle, &desc, 1, nullptr, strides, HIPTENSOR_R_32F, HIPTENSOR_OP_IDENTITY);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 
     // fail for (unaryOp == HIPTENSOR_OP_ADD)
     output = hiptensorInitTensorDescriptor(
-        &handle, &desc, 1, lens, strides, HIP_R_32F, HIPTENSOR_OP_ADD);
+        &handle, &desc, 1, lens, strides, HIPTENSOR_R_32F, HIPTENSOR_OP_ADD);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 
-    // fail for ((dataType != HIP_R_16F) && (dataType != HIP_R_16BF) && (dataType != HIP_R_32F)
-    // && (dataType != HIP_R_64F) && (dataType != HIP_C_32F) && (dataType != HIP_C_64F))
+    // fail for ((dataType != HIPTENSOR_R_16F) && (dataType != HIPTENSOR_R_16BF) && (dataType != HIPTENSOR_R_32F)
+    // && (dataType != HIPTENSOR_R_64F) && (dataType != HIPTENSOR_C_32F) && (dataType != HIPTENSOR_C_64F))
     output = hiptensorInitTensorDescriptor(
-        &handle, &desc, 1, lens, strides, HIP_R_8U, HIPTENSOR_OP_IDENTITY);
+        &handle, &desc, 1, lens, strides, HIPTENSOR_R_8U, HIPTENSOR_OP_IDENTITY);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 }
 
@@ -111,7 +111,7 @@ TEST(hiptensorGetAlignmentRequirementTest, UtilTest)
 
     // fail for (*alignmentRequirement == 0)
     hiptensorTensorDescriptor_t desc;
-    desc.mType = HIP_R_32F;
+    desc.mType = HIPTENSOR_R_32F;
     void* ptr  = reinterpret_cast<void*>(5);
     output     = hiptensorGetAlignmentRequirement(&handle, ptr, &desc, &alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
@@ -155,9 +155,9 @@ TEST(hiptensorReductionTest, UtilTest)
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for A is null
 
     A           = &buf;
-    descA.mType = HIP_R_64F;
-    descC.mType = HIP_R_64F;
-    descD.mType = HIP_R_64F;
+    descA.mType = HIPTENSOR_R_64F;
+    descC.mType = HIPTENSOR_R_64F;
+    descD.mType = HIPTENSOR_R_64F;
     typeCompute = HIPTENSOR_COMPUTE_16F;
     output      = hiptensorReduction(&handle,
                                 &alpha,
@@ -178,13 +178,13 @@ TEST(hiptensorReductionTest, UtilTest)
                                 0);
     EXPECT_EQ(
         output,
-        HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for (HIP_R_64F, HIP_R_64F, HIP_R_64F, HIPTENSOR_COMPUTE_16F) is not supported
+        HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for (HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_COMPUTE_16F) is not supported
 
-    descA.mType    = HIP_R_16F;
+    descA.mType    = HIPTENSOR_R_16F;
     descA.mLengths = {1};
-    descC.mType    = HIP_R_16F;
+    descC.mType    = HIPTENSOR_R_16F;
     descC.mLengths = {1, 1};
-    descD.mType    = HIP_R_16F;
+    descD.mType    = HIPTENSOR_R_16F;
     typeCompute    = HIPTENSOR_COMPUTE_16F;
     output         = hiptensorReduction(&handle,
                                 &alpha,

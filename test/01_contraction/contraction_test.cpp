@@ -346,10 +346,11 @@ namespace hiptensor
                 DDataType,
                 operatorType));
 
-            std::tuple<int32_t, int32_t, int32_t, int32_t> elementBytes(hipDataTypeSize(ADataType),
-                                                                        hipDataTypeSize(BDataType),
-                                                                        hipDataTypeSize(CDataType),
-                                                                        hipDataTypeSize(DDataType));
+            std::tuple<int32_t, int32_t, int32_t, int32_t> elementBytes(
+                hiptensorDataTypeSize(ADataType),
+                hiptensorDataTypeSize(BDataType),
+                hiptensorDataTypeSize(CDataType),
+                hiptensorDataTypeSize(DDataType));
 
             auto resource = getResource();
             resource->resizeStorage(lengths, elementBytes);
@@ -538,7 +539,7 @@ namespace hiptensor
             {
                 auto resource = getResource();
 
-                int size = hipDataTypeSize(DDataType);
+                int size = hiptensorDataTypeSize(DDataType);
 
                 size_t elementsA  = std::accumulate(a_ms_ks.mLengths.begin(),
                                                    a_ms_ks.mLengths.end(),
@@ -748,7 +749,7 @@ namespace hiptensor
              * `alpha` and `beta` are void pointer. hiptensor uses readVal to load the value of alpha.
              * ```
              * alphaF = hiptensor::readVal<float>(
-             *      alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+             *      alpha, convertToComputeType(HipTensorDataType_v<typename Traits::ComputeDataT>));
              * ```
              * Hence, the `alpha` and `bete` need to point to a ComputeData value
              */
@@ -809,17 +810,17 @@ namespace hiptensor
 
             size_t sizeA = std::accumulate(a_ms_ks.mLengths.begin(),
                                            a_ms_ks.mLengths.end(),
-                                           hipDataTypeSize(ADataType),
+                                           hiptensorDataTypeSize(ADataType),
                                            std::multiplies<size_t>());
 
             size_t sizeB = std::accumulate(b_ns_ks.mLengths.begin(),
                                            b_ns_ks.mLengths.end(),
-                                           hipDataTypeSize(BDataType),
+                                           hiptensorDataTypeSize(BDataType),
                                            std::multiplies<size_t>());
 
             size_t sizeD = std::accumulate(d_ms_ns.mLengths.begin(),
                                            d_ms_ns.mLengths.end(),
-                                           hipDataTypeSize(DDataType),
+                                           hiptensorDataTypeSize(DDataType),
                                            std::multiplies<size_t>());
 
             mTotalGBytes = sizeA + sizeB + sizeD;
@@ -869,7 +870,7 @@ namespace hiptensor
                                                 size_t{1},
                                                 std::multiplies<size_t>());
 
-                size_t elementsCD = sizeD / hipDataTypeSize(ADataType);
+                size_t elementsCD = sizeD / hiptensorDataTypeSize(ADataType);
 
                 auto   eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
                                                                            : HIPTENSOR_COMPUTE_32F);

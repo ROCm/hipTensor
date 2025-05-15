@@ -87,15 +87,16 @@ namespace hiptensor
 
         hiptensorDataType_t typeIn() const override
         {
-            return HipDataType_v<typename MetaTraitsT::TensorInDataType>;
+            return HipTensorDataType_v<typename MetaTraitsT::TensorInDataType>;
         }
         hiptensorComputeType_t typeAcc() const override
         {
-            return convertToComputeType(HipDataType_v<typename MetaTraitsT::TensorAccDataType>);
+            return convertToComputeType(
+                HipTensorDataType_v<typename MetaTraitsT::TensorAccDataType>);
         }
         hiptensorDataType_t typeOut() const override
         {
-            return HipDataType_v<typename MetaTraitsT::TensorOutDataType>;
+            return HipTensorDataType_v<typename MetaTraitsT::TensorOutDataType>;
         }
 
         hiptensorOperator_t opReduce() const override

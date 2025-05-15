@@ -183,9 +183,9 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                 }
 
                 auto flops = std::size_t(5) * pSolution->problemSize();
-                auto bytes = (hiptensor::hipDataTypeSize(descA->mType)
-                              + hiptensor::hipDataTypeSize(descC->mType)
-                              + hiptensor::hipDataTypeSize(descD->mType))
+                auto bytes = (hiptensor::hiptensorDataTypeSize(descA->mType)
+                              + hiptensor::hiptensorDataTypeSize(descC->mType)
+                              + hiptensor::hiptensorDataTypeSize(descD->mType))
                              * pSolution->problemSize();
 
                 hiptensor::PerfMetrics metrics = {

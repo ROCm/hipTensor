@@ -64,14 +64,14 @@ namespace hiptensor
                                       const uint64_t                           workspaceSize)
     {
         // Make sure that we calculate full element space incase strides are not packed.
-        auto sizeA = elementsFromLengths(a_ms_ks_lengths) * hipDataTypeSize(typeA);
-        auto sizeB = elementsFromLengths(b_ns_ks_lengths) * hipDataTypeSize(typeB);
+        auto sizeA = elementsFromLengths(a_ms_ks_lengths) * hiptensorDataTypeSize(typeA);
+        auto sizeB = elementsFromLengths(b_ns_ks_lengths) * hiptensorDataTypeSize(typeB);
         auto sizeD = 0;
         if(typeD != NONE_TYPE)
         {
-            sizeD = elementsFromLengths(d_ms_ns_lengths) * hipDataTypeSize(typeD);
+            sizeD = elementsFromLengths(d_ms_ns_lengths) * hiptensorDataTypeSize(typeD);
         }
-        auto sizeE = elementsFromLengths(e_ms_ns_lengths) * hipDataTypeSize(typeE);
+        auto sizeE = elementsFromLengths(e_ms_ns_lengths) * hiptensorDataTypeSize(typeE);
 
         void *A_d, *B_d, *D_d, *E_d, *wspace;
 
@@ -79,7 +79,7 @@ namespace hiptensor
          * `alpha` and `beta` are void pointer. hiptensor uses readVal to load the value of alpha.
          * ```
          * alphaF = hiptensor::readVal<float>(
-         *      alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+         *      alpha, convertToComputeType(HipTensorDataType_v<typename Traits::ComputeDataT>));
          * ```
          * Hence, the `alpha` and `bete` need to point to a ComputeData value
          */

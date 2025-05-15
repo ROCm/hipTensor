@@ -61,20 +61,21 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         // Composable Kernels (CK) does not handle reductions where the input and
         // output tensors maintain the same rank. For those scenarios, employ
         // elementwise binary operations.
-        return hiptensorElementwiseBinaryOpReference(alpha,
-                                                     A,
-                                                     descA,
-                                                     modeA,
-                                                     beta,
-                                                     C,
-                                                     descC,
-                                                     modeC,
-                                                     D,
-                                                     descD,
-                                                     modeD,
-                                                     HIPTENSOR_OP_ADD,
-                                                     *hiptensor::convertToHipDataType(typeCompute),
-                                                     stream);
+        return hiptensorElementwiseBinaryOpReference(
+            alpha,
+            A,
+            descA,
+            modeA,
+            beta,
+            C,
+            descC,
+            modeC,
+            D,
+            descD,
+            modeD,
+            HIPTENSOR_OP_ADD,
+            *hiptensor::convertToHipTensorDataType(typeCompute),
+            stream);
     }
 
     auto& instances = hiptensor::ReductionCpuReferenceInstances::instance();
@@ -105,7 +106,7 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         CHECK_HIP_ERROR(hipMemcpy(D,
                                   C,
                                   hiptensor::elementsFromLengths(descC->mLengths)
-                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                      * hiptensor::hiptensorDataTypeSize(descC->mType),
                                   hipMemcpyHostToHost));
     }
 

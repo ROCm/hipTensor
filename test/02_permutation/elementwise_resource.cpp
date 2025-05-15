@@ -75,7 +75,7 @@ namespace hiptensor
     {
         mOpType                   = opType;
         auto requiredElementCount = getProduct(dimSizes);
-        auto requiredMemorySize   = requiredElementCount * hipDataTypeSize(dataType);
+        auto requiredMemorySize   = requiredElementCount * hiptensorDataTypeSize(dataType);
 
         bool needFillData = false;
         if(requiredMemorySize > mCurrentAllocByte)
@@ -188,7 +188,7 @@ namespace hiptensor
 
     size_t ElementwiseResource::getCurrentMatrixMemorySize() const
     {
-        return mCurrentMatrixElement * hipDataTypeSize(mCurrentDataType);
+        return mCurrentMatrixElement * hiptensorDataTypeSize(mCurrentDataType);
     }
 
     auto ElementwiseResource::hostInput1() -> HostPtrT&

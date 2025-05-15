@@ -31,94 +31,94 @@
 
 namespace hiptensor
 {
-    // Specialize overrides for runtime HipDataType
+    // Specialize overrides for runtime HipTensorDataType
     template <>
-    struct HipDataType<hip_bfloat16>
+    struct HipTensorDataType<hip_bfloat16>
     {
         static constexpr auto value = HIPTENSOR_R_16BF;
     };
 
     template <>
-    struct HipDataType<_Float16>
+    struct HipTensorDataType<_Float16>
     {
         static constexpr auto value = HIPTENSOR_R_16F;
     };
 
     template <>
 
-    struct HipDataType<float>
+    struct HipTensorDataType<float>
     {
         static constexpr auto value = HIPTENSOR_R_32F;
     };
 
     template <>
-    struct HipDataType<double>
+    struct HipTensorDataType<double>
     {
         static constexpr auto value = HIPTENSOR_R_64F;
     };
 
     template <>
-    struct HipDataType<int8_t>
+    struct HipTensorDataType<int8_t>
     {
         static constexpr auto value = HIPTENSOR_R_8I;
     };
 
     template <>
-    struct HipDataType<uint8_t>
+    struct HipTensorDataType<uint8_t>
     {
         static constexpr auto value = HIPTENSOR_R_8U;
     };
 
     template <>
-    struct HipDataType<int16_t>
+    struct HipTensorDataType<int16_t>
     {
         static constexpr auto value = HIPTENSOR_R_16I;
     };
 
     template <>
-    struct HipDataType<uint16_t>
+    struct HipTensorDataType<uint16_t>
     {
         static constexpr auto value = HIPTENSOR_R_16U;
     };
 
     template <>
-    struct HipDataType<int32_t>
+    struct HipTensorDataType<int32_t>
     {
         static constexpr auto value = HIPTENSOR_R_32I;
     };
 
     template <>
-    struct HipDataType<uint32_t>
+    struct HipTensorDataType<uint32_t>
     {
         static constexpr auto value = HIPTENSOR_R_32U;
     };
 
     template <>
-    struct HipDataType<int64_t>
+    struct HipTensorDataType<int64_t>
     {
         static constexpr auto value = HIPTENSOR_R_64I;
     };
 
     template <>
-    struct HipDataType<uint64_t>
+    struct HipTensorDataType<uint64_t>
     {
         static constexpr auto value = HIPTENSOR_R_64U;
     };
 
     template <>
-    struct HipDataType<hipFloatComplex>
+    struct HipTensorDataType<hipFloatComplex>
     {
         static constexpr auto value = HIPTENSOR_C_32F;
     };
 
     template <>
-    struct HipDataType<hipDoubleComplex>
+    struct HipTensorDataType<hipDoubleComplex>
     {
         static constexpr auto value = HIPTENSOR_C_64F;
     };
 
     template <>
-    struct HipDataType<NoneType>
+    struct HipTensorDataType<NoneType>
     {
         static constexpr auto value = NONE_TYPE;
     };
