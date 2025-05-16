@@ -52,7 +52,7 @@ namespace std
 namespace ck::tensor_operation::device::instance
 {
     template <typename DataTypeTuple>
-    inline auto convertTypeTupleToHipDataTypeVector()
+    inline auto convertTypeTupleToHipTensorDataTypeVector()
     {
         using HiptensorDataTypeTuple
             = hiptensor::tuple_ck_type_tuple_to_hiptensor_type_tuple_t<DataTypeTuple>;
@@ -99,8 +99,8 @@ namespace ck::tensor_operation::device::instance
         static auto Gen()
         {
             DeviceElementwiseParams params;
-            params.mInDataTypes  = convertTypeTupleToHipDataTypeVector<InDataTypeTuple>();
-            params.mOutDataTypes = convertTypeTupleToHipDataTypeVector<OutDataTypeTuple>();
+            params.mInDataTypes  = convertTypeTupleToHipTensorDataTypeVector<InDataTypeTuple>();
+            params.mOutDataTypes = convertTypeTupleToHipTensorDataTypeVector<OutDataTypeTuple>();
             params.mScale        = Scale;
             params.mNumDim       = NumDim;
             params.mInstanceHyperParams.mBlockSize   = BlockSize;
@@ -124,8 +124,8 @@ namespace ck::tensor_operation::device::instance
         static auto Gen()
         {
             DeviceElementwiseParams params;
-            params.mInDataTypes  = convertTypeTupleToHipDataTypeVector<InDataTypeTuple>();
-            params.mOutDataTypes = convertTypeTupleToHipDataTypeVector<OutDataTypeTuple>();
+            params.mInDataTypes  = convertTypeTupleToHipTensorDataTypeVector<InDataTypeTuple>();
+            params.mOutDataTypes = convertTypeTupleToHipTensorDataTypeVector<OutDataTypeTuple>();
             params.mScale        = Scale;
             params.mNumDim       = NumDim;
 

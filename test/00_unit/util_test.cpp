@@ -114,7 +114,7 @@ TEST(opTypeToStringTest, UtilTest)
     EXPECT_STREQ(hiptensor::opTypeToString(HIPTENSOR_OP_MIN).c_str(), "HIPTENSOR_OP_MIN");
 }
 
-TEST(convertToHipDataTypeTypeToStringTest, UtilTest)
+TEST(convertToHipTensorDataTypeTypeToStringTest, UtilTest)
 {
     EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_16BF), HIPTENSOR_R_16BF);
     EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_16F), HIPTENSOR_R_16F);
