@@ -4103,6 +4103,7 @@ namespace hiptensor
             {32, 128, 512, 2048, 8192, 32768, 131072, 524288},
             {32, 256, 2048, 16384, 131072},
         };
+        if(lengths.size()>=edgeList.size()) return {};
         auto&                    edges = edgeList[lengths.size()];
         std::vector<ck::index_t> point;
         point.reserve(lengths.size());
@@ -4122,18 +4123,6 @@ namespace hiptensor
     {
         if(typeIn.size() == 1)
         {
-            auto key = hipTypeToString(typeIn[0]);
-            for(auto&& index : findRepresentPointOfSubSpace(lengths))
-            {
-                key += '_';
-                key += std::to_string(index);
-            }
-            for(auto&& mode : outputMode)
-            {
-                key += '_';
-                key += std::to_string(mode);
-            }
-
             decltype(lookUpTableRank2)* lut = nullptr;
             switch(numDim)
             {
@@ -4153,6 +4142,18 @@ namespace hiptensor
             }
             if(lut)
             {
+                auto key = hipTypeToString(typeIn[0]);
+                for(auto&& index : findRepresentPointOfSubSpace(lengths))
+                {
+                    key += '_';
+                    key += std::to_string(index);
+                }
+                for(auto&& mode : outputMode)
+                {
+                    key += '_';
+                    key += std::to_string(mode);
+                }
+
                 if(auto it = lut->find(key); it != lut->cend())
                 {
                     return it->second;
