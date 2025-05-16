@@ -99,13 +99,13 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream&          stream,
-                           hiptensorDataType_t    DDataType,
-                           hiptensorComputeType_t computeType,
-                           bool                   omitHeader,
-                           bool                   omitSkipped,
-                           bool                   omitFailed,
-                           bool                   omitPassed) const;
+        void reportResults(std::ostream&                stream,
+                           hiptensorDataType_t          DDataType,
+                           hiptensorComputeDescriptor_t computeType,
+                           bool                         omitHeader,
+                           bool                         omitSkipped,
+                           bool                         omitFailed,
+                           bool                         omitPassed) const;
 
     protected:
         // Workspace items

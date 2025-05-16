@@ -59,14 +59,14 @@ namespace hiptensor
             /// E.g. in this context, query further parameters.
 
             // By solution type
-            Query query(hiptensorDataType_t    typeIn,
-                        hiptensorComputeType_t typeAcc,
-                        hiptensorDataType_t    typeOut,
-                        int                    rank,
-                        int                    numReduceDim,
-                        hiptensorOperator_t    opReduce,
-                        bool                   propagateNan,
-                        bool                   outputIndex) const;
+            Query query(hiptensorDataType_t          typeIn,
+                        hiptensorComputeDescriptor_t typeAcc,
+                        hiptensorDataType_t          typeOut,
+                        int                          rank,
+                        int                          numReduceDim,
+                        hiptensorOperator_t          opReduce,
+                        bool                         propagateNan,
+                        bool                         outputIndex) const;
 
             // Full map of Uid to ReductionSolution*
             std::unordered_map<Uid, ReductionSolution*> const& solutions() const;
@@ -78,14 +78,14 @@ namespace hiptensor
 
         private:
             // Hashing helpers
-            static HashId hashSolution(hiptensorDataType_t    typeIn,
-                                       hiptensorComputeType_t typeAcc,
-                                       hiptensorDataType_t    typeOut,
-                                       int                    rank,
-                                       int                    numReduceDim,
-                                       hiptensorOperator_t    opReduce,
-                                       bool                   propagateNan,
-                                       bool                   outputIndex);
+            static HashId hashSolution(hiptensorDataType_t          typeIn,
+                                       hiptensorComputeDescriptor_t typeAcc,
+                                       hiptensorDataType_t          typeOut,
+                                       int                          rank,
+                                       int                          numReduceDim,
+                                       hiptensorOperator_t          opReduce,
+                                       bool                         propagateNan,
+                                       bool                         outputIndex);
 
             // Adding solutions to the query
             void addSolution(ReductionSolution* solution);

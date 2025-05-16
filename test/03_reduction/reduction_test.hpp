@@ -68,8 +68,8 @@ namespace hiptensor
         ReductionTest& operator=(ReductionTest&) = delete;
         ReductionTest& operator=(ReductionTest&&) = delete;
 
-        bool checkDevice(hiptensorDataType_t    datatype,
-                         hiptensorComputeType_t computeDataType) const;
+        bool checkDevice(hiptensorDataType_t          datatype,
+                         hiptensorComputeDescriptor_t computeDataType) const;
         bool checkSizes() const;
         void reset();
 

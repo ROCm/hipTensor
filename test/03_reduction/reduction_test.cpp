@@ -82,8 +82,8 @@ namespace hiptensor
     // Kernel run checks. Virtual as different Reduction kernels have different requirements
     // True = run test
     // False = skip test
-    bool ReductionTest::checkDevice(hiptensorDataType_t    datatype,
-                                    hiptensorComputeType_t computeDataType) const
+    bool ReductionTest::checkDevice(hiptensorDataType_t          datatype,
+                                    hiptensorComputeDescriptor_t computeDataType) const
     {
         return !(((datatype == HIPTENSOR_R_32F || computeDataType == HIPTENSOR_R_32F)
                   && !isF32Supported())
@@ -219,12 +219,13 @@ namespace hiptensor
         EXPECT_EQ(dataTypes.size(), 2); // HIPTENSOR_R_16F or HIPTENSOR_R_32F
         auto acDataType      = dataTypes[0];
         auto computeDataType = convertToComputeType(dataTypes[1]);
-        EXPECT_TRUE((acDataType == HIPTENSOR_R_16F && computeDataType == HIPTENSOR_COMPUTE_16F)
-                    || (acDataType == HIPTENSOR_R_16F && computeDataType == HIPTENSOR_COMPUTE_32F)
-                    || (acDataType == HIPTENSOR_R_16BF && computeDataType == HIPTENSOR_COMPUTE_16BF)
-                    || (acDataType == HIPTENSOR_R_16BF && computeDataType == HIPTENSOR_COMPUTE_32F)
-                    || (acDataType == HIPTENSOR_R_32F && computeDataType == HIPTENSOR_COMPUTE_32F)
-                    || (acDataType == HIPTENSOR_R_64F && computeDataType == HIPTENSOR_COMPUTE_64F));
+        EXPECT_TRUE(
+            (acDataType == HIPTENSOR_R_16F && computeDataType == HIPTENSOR_COMPUTE_DESC_16F)
+            || (acDataType == HIPTENSOR_R_16F && computeDataType == HIPTENSOR_COMPUTE_DESC_32F)
+            || (acDataType == HIPTENSOR_R_16BF && computeDataType == HIPTENSOR_COMPUTE_DESC_16BF)
+            || (acDataType == HIPTENSOR_R_16BF && computeDataType == HIPTENSOR_COMPUTE_DESC_32F)
+            || (acDataType == HIPTENSOR_R_32F && computeDataType == HIPTENSOR_COMPUTE_DESC_32F)
+            || (acDataType == HIPTENSOR_R_64F && computeDataType == HIPTENSOR_COMPUTE_DESC_64F));
 
         mRunFlag &= checkDevice(acDataType, computeDataType);
         mRunFlag &= lengths.size() >= outputDims.size();

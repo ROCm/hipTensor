@@ -113,29 +113,29 @@ typedef enum
 typedef enum
 {
     //! Single precision floating point
-    HIPTENSOR_COMPUTE_32F = (1U << 2U),
+    HIPTENSOR_COMPUTE_DESC_32F = (1U << 2U),
     //! Double precision floating point
-    HIPTENSOR_COMPUTE_64F = (1U << 4U),
+    HIPTENSOR_COMPUTE_DESC_64F = (1U << 4U),
     //! Half precision floating point
-    HIPTENSOR_COMPUTE_16F = (1U << 0U),
+    HIPTENSOR_COMPUTE_DESC_16F = (1U << 0U),
     //! Brain float half precision floating point
-    HIPTENSOR_COMPUTE_16BF = (1U << 10U),
+    HIPTENSOR_COMPUTE_DESC_16BF = (1U << 10U),
     //! Complex single precision floating point
-    HIPTENSOR_COMPUTE_C32F = (1U << 11U),
+    HIPTENSOR_COMPUTE_DESC_C32F = (1U << 11U),
     //! Complex double precision floating point
-    HIPTENSOR_COMPUTE_C64F = (1U << 12U),
+    HIPTENSOR_COMPUTE_DESC_C64F = (1U << 12U),
     //! No type
-    HIPTENSOR_COMPUTE_NONE = 0,
+    HIPTENSOR_COMPUTE_DESC_NONE = 0,
 
     // @cond
     //! <Following types to be added (TBA)>
-    HIPTENSOR_COMPUTE_8U  = (1U << 6U),
-    HIPTENSOR_COMPUTE_8I  = (1U << 8U),
-    HIPTENSOR_COMPUTE_32U = (1U << 7U),
-    HIPTENSOR_COMPUTE_32I = (1U << 9U),
+    HIPTENSOR_COMPUTE_DESC_8U  = (1U << 6U),
+    HIPTENSOR_COMPUTE_DESC_8I  = (1U << 8U),
+    HIPTENSOR_COMPUTE_DESC_32U = (1U << 7U),
+    HIPTENSOR_COMPUTE_DESC_32I = (1U << 9U),
     // @endcond
 
-} hiptensorComputeType_t;
+} hiptensorComputeDescriptor_t;
 
 //! @brief Element-wise operations
 typedef enum
@@ -252,7 +252,7 @@ struct hiptensorContractionDescriptor_t
     //! Enum that differentiates the internal contraction operation
     int32_t mContractionOpId;
     //! Compute type for the contraction
-    hiptensorComputeType_t mComputeType;
+    hiptensorComputeDescriptor_t mComputeType;
     //! Cache of tensor descriptors
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc;
     //! Cache of alignment requirements

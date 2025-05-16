@@ -40,17 +40,17 @@ namespace hiptensor
     }
 
     ContractionSolutionRegistry::Query
-        ContractionSolutionRegistry::Query::query(int32_t                dimsM,
-                                                  int32_t                dimsN,
-                                                  int32_t                dimsK,
-                                                  hiptensorDataType_t    typeA,
-                                                  hiptensorDataType_t    typeB,
-                                                  hiptensorDataType_t    typeC,
-                                                  hiptensorDataType_t    typeD,
-                                                  hiptensorOperator_t    opA,
-                                                  hiptensorOperator_t    opB,
-                                                  ContractionOpId_t      opCDE,
-                                                  hiptensorComputeType_t typeCompute) const
+        ContractionSolutionRegistry::Query::query(int32_t                      dimsM,
+                                                  int32_t                      dimsN,
+                                                  int32_t                      dimsK,
+                                                  hiptensorDataType_t          typeA,
+                                                  hiptensorDataType_t          typeB,
+                                                  hiptensorDataType_t          typeC,
+                                                  hiptensorDataType_t          typeD,
+                                                  hiptensorOperator_t          opA,
+                                                  hiptensorOperator_t          opB,
+                                                  ContractionOpId_t            opCDE,
+                                                  hiptensorComputeDescriptor_t typeCompute) const
     {
         auto solutionHash = hashSolution(
             dimsM, dimsN, dimsK, typeA, typeB, typeC, typeD, opA, opB, opCDE, typeCompute);
@@ -64,11 +64,11 @@ namespace hiptensor
     }
 
     ContractionSolutionRegistry::Query
-        ContractionSolutionRegistry::Query::query(hiptensorDataType_t    typeA,
-                                                  hiptensorDataType_t    typeB,
-                                                  hiptensorDataType_t    typeC,
-                                                  hiptensorDataType_t    typeD,
-                                                  hiptensorComputeType_t typeCompute) const
+        ContractionSolutionRegistry::Query::query(hiptensorDataType_t          typeA,
+                                                  hiptensorDataType_t          typeB,
+                                                  hiptensorDataType_t          typeC,
+                                                  hiptensorDataType_t          typeD,
+                                                  hiptensorComputeDescriptor_t typeCompute) const
     {
         return query(hashTypesComputeABCD(typeA, typeB, typeC, typeD, typeCompute));
     }
@@ -112,17 +112,17 @@ namespace hiptensor
 
     /* static */
     ContractionSolutionRegistry::Query::HashId
-        ContractionSolutionRegistry::Query::hashSolution(int32_t                dimsM,
-                                                         int32_t                dimsN,
-                                                         int32_t                dimsK,
-                                                         hiptensorDataType_t    typeA,
-                                                         hiptensorDataType_t    typeB,
-                                                         hiptensorDataType_t    typeC,
-                                                         hiptensorDataType_t    typeD,
-                                                         hiptensorOperator_t    opA,
-                                                         hiptensorOperator_t    opB,
-                                                         ContractionOpId_t      opCDE,
-                                                         hiptensorComputeType_t typeCompute)
+        ContractionSolutionRegistry::Query::hashSolution(int32_t                      dimsM,
+                                                         int32_t                      dimsN,
+                                                         int32_t                      dimsK,
+                                                         hiptensorDataType_t          typeA,
+                                                         hiptensorDataType_t          typeB,
+                                                         hiptensorDataType_t          typeC,
+                                                         hiptensorDataType_t          typeD,
+                                                         hiptensorOperator_t          opA,
+                                                         hiptensorOperator_t          opB,
+                                                         ContractionOpId_t            opCDE,
+                                                         hiptensorComputeDescriptor_t typeCompute)
     {
         return Hash{}(
             dimsM, dimsN, dimsK, typeA, typeB, typeC, typeD, opA, opB, opCDE, typeCompute);
@@ -137,11 +137,12 @@ namespace hiptensor
 
     /* static */
     ContractionSolutionRegistry::Query::HashId
-        ContractionSolutionRegistry::Query::hashTypesComputeABCD(hiptensorDataType_t    typeA,
-                                                                 hiptensorDataType_t    typeB,
-                                                                 hiptensorDataType_t    typeC,
-                                                                 hiptensorDataType_t    typeD,
-                                                                 hiptensorComputeType_t typeCompute)
+        ContractionSolutionRegistry::Query::hashTypesComputeABCD(
+            hiptensorDataType_t          typeA,
+            hiptensorDataType_t          typeB,
+            hiptensorDataType_t          typeC,
+            hiptensorDataType_t          typeD,
+            hiptensorComputeDescriptor_t typeCompute)
     {
         return Hash{}(typeA, typeB, typeC, typeD, typeCompute);
     }

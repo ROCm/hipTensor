@@ -48,7 +48,7 @@ namespace hiptensor
 
     struct ScalarData
     {
-        hiptensorComputeType_t mType;
+        hiptensorComputeDescriptor_t mType;
         union
         {
             double           mReal;
@@ -56,10 +56,10 @@ namespace hiptensor
         };
 
         ScalarData() = default;
-        ScalarData(hiptensorComputeType_t type, double real, double imag = 0)
+        ScalarData(hiptensorComputeDescriptor_t type, double real, double imag = 0)
         {
             mType = type;
-            if(type == HIPTENSOR_COMPUTE_C32F || type == HIPTENSOR_COMPUTE_C64F)
+            if(type == HIPTENSOR_COMPUTE_DESC_C32F || type == HIPTENSOR_COMPUTE_DESC_C64F)
             {
                 mComplex = make_hipDoubleComplex(real, imag);
             }
@@ -90,21 +90,21 @@ namespace hiptensor
     // Get data size in bytes from id
     uint32_t hiptensorDataTypeSize(hiptensorDataType_t id);
 
-    // Convert hiptensorDataType_t to hiptensorComputeType_t
-    hiptensorComputeType_t convertToComputeType(hiptensorDataType_t hipType);
+    // Convert hiptensorDataType_t to hiptensorComputeDescriptor_t
+    hiptensorComputeDescriptor_t convertToComputeType(hiptensorDataType_t hipType);
     std::optional<hiptensorDataType_t>
-        convertToHipTensorDataType(hiptensorComputeType_t computeType);
+        convertToHipTensorDataType(hiptensorComputeDescriptor_t computeType);
 
     // Read a single value from void pointer, casted to T
     template <typename T>
     T readVal(void const* value, hiptensorDataType_t id);
 
     template <typename T>
-    T readVal(void const* value, hiptensorComputeType_t id);
+    T readVal(void const* value, hiptensorComputeDescriptor_t id);
 
-    void writeVal(void const* addr, hiptensorComputeType_t id, ScalarData value);
+    void writeVal(void const* addr, hiptensorComputeDescriptor_t id, ScalarData value);
 
-    std::string computeTypeToString(hiptensorComputeType_t computeType);
+    std::string computeTypeToString(hiptensorComputeDescriptor_t computeType);
     std::string hipTypeToString(hiptensorDataType_t hipType);
     std::string opTypeToString(hiptensorOperator_t opType);
     std::string algoTypeToString(hiptensorAlgo_t algoType);
@@ -112,11 +112,11 @@ namespace hiptensor
     std::string workSizePrefToString(hiptensorWorksizePreference_t workSize);
 } // namespace hiptensor
 
-bool operator==(hiptensorDataType_t hipType, hiptensorComputeType_t computeType);
-bool operator==(hiptensorComputeType_t computeType, hiptensorDataType_t hipType);
+bool operator==(hiptensorDataType_t hipType, hiptensorComputeDescriptor_t computeType);
+bool operator==(hiptensorComputeDescriptor_t computeType, hiptensorDataType_t hipType);
 
-bool operator!=(hiptensorDataType_t hipType, hiptensorComputeType_t computeType);
-bool operator!=(hiptensorComputeType_t computeType, hiptensorDataType_t hipType);
+bool operator!=(hiptensorDataType_t hipType, hiptensorComputeDescriptor_t computeType);
+bool operator!=(hiptensorComputeDescriptor_t computeType, hiptensorDataType_t hipType);
 
 namespace std
 {

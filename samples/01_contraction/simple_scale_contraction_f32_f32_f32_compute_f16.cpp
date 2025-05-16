@@ -42,10 +42,10 @@ int main(int argc, char* argv[])
     typedef float    DDataType;
     typedef _Float16 floatTypeCompute;
 
-    constexpr hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
-    constexpr hiptensorDataType_t    typeB       = HIPTENSOR_R_32F;
-    constexpr hiptensorDataType_t    typeD       = HIPTENSOR_R_32F;
-    constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_16F;
+    constexpr hiptensorDataType_t          typeA       = HIPTENSOR_R_32F;
+    constexpr hiptensorDataType_t          typeB       = HIPTENSOR_R_32F;
+    constexpr hiptensorDataType_t          typeD       = HIPTENSOR_R_32F;
+    constexpr hiptensorComputeDescriptor_t typeCompute = HIPTENSOR_COMPUTE_DESC_16F;
 
     floatTypeCompute alpha = 1;
     return scaleContractionSample<ADataType,

@@ -103,7 +103,7 @@ namespace hiptensor
             return HipTensorDataType_v<typename MetaTraitsT::EDataT>;
         }
 
-        hiptensorComputeType_t typeCompute() const override
+        hiptensorComputeDescriptor_t typeCompute() const override
         {
             return convertToComputeType(HipTensorDataType_v<typename MetaTraitsT::ComputeDataT>);
         }

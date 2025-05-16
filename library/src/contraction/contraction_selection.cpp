@@ -60,7 +60,7 @@ namespace hiptensor
                                       std::vector<std::size_t> const&          e_ms_ns_lengths,
                                       std::vector<std::size_t> const&          e_ms_ns_strides,
                                       std::vector<int32_t> const&              e_ms_ns_modes,
-                                      hiptensorComputeType_t                   computeType,
+                                      hiptensorComputeDescriptor_t             computeType,
                                       const uint64_t                           workspaceSize)
     {
         // Make sure that we calculate full element space incase strides are not packed.
@@ -85,7 +85,7 @@ namespace hiptensor
          */
         ScalarData alpha;
         ScalarData beta;
-        if(computeType == HIPTENSOR_COMPUTE_C32F || computeType == HIPTENSOR_COMPUTE_C64F)
+        if(computeType == HIPTENSOR_COMPUTE_DESC_C32F || computeType == HIPTENSOR_COMPUTE_DESC_C64F)
         {
             writeVal(&alpha, computeType, {computeType, 1.02, 1.03});
             writeVal(&beta, computeType, {computeType, 1.04, 1.05});
@@ -2267,11 +2267,11 @@ namespace hiptensor
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
-                         hiptensorComputeType_t                                  computeType,
+                         hiptensorComputeDescriptor_t                            computeType,
                          const uint64_t                                          workspaceSize)
     {
         if(typeA == HIPTENSOR_R_16F && typeB == HIPTENSOR_R_16F && typeD == NONE_TYPE
-           && typeE == HIPTENSOR_R_16F && computeType == HIPTENSOR_COMPUTE_32F)
+           && typeE == HIPTENSOR_R_16F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<_Float16,
                                         _Float16,
@@ -2299,7 +2299,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_16F && typeB == HIPTENSOR_R_16F && typeD == HIPTENSOR_R_16F
-                && typeE == HIPTENSOR_R_16F && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_16F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<_Float16,
                                         _Float16,
@@ -2327,7 +2327,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_16BF && typeB == HIPTENSOR_R_16BF && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_R_16BF && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_16BF && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<hip_bfloat16,
                                         hip_bfloat16,
@@ -2355,7 +2355,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_16BF && typeB == HIPTENSOR_R_16BF && typeD == HIPTENSOR_R_16BF
-                && typeE == HIPTENSOR_R_16BF && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_16BF && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<hip_bfloat16,
                                         hip_bfloat16,
@@ -2383,7 +2383,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_16F)
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_16F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2411,7 +2411,7 @@ namespace hiptensor
                                                                 workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == HIPTENSOR_R_32F
-                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_16F)
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_16F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2495,7 +2495,7 @@ namespace hiptensor
                                                                     workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2523,7 +2523,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == HIPTENSOR_R_32F
-                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2551,7 +2551,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2579,7 +2579,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == HIPTENSOR_R_64F
-                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_32F)
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2607,7 +2607,7 @@ namespace hiptensor
                                                              workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_64F)
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_64F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2635,7 +2635,7 @@ namespace hiptensor
                                                               workspaceSize);
         }
         else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == HIPTENSOR_R_64F
-                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_64F)
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_64F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2663,7 +2663,7 @@ namespace hiptensor
                                                               workspaceSize);
         }
         else if(typeA == HIPTENSOR_C_32F && typeB == HIPTENSOR_C_32F && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_C_32F && computeType == HIPTENSOR_COMPUTE_C32F)
+                && typeE == HIPTENSOR_C_32F && computeType == HIPTENSOR_COMPUTE_DESC_C32F)
         {
             return ActorCriticSelection<hipFloatComplex,
                                         hipFloatComplex,
@@ -2691,7 +2691,7 @@ namespace hiptensor
                                                                        workspaceSize);
         }
         else if(typeA == HIPTENSOR_C_32F && typeB == HIPTENSOR_C_32F && typeD == HIPTENSOR_C_32F
-                && typeE == HIPTENSOR_C_32F && computeType == HIPTENSOR_COMPUTE_C32F)
+                && typeE == HIPTENSOR_C_32F && computeType == HIPTENSOR_COMPUTE_DESC_C32F)
         {
             return ActorCriticSelection<hipFloatComplex,
                                         hipFloatComplex,
@@ -2719,7 +2719,7 @@ namespace hiptensor
                                                                        workspaceSize);
         }
         else if(typeA == HIPTENSOR_C_64F && typeB == HIPTENSOR_C_64F && typeD == NONE_TYPE
-                && typeE == HIPTENSOR_C_64F && computeType == HIPTENSOR_COMPUTE_C64F)
+                && typeE == HIPTENSOR_C_64F && computeType == HIPTENSOR_COMPUTE_DESC_C64F)
         {
             return ActorCriticSelection<hipDoubleComplex,
                                         hipDoubleComplex,
@@ -2747,7 +2747,7 @@ namespace hiptensor
                                                                         workspaceSize);
         }
         else if(typeA == HIPTENSOR_C_64F && typeB == HIPTENSOR_C_64F && typeD == HIPTENSOR_C_64F
-                && typeE == HIPTENSOR_C_64F && computeType == HIPTENSOR_COMPUTE_C64F)
+                && typeE == HIPTENSOR_C_64F && computeType == HIPTENSOR_COMPUTE_DESC_C64F)
         {
             return ActorCriticSelection<hipDoubleComplex,
                                         hipDoubleComplex,

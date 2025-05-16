@@ -240,10 +240,12 @@ namespace hiptensor
         EXPECT_TRUE((DDataType == HIPTENSOR_R_16F) || (DDataType == HIPTENSOR_R_16BF)
                     || (DDataType == HIPTENSOR_R_32F) || (DDataType == HIPTENSOR_R_64F)
                     || (DDataType == HIPTENSOR_C_32F) || (DDataType == HIPTENSOR_C_64F));
-        EXPECT_TRUE(
-            (computeType == HIPTENSOR_COMPUTE_16F) || (computeType == HIPTENSOR_COMPUTE_16BF)
-            || (computeType == HIPTENSOR_COMPUTE_32F) || (computeType == HIPTENSOR_COMPUTE_64F)
-            || (computeType == HIPTENSOR_COMPUTE_C32F) || (computeType == HIPTENSOR_COMPUTE_C64F));
+        EXPECT_TRUE((computeType == HIPTENSOR_COMPUTE_DESC_16F)
+                    || (computeType == HIPTENSOR_COMPUTE_DESC_16BF)
+                    || (computeType == HIPTENSOR_COMPUTE_DESC_32F)
+                    || (computeType == HIPTENSOR_COMPUTE_DESC_64F)
+                    || (computeType == HIPTENSOR_COMPUTE_DESC_C32F)
+                    || (computeType == HIPTENSOR_COMPUTE_DESC_C64F));
 
         mRunFlag &= checkDevice(DDataType);
 
@@ -514,13 +516,13 @@ namespace hiptensor
         }
     }
 
-    void ContractionTest::reportResults(std::ostream&          stream,
-                                        hiptensorDataType_t    DDataType,
-                                        hiptensorComputeType_t computeType,
-                                        bool                   omitHeader,
-                                        bool                   omitSkipped,
-                                        bool                   omitFailed,
-                                        bool                   omitPassed) const
+    void ContractionTest::reportResults(std::ostream&                stream,
+                                        hiptensorDataType_t          DDataType,
+                                        hiptensorComputeDescriptor_t computeType,
+                                        bool                         omitHeader,
+                                        bool                         omitSkipped,
+                                        bool                         omitFailed,
+                                        bool                         omitPassed) const
     {
         if(!omitHeader)
         {
@@ -872,17 +874,18 @@ namespace hiptensor
 
                 size_t elementsCD = sizeD / hiptensorDataTypeSize(ADataType);
 
-                auto   eps = getEpsilon(computeType == HIPTENSOR_COMPUTE_64F ? HIPTENSOR_COMPUTE_64F
-                                                                           : HIPTENSOR_COMPUTE_32F);
+                auto   eps       = getEpsilon(computeType == HIPTENSOR_COMPUTE_DESC_64F
+                                          ? HIPTENSOR_COMPUTE_DESC_64F
+                                          : HIPTENSOR_COMPUTE_DESC_32F);
                 double tolerance = 2 * nelems_k * eps;
 
                 // use the same default tolerance value as CK
-                if(computeType == HIPTENSOR_COMPUTE_16BF || DDataType == HIPTENSOR_R_16BF)
+                if(computeType == HIPTENSOR_COMPUTE_DESC_16BF || DDataType == HIPTENSOR_R_16BF)
                 {
                     const double epsilon = std::pow(2, -7);
                     tolerance += epsilon * 2;
                 }
-                else if(computeType == HIPTENSOR_COMPUTE_16F || DDataType == HIPTENSOR_R_16F)
+                else if(computeType == HIPTENSOR_COMPUTE_DESC_16F || DDataType == HIPTENSOR_R_16F)
                 {
                     const double epsilon = std::pow(2, -10);
                     tolerance += epsilon * 2;

@@ -50,9 +50,9 @@ int main()
     typedef float floatTypeC;
     typedef float floatTypeCompute;
 
-    hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
-    hiptensorDataType_t    typeC       = HIPTENSOR_R_32F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+    hiptensorDataType_t          typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t          typeC       = HIPTENSOR_R_32F;
+    hiptensorComputeDescriptor_t typeCompute = HIPTENSOR_COMPUTE_DESC_32F;
 
     floatTypeCompute alpha = (floatTypeCompute)1.1f;
     floatTypeCompute beta  = (floatTypeCompute)0.f;

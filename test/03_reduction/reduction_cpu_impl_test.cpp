@@ -33,9 +33,9 @@
 #include "utils.hpp"
 
 template <typename floatTypeA, typename floatTypeC, typename floatTypeCompute>
-auto reduceWithCpu(hiptensorDataType_t    typeA,
-                   hiptensorDataType_t    typeC,
-                   hiptensorComputeType_t typeCompute)
+auto reduceWithCpu(hiptensorDataType_t          typeA,
+                   hiptensorDataType_t          typeC,
+                   hiptensorComputeDescriptor_t typeCompute)
 {
     floatTypeCompute alpha = (floatTypeCompute)1.2f;
     floatTypeCompute beta  = (floatTypeCompute)2.1f;
@@ -145,9 +145,9 @@ TEST(ReductionCpuImplTest, CompareF32ResultWithReference)
     using floatTypeC       = hiptensor::float32_t;
     using floatTypeCompute = hiptensor::float32_t;
 
-    hiptensorDataType_t    typeA       = HIPTENSOR_R_32F;
-    hiptensorDataType_t    typeC       = HIPTENSOR_R_32F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_32F;
+    hiptensorDataType_t          typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t          typeC       = HIPTENSOR_R_32F;
+    hiptensorComputeDescriptor_t typeCompute = HIPTENSOR_COMPUTE_DESC_32F;
 
     auto [result, maxRelativeError]
         = reduceWithCpu<floatTypeA, floatTypeC, floatTypeCompute>(typeA, typeC, typeCompute);
@@ -160,9 +160,9 @@ TEST(ReductionCpuImplTest, CompareF64ResultWithReference)
     using floatTypeC       = hiptensor::float64_t;
     using floatTypeCompute = hiptensor::float64_t;
 
-    hiptensorDataType_t    typeA       = HIPTENSOR_R_64F;
-    hiptensorDataType_t    typeC       = HIPTENSOR_R_64F;
-    hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_64F;
+    hiptensorDataType_t          typeA       = HIPTENSOR_R_64F;
+    hiptensorDataType_t          typeC       = HIPTENSOR_R_64F;
+    hiptensorComputeDescriptor_t typeCompute = HIPTENSOR_COMPUTE_DESC_64F;
 
     auto [result, maxRelativeError]
         = reduceWithCpu<floatTypeA, floatTypeC, floatTypeCompute>(typeA, typeC, typeCompute);
@@ -177,7 +177,7 @@ TEST(ReductionCpuImplTest, CompareF64ResultWithReference)
 //
 // hiptensorDataType_t typeA       = HIPTENSOR_R_16F;
 // hiptensorDataType_t typeC       = HIPTENSOR_R_16F;
-// hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_16F;
+// hiptensorComputeDescriptor_t typeCompute = HIPTENSOR_COMPUTE_DESC_16F;
 //
 // auto [result, maxRelativeError]
 // = reduceWithCpu<floatTypeA, floatTypeC, floatTypeCompute>(typeA, typeC, typeCompute);

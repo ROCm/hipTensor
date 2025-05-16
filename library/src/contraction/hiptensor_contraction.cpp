@@ -75,8 +75,8 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                                      const uint32_t alignmentRequirementC,
                                                      const hiptensorTensorDescriptor_t* descD,
                                                      const int32_t                      modeD[],
-                                                     const uint32_t         alignmentRequirementD,
-                                                     hiptensorComputeType_t typeCompute)
+                                                     const uint32_t alignmentRequirementD,
+                                                     hiptensorComputeDescriptor_t typeCompute)
 
 {
     using hiptensor::Logger;
@@ -148,10 +148,10 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
-        auto contractionOp
-            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
-                  ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
-                  : hiptensor::ContractionOpId_t::SCALE;
+        auto contractionOp = typeCompute == HIPTENSOR_COMPUTE_DESC_C32F
+                                     || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
+                                 ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
+                                 : hiptensor::ContractionOpId_t::SCALE;
         *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA,
@@ -178,10 +178,10 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
-        auto contractionOp
-            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
-                  ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
-                  : hiptensor::ContractionOpId_t::BILINEAR;
+        auto contractionOp = typeCompute == HIPTENSOR_COMPUTE_DESC_C32F
+                                     || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
+                                 ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
+                                 : hiptensor::ContractionOpId_t::BILINEAR;
         *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA, *descB, *descC, *descD},

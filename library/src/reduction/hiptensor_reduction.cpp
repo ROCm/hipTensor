@@ -55,7 +55,7 @@ namespace
                                               const hiptensorTensorDescriptor_t* descD,
                                               const int32_t*                     modeD,
                                               hiptensorOperator_t                opReduce,
-                                              hiptensorComputeType_t             typeCompute,
+                                              hiptensorComputeDescriptor_t       typeCompute,
                                               void*                              workspace,
                                               uint64_t                           workspaceSize)
     {
@@ -90,14 +90,18 @@ namespace
 
         const hiptensor::Hash            hashGenerator;
         const std::unordered_set<size_t> supportedTypes = {
-            hashGenerator(HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_COMPUTE_16F),
-            hashGenerator(HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_COMPUTE_32F),
             hashGenerator(
-                HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_COMPUTE_16BF),
+                HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_COMPUTE_DESC_16F),
             hashGenerator(
-                HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_COMPUTE_32F),
-            hashGenerator(HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_COMPUTE_32F),
-            hashGenerator(HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_COMPUTE_64F),
+                HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_COMPUTE_DESC_32F),
+            hashGenerator(
+                HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_COMPUTE_DESC_16BF),
+            hashGenerator(
+                HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_COMPUTE_DESC_32F),
+            hashGenerator(
+                HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_COMPUTE_DESC_32F),
+            hashGenerator(
+                HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_COMPUTE_DESC_64F),
         };
 
         if(supportedTypes.find(hashGenerator(descA->mType, descC->mType, descD->mType, typeCompute))
@@ -153,7 +157,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
                                      const hiptensorTensorDescriptor_t* descD,
                                      const int32_t                      modeD[],
                                      hiptensorOperator_t                opReduce,
-                                     hiptensorComputeType_t             typeCompute,
+                                     hiptensorComputeDescriptor_t       typeCompute,
                                      void*                              workspace,
                                      uint64_t                           workspaceSize,
                                      hipStream_t                        stream)
@@ -248,10 +252,10 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     auto DDataType    = descD->mType;
 
     auto internalTypeCompute = typeCompute;
-    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    if(typeCompute == HIPTENSOR_COMPUTE_DESC_16F || typeCompute == HIPTENSOR_COMPUTE_DESC_16BF)
     {
         // CK does not support f16 or bf16 as compute type
-        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+        internalTypeCompute = HIPTENSOR_COMPUTE_DESC_32F;
     }
 
     // Query reduction solutions for the correct reduction operation and type
@@ -384,7 +388,7 @@ hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t*   
                                                      const hiptensorTensorDescriptor_t* descD,
                                                      const int32_t                      modeD[],
                                                      hiptensorOperator_t                opReduce,
-                                                     hiptensorComputeType_t             typeCompute,
+                                                     hiptensorComputeDescriptor_t       typeCompute,
                                                      uint64_t* workspaceSize)
 {
     *workspaceSize = 0;

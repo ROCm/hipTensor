@@ -192,24 +192,24 @@ namespace hiptensor
     }
 
     template <typename T>
-    T readVal(void const* value, hiptensorComputeType_t id)
+    T readVal(void const* value, hiptensorComputeDescriptor_t id)
     {
-        if(id == HIPTENSOR_COMPUTE_16F)
+        if(id == HIPTENSOR_COMPUTE_DESC_16F)
         {
             return static_cast<T>(*(_Float16*)value);
         }
-        else if(id == HIPTENSOR_COMPUTE_32F)
+        else if(id == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return static_cast<T>(*(float*)value);
         }
-        else if(id == HIPTENSOR_COMPUTE_64F)
+        else if(id == HIPTENSOR_COMPUTE_DESC_64F)
         {
             return static_cast<T>(*(double*)value);
         }
         else
         {
 #if !NDEBUG
-            std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+            std::cout << "Unhandled hiptensorComputeDescriptor_t: " << id << std::endl;
 #endif // !NDEBUG
             return 0;
         }
@@ -217,7 +217,7 @@ namespace hiptensor
 
     // @cond
     template <>
-    ScalarData readVal(void const* value, hiptensorComputeType_t id);
+    ScalarData readVal(void const* value, hiptensorComputeDescriptor_t id);
     // @endcond
 
 } // namespace hiptensor

@@ -59,54 +59,54 @@
         CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
 
-inline double getEpsilon(hiptensorComputeType_t id)
+inline double getEpsilon(hiptensorComputeDescriptor_t id)
 {
     auto toDouble = [](auto const& val) { return static_cast<double>(static_cast<float>(val)); };
 
-    if(id == HIPTENSOR_COMPUTE_16F)
+    if(id == HIPTENSOR_COMPUTE_DESC_16F)
     {
         return toDouble(std::numeric_limits<_Float16>::epsilon());
     }
-    else if(id == HIPTENSOR_COMPUTE_16BF)
+    else if(id == HIPTENSOR_COMPUTE_DESC_16BF)
     {
         return toDouble(std::numeric_limits<hip_bfloat16>::epsilon());
     }
-    else if(id == HIPTENSOR_COMPUTE_32F)
+    else if(id == HIPTENSOR_COMPUTE_DESC_32F)
     {
         return toDouble(std::numeric_limits<float>::epsilon());
     }
-    else if(id == HIPTENSOR_COMPUTE_64F)
+    else if(id == HIPTENSOR_COMPUTE_DESC_64F)
     {
         return toDouble(std::numeric_limits<double>::epsilon());
     }
-    else if(id == HIPTENSOR_COMPUTE_8U)
+    else if(id == HIPTENSOR_COMPUTE_DESC_8U)
     {
         return 0;
     }
-    else if(id == HIPTENSOR_COMPUTE_8I)
+    else if(id == HIPTENSOR_COMPUTE_DESC_8I)
     {
         return 0;
     }
-    else if(id == HIPTENSOR_COMPUTE_32U)
+    else if(id == HIPTENSOR_COMPUTE_DESC_32U)
     {
         return 0;
     }
-    else if(id == HIPTENSOR_COMPUTE_32I)
+    else if(id == HIPTENSOR_COMPUTE_DESC_32I)
     {
         return 0;
     }
-    else if(id == HIPTENSOR_COMPUTE_C32F)
+    else if(id == HIPTENSOR_COMPUTE_DESC_C32F)
     {
         return toDouble(std::numeric_limits<float>::epsilon());
     }
-    else if(id == HIPTENSOR_COMPUTE_C64F)
+    else if(id == HIPTENSOR_COMPUTE_DESC_C64F)
     {
         return toDouble(std::numeric_limits<double>::epsilon());
     }
     else
     {
 #if !NDEBUG
-        std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+        std::cout << "Unhandled hiptensorComputeDescriptor_t: " << id << std::endl;
 #endif // !NDEBUG
         return 0;
     }
@@ -183,11 +183,11 @@ __host__ static inline void
 }
 
 template <typename DDataType>
-std::pair<bool, double> compareEqual(DDataType const*       deviceD,
-                                     DDataType const*       hostD,
-                                     std::size_t            elementsD,
-                                     hiptensorComputeType_t computeType,
-                                     double                 tolerance = 0.0)
+std::pair<bool, double> compareEqual(DDataType const*             deviceD,
+                                     DDataType const*             hostD,
+                                     std::size_t                  elementsD,
+                                     hiptensorComputeDescriptor_t computeType,
+                                     double                       tolerance = 0.0)
 {
     bool   retval             = true;
     double max_relative_error = 0.0;
@@ -241,13 +241,13 @@ std::pair<bool, double> compareEqual(DDataType const*       deviceD,
     if(tolerance == 0.0)
     {
         // use the same default tolerance value as CK
-        if(computeType == HIPTENSOR_COMPUTE_16BF
+        if(computeType == HIPTENSOR_COMPUTE_DESC_16BF
            || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
         {
             const double epsilon = std::pow(2, -7);
             tolerance            = epsilon * 2;
         }
-        else if(computeType == HIPTENSOR_COMPUTE_16F
+        else if(computeType == HIPTENSOR_COMPUTE_DESC_16F
                 || std::is_same_v<DDataType, hiptensor::float16_t>)
         {
             const double epsilon = std::pow(2, -10);
@@ -278,11 +278,11 @@ std::pair<bool, double> compareEqual(DDataType const*       deviceD,
 }
 
 template <typename DDataType>
-std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
-                                                 DDataType*             hostD,
-                                                 std::size_t            elementsD,
-                                                 hiptensorComputeType_t computeType,
-                                                 double                 tolerance = 0.0)
+std::pair<bool, double> compareEqualLaunchKernel(DDataType*                   deviceD,
+                                                 DDataType*                   hostD,
+                                                 std::size_t                  elementsD,
+                                                 hiptensorComputeDescriptor_t computeType,
+                                                 double                       tolerance = 0.0)
 {
     static hiptensor::HipResource::DevicePtrT relativeErrorPtr;
     static std::size_t                        relativeErrorSize = 0;
@@ -355,13 +355,13 @@ std::pair<bool, double> compareEqualLaunchKernel(DDataType*             deviceD,
     if(tolerance == 0.0)
     {
         // use the same default tolerance value as CK
-        if(computeType == HIPTENSOR_COMPUTE_16BF
+        if(computeType == HIPTENSOR_COMPUTE_DESC_16BF
            || std::is_same_v<DDataType, hiptensor::bfloat16_t>)
         {
             const double epsilon = std::pow(2, -7);
             tolerance            = epsilon * 2;
         }
-        else if(computeType == HIPTENSOR_COMPUTE_16F
+        else if(computeType == HIPTENSOR_COMPUTE_DESC_16F
                 || std::is_same_v<DDataType, hiptensor::float16_t>)
         {
             const double epsilon = std::pow(2, -10);

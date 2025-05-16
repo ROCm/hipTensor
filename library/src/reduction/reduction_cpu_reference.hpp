@@ -44,6 +44,6 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                               const hiptensorTensorDescriptor_t* descD,
                                               const int32_t                      modeD[],
                                               hiptensorOperator_t                opReduce,
-                                              hiptensorComputeType_t             typeCompute,
+                                              hiptensorComputeDescriptor_t       typeCompute,
                                               hipStream_t                        stream);
 #endif // HIPTENSOR_REDUCTION_CPU_REFERENCE_HPP

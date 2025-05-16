@@ -35,14 +35,14 @@ namespace hiptensor
 
     // @cond
     ReductionSolutionRegistry::Query
-        ReductionSolutionRegistry::Query::query(hiptensorDataType_t    typeIn,
-                                                hiptensorComputeType_t typeAcc,
-                                                hiptensorDataType_t    typeOut,
-                                                int                    rank,
-                                                int                    numReduceDim,
-                                                hiptensorOperator_t    opReduce,
-                                                bool                   propagateNan,
-                                                bool                   outputIndex) const
+        ReductionSolutionRegistry::Query::query(hiptensorDataType_t          typeIn,
+                                                hiptensorComputeDescriptor_t typeAcc,
+                                                hiptensorDataType_t          typeOut,
+                                                int                          rank,
+                                                int                          numReduceDim,
+                                                hiptensorOperator_t          opReduce,
+                                                bool                         propagateNan,
+                                                bool                         outputIndex) const
     {
         auto solutionHash = hashSolution(
             typeIn, typeAcc, typeOut, rank, numReduceDim, opReduce, propagateNan, outputIndex);
@@ -77,14 +77,14 @@ namespace hiptensor
 
     /* static */
     ReductionSolutionRegistry::Query::HashId
-        ReductionSolutionRegistry::Query::hashSolution(hiptensorDataType_t    typeIn,
-                                                       hiptensorComputeType_t typeAcc,
-                                                       hiptensorDataType_t    typeOut,
-                                                       int                    rank,
-                                                       int                    numReduceDim,
-                                                       hiptensorOperator_t    opReduce,
-                                                       bool                   propagateNan,
-                                                       bool                   outputIndex)
+        ReductionSolutionRegistry::Query::hashSolution(hiptensorDataType_t          typeIn,
+                                                       hiptensorComputeDescriptor_t typeAcc,
+                                                       hiptensorDataType_t          typeOut,
+                                                       int                          rank,
+                                                       int                          numReduceDim,
+                                                       hiptensorOperator_t          opReduce,
+                                                       bool                         propagateNan,
+                                                       bool                         outputIndex)
     {
         return Hash{}(
             typeIn, typeAcc, typeOut, rank, numReduceDim, opReduce, propagateNan, outputIndex);

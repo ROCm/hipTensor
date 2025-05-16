@@ -37,10 +37,10 @@
 template <typename ADataType,
           typename BDataType,
           typename DDataType,
-          hiptensorDataType_t    typeA,
-          hiptensorDataType_t    typeB,
-          hiptensorDataType_t    typeD,
-          hiptensorComputeType_t typeCompute>
+          hiptensorDataType_t          typeA,
+          hiptensorDataType_t          typeB,
+          hiptensorDataType_t          typeD,
+          hiptensorComputeDescriptor_t typeCompute>
 int scaleContractionSample(void* alpha)
 {
     /**********************

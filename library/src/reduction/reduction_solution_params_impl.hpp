@@ -89,7 +89,7 @@ namespace hiptensor
         {
             return HipTensorDataType_v<typename MetaTraitsT::TensorInDataType>;
         }
-        hiptensorComputeType_t typeAcc() const override
+        hiptensorComputeDescriptor_t typeAcc() const override
         {
             return convertToComputeType(
                 HipTensorDataType_v<typename MetaTraitsT::TensorAccDataType>);

@@ -41,7 +41,7 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                               const hiptensorTensorDescriptor_t* descD,
                                               const int32_t                      modeD[],
                                               hiptensorOperator_t                opReduce,
-                                              hiptensorComputeType_t             typeCompute,
+                                              hiptensorComputeDescriptor_t       typeCompute,
                                               hipStream_t                        stream)
 {
     int  rankA        = descA->mLengths.size();
@@ -50,10 +50,10 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
     auto DDataType    = descD->mType;
 
     auto internalTypeCompute = typeCompute;
-    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    if(typeCompute == HIPTENSOR_COMPUTE_DESC_16F || typeCompute == HIPTENSOR_COMPUTE_DESC_16BF)
     {
         // CK does not support f16 or bf16 as compute type
-        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+        internalTypeCompute = HIPTENSOR_COMPUTE_DESC_32F;
     }
 
     if(descA->mLengths.size() == descD->mLengths.size())

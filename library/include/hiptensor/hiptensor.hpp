@@ -248,8 +248,8 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                                      const uint32_t alignmentRequirementC,
                                                      const hiptensorTensorDescriptor_t* descD,
                                                      const int32_t                      modeD[],
-                                                     const uint32_t         alignmentRequirementD,
-                                                     hiptensorComputeType_t typeCompute);
+                                                     const uint32_t alignmentRequirementD,
+                                                     hiptensorComputeDescriptor_t typeCompute);
 
 //! @brief Narrows down the candidates for the contraction problem.
 //! @details This function gives the user finer control over the candidates that
@@ -372,7 +372,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
                                      const hiptensorTensorDescriptor_t* descD,
                                      const int32_t                      modeD[],
                                      hiptensorOperator_t                opReduce,
-                                     hiptensorComputeType_t             typeCompute,
+                                     hiptensorComputeDescriptor_t       typeCompute,
                                      void*                              workspace,
                                      uint64_t                           workspaceSize,
                                      hipStream_t                        stream);
@@ -405,7 +405,7 @@ hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t*   
                                                      const hiptensorTensorDescriptor_t* descD,
                                                      const int32_t                      modeD[],
                                                      hiptensorOperator_t                opReduce,
-                                                     hiptensorComputeType_t             typeCompute,
+                                                     hiptensorComputeDescriptor_t       typeCompute,
                                                      uint64_t* workspaceSize);
 
 //! @brief Registers a callback function that will be invoked by logger calls.

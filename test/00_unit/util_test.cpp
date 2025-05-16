@@ -116,12 +116,12 @@ TEST(opTypeToStringTest, UtilTest)
 
 TEST(convertToHipDataTypeTypeToStringTest, UtilTest)
 {
-    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_16BF), HIPTENSOR_R_16BF);
-    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_16F), HIPTENSOR_R_16F);
-    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_32F), HIPTENSOR_R_32F);
-    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_64F), HIPTENSOR_R_64F);
-    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_C32F), HIPTENSOR_C_32F);
-    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_C64F), HIPTENSOR_C_64F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_16BF), HIPTENSOR_R_16BF);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_16F), HIPTENSOR_R_16F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_32F), HIPTENSOR_R_32F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_64F), HIPTENSOR_R_64F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_C32F), HIPTENSOR_C_32F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_C64F), HIPTENSOR_C_64F);
 }
 
 TEST(algoTypeToStringTest, UtilTest)

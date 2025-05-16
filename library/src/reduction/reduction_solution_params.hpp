@@ -51,9 +51,9 @@ namespace hiptensor
         virtual bool    propagateNan() const  = 0;
         virtual bool    outputIndex() const   = 0;
 
-        virtual hiptensorDataType_t    typeIn() const  = 0;
-        virtual hiptensorComputeType_t typeAcc() const = 0;
-        virtual hiptensorDataType_t    typeOut() const = 0;
+        virtual hiptensorDataType_t          typeIn() const  = 0;
+        virtual hiptensorComputeDescriptor_t typeAcc() const = 0;
+        virtual hiptensorDataType_t          typeOut() const = 0;
 
         virtual hiptensorOperator_t opReduce() const = 0;
     };

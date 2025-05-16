@@ -119,23 +119,23 @@ TEST(hiptensorGetAlignmentRequirementTest, UtilTest)
 
 TEST(hiptensorReductionTest, UtilTest)
 {
-    char                        buf[1];
-    hiptensorHandle_t           handle;
-    float                       alpha, beta;
-    const void*                 A = nullptr;
-    const void*                 C = &buf;
-    void*                       D = &buf;
-    hiptensorTensorDescriptor_t descA;
-    int32_t                     modeA[1];
-    hiptensorTensorDescriptor_t descC;
-    int32_t                     modeC[1];
-    hiptensorTensorDescriptor_t descD;
-    int32_t                     modeD[1];
-    hiptensorOperator_t         opReduce;
-    hiptensorComputeType_t      typeCompute;
-    void*                       workspace     = nullptr;
-    uint64_t                    workspaceSize = 0;
-    auto                        output        = hiptensorReduction(&handle,
+    char                         buf[1];
+    hiptensorHandle_t            handle;
+    float                        alpha, beta;
+    const void*                  A = nullptr;
+    const void*                  C = &buf;
+    void*                        D = &buf;
+    hiptensorTensorDescriptor_t  descA;
+    int32_t                      modeA[1];
+    hiptensorTensorDescriptor_t  descC;
+    int32_t                      modeC[1];
+    hiptensorTensorDescriptor_t  descD;
+    int32_t                      modeD[1];
+    hiptensorOperator_t          opReduce;
+    hiptensorComputeDescriptor_t typeCompute;
+    void*                        workspace     = nullptr;
+    uint64_t                     workspaceSize = 0;
+    auto                         output        = hiptensorReduction(&handle,
                                      &alpha,
                                      A,
                                      &descA,
@@ -158,7 +158,7 @@ TEST(hiptensorReductionTest, UtilTest)
     descA.mType = HIPTENSOR_R_64F;
     descC.mType = HIPTENSOR_R_64F;
     descD.mType = HIPTENSOR_R_64F;
-    typeCompute = HIPTENSOR_COMPUTE_16F;
+    typeCompute = HIPTENSOR_COMPUTE_DESC_16F;
     output      = hiptensorReduction(&handle,
                                 &alpha,
                                 A,
@@ -178,14 +178,14 @@ TEST(hiptensorReductionTest, UtilTest)
                                 0);
     EXPECT_EQ(
         output,
-        HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for (HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_COMPUTE_16F) is not supported
+        HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for (HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_COMPUTE_DESC_16F) is not supported
 
     descA.mType    = HIPTENSOR_R_16F;
     descA.mLengths = {1};
     descC.mType    = HIPTENSOR_R_16F;
     descC.mLengths = {1, 1};
     descD.mType    = HIPTENSOR_R_16F;
-    typeCompute    = HIPTENSOR_COMPUTE_16F;
+    typeCompute    = HIPTENSOR_COMPUTE_DESC_16F;
     output         = hiptensorReduction(&handle,
                                 &alpha,
                                 A,
@@ -225,7 +225,7 @@ TEST(hiptensorInitContractionDescriptorTest, UtilTest)
     const uint32_t                   alignmentRequirementB = 0;
     const uint32_t                   alignmentRequirementC = 0;
     const uint32_t                   alignmentRequirementD = 0;
-    hiptensorComputeType_t           typeCompute;
+    hiptensorComputeDescriptor_t     typeCompute;
     auto                             output = hiptensorInitContractionDescriptor(&handle,
                                                      nullptr,
                                                      &descA,
