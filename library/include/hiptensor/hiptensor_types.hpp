@@ -67,7 +67,6 @@ typedef enum
     HIPTENSOR_STATUS_INSUFFICIENT_DRIVER = 20,
     //! Indicates an error related to file I/O.
     HIPTENSOR_STATUS_IO_ERROR = 21,
-
 } hiptensorStatus_t;
 
 //! @brief hipTensor compute type enumeration
