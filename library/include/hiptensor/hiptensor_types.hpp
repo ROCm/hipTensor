@@ -202,17 +202,33 @@ struct hiptensorTensorDescriptor_t
     hiptensorOperator_t mUnaryOp;
 };
 
-//! @brief Structure representing a tensor contraction descriptor
+//! @brief This enum decides the over the operation based on the inputs.
 //!
-//! Represents contraction descriptor with the given properties of internal
-//! contraction op (either scale or bilinear), the internal compute type,
+//! This enum decides the operation based on the in puts passed in the
+//! hipTensorContractionGetWorkspaceSize
+
+enum struct hiptensorOperationId_t : int32_t
+{
+    SCALE_CONTRACTION            = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
+    BILINEAR_CONTRACTION         = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
+    SCALE_COMPLEX_CONTRACTION    = 2,
+    BILINEAR_COMPLEX_CONTRACTION = 3,
+    PERMUTATION                  = 4,
+    REDUCTION                    = 5,
+    UNKNOWN,
+};
+
+//! @brief Structure representing a tensor operation descriptor
+//!
+//! Represents operation descriptor with the given properties of internal
+//! tensor op (contraction, permutation, reduction), the internal compute type,
 //! as well as all of the input tensor descriptors, their alignment requirements
 //! and modes.
 //! Constructed with hiptensorInitContractionDescriptor() function.
-struct hiptensorContractionDescriptor_t
+struct hiptensorOperationDescriptor_t
 {
-    //! Enum that differentiates the internal contraction operation
-    int32_t mContractionOpId;
+    //! Enum that differentiates the internal tensor operation
+    int32_t mOperationOpId;
     //! Compute type for the contraction
     hiptensorComputeType_t mComputeType;
     //! Cache of tensor descriptors
@@ -239,7 +255,7 @@ struct hiptensorContractionPlan_t
     //! Final solution candidate
     void* mSolution;
     //! Contraction parameters
-    hiptensorContractionDescriptor_t mContractionDesc;
+    hiptensorOperationDescriptor_t mContractionDesc;
 };
 
 //! @brief Logging callback

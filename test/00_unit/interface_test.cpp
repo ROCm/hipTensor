@@ -211,23 +211,23 @@ TEST(hiptensorReductionTest, UtilTest)
 
 TEST(hiptensorInitContractionDescriptorTest, UtilTest)
 {
-    char                             buf[1];
-    hiptensorContractionDescriptor_t desc;
-    hiptensorHandle_t                handle;
-    hiptensorTensorDescriptor_t      descA;
-    int32_t                          modeA[1];
-    hiptensorTensorDescriptor_t      descB;
-    int32_t                          modeB[1];
-    hiptensorTensorDescriptor_t      descC;
-    int32_t                          modeC[1];
-    hiptensorTensorDescriptor_t      descD;
-    int32_t                          modeD[1];
-    const uint32_t                   alignmentRequirementA = 0;
-    const uint32_t                   alignmentRequirementB = 0;
-    const uint32_t                   alignmentRequirementC = 0;
-    const uint32_t                   alignmentRequirementD = 0;
-    hiptensorComputeDescriptor_t     typeCompute;
-    auto                             output = hiptensorInitContractionDescriptor(handle,
+    char                           buf[1];
+    hiptensorOperationDescriptor_t desc;
+    hiptensorHandle_t              handle;
+    hiptensorTensorDescriptor_t    descA;
+    int32_t                        modeA[1];
+    hiptensorTensorDescriptor_t    descB;
+    int32_t                        modeB[1];
+    hiptensorTensorDescriptor_t    descC;
+    int32_t                        modeC[1];
+    hiptensorTensorDescriptor_t    descD;
+    int32_t                        modeD[1];
+    const uint32_t                 alignmentRequirementA = 0;
+    const uint32_t                 alignmentRequirementB = 0;
+    const uint32_t                 alignmentRequirementC = 0;
+    const uint32_t                 alignmentRequirementD = 0;
+    hiptensorComputeDescriptor_t   typeCompute;
+    auto                           output = hiptensorInitContractionDescriptor(handle,
                                                      nullptr,
                                                      &descA,
                                                      modeA,
@@ -287,11 +287,11 @@ TEST(hiptensorInitContractionFindTest, UtilTest)
 
 TEST(hiptensorContractionGetWorkspaceSizeTest, UtilTest)
 {
-    hiptensorHandle_t                handle;
-    hiptensorContractionDescriptor_t desc;
-    hiptensorContractionFind_t       find;
-    hiptensorWorksizePreference_t    pref;
-    uint64_t                         workspaceSize;
+    hiptensorHandle_t              handle;
+    hiptensorOperationDescriptor_t desc;
+    hiptensorContractionFind_t     find;
+    hiptensorWorksizePreference_t  pref;
+    uint64_t                       workspaceSize;
     // auto output = hiptensorContractionGetWorkspaceSize(nullptr, &desc, &find, pref, &workspaceSize);
     // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for handle is null
     auto output
@@ -301,11 +301,11 @@ TEST(hiptensorContractionGetWorkspaceSizeTest, UtilTest)
 
 TEST(hiptensorInitContractionPlanTest, UtilTest)
 {
-    hiptensorHandle_t                handle;
-    hiptensorContractionPlan_t       plan;
-    hiptensorContractionDescriptor_t desc;
-    hiptensorContractionFind_t       find;
-    uint64_t                         workspaceSize;
+    hiptensorHandle_t              handle;
+    hiptensorContractionPlan_t     plan;
+    hiptensorOperationDescriptor_t desc;
+    hiptensorContractionFind_t     find;
+    uint64_t                       workspaceSize;
     // auto output = hiptensorInitContractionPlan(nullptr, &plan, &desc, &find, workspaceSize);
     // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for handle is null
 

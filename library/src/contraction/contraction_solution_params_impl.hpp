@@ -59,12 +59,12 @@ namespace hiptensor
     template <typename DeviceOp>
     struct ContractionSolutionParamsImpl : public ContractionSolutionParams
     {
-        ContractionSolutionParamsImpl()                                                = default;
-        ~ContractionSolutionParamsImpl()                                               = default;
-        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl const&)            = default;
-        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl&&)                 = default;
+        ContractionSolutionParamsImpl()                                     = default;
+        ~ContractionSolutionParamsImpl()                                    = default;
+        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl const&) = default;
+        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl&&)      = default;
         ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl const&) = default;
-        ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl&&)      = default;
+        ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl&&) = default;
 
         using MetaTraitsT = MetaTraits<DeviceOp>;
 
@@ -118,7 +118,7 @@ namespace hiptensor
             return ElementWiseOperatorType_v<typename MetaTraitsT::BOp>;
         }
 
-        ContractionOpId_t opCDE() const override
+        hiptensorOperationId_t opCDE() const override
         {
             return ContractionOperatorType_v<typename MetaTraitsT::CDEOp>;
         }

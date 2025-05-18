@@ -36,12 +36,12 @@ namespace hiptensor
 {
     struct ContractionSolutionParams
     {
-        ContractionSolutionParams()                                            = default;
-        virtual ~ContractionSolutionParams()                                   = default;
-        ContractionSolutionParams(ContractionSolutionParams const&)            = default;
-        ContractionSolutionParams(ContractionSolutionParams&&)                 = default;
+        ContractionSolutionParams()                                 = default;
+        virtual ~ContractionSolutionParams()                        = default;
+        ContractionSolutionParams(ContractionSolutionParams const&) = default;
+        ContractionSolutionParams(ContractionSolutionParams&&)      = default;
         ContractionSolutionParams& operator=(ContractionSolutionParams const&) = default;
-        ContractionSolutionParams& operator=(ContractionSolutionParams&&)      = default;
+        ContractionSolutionParams& operator=(ContractionSolutionParams&&) = default;
 
         // Map tensor dimensions
         virtual int32_t dimsM() const = 0;
@@ -56,9 +56,9 @@ namespace hiptensor
         virtual hiptensorComputeType_t typeCompute() const = 0;
 
         // Map to operators
-        virtual hiptensorOperator_t opA() const   = 0;
-        virtual hiptensorOperator_t opB() const   = 0;
-        virtual ContractionOpId_t   opCDE() const = 0;
+        virtual hiptensorOperator_t    opA() const   = 0;
+        virtual hiptensorOperator_t    opB() const   = 0;
+        virtual hiptensorOperationId_t opCDE() const = 0;
     };
 
 } // namespace hiptensor

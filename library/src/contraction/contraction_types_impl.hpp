@@ -49,25 +49,25 @@ namespace hiptensor
     template <>
     struct ContractionOperatorType<ck::tensor_operation::element_wise::Scale>
     {
-        static constexpr auto value = ContractionOpId_t::SCALE;
+        static constexpr auto value = hiptensorOperationId_t::SCALE_CONTRACTION;
     };
 
     template <>
     struct ContractionOperatorType<ck::tensor_operation::element_wise::ScaleComplex>
     {
-        static constexpr auto value = ContractionOpId_t::SCALE_COMPLEX;
+        static constexpr auto value = hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION;
     };
 
     template <>
     struct ContractionOperatorType<ck::tensor_operation::element_wise::Bilinear>
     {
-        static constexpr auto value = ContractionOpId_t::BILINEAR;
+        static constexpr auto value = hiptensorOperationId_t::BILINEAR_CONTRACTION;
     };
 
     template <>
     struct ContractionOperatorType<ck::tensor_operation::element_wise::BilinearComplex>
     {
-        static constexpr auto value = ContractionOpId_t::BILINEAR_COMPLEX;
+        static constexpr auto value = hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION;
     };
 
 } // namespace hiptensor

@@ -246,7 +246,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t      
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
-                                                     hiptensorContractionDescriptor_t*  desc,
+                                                     hiptensorOperationDescriptor_t*    desc,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],
                                                      const uint32_t alignmentRequirementA,
@@ -284,10 +284,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handl
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t handle,
-                                                       const hiptensorContractionDescriptor_t* desc,
-                                                       const hiptensorContractionFind_t*       find,
-                                                       const hiptensorWorksizePreference_t     pref,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t               handle,
+                                                       const hiptensorOperationDescriptor_t* desc,
+                                                       const hiptensorContractionFind_t*     find,
+                                                       const hiptensorWorksizePreference_t   pref,
                                                        uint64_t* workspaceSize);
 
 //! @brief Initializes the contraction plan for a given tensor contraction problem
@@ -305,11 +305,11 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t h
 //! @retval HIPTENSOR_STATUS_SUCCESS If a viable candidate has been found.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find or desc is not
 //! initialized.
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t                 handle,
-                                               hiptensorContractionPlan_t*             plan,
-                                               const hiptensorContractionDescriptor_t* desc,
-                                               const hiptensorContractionFind_t*       find,
-                                               const uint64_t workspaceSize);
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t               handle,
+                                               hiptensorContractionPlan_t*           plan,
+                                               const hiptensorOperationDescriptor_t* desc,
+                                               const hiptensorContractionFind_t*     find,
+                                               const uint64_t                        workspaceSize);
 
 //! @brief Computes the tensor contraction \f[ D = alpha * A * B + beta * C \f]
 //! @param[in] handle Opaque handle holding hipTensor's library context.

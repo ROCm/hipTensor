@@ -63,7 +63,7 @@ inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolu
 }
 
 hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
-                                                     hiptensorContractionDescriptor_t*  desc,
+                                                     hiptensorOperationDescriptor_t*    desc,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],
                                                      const uint32_t alignmentRequirementA,
@@ -148,10 +148,10 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t    
         int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
-        auto contractionOp
-            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
-                  ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
-                  : hiptensor::ContractionOpId_t::SCALE;
+        auto contractionOp = typeCompute == HIPTENSOR_COMPUTE_DESC_C32F
+                                     || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
+                                 ? hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION
+                                 : hiptensorOperationId_t::SCALE_CONTRACTION;
         *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA,
@@ -178,10 +178,10 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t    
         int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
-        auto contractionOp
-            = typeCompute == HIPTENSOR_COMPUTE_C32F || typeCompute == HIPTENSOR_COMPUTE_C64F
-                  ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
-                  : hiptensor::ContractionOpId_t::BILINEAR;
+        auto contractionOp = typeCompute == HIPTENSOR_COMPUTE_DESC_C32F
+                                     || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
+                                 ? hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION
+                                 : hiptensorOperationId_t::BILINEAR_CONTRACTION;
         *desc = {(int32_t)contractionOp,
                  typeCompute,
                  {*descA, *descB, *descC, *descD},
@@ -279,10 +279,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handl
     }
 }
 
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t handle,
-                                                       const hiptensorContractionDescriptor_t* desc,
-                                                       const hiptensorContractionFind_t*       find,
-                                                       const hiptensorWorksizePreference_t     pref,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t               handle,
+                                                       const hiptensorOperationDescriptor_t* desc,
+                                                       const hiptensorContractionFind_t*     find,
+                                                       const hiptensorWorksizePreference_t   pref,
                                                        uint64_t* workspaceSize)
 {
     using hiptensor::Logger;
@@ -357,11 +357,11 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t h
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t                 handle,
-                                               hiptensorContractionPlan_t*             plan,
-                                               const hiptensorContractionDescriptor_t* desc,
-                                               const hiptensorContractionFind_t*       find,
-                                               const uint64_t workspaceSize)
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t               handle,
+                                               hiptensorContractionPlan_t*           plan,
+                                               const hiptensorOperationDescriptor_t* desc,
+                                               const hiptensorContractionFind_t*     find,
+                                               const uint64_t                        workspaceSize)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -421,7 +421,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
 
     // Query contraction solutions for the correct contraction operation and type
     auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}
-                         .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
+                         .query((hiptensorOperationId_t)desc->mOperationOpId)
                          .query(ADataType, BDataType, DDataType, EDataType, computeType);
 
     candidates = toContractionSolutionVec(solutionQ.solutions());

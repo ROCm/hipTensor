@@ -209,7 +209,7 @@ namespace hiptensor
                                 _Float16,
                                 _Float16,
                                 _Float16,
-                                ContractionOpId_t::SCALE,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
                                 float>
     {
         static hiptensorStatus_t
@@ -321,7 +321,7 @@ namespace hiptensor
                                 _Float16,
                                 _Float16,
                                 _Float16,
-                                ContractionOpId_t::BILINEAR,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                 float>
     {
         static hiptensorStatus_t
@@ -442,7 +442,7 @@ namespace hiptensor
                                 hip_bfloat16,
                                 hip_bfloat16,
                                 hip_bfloat16,
-                                ContractionOpId_t::SCALE,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
                                 float>
     {
         static hiptensorStatus_t
@@ -554,7 +554,7 @@ namespace hiptensor
                                 hip_bfloat16,
                                 hip_bfloat16,
                                 hip_bfloat16,
-                                ContractionOpId_t::BILINEAR,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                 float>
     {
         static hiptensorStatus_t
@@ -670,7 +670,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, _Float16>
+    struct ActorCriticSelection<float,
+                                float,
+                                float,
+                                float,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
+                                _Float16>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -777,7 +782,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR, _Float16>
+    struct ActorCriticSelection<float,
+                                float,
+                                float,
+                                float,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
+                                _Float16>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -892,7 +902,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, hip_bfloat16>
+    struct ActorCriticSelection<float,
+                                float,
+                                float,
+                                float,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
+                                hip_bfloat16>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1003,7 +1018,7 @@ namespace hiptensor
                                 float,
                                 float,
                                 float,
-                                ContractionOpId_t::BILINEAR,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                 hip_bfloat16>
     {
         static hiptensorStatus_t
@@ -1119,7 +1134,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::SCALE, float>
+    struct ActorCriticSelection<float,
+                                float,
+                                float,
+                                float,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1226,7 +1246,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<float, float, float, float, ContractionOpId_t::BILINEAR, float>
+    struct ActorCriticSelection<float,
+                                float,
+                                float,
+                                float,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1341,7 +1366,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE, float>
+    struct ActorCriticSelection<double,
+                                double,
+                                double,
+                                double,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1448,7 +1478,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR, float>
+    struct ActorCriticSelection<double,
+                                double,
+                                double,
+                                double,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
+                                float>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1563,7 +1598,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::SCALE, double>
+    struct ActorCriticSelection<double,
+                                double,
+                                double,
+                                double,
+                                hiptensorOperationId_t::SCALE_CONTRACTION,
+                                double>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1670,7 +1710,12 @@ namespace hiptensor
     };
 
     template <>
-    struct ActorCriticSelection<double, double, double, double, ContractionOpId_t::BILINEAR, double>
+    struct ActorCriticSelection<double,
+                                double,
+                                double,
+                                double,
+                                hiptensorOperationId_t::BILINEAR_CONTRACTION,
+                                double>
     {
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
@@ -1789,7 +1834,7 @@ namespace hiptensor
                                 hipFloatComplex,
                                 hipFloatComplex,
                                 hipFloatComplex,
-                                ContractionOpId_t::SCALE_COMPLEX,
+                                hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION,
                                 hipFloatComplex>
     {
         static hiptensorStatus_t
@@ -1901,7 +1946,7 @@ namespace hiptensor
                                 hipFloatComplex,
                                 hipFloatComplex,
                                 hipFloatComplex,
-                                ContractionOpId_t::BILINEAR_COMPLEX,
+                                hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION,
                                 hipFloatComplex>
     {
         static hiptensorStatus_t
@@ -2021,7 +2066,7 @@ namespace hiptensor
                                 hipDoubleComplex,
                                 hipDoubleComplex,
                                 hipDoubleComplex,
-                                ContractionOpId_t::SCALE_COMPLEX,
+                                hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION,
                                 hipDoubleComplex>
     {
         static hiptensorStatus_t
@@ -2133,7 +2178,7 @@ namespace hiptensor
                                 hipDoubleComplex,
                                 hipDoubleComplex,
                                 hipDoubleComplex,
-                                ContractionOpId_t::BILINEAR_COMPLEX,
+                                hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION,
                                 hipDoubleComplex>
     {
         static hiptensorStatus_t
@@ -2277,7 +2322,7 @@ namespace hiptensor
                                         _Float16,
                                         _Float16,
                                         _Float16,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2305,7 +2350,7 @@ namespace hiptensor
                                         _Float16,
                                         _Float16,
                                         _Float16,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2333,7 +2378,7 @@ namespace hiptensor
                                         hip_bfloat16,
                                         hip_bfloat16,
                                         hip_bfloat16,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2361,7 +2406,7 @@ namespace hiptensor
                                         hip_bfloat16,
                                         hip_bfloat16,
                                         hip_bfloat16,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2389,7 +2434,7 @@ namespace hiptensor
                                         float,
                                         float,
                                         float,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         _Float16>::selectWinner(winner,
                                                                 candidates,
                                                                 typeA,
@@ -2417,7 +2462,7 @@ namespace hiptensor
                                         float,
                                         float,
                                         float,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         _Float16>::selectWinner(winner,
                                                                 candidates,
                                                                 typeA,
@@ -2445,7 +2490,7 @@ namespace hiptensor
                                         float,
                                         float,
                                         float,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         hip_bfloat16>::selectWinner(winner,
                                                                     candidates,
                                                                     typeA,
@@ -2473,7 +2518,7 @@ namespace hiptensor
                                         float,
                                         float,
                                         float,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         hip_bfloat16>::selectWinner(winner,
                                                                     candidates,
                                                                     typeA,
@@ -2501,7 +2546,7 @@ namespace hiptensor
                                         float,
                                         float,
                                         float,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2529,7 +2574,7 @@ namespace hiptensor
                                         float,
                                         float,
                                         float,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2557,7 +2602,7 @@ namespace hiptensor
                                         double,
                                         double,
                                         double,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2585,7 +2630,7 @@ namespace hiptensor
                                         double,
                                         double,
                                         double,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         float>::selectWinner(winner,
                                                              candidates,
                                                              typeA,
@@ -2613,7 +2658,7 @@ namespace hiptensor
                                         double,
                                         double,
                                         double,
-                                        ContractionOpId_t::SCALE,
+                                        hiptensorOperationId_t::SCALE_CONTRACTION,
                                         double>::selectWinner(winner,
                                                               candidates,
                                                               typeA,
@@ -2641,7 +2686,7 @@ namespace hiptensor
                                         double,
                                         double,
                                         double,
-                                        ContractionOpId_t::BILINEAR,
+                                        hiptensorOperationId_t::BILINEAR_CONTRACTION,
                                         double>::selectWinner(winner,
                                                               candidates,
                                                               typeA,
@@ -2669,7 +2714,7 @@ namespace hiptensor
                                         hipFloatComplex,
                                         hipFloatComplex,
                                         hipFloatComplex,
-                                        ContractionOpId_t::SCALE_COMPLEX,
+                                        hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION,
                                         hipFloatComplex>::selectWinner(winner,
                                                                        candidates,
                                                                        typeA,
@@ -2697,7 +2742,7 @@ namespace hiptensor
                                         hipFloatComplex,
                                         hipFloatComplex,
                                         hipFloatComplex,
-                                        ContractionOpId_t::BILINEAR_COMPLEX,
+                                        hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION,
                                         hipFloatComplex>::selectWinner(winner,
                                                                        candidates,
                                                                        typeA,
@@ -2725,7 +2770,7 @@ namespace hiptensor
                                         hipDoubleComplex,
                                         hipDoubleComplex,
                                         hipDoubleComplex,
-                                        ContractionOpId_t::SCALE_COMPLEX,
+                                        hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION,
                                         hipDoubleComplex>::selectWinner(winner,
                                                                         candidates,
                                                                         typeA,
@@ -2753,7 +2798,7 @@ namespace hiptensor
                                         hipDoubleComplex,
                                         hipDoubleComplex,
                                         hipDoubleComplex,
-                                        ContractionOpId_t::BILINEAR_COMPLEX,
+                                        hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION,
                                         hipDoubleComplex>::selectWinner(winner,
                                                                         candidates,
                                                                         typeA,

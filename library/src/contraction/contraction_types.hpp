@@ -31,20 +31,6 @@
 
 namespace hiptensor
 {
-    /**
-     * \brief This enum decides the over the operation based on the inputs.
-     * \details This enum decides the operation based on the in puts passed in the
-     * hipTensorContractionGetWorkspaceSize
-     */
-    enum struct ContractionOpId_t : int32_t
-    {
-        SCALE            = 0, ///< \f${C=\alpha\mathcal{A}\mathcal{B}}\f$
-        BILINEAR         = 1, ///< \f${D=\alpha\mathcal{A}\mathcal{B}+\beta\mathcal{C}}\f$
-        SCALE_COMPLEX    = 2,
-        BILINEAR_COMPLEX = 3,
-        UNKNOWN,
-    };
-
     // Map type to runtime hiptensorOperator_t
     template <typename OpId>
     struct ElementWiseOperatorType;
@@ -52,7 +38,7 @@ namespace hiptensor
     template <typename OpId>
     static constexpr auto ElementWiseOperatorType_v = ElementWiseOperatorType<OpId>::value;
 
-    // Map type to runtime ContractionOpId_t
+    // Map type to runtime hiptensorOperationId_t
     template <typename OpId>
     struct ContractionOperatorType;
 
@@ -63,7 +49,7 @@ namespace hiptensor
 
 namespace std
 {
-    ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const&);
+    ostream& operator<<(ostream& os, hiptensorOperationId_t const&);
 
 } // namespace std
 

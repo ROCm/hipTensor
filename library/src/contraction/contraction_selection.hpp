@@ -60,7 +60,7 @@ namespace hiptensor
               typename B,
               typename C,
               typename D,
-              ContractionOpId_t ContractionOp,
+              hiptensorOperationId_t ContractionOp,
               typename ComputeType>
     struct ActorCriticSelection
     {

@@ -205,7 +205,7 @@ int scaleContractionSample(void* alpha)
     std::cout << "b_ns_ks: " << b_ns_ks << std::endl;
     std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
 
-    hiptensorContractionDescriptor_t desc;
+    hiptensorOperationDescriptor_t desc;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(*handle,
                                                              &desc,
                                                              &a_ms_ks,

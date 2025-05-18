@@ -28,7 +28,7 @@
 
 namespace std
 {
-    ostream& operator<<(ostream& os, hiptensor::ContractionOpId_t const& op)
+    ostream& operator<<(ostream& os, hiptensorOperationId_t const& op)
     {
         return os << (int32_t)op;
     }
