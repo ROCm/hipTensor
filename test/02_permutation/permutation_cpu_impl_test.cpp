@@ -114,14 +114,21 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
 
     const floatTypeCompute alphaValue = 2.1f;
     hiptensorHandle_t*     handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
+
     hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, HIPTENSOR_OP_IDENTITY));
+    uint32_t                    alignmentRequirementA;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, extentA.data(), &descA, &alignmentRequirementA));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        *handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
 
     hiptensorTensorDescriptor_t descB;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, HIPTENSOR_OP_IDENTITY));
+    uint32_t                    alignmentRequirementB;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, extentB.data(), &descB, &alignmentRequirementB));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        *handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, alignmentRequirementB));
 
     hiptensorPermutationReference(&alphaValue,
                                   aArray.data(),

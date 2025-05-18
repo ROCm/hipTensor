@@ -32,7 +32,7 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            handle,
                                              const void*                        alpha,
                                              const void*                        A,
                                              const hiptensorTensorDescriptor_t* descA,
@@ -59,7 +59,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
              "gamma=%p, C=%p, descC=%p, modeC=%p, "
              "D=%p, descD=%p, modeD=%p, "
              "opAC=0x%02X, typeScalar=0x%02X, stream=%p",
-             handle,
+             &handle,
              alpha,
              A,
              descA,
@@ -78,7 +78,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
     logger->logAPITrace("hiptensorElementwiseBinary", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, alpha);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, A);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);

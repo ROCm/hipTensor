@@ -42,7 +42,7 @@ namespace hiptensor
         Handle()  = default;
         ~Handle() = default;
 
-        static Handle  createHandle(int64_t* buff); // Calls constructor for all member variables
+        static Handle* createHandle(int64_t* buff); // Calls constructor for all member variables
         static void    destroyHandle(int64_t* buff); // Calls destructor for all member variables
         static Handle* toHandle(int64_t* buff); // Reinterprets input buffer as Handle class
 

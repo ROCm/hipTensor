@@ -88,20 +88,26 @@ auto reduceWithCpu(hipDataType typeA, hipDataType typeC, hiptensorComputeType_t 
     }
 
     hiptensorHandle_t* handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
     hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, HIPTENSOR_OP_NEG));
+    uint32_t                    alignmentRequirementA;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, extentA.data(), &descA, &alignmentRequirementA));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        *handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
 
     hiptensorTensorDescriptor_t descC;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, HIPTENSOR_OP_NEG));
+    uint32_t                    alignmentRequirementC;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, extentC.data(), &descC, &alignmentRequirementC));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        *handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
 
     const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
 
     uint64_t worksize = 0;
-    CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
+    CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(*handle,
                                                              aArray.data(),
                                                              &descA,
                                                              modeA.data(),

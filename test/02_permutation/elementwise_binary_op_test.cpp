@@ -68,8 +68,6 @@ namespace hiptensor
 
     void ElementwiseBinaryOpTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -361,24 +359,43 @@ namespace hiptensor
 
             hiptensorStatus_t  err;
             hiptensorHandle_t* handle;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
             hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, dataType, Aop));
+            uint32_t                    alignmentRequirementA;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentA.data(), &descA, &alignmentRequirementA));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descA,
+                                                                  nmodeA,
+                                                                  extentA.data(),
+                                                                  NULL /* stride */,
+                                                                  dataType,
+                                                                  alignmentRequirementA));
 
             hiptensorTensorDescriptor_t descC;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descC, nmodeC, extentC.data(), NULL /* stride */, dataType, Cop));
+            uint32_t                    alignmentRequirementC;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentC.data(), &descC, &alignmentRequirementC));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descC,
+                                                                  nmodeC,
+                                                                  extentC.data(),
+                                                                  NULL /* stride */,
+                                                                  dataType,
+                                                                  alignmentRequirementC));
 
             hiptensorTensorDescriptor_t descD;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descD,
-                                                                nmodeD,
-                                                                extentD.data(),
-                                                                NULL /* stride */,
-                                                                dataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            uint32_t                    alignmentRequirementD;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentD.data(), &descD, &alignmentRequirementD));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descD,
+                                                                  nmodeD,
+                                                                  extentD.data(),
+                                                                  NULL /* stride */,
+                                                                  dataType,
+                                                                  alignmentRequirementD));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -412,7 +429,7 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(*handle,
                                                              &alphaValue,
                                                              resource->deviceInput1().get(),
                                                              &descA,

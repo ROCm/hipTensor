@@ -67,8 +67,6 @@ namespace hiptensor
 
     void PermutationTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -314,20 +312,31 @@ namespace hiptensor
 
             hiptensorStatus_t  err;
             hiptensorHandle_t* handle;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
             hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, abDataType, Aop));
+            uint32_t                    alignmentRequirementA;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentA.data(), &descA, &alignmentRequirementA));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descA,
+                                                                  nmodeA,
+                                                                  extentA.data(),
+                                                                  NULL /* stride */,
+                                                                  abDataType,
+                                                                  alignmentRequirementA));
 
             hiptensorTensorDescriptor_t descB;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descB,
-                                                                nmodeB,
-                                                                extentB.data(),
-                                                                NULL /* stride */,
-                                                                abDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            uint32_t                    alignmentRequirementB;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentB.data(), &descB, &alignmentRequirementB));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descB,
+                                                                  nmodeB,
+                                                                  extentB.data(),
+                                                                  NULL /* stride */,
+                                                                  abDataType,
+                                                                  alignmentRequirementB));
 
             float alphaValue{};
             if(computeDataType == HIP_R_16F)
@@ -344,7 +353,7 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(*handle,
                                                        &alphaValue,
                                                        resource->deviceInput1().get(),
                                                        &descA,

@@ -28,12 +28,12 @@
 
 namespace hiptensor
 {
-    Handle Handle::createHandle(int64_t* buff)
+    Handle* Handle::createHandle(int64_t* buff)
     {
         auto handle = toHandle(buff);
         new(handle) Handle();
 
-        return *handle;
+        return handle;
     }
 
     void Handle::destroyHandle(int64_t* buff)

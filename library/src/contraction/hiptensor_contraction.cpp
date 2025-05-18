@@ -62,7 +62,7 @@ inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolu
     return result;
 }
 
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
                                                      hiptensorContractionDescriptor_t*  desc,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],
@@ -92,7 +92,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
         "typeCompute=0x%02X",
         2 * (int)sizeof(void*),
-        (unsigned long long)handle,
+        (unsigned long long)&handle,
         (unsigned long long)desc,
         (unsigned long long)descA,
         (unsigned long long)modeA,
@@ -111,7 +111,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descB);
@@ -121,19 +121,19 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
         return checkResult;
     }
 
-    if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY || descB->mUnaryOp != HIPTENSOR_OP_IDENTITY
-       || descD->mUnaryOp != HIPTENSOR_OP_IDENTITY
-       || (descC && descC->mUnaryOp != HIPTENSOR_OP_IDENTITY))
-    {
-        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Unsupported Operator Type Error : The supported Operator is "
-                 "HIPTENSOR_OP_IDENTITY (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorInitContractionDescriptor", msg);
-        return errorCode;
-    }
+    // if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY || descB->mUnaryOp != HIPTENSOR_OP_IDENTITY
+    //    || descD->mUnaryOp != HIPTENSOR_OP_IDENTITY
+    //    || (descC && descC->mUnaryOp != HIPTENSOR_OP_IDENTITY))
+    // {
+    //     auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+    //     snprintf(msg,
+    //              sizeof(msg),
+    //              "Unsupported Operator Type Error : The supported Operator is "
+    //              "HIPTENSOR_OP_IDENTITY (%s)",
+    //              hiptensorGetErrorString(errorCode));
+    //     logger->logError("hiptensorInitContractionDescriptor", msg);
+    //     return errorCode;
+    // }
 
     if(descC == nullptr || modeC == nullptr)
     {
@@ -195,7 +195,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
+hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handle,
                                                hiptensorContractionFind_t* find,
                                                const hiptensorAlgo_t       algo)
 {
@@ -208,21 +208,21 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
              sizeof(msg),
              "handle=0x%0*llX, find=0x%llX, algo=0x%02X",
              2 * (int)sizeof(void*),
-             (unsigned long long)handle,
+             (unsigned long long)&handle,
              (unsigned long long)find,
              (int)algo);
 
     logger->logAPITrace("hiptensorInitContractionFind", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
     if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
@@ -279,7 +279,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     }
 }
 
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t handle,
                                                        const hiptensorContractionDescriptor_t* desc,
                                                        const hiptensorContractionFind_t*       find,
                                                        const hiptensorWorksizePreference_t     pref,
@@ -294,7 +294,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
              sizeof(msg),
              "handle=0x%0*llX, desc=0x%llX, find=0x%llX, pref=0x%02X, workspaceSize=0x%04lX",
              2 * (int)sizeof(void*),
-             (unsigned long long)handle,
+             (unsigned long long)&handle,
              (unsigned long long)desc,
              (unsigned long long)find,
              (unsigned int)pref,
@@ -302,7 +302,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, workspaceSize);
@@ -357,7 +357,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t                 handle,
                                                hiptensorContractionPlan_t*             plan,
                                                const hiptensorContractionDescriptor_t* desc,
                                                const hiptensorContractionFind_t*       find,
@@ -373,7 +373,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
              sizeof(msg),
              "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX",
              2 * (int)sizeof(void*),
-             (unsigned long long)handle,
+             (unsigned long long)&handle,
              (unsigned long long)plan,
              (unsigned long long)desc,
              (unsigned long long)find,
@@ -381,7 +381,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     logger->logAPITrace("hiptensorInitContractionPlan", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
@@ -390,7 +390,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
@@ -520,7 +520,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
+hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
                                        const hiptensorContractionPlan_t* plan,
                                        const void*                       alpha,
                                        const void*                       A,
@@ -575,7 +575,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
              "handle=0x%0*llX, plan=0x%llX, %s, A=0x%llX, B=0x%llX, %s, "
              "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
              2 * (int)sizeof(void*),
-             (unsigned long long)handle,
+             (unsigned long long)&handle,
              (unsigned long long)plan,
              alphaMsg,
              (unsigned long long)A,
@@ -590,7 +590,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
     logger->logAPITrace("hiptensorContraction", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, alpha);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, A);
@@ -602,7 +602,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;

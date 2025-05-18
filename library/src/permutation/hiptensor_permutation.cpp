@@ -32,7 +32,7 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle,
                                        const void*                        alpha,
                                        const void*                        A,
                                        const hiptensorTensorDescriptor_t* descA,
@@ -52,7 +52,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
              sizeof(msg),
              "handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, B=%p, descB=%p, modeB=%p, "
              "typeScalar=0x%02X, stream=%p",
-             handle,
+             &handle,
              alpha,
              A,
              descA,
@@ -66,7 +66,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
     logger->logAPITrace("hiptensorPermutation", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, alpha);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, A);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);

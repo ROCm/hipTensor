@@ -187,7 +187,7 @@ struct hiptensorHandle_t
 //!
 //! Represents a descriptor for the tensor with the given properties of
 //! data type, lengths, strides and element-wise unary operation.
-//! Constructed with hiptensorInitTensorDescriptor() function.
+//! Constructed with hiptensorCreateTensorDescriptor() function.
 struct hiptensorTensorDescriptor_t
 {
     //! Data type of the tensors enum selection
@@ -196,6 +196,8 @@ struct hiptensorTensorDescriptor_t
     std::vector<std::size_t> mLengths;
     //! Strides of the tensor
     std::vector<std::size_t> mStrides;
+    //! Alignment (in bytes) of the tensor
+    uint32_t mAlignmentRequirement;
     //! Unary operator applied to the tensor
     hiptensorOperator_t mUnaryOp;
 };

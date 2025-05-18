@@ -139,44 +139,60 @@ int main()
 
     hiptensorStatus_t  err;
     hiptensorHandle_t* handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
+    /************************************************
+   * Retrieve the memory alignment for each tensor
+   ************************************************/
+
     hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descA,
-                                                        nmodeA,
-                                                        extentA.data(),
-                                                        nullptr /* stride */,
-                                                        typeA,
-                                                        HIPTENSOR_OP_IDENTITY));
+    uint32_t                    alignmentRequirementA;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, A_d, &descA, &alignmentRequirementA));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                          &descA,
+                                                          nmodeA,
+                                                          extentA.data(),
+                                                          nullptr /* stride */,
+                                                          typeA,
+                                                          alignmentRequirementA));
 
     hiptensorTensorDescriptor_t descB;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descB,
-                                                        nmodeB,
-                                                        extentB.data(),
-                                                        nullptr /* stride */,
-                                                        typeB,
-                                                        HIPTENSOR_OP_IDENTITY));
+    uint32_t                    alignmentRequirementB;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, B_d, &descB, &alignmentRequirementB));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                          &descB,
+                                                          nmodeB,
+                                                          extentB.data(),
+                                                          nullptr /* stride */,
+                                                          typeB,
+                                                          alignmentRequirementB));
 
     hiptensorTensorDescriptor_t descC;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descC,
-                                                        nmodeC,
-                                                        extentC.data(),
-                                                        nullptr /* stride */,
-                                                        typeC,
-                                                        HIPTENSOR_OP_IDENTITY));
+    uint32_t                    alignmentRequirementC;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, C_d, &descC, &alignmentRequirementC));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                          &descC,
+                                                          nmodeC,
+                                                          extentC.data(),
+                                                          nullptr /* stride */,
+                                                          typeC,
+                                                          alignmentRequirementC));
 
     hiptensorTensorDescriptor_t descD;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descD,
-                                                        nmodeD,
-                                                        extentD.data(),
-                                                        nullptr /* stride */,
-                                                        typeD,
-                                                        HIPTENSOR_OP_IDENTITY));
+    uint32_t                    alignmentRequirementD;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorGetAlignmentRequirement(*handle, D_d, &descD, &alignmentRequirementD));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                          &descD,
+                                                          nmodeD,
+                                                          extentD.data(),
+                                                          nullptr /* stride */,
+                                                          typeD,
+                                                          alignmentRequirementD));
 
     using hiptensor::HiptensorOptions;
     auto& options = HiptensorOptions::instance();
@@ -186,7 +202,7 @@ int main()
     const floatTypeCompute beta  = 1.0f;
     const floatTypeCompute gamma = 2.0f;
 
-    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(handle,
+    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(*handle,
                                                       &alpha,
                                                       A_d,
                                                       &descA,

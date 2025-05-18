@@ -96,8 +96,6 @@ namespace hiptensor
 
     void ReductionTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -409,27 +407,46 @@ namespace hiptensor
 
             hiptensorStatus_t  err;
             hiptensorHandle_t* handle;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
             hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, acDataType, aOp));
+            uint32_t                    alignmentRequirementA;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentA.data(), &descA, &alignmentRequirementA));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descA,
+                                                                  nmodeA,
+                                                                  extentA.data(),
+                                                                  NULL /* stride */,
+                                                                  acDataType,
+                                                                  alignmentRequirementA));
 
             hiptensorTensorDescriptor_t descC;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descC, nmodeC, extentC.data(), strideC.data(), acDataType, cOp));
+            uint32_t                    alignmentRequirementC;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentC.data(), &descC, &alignmentRequirementC));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descC,
+                                                                  nmodeC,
+                                                                  extentC.data(),
+                                                                  strideC.data(),
+                                                                  acDataType,
+                                                                  alignmentRequirementC));
 
             hiptensorTensorDescriptor_t descD;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descD,
-                                                                nmodeD,
-                                                                extentD.data(),
-                                                                strideD.data(),
-                                                                acDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            uint32_t                    alignmentRequirementD;
+            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+                *handle, extentD.data(), &descD, &alignmentRequirementD));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
+                                                                  &descD,
+                                                                  nmodeD,
+                                                                  extentD.data(),
+                                                                  strideD.data(),
+                                                                  acDataType,
+                                                                  alignmentRequirementD));
 
             uint64_t worksize = 0;
-            CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(*handle,
                                                                      resource->deviceA().get(),
                                                                      &descA,
                                                                      modeA.data(),
@@ -455,7 +472,7 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorReduction(handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorReduction(*handle,
                                                      (const void*)&alphaValue,
                                                      resource->deviceA().get(),
                                                      &descA,
