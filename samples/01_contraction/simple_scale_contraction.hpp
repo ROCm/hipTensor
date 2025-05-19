@@ -317,6 +317,9 @@ int scaleContractionSample(void* alpha)
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(a_ms_ks));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(b_ns_ks));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(d_ms_ns));
 
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(B);

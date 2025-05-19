@@ -959,6 +959,10 @@ namespace hiptensor
         if(mRunFlag)
         {
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(a_ms_ks));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(b_ns_ks));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(c_ms_ns));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(d_ms_ns));
         }
     }
 

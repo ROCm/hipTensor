@@ -171,6 +171,11 @@ auto elementaryBinaryOpWithCpu(hiptensorDataType_t inputType,
                                           descCompute,
                                           0);
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
+
     return compareEqual(referenceArray.data(),
                         dArray.data(),
                         dArray.size(),

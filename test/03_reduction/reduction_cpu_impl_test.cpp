@@ -142,6 +142,10 @@ auto reduceWithCpu(hiptensorDataType_t          typeA,
                                                       descCompute,
                                                       0 /* stream */));
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+
     return compareEqual(referenceArray.data(), cArray.data(), cArray.size(), descCompute);
 }
 

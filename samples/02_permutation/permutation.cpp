@@ -184,6 +184,9 @@ int main()
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(C);
     HIPTENSOR_FREE_DEVICE(A_d);

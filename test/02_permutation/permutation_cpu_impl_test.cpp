@@ -142,6 +142,10 @@ auto permuteWithCpu(hiptensorDataType_t typeA,
                                   descCompute,
                                   0);
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descB));
+
     return compareEqual(referenceArray.data(),
                         bArray.data(),
                         bArray.size(),

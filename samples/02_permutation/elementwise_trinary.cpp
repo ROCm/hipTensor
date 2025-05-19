@@ -286,6 +286,11 @@ int main()
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descB));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
+
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(B);
     HIPTENSOR_FREE_HOST(C);

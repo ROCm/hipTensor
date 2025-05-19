@@ -625,6 +625,9 @@ namespace hiptensor
         if(mRunFlag)
         {
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
         }
     }
 

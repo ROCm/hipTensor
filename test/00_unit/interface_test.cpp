@@ -69,6 +69,8 @@ TEST(hiptensorCreateTensorDescriptorTest, UtilTest)
     output = hiptensorCreateTensorDescriptor(
         handle, desc, 1, lens, strides, HIPTENSOR_R_8U, alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
+
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(desc));
 }
 
 TEST(hiptensorGetErrorStringTest, UtilTest)
