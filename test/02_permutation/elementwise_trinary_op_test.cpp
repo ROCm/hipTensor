@@ -390,48 +390,48 @@ namespace hiptensor
             hiptensorHandle_t* handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
-            hiptensorTensorDescriptor_t descA;
-            uint32_t                    alignmentRequirementA;
+            hiptensorTensorDescriptor_t* descA;
+            uint32_t                     alignmentRequirementA;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentA.data(), &descA, &alignmentRequirementA));
+                *handle, extentA.data(), dataType, &alignmentRequirementA));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descA,
+                                                                  descA,
                                                                   nmodeA,
                                                                   extentA.data(),
                                                                   NULL /* stride */,
                                                                   dataType,
                                                                   alignmentRequirementA));
 
-            hiptensorTensorDescriptor_t descB;
-            uint32_t                    alignmentRequirementB;
+            hiptensorTensorDescriptor_t* descB;
+            uint32_t                     alignmentRequirementB;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentB.data(), &descB, &alignmentRequirementB));
+                *handle, extentB.data(), dataType, &alignmentRequirementB));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descB,
+                                                                  descB,
                                                                   nmodeB,
                                                                   extentB.data(),
                                                                   NULL /* stride */,
                                                                   dataType,
                                                                   alignmentRequirementB));
 
-            hiptensorTensorDescriptor_t descC;
-            uint32_t                    alignmentRequirementC;
+            hiptensorTensorDescriptor_t* descC;
+            uint32_t                     alignmentRequirementC;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentC.data(), &descC, &alignmentRequirementC));
+                *handle, extentC.data(), dataType, &alignmentRequirementC));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descC,
+                                                                  descC,
                                                                   nmodeC,
                                                                   extentC.data(),
                                                                   NULL /* stride */,
                                                                   dataType,
                                                                   alignmentRequirementC));
 
-            hiptensorTensorDescriptor_t descD;
-            uint32_t                    alignmentRequirementD;
+            hiptensorTensorDescriptor_t* descD;
+            uint32_t                     alignmentRequirementD;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentD.data(), &descD, &alignmentRequirementD));
+                *handle, extentD.data(), dataType, &alignmentRequirementD));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descD,
+                                                                  descD,
                                                                   nmodeD,
                                                                   extentD.data(),
                                                                   NULL /* stride */,
@@ -486,18 +486,18 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(*handle,
                                                               &alphaValue,
                                                               resource->deviceInput1().get(),
-                                                              &descA,
+                                                              descA,
                                                               modeA.data(),
                                                               &betaValue,
                                                               resource->deviceInput2().get(),
-                                                              &descB,
+                                                              descB,
                                                               modeB.data(),
                                                               &gammaValue,
                                                               resource->deviceInput3().get(),
-                                                              &descC,
+                                                              descC,
                                                               modeC.data(),
                                                               resource->deviceOutput().get(),
-                                                              &descD,
+                                                              descD,
                                                               modeD.data(),
                                                               ABop,
                                                               ABCop,
@@ -554,18 +554,18 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryOpReference(
                         &alphaValue,
                         (const double*)resource->hostInput1().get(),
-                        &descA,
+                        descA,
                         modeA.data(),
                         &betaValue,
                         (const double*)resource->hostInput2().get(),
-                        &descB,
+                        descB,
                         modeB.data(),
                         &gammaValue,
                         (const double*)resource->hostInput3().get(),
-                        &descC,
+                        descC,
                         modeC.data(),
                         (double*)resource->hostReference().get(),
-                        &descD,
+                        descD,
                         modeD.data(),
                         ABop,
                         ABCop,
@@ -585,18 +585,18 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryOpReference(
                         &alphaValue,
                         (const float*)resource->hostInput1().get(),
-                        &descA,
+                        descA,
                         modeA.data(),
                         &betaValue,
                         (const float*)resource->hostInput2().get(),
-                        &descB,
+                        descB,
                         modeB.data(),
                         &gammaValue,
                         (const float*)resource->hostInput3().get(),
-                        &descC,
+                        descC,
                         modeC.data(),
                         (float*)resource->hostReference().get(),
-                        &descD,
+                        descD,
                         modeD.data(),
                         ABop,
                         ABCop,
@@ -615,18 +615,18 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryOpReference(
                         &alphaValue,
                         (const _Float16*)resource->hostInput1().get(),
-                        &descA,
+                        descA,
                         modeA.data(),
                         &betaValue,
                         (const _Float16*)resource->hostInput2().get(),
-                        &descB,
+                        descB,
                         modeB.data(),
                         &gammaValue,
                         (const _Float16*)resource->hostInput3().get(),
-                        &descC,
+                        descC,
                         modeC.data(),
                         (_Float16*)resource->hostReference().get(),
-                        &descD,
+                        descD,
                         modeD.data(),
                         ABop,
                         ABCop,

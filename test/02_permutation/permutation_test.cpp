@@ -314,24 +314,24 @@ namespace hiptensor
             hiptensorHandle_t* handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
-            hiptensorTensorDescriptor_t descA;
-            uint32_t                    alignmentRequirementA;
+            hiptensorTensorDescriptor_t* descA;
+            uint32_t                     alignmentRequirementA;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentA.data(), &descA, &alignmentRequirementA));
+                *handle, extentA.data(), abDataType, &alignmentRequirementA));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descA,
+                                                                  descA,
                                                                   nmodeA,
                                                                   extentA.data(),
                                                                   NULL /* stride */,
                                                                   abDataType,
                                                                   alignmentRequirementA));
 
-            hiptensorTensorDescriptor_t descB;
-            uint32_t                    alignmentRequirementB;
+            hiptensorTensorDescriptor_t* descB;
+            uint32_t                     alignmentRequirementB;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentB.data(), &descB, &alignmentRequirementB));
+                *handle, extentB.data(), abDataType, &alignmentRequirementB));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descB,
+                                                                  descB,
                                                                   nmodeB,
                                                                   extentB.data(),
                                                                   NULL /* stride */,
@@ -356,10 +356,10 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorPermutation(*handle,
                                                        &alphaValue,
                                                        resource->deviceInput1().get(),
-                                                       &descA,
+                                                       descA,
                                                        modeA.data(),
                                                        resource->deviceOutput().get(),
-                                                       &descB,
+                                                       descB,
                                                        modeB.data(),
                                                        computeDataType,
                                                        0 /* stream */));
@@ -404,10 +404,10 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(&alphaValue,
                                                       (const float*)resource->hostInput1().get(),
-                                                      &descA,
+                                                      descA,
                                                       modeA.data(),
                                                       (float*)resource->hostReference().get(),
-                                                      &descB,
+                                                      descB,
                                                       modeB.data(),
                                                       computeDataType,
                                                       0 /* stream */));
@@ -424,10 +424,10 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(&alphaValue,
                                                       (const _Float16*)resource->hostInput1().get(),
-                                                      &descA,
+                                                      descA,
                                                       modeA.data(),
                                                       (_Float16*)resource->hostReference().get(),
-                                                      &descB,
+                                                      descB,
                                                       modeB.data(),
                                                       computeDataType,
                                                       0 /* stream */));

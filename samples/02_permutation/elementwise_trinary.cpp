@@ -146,48 +146,48 @@ int main()
    * Retrieve the memory alignment for each tensor
    ************************************************/
 
-    hiptensorTensorDescriptor_t descA;
-    uint32_t                    alignmentRequirementA;
+    hiptensorTensorDescriptor_t* descA;
+    uint32_t                     alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, A_d, &descA, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(*handle, A_d, typeA, &alignmentRequirementA));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descA,
+                                                          descA,
                                                           nmodeA,
                                                           extentA.data(),
                                                           nullptr /* stride */,
                                                           typeA,
                                                           alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t descB;
-    uint32_t                    alignmentRequirementB;
+    hiptensorTensorDescriptor_t* descB;
+    uint32_t                     alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, B_d, &descB, &alignmentRequirementB));
+        hiptensorGetAlignmentRequirement(*handle, B_d, typeB, &alignmentRequirementB));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descB,
+                                                          descB,
                                                           nmodeB,
                                                           extentB.data(),
                                                           nullptr /* stride */,
                                                           typeB,
                                                           alignmentRequirementB));
 
-    hiptensorTensorDescriptor_t descC;
-    uint32_t                    alignmentRequirementC;
+    hiptensorTensorDescriptor_t* descC;
+    uint32_t                     alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, C_d, &descC, &alignmentRequirementC));
+        hiptensorGetAlignmentRequirement(*handle, C_d, typeC, &alignmentRequirementC));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descC,
+                                                          descC,
                                                           nmodeC,
                                                           extentC.data(),
                                                           nullptr /* stride */,
                                                           typeC,
                                                           alignmentRequirementC));
 
-    hiptensorTensorDescriptor_t descD;
-    uint32_t                    alignmentRequirementD;
+    hiptensorTensorDescriptor_t* descD;
+    uint32_t                     alignmentRequirementD;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, D_d, &descD, &alignmentRequirementD));
+        hiptensorGetAlignmentRequirement(*handle, D_d, typeD, &alignmentRequirementD));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descD,
+                                                          descD,
                                                           nmodeD,
                                                           extentD.data(),
                                                           nullptr /* stride */,
@@ -205,18 +205,18 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(*handle,
                                                       &alpha,
                                                       A_d,
-                                                      &descA,
+                                                      descA,
                                                       modeA.data(),
                                                       &beta,
                                                       B_d,
-                                                      &descB,
+                                                      descB,
                                                       modeB.data(),
                                                       &gamma,
                                                       C_d,
-                                                      &descC,
+                                                      descC,
                                                       modeC.data(),
                                                       D_d,
-                                                      &descD,
+                                                      descD,
                                                       modeD.data(),
                                                       HIPTENSOR_OP_ADD,
                                                       HIPTENSOR_OP_ADD,

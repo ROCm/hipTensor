@@ -104,13 +104,13 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t*& handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
-                                                  hiptensorTensorDescriptor_t* desc,
-                                                  const uint32_t               numModes,
-                                                  const int64_t                lens[],
-                                                  const int64_t                strides[],
-                                                  hiptensorDataType_t          dataType,
-                                                  uint32_t                     alignmentRequirement)
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t       handle,
+                                                  hiptensorTensorDescriptor_t*& desc,
+                                                  const uint32_t                numModes,
+                                                  const int64_t                 lens[],
+                                                  const int64_t                 strides[],
+                                                  hiptensorDataType_t           dataType,
+                                                  uint32_t alignmentRequirement)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -153,18 +153,18 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
     //     return HIPTENSOR_STATUS_NOT_INITIALIZED;
     // }
 
-    if(desc == nullptr)
-    {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
+    // if(desc == nullptr)
+    // {
+    //     auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
 
-        snprintf(msg,
-                 sizeof(msg),
-                 "Initialization Error : contraction descriptor = nullptr (%s)",
-                 hiptensorGetErrorString(errorCode));
+    //     snprintf(msg,
+    //              sizeof(msg),
+    //              "Initialization Error : contraction descriptor = nullptr (%s)",
+    //              hiptensorGetErrorString(errorCode));
 
-        logger->logError("hiptensorCreateTensorDescriptor", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
-    }
+    //     logger->logError("hiptensorCreateTensorDescriptor", msg);
+    //     return HIPTENSOR_STATUS_NOT_INITIALIZED;
+    // }
 
     if((lens == nullptr && strides != nullptr)
        || ((dataType != HIPTENSOR_R_16F) && (dataType != HIPTENSOR_R_16BF)
@@ -196,6 +196,7 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
+    desc = new hiptensorTensorDescriptor_t;
     if(strides)
     {
         // Construct with both given lengths and strides
@@ -225,6 +226,22 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
                      alignmentRequirement};
         }
     }
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t* desc)
+{
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[128];
+    snprintf(msg, sizeof(msg), "desc=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)desc);
+    logger->logAPITrace("hiptensorDestroyTensorDescriptor", msg);
+
+    delete desc;
+    desc = nullptr;
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -269,10 +286,10 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error)
         return "HIPTENSOR_STATUS_UNKNOWN";
 }
 
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t            handle,
-                                                   const void*                        ptr,
-                                                   const hiptensorTensorDescriptor_t* desc,
-                                                   uint32_t* alignmentRequirement)
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t handle,
+                                                   const void*             ptr,
+                                                   hiptensorDataType_t     dataType,
+                                                   uint32_t*               alignmentRequirement)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -281,39 +298,17 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t      
     char msg[256];
     snprintf(msg,
              sizeof(msg),
-             "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%02X",
+             "handle=0x%0*llX, ptr=0x%llX, dataType=0x%d, alignmentRequirement=0x%02X",
              2 * (int)sizeof(void*),
              (unsigned long long)&handle,
              (unsigned long long)ptr,
-             (unsigned long long)desc,
+             (uint32_t)dataType,
              (unsigned int)*alignmentRequirement);
 
     logger->logAPITrace("hiptensorGetAlignmentRequirement", msg);
 
-    // if(&handle == nullptr || desc == nullptr)
-    if(desc == nullptr)
-    {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        // if(handle == nullptr)
-        // {
-        //     snprintf(msg,
-        //              sizeof(msg),
-        //              "Error : handle = nullptr (%s)",
-        //              hiptensorGetErrorString(errorCode));
-        // }
-        // else
-        // {
-        snprintf(msg,
-                 sizeof(msg),
-                 "Error : contraction descriptor = nullptr (%s)",
-                 hiptensorGetErrorString(errorCode));
-        // }
-        logger->logError("hiptensorGetAlignmentRequirement", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
-    }
-
     *alignmentRequirement = 0u;
-    for(auto i = max(2, hiptensor::hiptensorDataTypeSize(desc->mType)); i <= 16u; i *= 2)
+    for(auto i = max(2, hiptensor::hiptensorDataTypeSize(dataType)); i <= 16u; i *= 2)
     {
         if((std::size_t)ptr % (std::size_t)i == 0)
         {
@@ -341,6 +336,16 @@ hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescript
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[128];
+    snprintf(msg, sizeof(msg), "desc=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)desc);
+    logger->logAPITrace("hiptensorDestroyOperationDescriptor", msg);
+
+    delete desc;
+    desc = nullptr;
+
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)

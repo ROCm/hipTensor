@@ -63,7 +63,7 @@ inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolu
 }
 
 hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
-                                             hiptensorOperationDescriptor_t*    desc,
+                                             hiptensorOperationDescriptor_t*&   desc,
                                              const hiptensorTensorDescriptor_t* descA,
                                              const int32_t                      modeA[],
                                              hiptensorOperator_t                opA,
@@ -104,6 +104,8 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
              (unsigned int)descCompute);
 
     logger->logAPITrace("hiptensorCreateContraction", msg);
+
+    desc = new hiptensorOperationDescriptor_t;
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
@@ -146,6 +148,7 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
                                      || descCompute == HIPTENSOR_COMPUTE_DESC_C64F
                                  ? hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION
                                  : hiptensorOperationId_t::SCALE_CONTRACTION;
+
         *desc = {(int32_t)contractionOp,
                  descCompute,
                  {*descA,
@@ -176,6 +179,7 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
                                      || descCompute == HIPTENSOR_COMPUTE_DESC_C64F
                                  ? hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION
                                  : hiptensorOperationId_t::BILINEAR_CONTRACTION;
+
         *desc = {(int32_t)contractionOp,
                  descCompute,
                  {*descA, *descB, *descC, *descD},

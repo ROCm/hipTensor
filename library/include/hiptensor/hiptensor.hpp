@@ -61,12 +61,12 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t*& handle);
 //! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if the requested tensor descriptor is not supported.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if an invalid value or parameter was passed to the function.
 //! (indicates a user error).
-hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
-                                                  hiptensorTensorDescriptor_t* desc,
-                                                  const uint32_t               numModes,
-                                                  const int64_t                lens[],
-                                                  const int64_t                strides[],
-                                                  hiptensorDataType_t          dataType,
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t       handle,
+                                                  hiptensorTensorDescriptor_t*& desc,
+                                                  const uint32_t                numModes,
+                                                  const int64_t                 lens[],
+                                                  const int64_t                 strides[],
+                                                  hiptensorDataType_t           dataType,
                                                   uint32_t alignmentRequirement);
 
 //! @brief Frees the resources related to the provided tensor descriptor
@@ -222,10 +222,10 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported parameter is passed.
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t            handle,
-                                                   const void*                        ptr,
-                                                   const hiptensorTensorDescriptor_t* desc,
-                                                   uint32_t* alignmentRequirement);
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t handle,
+                                                   const void*             ptr,
+                                                   hiptensorDataType_t     dataType,
+                                                   uint32_t*               alignmentRequirement);
 
 //! @brief Frees the resources related to the provided operation descriptor
 //! @param[out] desc Pointer to the allocated operation descriptor object.
@@ -251,7 +251,7 @@ hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescript
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
 hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
-                                             hiptensorOperationDescriptor_t*    desc,
+                                             hiptensorOperationDescriptor_t*&   desc,
                                              const hiptensorTensorDescriptor_t* descA,
                                              const int32_t                      modeA[],
                                              hiptensorOperator_t                opA,

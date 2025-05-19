@@ -409,36 +409,36 @@ namespace hiptensor
             hiptensorHandle_t* handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
-            hiptensorTensorDescriptor_t descA;
-            uint32_t                    alignmentRequirementA;
+            hiptensorTensorDescriptor_t* descA;
+            uint32_t                     alignmentRequirementA;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentA.data(), &descA, &alignmentRequirementA));
+                *handle, extentA.data(), acDataType, &alignmentRequirementA));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descA,
+                                                                  descA,
                                                                   nmodeA,
                                                                   extentA.data(),
                                                                   NULL /* stride */,
                                                                   acDataType,
                                                                   alignmentRequirementA));
 
-            hiptensorTensorDescriptor_t descC;
-            uint32_t                    alignmentRequirementC;
+            hiptensorTensorDescriptor_t* descC;
+            uint32_t                     alignmentRequirementC;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentC.data(), &descC, &alignmentRequirementC));
+                *handle, extentC.data(), acDataType, &alignmentRequirementC));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descC,
+                                                                  descC,
                                                                   nmodeC,
                                                                   extentC.data(),
                                                                   strideC.data(),
                                                                   acDataType,
                                                                   alignmentRequirementC));
 
-            hiptensorTensorDescriptor_t descD;
-            uint32_t                    alignmentRequirementD;
+            hiptensorTensorDescriptor_t* descD;
+            uint32_t                     alignmentRequirementD;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentD.data(), &descD, &alignmentRequirementD));
+                *handle, extentD.data(), acDataType, &alignmentRequirementD));
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  &descD,
+                                                                  descD,
                                                                   nmodeD,
                                                                   extentD.data(),
                                                                   strideD.data(),
@@ -448,13 +448,13 @@ namespace hiptensor
             uint64_t worksize = 0;
             CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(*handle,
                                                                      resource->deviceA().get(),
-                                                                     &descA,
+                                                                     descA,
                                                                      modeA.data(),
                                                                      resource->deviceC().get(),
-                                                                     &descC,
+                                                                     descC,
                                                                      modeC.data(),
                                                                      resource->deviceD().get(),
-                                                                     &descD,
+                                                                     descD,
                                                                      modeD.data(),
                                                                      reduceOp,
                                                                      computeDataType,
@@ -475,14 +475,14 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorReduction(*handle,
                                                      (const void*)&alphaValue,
                                                      resource->deviceA().get(),
-                                                     &descA,
+                                                     descA,
                                                      modeA.data(),
                                                      (const void*)&betaValue,
                                                      resource->deviceC().get(),
-                                                     &descC,
+                                                     descC,
                                                      modeC.data(),
                                                      resource->deviceD().get(),
-                                                     &descD,
+                                                     descD,
                                                      modeD.data(),
                                                      reduceOp,
                                                      computeDataType,
@@ -527,14 +527,14 @@ namespace hiptensor
 
                 CHECK_HIPTENSOR_ERROR(hiptensorReductionReference(&alphaValue,
                                                                   resource->hostA().get(),
-                                                                  &descA,
+                                                                  descA,
                                                                   modeA.data(),
                                                                   &betaValue,
                                                                   resource->hostC().get(),
-                                                                  &descC,
+                                                                  descC,
                                                                   modeC.data(),
                                                                   resource->hostReference().get(),
-                                                                  &descD,
+                                                                  descD,
                                                                   modeD.data(),
                                                                   reduceOp,
                                                                   computeDataType,

@@ -233,7 +233,7 @@ struct hiptensorOperationDescriptor_t
     hiptensorComputeType_t mComputeType;
     //! Cache of tensor descriptors
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc;
-    //! Cache of alignment requirements
+    //! Cache of binary operations
     std::vector<hiptensorOperator_t> mOp;
     //! Tensor modes
     std::vector<std::vector<int32_t>> mTensorMode;

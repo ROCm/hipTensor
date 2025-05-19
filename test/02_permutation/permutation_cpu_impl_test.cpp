@@ -118,26 +118,26 @@ auto permuteWithCpu(hiptensorDataType_t typeA,
     hiptensorHandle_t*     handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
-    hiptensorTensorDescriptor_t descA;
-    uint32_t                    alignmentRequirementA;
+    hiptensorTensorDescriptor_t* descA;
+    uint32_t                     alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, extentA.data(), &descA, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(*handle, extentA.data(), typeA, &alignmentRequirementA));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
+        *handle, descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t descB;
-    uint32_t                    alignmentRequirementB;
+    hiptensorTensorDescriptor_t* descB;
+    uint32_t                     alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, extentB.data(), &descB, &alignmentRequirementB));
+        hiptensorGetAlignmentRequirement(*handle, extentB.data(), typeB, &alignmentRequirementB));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, alignmentRequirementB));
+        *handle, descB, nmodeB, extentB.data(), NULL /* stride */, typeB, alignmentRequirementB));
 
     hiptensorPermutationReference(&alphaValue,
                                   aArray.data(),
-                                  &descA,
+                                  descA,
                                   modeA.data(),
                                   bArray.data(),
-                                  &descB,
+                                  descB,
                                   modeB.data(),
                                   descCompute,
                                   0);

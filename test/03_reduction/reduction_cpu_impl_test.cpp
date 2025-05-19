@@ -92,32 +92,32 @@ auto reduceWithCpu(hiptensorDataType_t          typeA,
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
-    hiptensorTensorDescriptor_t descA;
-    uint32_t                    alignmentRequirementA;
+    hiptensorTensorDescriptor_t* descA;
+    uint32_t                     alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, extentA.data(), &descA, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(*handle, extentA.data(), typeA, &alignmentRequirementA));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
+        *handle, descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t descC;
-    uint32_t                    alignmentRequirementC;
+    hiptensorTensorDescriptor_t* descC;
+    uint32_t                     alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, extentC.data(), &descC, &alignmentRequirementC));
+        hiptensorGetAlignmentRequirement(*handle, extentC.data(), typeC, &alignmentRequirementC));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
+        *handle, descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
 
     const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
 
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(*handle,
                                                              aArray.data(),
-                                                             &descA,
+                                                             descA,
                                                              modeA.data(),
                                                              cArray.data(),
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              cArray.data(),
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              opReduce,
                                                              descCompute,
@@ -129,14 +129,14 @@ auto reduceWithCpu(hiptensorDataType_t          typeA,
     hiptensor::writeVal(&betaValue, descCompute, {descCompute, beta});
     CHECK_HIPTENSOR_ERROR(hiptensorReductionReference((const void*)&alphaValue,
                                                       aArray.data(),
-                                                      &descA,
+                                                      descA,
                                                       modeA.data(),
                                                       (const void*)&betaValue,
                                                       cArray.data(),
-                                                      &descC,
+                                                      descC,
                                                       modeC.data(),
                                                       cArray.data(),
-                                                      &descC,
+                                                      descC,
                                                       modeC.data(),
                                                       opReduce,
                                                       descCompute,

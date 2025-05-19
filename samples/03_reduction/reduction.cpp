@@ -122,32 +122,32 @@ int main()
    * Retrieve the memory alignment for each tensor
    ************************************************/
 
-    hiptensorTensorDescriptor_t descA;
-    uint32_t                    alignmentRequirementA;
+    hiptensorTensorDescriptor_t* descA;
+    uint32_t                     alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, A_d, &descA, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(*handle, A_d, typeA, &alignmentRequirementA));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
+        *handle, descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t descC;
-    uint32_t                    alignmentRequirementC;
+    hiptensorTensorDescriptor_t* descC;
+    uint32_t                     alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, C_d, &descC, &alignmentRequirementC));
+        hiptensorGetAlignmentRequirement(*handle, C_d, typeC, &alignmentRequirementC));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
+        *handle, descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
 
     const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
 
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(*handle,
                                                              A_d,
-                                                             &descA,
+                                                             descA,
                                                              modeA.data(),
                                                              C_d,
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              C_d,
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              opReduce,
                                                              descCompute,
@@ -165,14 +165,14 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorReduction(*handle,
                                              (const void*)&alpha,
                                              A_d,
-                                             &descA,
+                                             descA,
                                              modeA.data(),
                                              (const void*)&beta,
                                              C_d,
-                                             &descC,
+                                             descC,
                                              modeC.data(),
                                              C_d,
-                                             &descC,
+                                             descC,
                                              modeC.data(),
                                              opReduce,
                                              descCompute,

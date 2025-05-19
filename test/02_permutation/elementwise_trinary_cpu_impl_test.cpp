@@ -120,48 +120,48 @@ auto elementaryTrinaryOpWithCpu(hiptensorDataType_t inputType,
     hiptensorHandle_t* handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
 
-    hiptensorTensorDescriptor_t descA;
-    uint32_t                    alignmentRequirementA;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, inExtent.data(), &descA, &alignmentRequirementA));
+    hiptensorTensorDescriptor_t* descA;
+    uint32_t                     alignmentRequirementA;
+    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+        *handle, inExtent.data(), inputType, &alignmentRequirementA));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descA,
+                                                          descA,
                                                           ninMode,
                                                           inExtent.data(),
                                                           NULL /* stride */,
                                                           inputType,
                                                           alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t descB;
-    uint32_t                    alignmentRequirementB;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, inExtent.data(), &descB, &alignmentRequirementB));
+    hiptensorTensorDescriptor_t* descB;
+    uint32_t                     alignmentRequirementB;
+    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+        *handle, inExtent.data(), inputType, &alignmentRequirementB));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descB,
+                                                          descB,
                                                           ninMode,
                                                           inExtent.data(),
                                                           NULL /* stride */,
                                                           inputType,
                                                           alignmentRequirementB));
 
-    hiptensorTensorDescriptor_t descC;
-    uint32_t                    alignmentRequirementC;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, inExtent.data(), &descC, &alignmentRequirementC));
+    hiptensorTensorDescriptor_t* descC;
+    uint32_t                     alignmentRequirementC;
+    CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
+        *handle, inExtent.data(), inputType, &alignmentRequirementC));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descC,
+                                                          descC,
                                                           ninMode,
                                                           inExtent.data(),
                                                           NULL /* stride */,
                                                           inputType,
                                                           alignmentRequirementC));
 
-    hiptensorTensorDescriptor_t descD;
-    uint32_t                    alignmentRequirementD;
+    hiptensorTensorDescriptor_t* descD;
+    uint32_t                     alignmentRequirementD;
     CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-        *handle, outputExtent.data(), &descD, &alignmentRequirementD));
+        *handle, outputExtent.data(), outputType, &alignmentRequirementD));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          &descD,
+                                                          descD,
                                                           noutputMode,
                                                           outputExtent.data(),
                                                           NULL /* stride */,
@@ -170,18 +170,18 @@ auto elementaryTrinaryOpWithCpu(hiptensorDataType_t inputType,
 
     hiptensorElementwiseTrinaryOpReference(&alphaValue,
                                            aArray.data(),
-                                           &descA,
+                                           descA,
                                            inMode.data(),
                                            &betaValue,
                                            bArray.data(),
-                                           &descB,
+                                           descB,
                                            inMode.data(),
                                            &gammaValue,
                                            cArray.data(),
-                                           &descC,
+                                           descC,
                                            inMode.data(),
                                            dArray.data(),
-                                           &descD,
+                                           descD,
                                            outputMode.data(),
                                            HIPTENSOR_OP_ADD,
                                            HIPTENSOR_OP_ADD,

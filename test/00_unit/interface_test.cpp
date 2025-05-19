@@ -42,31 +42,32 @@ TEST(hiptensorCreateTensorDescriptorTest, UtilTest)
     //     nullptr, nullptr, 0, nullptr, nullptr, HIPTENSOR_R_32F, alignmentRequirement);
     // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED);
 
-    // fail for desc == nullptr
     hiptensorHandle_t handle;
     uint32_t          alignmentRequirement = 256;
-    auto              output               = hiptensorCreateTensorDescriptor(
-        handle, nullptr, 0, nullptr, nullptr, HIPTENSOR_R_32F, alignmentRequirement);
-    EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED);
 
-    hiptensorTensorDescriptor_t desc;
-    const int64_t               lens[]    = {1};
-    const int64_t               strides[] = {1};
+    hiptensorTensorDescriptor_t* desc;
+    const int64_t                lens[]    = {1};
+    const int64_t                strides[] = {1};
+
+    // // fail for desc == nullptr
+    // auto              output               = hiptensorCreateTensorDescriptor(
+    //     handle, nullptr, 0, nullptr, nullptr, HIPTENSOR_R_32F, alignmentRequirement);
+    // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED);
 
     // fail for (lens == nullptr && strides != nullptr)
-    output = hiptensorCreateTensorDescriptor(
-        handle, &desc, 1, nullptr, strides, HIPTENSOR_R_32F, alignmentRequirement);
+    auto output = hiptensorCreateTensorDescriptor(
+        handle, desc, 1, nullptr, strides, HIPTENSOR_R_32F, alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 
     // fail for (unaryOp == HIPTENSOR_OP_ADD)
     output = hiptensorCreateTensorDescriptor(
-        handle, &desc, 1, lens, strides, HIPTENSOR_R_32F, alignmentRequirement);
+        handle, desc, 1, lens, strides, HIPTENSOR_R_32F, alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 
     // fail for ((dataType != HIPTENSOR_R_16F) && (dataType != HIPTENSOR_R_16BF) && (dataType != HIPTENSOR_R_32F)
     // && (dataType != HIPTENSOR_R_64F) && (dataType != HIPTENSOR_C_32F) && (dataType != HIPTENSOR_C_64F))
     output = hiptensorCreateTensorDescriptor(
-        handle, &desc, 1, lens, strides, HIPTENSOR_R_8U, alignmentRequirement);
+        handle, desc, 1, lens, strides, HIPTENSOR_R_8U, alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 }
 
@@ -107,14 +108,13 @@ TEST(hiptensorGetAlignmentRequirementTest, UtilTest)
 
     // fail for !desc
     hiptensorHandle_t handle;
-    auto output = hiptensorGetAlignmentRequirement(handle, nullptr, nullptr, &alignmentRequirement);
+    auto              output
+        = hiptensorGetAlignmentRequirement(handle, nullptr, HIPTENSOR_R_32F, &alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED);
 
     // fail for (*alignmentRequirement == 0)
-    hiptensorTensorDescriptor_t desc;
-    desc.mType = HIP_R_32F;
-    void* ptr  = reinterpret_cast<void*>(5);
-    output     = hiptensorGetAlignmentRequirement(handle, ptr, &desc, &alignmentRequirement);
+    void* ptr = reinterpret_cast<void*>(5);
+    output = hiptensorGetAlignmentRequirement(handle, ptr, HIPTENSOR_R_32F, &alignmentRequirement);
     EXPECT_EQ(output, HIPTENSOR_STATUS_INVALID_VALUE);
 }
 
@@ -123,14 +123,14 @@ TEST(hiptensorReductionTest, UtilTest)
     char                         buf[1];
     hiptensorHandle_t            handle;
     float                        alpha, beta;
-    const void*                  A = nullptr;
-    const void*                  C = &buf;
-    void*                        D = &buf;
-    hiptensorTensorDescriptor_t  descA;
+    const void*                  A     = nullptr;
+    const void*                  C     = &buf;
+    void*                        D     = &buf;
+    hiptensorTensorDescriptor_t* descA = new hiptensorTensorDescriptor_t;
     int32_t                      modeA[1];
-    hiptensorTensorDescriptor_t  descC;
+    hiptensorTensorDescriptor_t* descC = new hiptensorTensorDescriptor_t;
     int32_t                      modeC[1];
-    hiptensorTensorDescriptor_t  descD;
+    hiptensorTensorDescriptor_t* descD = new hiptensorTensorDescriptor_t;
     int32_t                      modeD[1];
     hiptensorOperator_t          opReduce;
     hiptensorComputeDescriptor_t descCompute;
@@ -139,14 +139,14 @@ TEST(hiptensorReductionTest, UtilTest)
     auto                         output        = hiptensorReduction(handle,
                                      &alpha,
                                      A,
-                                     &descA,
+                                     descA,
                                      modeA,
                                      &beta,
                                      C,
-                                     &descC,
+                                     descC,
                                      modeC,
                                      D,
-                                     &descD,
+                                     descD,
                                      modeD,
                                      opReduce,
                                      descCompute,
@@ -155,22 +155,22 @@ TEST(hiptensorReductionTest, UtilTest)
                                      0);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for A is null
 
-    A           = &buf;
-    descA.mType = HIPTENSOR_R_64F;
-    descC.mType = HIPTENSOR_R_64F;
-    descD.mType = HIPTENSOR_R_64F;
-    descCompute = HIPTENSOR_COMPUTE_DESC_16F;
-    output      = hiptensorReduction(handle,
+    A            = &buf;
+    descA->mType = HIPTENSOR_R_64F;
+    descC->mType = HIPTENSOR_R_64F;
+    descD->mType = HIPTENSOR_R_64F;
+    descCompute  = HIPTENSOR_COMPUTE_DESC_16F;
+    output       = hiptensorReduction(handle,
                                 &alpha,
                                 A,
-                                &descA,
+                                descA,
                                 modeA,
                                 &beta,
                                 C,
-                                &descC,
+                                descC,
                                 modeC,
                                 D,
-                                &descD,
+                                descD,
                                 modeD,
                                 opReduce,
                                 descCompute,
@@ -181,23 +181,23 @@ TEST(hiptensorReductionTest, UtilTest)
         output,
         HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for (HIP_R_64F, HIP_R_64F, HIP_R_64F, HIPTENSOR_COMPUTE_16F) is not supported
 
-    descA.mType    = HIP_R_16F;
-    descA.mLengths = {1};
-    descC.mType    = HIP_R_16F;
-    descC.mLengths = {1, 1};
-    descD.mType    = HIPTENSOR_R_16F;
-    descCompute    = HIPTENSOR_COMPUTE_DESC_16F;
-    output         = hiptensorReduction(handle,
+    descA->mType    = HIPTENSOR_R_16F;
+    descA->mLengths = {1};
+    descC->mType    = HIPTENSOR_R_16F;
+    descC->mLengths = {1, 1};
+    descD->mType    = HIPTENSOR_R_16F;
+    descCompute     = HIPTENSOR_COMPUTE_DESC_16F;
+    output          = hiptensorReduction(handle,
                                 &alpha,
                                 A,
-                                &descA,
+                                descA,
                                 modeA,
                                 &beta,
                                 C,
-                                &descC,
+                                descC,
                                 modeC,
                                 D,
-                                &descD,
+                                descD,
                                 modeD,
                                 opReduce,
                                 descCompute,
@@ -206,59 +206,68 @@ TEST(hiptensorReductionTest, UtilTest)
                                 0);
     EXPECT_EQ(
         output,
-        HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for descA.mLengths.size() < descC.mLengths.size()
+        HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for descA->mLengths.size() < descC->mLengths.size()
+
+    delete descA;
+    delete descC;
+    delete descD;
 }
 
 TEST(hiptensorCreateContractionTest, UtilTest)
 {
-    char                           buf[1];
-    hiptensorOperationDescriptor_t desc;
-    hiptensorHandle_t              handle;
-    hiptensorTensorDescriptor_t    descA;
-    int32_t                        modeA[1];
-    hiptensorTensorDescriptor_t    descB;
-    int32_t                        modeB[1];
-    hiptensorTensorDescriptor_t    descC;
-    int32_t                        modeC[1];
-    hiptensorTensorDescriptor_t    descD;
-    int32_t                        modeD[1];
-    const uint32_t                 alignmentRequirementA = 0;
-    const uint32_t                 alignmentRequirementB = 0;
-    const uint32_t                 alignmentRequirementC = 0;
-    const uint32_t                 alignmentRequirementD = 0;
-    hiptensorComputeDescriptor_t   descCompute;
-    auto                           output = hiptensorCreateContraction(handle,
-                                             nullptr,
-                                             &descA,
+    char                            buf[1];
+    hiptensorOperationDescriptor_t* desc = nullptr;
+    hiptensorHandle_t               handle;
+    hiptensorTensorDescriptor_t*    descA = new hiptensorTensorDescriptor_t;
+    int32_t                         modeA[1];
+    hiptensorTensorDescriptor_t*    descB = new hiptensorTensorDescriptor_t;
+    int32_t                         modeB[1];
+    hiptensorTensorDescriptor_t*    descC = new hiptensorTensorDescriptor_t;
+    int32_t                         modeC[1];
+    hiptensorTensorDescriptor_t*    descD = new hiptensorTensorDescriptor_t;
+    int32_t                         modeD[1];
+    const uint32_t                  alignmentRequirementA = 0;
+    const uint32_t                  alignmentRequirementB = 0;
+    const uint32_t                  alignmentRequirementC = 0;
+    const uint32_t                  alignmentRequirementD = 0;
+    hiptensorComputeDescriptor_t    descCompute;
+    // auto                           output = hiptensorCreateContraction(handle,
+    //                                          nullptr,
+    //                                          descA,
+    //                                          modeA,
+    //                                          HIPTENSOR_OP_IDENTITY,
+    //                                          descB,
+    //                                          modeB,
+    //                                          HIPTENSOR_OP_IDENTITY,
+    //                                          descC,
+    //                                          modeC,
+    //                                          HIPTENSOR_OP_IDENTITY,
+    //                                          descD,
+    //                                          modeD,
+    //                                          descCompute);
+    // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for desc is nullptr
+
+    descA->mUnaryOp = HIPTENSOR_OP_NEG;
+    auto output     = hiptensorCreateContraction(handle,
+                                             desc,
+                                             descA,
                                              modeA,
                                              HIPTENSOR_OP_IDENTITY,
-                                             &descB,
+                                             descB,
                                              modeB,
                                              HIPTENSOR_OP_IDENTITY,
-                                             &descC,
+                                             descC,
                                              modeC,
                                              HIPTENSOR_OP_IDENTITY,
-                                             &descD,
+                                             descD,
                                              modeD,
                                              descCompute);
-    EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for desc is nullptr
-
-    descA.mUnaryOp = HIPTENSOR_OP_NEG;
-    output         = hiptensorCreateContraction(handle,
-                                        &desc,
-                                        &descA,
-                                        modeA,
-                                        HIPTENSOR_OP_IDENTITY,
-                                        &descB,
-                                        modeB,
-                                        HIPTENSOR_OP_IDENTITY,
-                                        &descC,
-                                        modeC,
-                                        HIPTENSOR_OP_IDENTITY,
-                                        &descD,
-                                        modeD,
-                                        descCompute);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for opA != HIPTENSOR_OP_IDENTITY
+
+    delete descA;
+    delete descB;
+    delete descC;
+    delete descD;
 }
 
 TEST(hiptensorInitContractionFindTest, UtilTest)
@@ -290,7 +299,7 @@ TEST(hiptensorContractionGetWorkspaceSizeTest, UtilTest)
     hiptensorContractionFind_t     find;
     hiptensorWorksizePreference_t  pref;
     uint64_t                       workspaceSize;
-    // auto output = hiptensorContractionGetWorkspaceSize(nullptr, &desc, &find, pref, &workspaceSize);
+    // auto output = hiptensorContractionGetWorkspaceSize(nullptr, desc, &find, pref, &workspaceSize);
     // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for handle is null
     auto output
         = hiptensorContractionGetWorkspaceSize(handle, nullptr, &find, pref, &workspaceSize);
@@ -299,15 +308,15 @@ TEST(hiptensorContractionGetWorkspaceSizeTest, UtilTest)
 
 TEST(hiptensorInitContractionPlanTest, UtilTest)
 {
-    hiptensorHandle_t              handle;
-    hiptensorContractionPlan_t     plan;
-    hiptensorOperationDescriptor_t desc;
-    hiptensorContractionFind_t     find;
-    uint64_t                       workspaceSize;
-    // auto output = hiptensorInitContractionPlan(nullptr, &plan, &desc, &find, workspaceSize);
+    hiptensorHandle_t               handle;
+    hiptensorContractionPlan_t      plan;
+    hiptensorOperationDescriptor_t* desc;
+    hiptensorContractionFind_t      find;
+    uint64_t                        workspaceSize;
+    // auto output = hiptensorInitContractionPlan(nullptr, &plan, desc, &find, workspaceSize);
     // EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for handle is null
 
-    auto output = hiptensorInitContractionPlan(handle, &plan, &desc, &find, workspaceSize);
+    auto output = hiptensorInitContractionPlan(handle, &plan, desc, &find, workspaceSize);
     EXPECT_EQ(output, HIPTENSOR_STATUS_ARCH_MISMATCH); // fail for handle is null
 }
 
