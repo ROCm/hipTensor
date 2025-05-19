@@ -48,12 +48,12 @@ namespace hiptensor
         virtual int32_t dimsN() const = 0;
         virtual int32_t dimsK() const = 0;
 
-        // Map to hipDataType
-        virtual hipDataType            typeA() const       = 0;
-        virtual hipDataType            typeB() const       = 0;
-        virtual hipDataType            typeC() const       = 0;
-        virtual hipDataType            typeD() const       = 0;
-        virtual hiptensorComputeType_t typeCompute() const = 0;
+        // Map to hiptensorDataType_t
+        virtual hiptensorDataType_t          typeA() const       = 0;
+        virtual hiptensorDataType_t          typeB() const       = 0;
+        virtual hiptensorDataType_t          typeC() const       = 0;
+        virtual hiptensorDataType_t          typeD() const       = 0;
+        virtual hiptensorComputeDescriptor_t descCompute() const = 0;
 
         // Map to operators
         virtual hiptensorOperator_t    opA() const   = 0;

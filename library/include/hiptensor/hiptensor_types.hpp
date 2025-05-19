@@ -224,7 +224,7 @@ enum struct hiptensorOperationId_t : int32_t
 //! tensor op (contraction, permutation, reduction), the internal compute type,
 //! as well as all of the input tensor descriptors, their alignment requirements
 //! and modes.
-//! Constructed with hiptensorInitContractionDescriptor() function.
+//! Constructed with hiptensorCreateContraction() function.
 struct hiptensorOperationDescriptor_t
 {
     //! Enum that differentiates the internal tensor operation
@@ -234,7 +234,7 @@ struct hiptensorOperationDescriptor_t
     //! Cache of tensor descriptors
     std::vector<hiptensorTensorDescriptor_t> mTensorDesc;
     //! Cache of alignment requirements
-    std::vector<uint32_t> mAlignmentReq;
+    std::vector<hiptensorOperator_t> mOp;
     //! Tensor modes
     std::vector<std::vector<int32_t>> mTensorMode;
 };

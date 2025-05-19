@@ -62,53 +62,48 @@ inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolu
     return result;
 }
 
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
-                                                     hiptensorOperationDescriptor_t*    desc,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
-                                                     const uint32_t alignmentRequirementA,
-                                                     const hiptensorTensorDescriptor_t* descB,
-                                                     const int32_t                      modeB[],
-                                                     const uint32_t alignmentRequirementB,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
-                                                     const uint32_t alignmentRequirementC,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
-                                                     const uint32_t         alignmentRequirementD,
-                                                     hiptensorComputeType_t typeCompute)
-
+hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t* descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t* descB,
+                                             const int32_t                      modeB[],
+                                             hiptensorOperator_t                opB,
+                                             const hiptensorTensorDescriptor_t* descC,
+                                             const int32_t                      modeC[],
+                                             hiptensorOperator_t                opC,
+                                             const hiptensorTensorDescriptor_t* descD,
+                                             const int32_t                      modeD[],
+                                             hiptensorComputeDescriptor_t       descCompute)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
     // Log API access
     char msg[2048];
-    snprintf(
-        msg,
-        sizeof(msg),
-        "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, alignmentRequirementA=0x%02X, "
-        "descB=0x%llX, modeB=0x%llX, alignmentRequirementB=0x%02X, descC=0x%llX, modeC=0x%llX, "
-        "alignmentRequirementC=0x%02X, descD=0x%llX, modeD=0x%llX, alignmentRequirementD=0x%02X, "
-        "typeCompute=0x%02X",
-        2 * (int)sizeof(void*),
-        (unsigned long long)&handle,
-        (unsigned long long)desc,
-        (unsigned long long)descA,
-        (unsigned long long)modeA,
-        (unsigned int)alignmentRequirementA,
-        (unsigned long long)descB,
-        (unsigned long long)modeB,
-        (unsigned int)alignmentRequirementB,
-        (unsigned long long)descC,
-        (unsigned long long)modeC,
-        (unsigned int)alignmentRequirementC,
-        (unsigned long long)descD,
-        (unsigned long long)modeD,
-        (unsigned int)alignmentRequirementD,
-        (unsigned int)typeCompute);
+    snprintf(msg,
+             sizeof(msg),
+             "handle=0x%0*llX, desc=0x%llX, descA=0x%llX, modeA=0x%llX, opA=0x%02X, "
+             "descB=0x%llX, modeB=0x%llX, opB=0x%02X, descC=0x%llX, modeC=0x%llX, "
+             "opC=0x%02X, descD=0x%llX, modeD=0x%llX, descCompute=0x%02X",
+             2 * (int)sizeof(void*),
+             (unsigned long long)&handle,
+             (unsigned long long)desc,
+             (unsigned long long)descA,
+             (unsigned long long)modeA,
+             (unsigned int)opA,
+             (unsigned long long)descB,
+             (unsigned long long)modeB,
+             (unsigned int)opB,
+             (unsigned long long)descC,
+             (unsigned long long)modeC,
+             (unsigned int)opC,
+             (unsigned long long)descD,
+             (unsigned long long)modeD,
+             (unsigned int)descCompute);
 
-    logger->logAPITrace("hiptensorInitContractionDescriptor", msg);
+    logger->logAPITrace("hiptensorCreateContraction", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
@@ -121,19 +116,18 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t    
         return checkResult;
     }
 
-    // if(descA->mUnaryOp != HIPTENSOR_OP_IDENTITY || descB->mUnaryOp != HIPTENSOR_OP_IDENTITY
-    //    || descD->mUnaryOp != HIPTENSOR_OP_IDENTITY
-    //    || (descC && descC->mUnaryOp != HIPTENSOR_OP_IDENTITY))
-    // {
-    //     auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
-    //     snprintf(msg,
-    //              sizeof(msg),
-    //              "Unsupported Operator Type Error : The supported Operator is "
-    //              "HIPTENSOR_OP_IDENTITY (%s)",
-    //              hiptensorGetErrorString(errorCode));
-    //     logger->logError("hiptensorInitContractionDescriptor", msg);
-    //     return errorCode;
-    // }
+    if(opA != HIPTENSOR_OP_IDENTITY || opB != HIPTENSOR_OP_IDENTITY
+       || (descC && opC != HIPTENSOR_OP_IDENTITY))
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Unsupported Operator Type Error : The supported Operator is "
+                 "HIPTENSOR_OP_IDENTITY (%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorCreateContraction", msg);
+        return errorCode;
+    }
 
     if(descC == nullptr || modeC == nullptr)
     {
@@ -148,19 +142,19 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t    
         int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
-        auto contractionOp = typeCompute == HIPTENSOR_COMPUTE_DESC_C32F
-                                     || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
+        auto contractionOp = descCompute == HIPTENSOR_COMPUTE_DESC_C32F
+                                     || descCompute == HIPTENSOR_COMPUTE_DESC_C64F
                                  ? hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION
                                  : hiptensorOperationId_t::SCALE_CONTRACTION;
         *desc = {(int32_t)contractionOp,
-                 typeCompute,
+                 descCompute,
                  {*descA,
                   *descB,
                   {hiptensor::NONE_TYPE,
                    std::vector<std::size_t>(descD->mLengths.size(), 0),
                    std::vector<std::size_t>(descD->mStrides.size(), 0)},
                   *descD},
-                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD},
+                 {opA, opB},
                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
     }
     else
@@ -178,17 +172,14 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t    
         int                  nModeD = descD->mLengths.size();
         std::vector<int32_t> modeDV(modeD, modeD + nModeD);
 
-        auto contractionOp = typeCompute == HIPTENSOR_COMPUTE_DESC_C32F
-                                     || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
+        auto contractionOp = descCompute == HIPTENSOR_COMPUTE_DESC_C32F
+                                     || descCompute == HIPTENSOR_COMPUTE_DESC_C64F
                                  ? hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION
                                  : hiptensorOperationId_t::BILINEAR_CONTRACTION;
         *desc = {(int32_t)contractionOp,
-                 typeCompute,
+                 descCompute,
                  {*descA, *descB, *descC, *descD},
-                 {alignmentRequirementA,
-                  alignmentRequirementB,
-                  alignmentRequirementC,
-                  alignmentRequirementD},
+                 {opA, opB, opC},
                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
     }
 

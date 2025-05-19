@@ -133,7 +133,7 @@ TEST(hiptensorReductionTest, UtilTest)
     hiptensorTensorDescriptor_t  descD;
     int32_t                      modeD[1];
     hiptensorOperator_t          opReduce;
-    hiptensorComputeDescriptor_t typeCompute;
+    hiptensorComputeDescriptor_t descCompute;
     void*                        workspace     = nullptr;
     uint64_t                     workspaceSize = 0;
     auto                         output        = hiptensorReduction(handle,
@@ -149,7 +149,7 @@ TEST(hiptensorReductionTest, UtilTest)
                                      &descD,
                                      modeD,
                                      opReduce,
-                                     typeCompute,
+                                     descCompute,
                                      workspace,
                                      workspaceSize,
                                      0);
@@ -159,7 +159,7 @@ TEST(hiptensorReductionTest, UtilTest)
     descA.mType = HIPTENSOR_R_64F;
     descC.mType = HIPTENSOR_R_64F;
     descD.mType = HIPTENSOR_R_64F;
-    typeCompute = HIPTENSOR_COMPUTE_DESC_16F;
+    descCompute = HIPTENSOR_COMPUTE_DESC_16F;
     output      = hiptensorReduction(handle,
                                 &alpha,
                                 A,
@@ -173,7 +173,7 @@ TEST(hiptensorReductionTest, UtilTest)
                                 &descD,
                                 modeD,
                                 opReduce,
-                                typeCompute,
+                                descCompute,
                                 workspace,
                                 workspaceSize,
                                 0);
@@ -186,7 +186,7 @@ TEST(hiptensorReductionTest, UtilTest)
     descC.mType    = HIP_R_16F;
     descC.mLengths = {1, 1};
     descD.mType    = HIPTENSOR_R_16F;
-    typeCompute    = HIPTENSOR_COMPUTE_DESC_16F;
+    descCompute    = HIPTENSOR_COMPUTE_DESC_16F;
     output         = hiptensorReduction(handle,
                                 &alpha,
                                 A,
@@ -200,7 +200,7 @@ TEST(hiptensorReductionTest, UtilTest)
                                 &descD,
                                 modeD,
                                 opReduce,
-                                typeCompute,
+                                descCompute,
                                 workspace,
                                 workspaceSize,
                                 0);
@@ -209,7 +209,7 @@ TEST(hiptensorReductionTest, UtilTest)
         HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for descA.mLengths.size() < descC.mLengths.size()
 }
 
-TEST(hiptensorInitContractionDescriptorTest, UtilTest)
+TEST(hiptensorCreateContractionTest, UtilTest)
 {
     char                           buf[1];
     hiptensorOperationDescriptor_t desc;
@@ -226,40 +226,38 @@ TEST(hiptensorInitContractionDescriptorTest, UtilTest)
     const uint32_t                 alignmentRequirementB = 0;
     const uint32_t                 alignmentRequirementC = 0;
     const uint32_t                 alignmentRequirementD = 0;
-    hiptensorComputeDescriptor_t   typeCompute;
-    auto                           output = hiptensorInitContractionDescriptor(handle,
-                                                     nullptr,
-                                                     &descA,
-                                                     modeA,
-                                                     alignmentRequirementA,
-                                                     &descB,
-                                                     modeB,
-                                                     alignmentRequirementB,
-                                                     &descC,
-                                                     modeC,
-                                                     alignmentRequirementC,
-                                                     &descD,
-                                                     modeD,
-                                                     alignmentRequirementD,
-                                                     typeCompute);
+    hiptensorComputeDescriptor_t   descCompute;
+    auto                           output = hiptensorCreateContraction(handle,
+                                             nullptr,
+                                             &descA,
+                                             modeA,
+                                             HIPTENSOR_OP_IDENTITY,
+                                             &descB,
+                                             modeB,
+                                             HIPTENSOR_OP_IDENTITY,
+                                             &descC,
+                                             modeC,
+                                             HIPTENSOR_OP_IDENTITY,
+                                             &descD,
+                                             modeD,
+                                             descCompute);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_INITIALIZED); // fail for desc is nullptr
 
     descA.mUnaryOp = HIPTENSOR_OP_NEG;
-    output         = hiptensorInitContractionDescriptor(handle,
-                                                &desc,
-                                                &descA,
-                                                modeA,
-                                                alignmentRequirementA,
-                                                &descB,
-                                                modeB,
-                                                alignmentRequirementB,
-                                                &descC,
-                                                modeC,
-                                                alignmentRequirementC,
-                                                &descD,
-                                                modeD,
-                                                alignmentRequirementD,
-                                                typeCompute);
+    output         = hiptensorCreateContraction(handle,
+                                        &desc,
+                                        &descA,
+                                        modeA,
+                                        HIPTENSOR_OP_IDENTITY,
+                                        &descB,
+                                        modeB,
+                                        HIPTENSOR_OP_IDENTITY,
+                                        &descC,
+                                        modeC,
+                                        HIPTENSOR_OP_IDENTITY,
+                                        &descD,
+                                        modeD,
+                                        descCompute);
     EXPECT_EQ(output, HIPTENSOR_STATUS_NOT_SUPPORTED); // fail for opA != HIPTENSOR_OP_IDENTITY
 }
 

@@ -227,39 +227,43 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t      
                                                    const hiptensorTensorDescriptor_t* desc,
                                                    uint32_t* alignmentRequirement);
 
-//! @brief Initializes a contraction descriptor for the tensor contraction problem.
+//! @brief Frees the resources related to the provided operation descriptor
+//! @param[out] desc Pointer to the allocated operation descriptor object.
+//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+//! @retval HIPTENSOR_STATUS_INTERNAL_ERROR if an error occured in freeing resources.
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t* desc);
+
+//! @brief Initializes an operation descriptor for the tensor contraction problem.
 //! @param[in] handle Opaque handle holding hipTensor's library context.
 //! @param[out] desc Tensor contraction problem descriptor.
 //! @param[in] descA A descriptor that holds information about tensor A.
 //! @param[in] modeA Array with 'nmodeA' entries that represent the modes of A.
-//! @param[in] alignmentRequirementA Alignment reqirement for A's pointer (in bytes);
+//! @param[in] opA Element-wise binary operator \f$\Phi_{A}\f$
 //! @param[in] descB A descriptor that holds information about tensor B.
 //! @param[in] modeB Array with 'nmodeB' entries that represent the modes of B.
-//! @param[in] alignmentRequirementB Alignment reqirement for B's pointer (in bytes);
+//! @param[in] opB Element-wise binary operator \f$\Phi_{B}\f$
 //! @param[in] modeC Array with 'nmodeC' entries that represent the modes of C.
 //! @param[in] descC A descriptor that holds information about tensor C.
-//! @param[in] alignmentRequirementC Alignment requirement for C's pointer (in bytes);
+//! @param[in] opC Element-wise binary operator \f$\Phi_{C}\f$
 //! @param[in] modeD Array with 'nmodeD' entries that represent the modes of D (must be identical to modeC).
 //! @param[in] descD A descriptor that holds information about tensor D (must be identical to descC).
-//! @param[in] alignmentRequirementD Alignment requirement for D's pointer (in bytes);
-//! @param[in] typeCompute Datatype for the intermediate computation  T = A * B.
+//! @param[in] descCompute Datatype for the intermediate computation  T = A * B.
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
-                                                     hiptensorOperationDescriptor_t*    desc,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
-                                                     const uint32_t alignmentRequirementA,
-                                                     const hiptensorTensorDescriptor_t* descB,
-                                                     const int32_t                      modeB[],
-                                                     const uint32_t alignmentRequirementB,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
-                                                     const uint32_t alignmentRequirementC,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
-                                                     const uint32_t         alignmentRequirementD,
-                                                     hiptensorComputeType_t typeCompute);
+hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t* descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t* descB,
+                                             const int32_t                      modeB[],
+                                             hiptensorOperator_t                opB,
+                                             const hiptensorTensorDescriptor_t* descC,
+                                             const int32_t                      modeC[],
+                                             hiptensorOperator_t                opC,
+                                             const hiptensorTensorDescriptor_t* descD,
+                                             const int32_t                      modeD[],
+                                             hiptensorComputeDescriptor_t       descCompute);
 
 //! @brief Narrows down the candidates for the contraction problem.
 //! @details This function gives the user finer control over the candidates that
@@ -318,10 +322,10 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
 //! @param[in] plan Opaque handle holding the contraction plan (i.e.,
 //! the algorithm that will be executed, its runtime parameters for the given
 //! tensor contraction problem).
-//! @param[in] alpha Scaling parameter for A*B of data type 'typeCompute'.
+//! @param[in] alpha Scaling parameter for A*B of data type 'descCompute'.
 //! @param[in] A Pointer to A's data in device memory.
 //! @param[in] B Pointer to B's data in device memory.
-//! @param[in] beta Scaling parameter for C of data type 'typeCompute'.
+//! @param[in] beta Scaling parameter for C of data type 'descCompute'.
 //! @param[in] C Pointer to C's data in device memory.
 //! @param[out] D Pointer to D's data in device memory.
 //! @param[out] workspace Workspace pointer in device memory
@@ -347,11 +351,11 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
 //! @brief Implements a tensor reduction of the form \f[ D = alpha * opReduce(opA(A)) + beta * opC(C) \f]
 //!
 //! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[in] alpha Scaling for A; its data type is determined by 'typeCompute'. Pointer to the host memory.
+//! @param[in] alpha Scaling for A; its data type is determined by 'descCompute'. Pointer to the host memory.
 //! @param[in] A Pointer to the data corresponding to A in device memory. Pointer to the GPU-accessible memory.
 //! @param[in] descA A descriptor that holds the information about the data type, modes and strides of A.
 //! @param[in] modeA Array with 'nmodeA' entries that represent the modes of A. modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorCreateTensorDescriptor. Modes that only appear in modeA but not in modeC are reduced (contracted).
-//! @param[in] beta Scaling for C; its data type is determined by 'typeCompute'. Pointer to the host memory.
+//! @param[in] beta Scaling for C; its data type is determined by 'descCompute'. Pointer to the host memory.
 //! @param[in] C Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
 //! @param[in] descC A descriptor that holds the information about the data type, modes and strides of C.
 //! @param[in] modeC Array with 'nmodeC' entries that represent the modes of C. modeC[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorCreateTensorDescriptor.
@@ -359,7 +363,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
 //! @param[in] descD Must be identical to descC for now.
 //! @param[in] modeD Must be identical to modeC for now.
 //! @param[in] opReduce binary operator used to reduce elements of A.
-//! @param[in] typeCompute All arithmetic is performed using this data type (i.e., it affects the accuracy and performance).
+//! @param[in] descCompute All arithmetic is performed using this data type (i.e., it affects the accuracy and performance).
 //! @param[out] workspace Scratchpad (device) memory; the workspace must be aligned to 128 bytes.
 //! @param[in] workspaceSize Please use hiptensorReductionGetWorkspaceSize() to query the required workspace.
 //!            While lower values, including zero, are valid, they may lead to grossly suboptimal performance.
@@ -382,7 +386,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
                                      const hiptensorTensorDescriptor_t* descD,
                                      const int32_t                      modeD[],
                                      hiptensorOperator_t                opReduce,
-                                     hiptensorComputeType_t             typeCompute,
+                                     hiptensorComputeDescriptor_t       descCompute,
                                      void*                              workspace,
                                      uint64_t                           workspaceSize,
                                      hipStream_t                        stream);
@@ -399,7 +403,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
 //! @param[in] descD same as in hiptensorReduction
 //! @param[in] modeD same as in hiptensorReduction
 //! @param[in] opReduce same as in hiptensorReduction
-//! @param[in] typeCompute same as in hiptensorReduction
+//! @param[in] descCompute same as in hiptensorReduction
 //! @param[out] workspaceSize The workspace size (in bytes) that is required for the given tensor reduction.
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
@@ -415,7 +419,7 @@ hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t    
                                                      const hiptensorTensorDescriptor_t* descD,
                                                      const int32_t                      modeD[],
                                                      hiptensorOperator_t                opReduce,
-                                                     hiptensorComputeType_t             typeCompute,
+                                                     hiptensorComputeDescriptor_t       descCompute,
                                                      uint64_t* workspaceSize);
 
 //! @brief Registers a callback function that will be invoked by logger calls.

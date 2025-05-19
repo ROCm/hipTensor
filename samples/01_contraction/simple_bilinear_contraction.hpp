@@ -37,10 +37,10 @@
 template <typename ADataType,
           typename BDataType,
           typename CDataType,
-          hipDataType            typeA,
-          hipDataType            typeB,
-          hipDataType            typeC,
-          hiptensorComputeType_t typeCompute>
+          hiptensorDataType_t          typeA,
+          hiptensorDataType_t          typeB,
+          hiptensorDataType_t          typeC,
+          hiptensorComputeDescriptor_t descCompute>
 int bilinearContractionSample(void* alpha, void* beta)
 {
     /**********************
@@ -214,21 +214,20 @@ int bilinearContractionSample(void* alpha, void* beta)
     std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
 
     hiptensorOperationDescriptor_t desc;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(*handle,
-                                                             &desc,
-                                                             &a_ms_ks,
-                                                             modeA.data(),
-                                                             alignmentRequirementA,
-                                                             &b_ns_ks,
-                                                             modeB.data(),
-                                                             alignmentRequirementB,
-                                                             &c_ms_ns,
-                                                             modeC.data(),
-                                                             alignmentRequirementC,
-                                                             &c_ms_ns,
-                                                             modeC.data(),
-                                                             alignmentRequirementC,
-                                                             typeCompute));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(*handle,
+                                                     &desc,
+                                                     &a_ms_ks,
+                                                     modeA.data(),
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     &b_ns_ks,
+                                                     modeB.data(),
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     &c_ms_ns,
+                                                     modeC.data(),
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     &c_ms_ns,
+                                                     modeC.data(),
+                                                     descCompute));
     /**************************
    * Set the algorithm to use
    ***************************/

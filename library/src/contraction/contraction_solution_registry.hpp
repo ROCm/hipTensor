@@ -69,14 +69,14 @@ namespace hiptensor
                         hiptensorOperator_t          opA,
                         hiptensorOperator_t          opB,
                         hiptensorOperationId_t       opCDE,
-                        hiptensorComputeDescriptor_t typeCompute) const;
+                        hiptensorComputeDescriptor_t descCompute) const;
 
             // By data types
-            Query query(hipDataType            typeA,
-                        hipDataType            typeB,
-                        hipDataType            typeC,
-                        hipDataType            typeD,
-                        hiptensorComputeType_t typeCompute) const;
+            Query query(hiptensorDataType_t          typeA,
+                        hiptensorDataType_t          typeB,
+                        hiptensorDataType_t          typeC,
+                        hiptensorDataType_t          typeD,
+                        hiptensorComputeDescriptor_t descCompute) const;
 
             // By contraction operation
             Query query(hiptensorOperationId_t opCDE) const;
@@ -104,14 +104,14 @@ namespace hiptensor
                                        hiptensorOperator_t          opA,
                                        hiptensorOperator_t          opB,
                                        hiptensorOperationId_t       opCDE,
-                                       hiptensorComputeDescriptor_t typeCompute);
+                                       hiptensorComputeDescriptor_t descCompute);
 
             static HashId hashDimsMNK(int32_t dimsM, int32_t dimsN, int32_t dimsK);
-            static HashId hashTypesComputeABCD(hipDataType            typeA,
-                                               hipDataType            typeB,
-                                               hipDataType            typeC,
-                                               hipDataType            typeD,
-                                               hiptensorComputeType_t typeCompute);
+            static HashId hashTypesComputeABCD(hiptensorDataType_t          typeA,
+                                               hiptensorDataType_t          typeB,
+                                               hiptensorDataType_t          typeC,
+                                               hiptensorDataType_t          typeD,
+                                               hiptensorComputeDescriptor_t descCompute);
             static HashId hashElementOps(hiptensorOperator_t opA, hiptensorOperator_t opB);
             static HashId hashContractionOps(hiptensorOperationId_t opCDE);
 

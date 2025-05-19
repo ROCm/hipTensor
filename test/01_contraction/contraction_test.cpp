@@ -471,21 +471,20 @@ namespace hiptensor
 
             resource->copyDeviceToHostAll(elementBytes);
 
-            CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(
                 *handle,
                 &desc,
                 &a_ms_ks,
                 a_ms_ks_modes.data(),
-                alignmentRequirementA,
+                operatorType,
                 &b_ns_ks,
                 b_ns_ks_modes.data(),
-                alignmentRequirementB,
+                operatorType,
                 (CDataType != NONE_TYPE) ? &c_ms_ns : nullptr,
                 (CDataType != NONE_TYPE) ? cd_ms_ns_modes.data() : nullptr,
-                alignmentRequirementC,
+                operatorType,
                 &d_ms_ns,
                 cd_ms_ns_modes.data(),
-                alignmentRequirementD,
                 computeType));
             /**************************
             * Set the algorithm to use

@@ -337,6 +337,12 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t      
     }
 }
 
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t* desc)
+{
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+}
+
 hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)
 {
     using hiptensor::Logger;

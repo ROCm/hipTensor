@@ -41,7 +41,7 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                               const hiptensorTensorDescriptor_t* descD,
                                               const int32_t                      modeD[],
                                               hiptensorOperator_t                opReduce,
-                                              hiptensorComputeType_t             typeCompute,
+                                              hiptensorComputeDescriptor_t       descCompute,
                                               hipStream_t                        stream)
 {
     int  rankA        = descA->mLengths.size();
@@ -49,8 +49,8 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
     auto ADataType    = descA->mType;
     auto DDataType    = descD->mType;
 
-    auto internalTypeCompute = typeCompute;
-    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    auto internalTypeCompute = descCompute;
+    if(descCompute == HIPTENSOR_COMPUTE_DESC_16F || descCompute == HIPTENSOR_COMPUTE_DESC_16BF)
     {
         // CK does not support f16 or bf16 as compute type
         internalTypeCompute = HIPTENSOR_COMPUTE_32F;
@@ -61,20 +61,21 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         // Composable Kernels (CK) does not handle reductions where the input and
         // output tensors maintain the same rank. For those scenarios, employ
         // elementwise binary operations.
-        return hiptensorElementwiseBinaryOpReference(alpha,
-                                                     A,
-                                                     descA,
-                                                     modeA,
-                                                     beta,
-                                                     C,
-                                                     descC,
-                                                     modeC,
-                                                     D,
-                                                     descD,
-                                                     modeD,
-                                                     HIPTENSOR_OP_ADD,
-                                                     *hiptensor::convertToHipDataType(typeCompute),
-                                                     stream);
+        return hiptensorElementwiseBinaryOpReference(
+            alpha,
+            A,
+            descA,
+            modeA,
+            beta,
+            C,
+            descC,
+            modeC,
+            D,
+            descD,
+            modeD,
+            HIPTENSOR_OP_ADD,
+            *hiptensor::convertToHipTensorDataType(descCompute),
+            stream);
     }
 
     auto& instances = hiptensor::ReductionCpuReferenceInstances::instance();
@@ -90,12 +91,12 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
     double alphaD;
     if(alpha != nullptr)
     {
-        alphaD = hiptensor::readVal<double>(alpha, typeCompute);
+        alphaD = hiptensor::readVal<double>(alpha, descCompute);
     }
     double betaD;
     if(beta != nullptr)
     {
-        betaD = hiptensor::readVal<double>(beta, typeCompute);
+        betaD = hiptensor::readVal<double>(beta, descCompute);
     }
 
     if(C && C != D)

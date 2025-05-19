@@ -33,9 +33,9 @@
 #include "utils.hpp"
 
 template <typename InputType, typename OutputType, typename ComputeType>
-auto elementaryBinaryOpWithCpu(hipDataType inputType,
-                               hipDataType outputType,
-                               hipDataType typeCompute)
+auto elementaryBinaryOpWithCpu(hiptensorDataType_t inputType,
+                               hiptensorDataType_t outputType,
+                               hiptensorDataType_t descCompute)
 {
     std::vector<int> inMode{'w', 'h', 'c', 'n'};
     std::vector<int> outputMode{'c', 'n', 'h', 'w'};
@@ -168,13 +168,13 @@ auto elementaryBinaryOpWithCpu(hipDataType inputType,
                                           &descD,
                                           outputMode.data(),
                                           HIPTENSOR_OP_ADD,
-                                          typeCompute,
+                                          descCompute,
                                           0);
 
     return compareEqual(referenceArray.data(),
                         dArray.data(),
                         dArray.size(),
-                        hiptensor::convertToComputeType(typeCompute),
+                        hiptensor::convertToComputeType(descCompute),
                         0);
 }
 
@@ -184,12 +184,12 @@ TEST(ElementaryBinaryOpCpuImplTest, CompareF32ResultWithReference)
     typedef float OutputType;
     typedef float ComputeType;
 
-    hipDataType inputType   = HIP_R_32F;
-    hipDataType outputType  = HIP_R_32F;
-    hipDataType typeCompute = HIP_R_32F;
+    hiptensorDataType_t inputType   = HIPTENSOR_R_32F;
+    hiptensorDataType_t outputType  = HIPTENSOR_R_32F;
+    hiptensorDataType_t descCompute = HIPTENSOR_R_32F;
 
     auto [result, maxRelativeError] = elementaryBinaryOpWithCpu<InputType, OutputType, ComputeType>(
-        inputType, outputType, typeCompute);
+        inputType, outputType, descCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
 
@@ -199,11 +199,11 @@ TEST(ElementaryBinaryOpCpuImplTest, CompareF16ResultWithReference)
     typedef _Float16 OutputType;
     typedef _Float16 ComputeType;
 
-    hipDataType inputType   = HIP_R_16F;
-    hipDataType outputType  = HIP_R_16F;
-    hipDataType typeCompute = HIP_R_16F;
+    hiptensorDataType_t inputType   = HIPTENSOR_R_16F;
+    hiptensorDataType_t outputType  = HIPTENSOR_R_16F;
+    hiptensorDataType_t descCompute = HIPTENSOR_R_16F;
 
     auto [result, maxRelativeError] = elementaryBinaryOpWithCpu<InputType, OutputType, ComputeType>(
-        inputType, outputType, typeCompute);
+        inputType, outputType, descCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }

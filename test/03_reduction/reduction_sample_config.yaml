@@ -11,7 +11,7 @@ Log Level:
   # Example:
 [ HIPTENSOR_LOG_LEVEL_ERROR, HIPTENSOR_LOG_LEVEL_PERF_TRACE, HIPTENSOR_LOG_LEVEL_HEURISTICS_TRACE ]
 Tensor Data Types:
-  # Data types for tensorA/B, typeCompute
+  # Data types for tensorA/B, descCompute
   # Supported type combinations are:
     # - [ HIP_R_32F, HIP_R_32F]
     # - [ HIP_R_16F, HIP_R_16F]
@@ -20,12 +20,12 @@ Tensor Data Types:
   # Example:
   - [ HIP_R_32F, HIP_R_32F ]
 Alphas:
-  # Scaling parameter for tensorA of data type 'typeCompute'
+  # Scaling parameter for tensorA of data type 'descCompute'
 
   # Example:
   - [1.1]
 Betas:
-  # Scaling parameter for tensorB of data type 'typeCompute'
+  # Scaling parameter for tensorB of data type 'descCompute'
 
   # Example:
   - [2.2]

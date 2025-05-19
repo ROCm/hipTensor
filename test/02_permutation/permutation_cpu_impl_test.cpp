@@ -33,7 +33,9 @@
 #include "utils.hpp"
 
 template <typename floatTypeA, typename floatTypeB, typename floatTypeCompute>
-auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeCompute)
+auto permuteWithCpu(hiptensorDataType_t typeA,
+                    hiptensorDataType_t typeB,
+                    hiptensorDataType_t descCompute)
 {
     std::vector<int> modeA{'w', 'h', 'c', 'n'};
     std::vector<int> modeB{'c', 'n', 'h', 'w'};
@@ -137,13 +139,13 @@ auto permuteWithCpu(hipDataType typeA, hipDataType typeB, hipDataType typeComput
                                   bArray.data(),
                                   &descB,
                                   modeB.data(),
-                                  typeCompute,
+                                  descCompute,
                                   0);
 
     return compareEqual(referenceArray.data(),
                         bArray.data(),
                         bArray.size(),
-                        hiptensor::convertToComputeType(typeCompute),
+                        hiptensor::convertToComputeType(descCompute),
                         0);
 }
 
@@ -153,12 +155,12 @@ TEST(PermutationCpuImplTest, CompareF32ResultWithReference)
     typedef float floatTypeB;
     typedef float floatTypeCompute;
 
-    hipDataType typeA       = HIP_R_32F;
-    hipDataType typeB       = HIP_R_32F;
-    hipDataType typeCompute = HIP_R_32F;
+    hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t typeB       = HIPTENSOR_R_32F;
+    hiptensorDataType_t descCompute = HIPTENSOR_R_32F;
 
     auto [result, maxRelativeError]
-        = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, typeCompute);
+        = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, descCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
 
@@ -168,11 +170,11 @@ TEST(PermutationCpuImplTest, CompareF16ResultWithReference)
     typedef _Float16 floatTypeB;
     typedef _Float16 floatTypeCompute;
 
-    hipDataType typeA       = HIP_R_16F;
-    hipDataType typeB       = HIP_R_16F;
-    hipDataType typeCompute = HIP_R_16F;
+    hiptensorDataType_t typeA       = HIPTENSOR_R_16F;
+    hiptensorDataType_t typeB       = HIPTENSOR_R_16F;
+    hiptensorDataType_t descCompute = HIPTENSOR_R_16F;
 
     auto [result, maxRelativeError]
-        = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, typeCompute);
+        = permuteWithCpu<floatTypeA, floatTypeB, floatTypeCompute>(typeA, typeB, descCompute);
     EXPECT_TRUE(result) << "max_relative_error: " << maxRelativeError;
 }
