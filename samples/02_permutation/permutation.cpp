@@ -104,35 +104,35 @@ int main()
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, A, sizeA, hipMemcpyDefault));
 
-    hiptensorStatus_t  err;
-    hiptensorHandle_t* handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
+    hiptensorStatus_t err;
+    hiptensorHandle_t handle;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     /************************************************
    * Retrieve the memory alignment for each tensor
    ************************************************/
 
-    hiptensorTensorDescriptor_t* descA;
-    uint32_t                     alignmentRequirementA;
+    hiptensorTensorDescriptor_t descA;
+    uint32_t                    alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, A_d, typeA, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(handle, A_d, typeA, &alignmentRequirementA));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
+        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t* descC;
-    uint32_t                     alignmentRequirementC;
+    hiptensorTensorDescriptor_t descC;
+    uint32_t                    alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, C_d, typeC, &alignmentRequirementC));
+        hiptensorGetAlignmentRequirement(handle, C_d, typeC, &alignmentRequirementC));
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        *handle, descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
+        handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, alignmentRequirementC));
 
     using hiptensor::HiptensorOptions;
     auto& options = HiptensorOptions::instance();
     options->setColdRuns(5);
     options->setHotRuns(50);
     const floatTypeCompute one = 1.0f;
-    CHECK_HIPTENSOR_ERROR(hiptensorPermutation(*handle,
+    CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
                                                &one,
                                                A_d,
                                                descA,

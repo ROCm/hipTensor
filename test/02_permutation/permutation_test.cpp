@@ -310,28 +310,26 @@ namespace hiptensor
             for(auto mode : modeB)
                 extentB.push_back(extent[mode]);
 
-            hiptensorStatus_t  err;
-            hiptensorHandle_t* handle;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
+            hiptensorStatus_t err;
+            hiptensorHandle_t handle;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-            hiptensorTensorDescriptor_t* descA;
-            uint32_t                     alignmentRequirementA;
+            uint32_t alignmentRequirementA;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentA.data(), abDataType, &alignmentRequirementA));
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  descA,
+                handle, extentA.data(), abDataType, &alignmentRequirementA));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                                  &descA,
                                                                   nmodeA,
                                                                   extentA.data(),
                                                                   NULL /* stride */,
                                                                   abDataType,
                                                                   alignmentRequirementA));
 
-            hiptensorTensorDescriptor_t* descB;
-            uint32_t                     alignmentRequirementB;
+            uint32_t alignmentRequirementB;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentB.data(), abDataType, &alignmentRequirementB));
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  descB,
+                handle, extentB.data(), abDataType, &alignmentRequirementB));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                                  &descB,
                                                                   nmodeB,
                                                                   extentB.data(),
                                                                   NULL /* stride */,
@@ -353,7 +351,7 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(*handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
                                                        &alphaValue,
                                                        resource->deviceInput1().get(),
                                                        descA,

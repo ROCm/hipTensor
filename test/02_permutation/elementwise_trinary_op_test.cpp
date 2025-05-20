@@ -386,52 +386,52 @@ namespace hiptensor
             for(auto mode : modeD)
                 extentD.push_back(extent[mode]);
 
-            hiptensorStatus_t  err;
-            hiptensorHandle_t* handle;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
+            hiptensorStatus_t err;
+            hiptensorHandle_t handle;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-            hiptensorTensorDescriptor_t* descA;
-            uint32_t                     alignmentRequirementA;
+            hiptensorTensorDescriptor_t descA;
+            uint32_t                    alignmentRequirementA;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentA.data(), dataType, &alignmentRequirementA));
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  descA,
+                handle, extentA.data(), dataType, &alignmentRequirementA));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                                  &descA,
                                                                   nmodeA,
                                                                   extentA.data(),
                                                                   NULL /* stride */,
                                                                   dataType,
                                                                   alignmentRequirementA));
 
-            hiptensorTensorDescriptor_t* descB;
-            uint32_t                     alignmentRequirementB;
+            hiptensorTensorDescriptor_t descB;
+            uint32_t                    alignmentRequirementB;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentB.data(), dataType, &alignmentRequirementB));
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  descB,
+                handle, extentB.data(), dataType, &alignmentRequirementB));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                                  &descB,
                                                                   nmodeB,
                                                                   extentB.data(),
                                                                   NULL /* stride */,
                                                                   dataType,
                                                                   alignmentRequirementB));
 
-            hiptensorTensorDescriptor_t* descC;
-            uint32_t                     alignmentRequirementC;
+            hiptensorTensorDescriptor_t descC;
+            uint32_t                    alignmentRequirementC;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentC.data(), dataType, &alignmentRequirementC));
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  descC,
+                handle, extentC.data(), dataType, &alignmentRequirementC));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                                  &descC,
                                                                   nmodeC,
                                                                   extentC.data(),
                                                                   NULL /* stride */,
                                                                   dataType,
                                                                   alignmentRequirementC));
 
-            hiptensorTensorDescriptor_t* descD;
-            uint32_t                     alignmentRequirementD;
+            hiptensorTensorDescriptor_t descD;
+            uint32_t                    alignmentRequirementD;
             CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                *handle, extentD.data(), dataType, &alignmentRequirementD));
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                                  descD,
+                handle, extentD.data(), dataType, &alignmentRequirementD));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                                  &descD,
                                                                   nmodeD,
                                                                   extentD.data(),
                                                                   NULL /* stride */,
@@ -483,7 +483,7 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(*handle,
+            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinary(handle,
                                                               &alphaValue,
                                                               resource->deviceInput1().get(),
                                                               descA,

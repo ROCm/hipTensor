@@ -178,17 +178,19 @@ typedef enum
 } hiptensorLogLevel_t;
 
 //! @brief hipTensor's library context
-struct hiptensorHandle_t
+struct hiptensorHandle
 {
     int64_t fields[512];
 };
+
+typedef struct hiptensorHandle* hiptensorHandle_t;
 
 //! @brief Structure representing a tensor descriptor
 //!
 //! Represents a descriptor for the tensor with the given properties of
 //! data type, lengths, strides and element-wise unary operation.
 //! Constructed with hiptensorCreateTensorDescriptor() function.
-struct hiptensorTensorDescriptor_t
+struct hiptensorTensorDescriptor
 {
     //! Data type of the tensors enum selection
     hipDataType mType;
@@ -201,6 +203,8 @@ struct hiptensorTensorDescriptor_t
     //! Unary operator applied to the tensor
     hiptensorOperator_t mUnaryOp;
 };
+
+typedef struct hiptensorTensorDescriptor* hiptensorTensorDescriptor_t;
 
 //! @brief This enum decides the over the operation based on the inputs.
 //!
@@ -225,7 +229,7 @@ enum struct hiptensorOperationId_t : int32_t
 //! as well as all of the input tensor descriptors, their alignment requirements
 //! and modes.
 //! Constructed with hiptensorCreateContraction() function.
-struct hiptensorOperationDescriptor_t
+struct hiptensorOperationDescriptor
 {
     //! Enum that differentiates the internal tensor operation
     int32_t mOperationOpId;
@@ -238,6 +242,8 @@ struct hiptensorOperationDescriptor_t
     //! Tensor modes
     std::vector<std::vector<int32_t>> mTensorMode;
 };
+
+typedef struct hiptensorOperationDescriptor* hiptensorOperationDescriptor_t;
 
 //! @brief hipTensor structure representing the contraction selection algorithm and candidates.
 struct hiptensorContractionFind_t

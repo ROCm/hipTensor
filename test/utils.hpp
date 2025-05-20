@@ -573,14 +573,14 @@ namespace std
 {
     static ostream& operator<<(ostream& os, const hiptensorTensorDescriptor_t& desc)
     {
-        os << "dim " << desc.mLengths.size() << ", ";
+        os << "dim " << desc->mLengths.size() << ", ";
 
         os << "lengths {";
-        hiptensorPrintVectorElements(desc.mLengths, ", ");
+        hiptensorPrintVectorElements(desc->mLengths, ", ");
         os << "}, ";
 
         os << "strides {";
-        hiptensorPrintVectorElements(desc.mStrides, ", ");
+        hiptensorPrintVectorElements(desc->mStrides, ", ");
         os << "}";
 
         return os;

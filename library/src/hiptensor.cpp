@@ -33,7 +33,7 @@
 #include "logger.hpp"
 #include "util.hpp"
 
-hiptensorStatus_t hiptensorCreate(hiptensorHandle_t*& handle)
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -44,9 +44,9 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t*& handle)
         msg, sizeof(msg), "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
     logger->logAPITrace("hiptensorCreate", msg);
 
-    handle = new hiptensorHandle_t;
+    *handle = new hiptensorHandle;
 
-    if(handle == nullptr)
+    if(handle == nullptr || *handle == nullptr)
     {
         auto errorCode = HIPTENSOR_STATUS_ALLOC_FAILED;
         snprintf(msg,
@@ -80,12 +80,12 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t*& handle)
     }
 
     // Get the current device (handled by the Handle class)
-    auto realHandle = hiptensor::Handle::createHandle(handle->fields);
+    auto realHandle = hiptensor::Handle::createHandle((*handle)->fields);
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t*& handle)
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -104,13 +104,13 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t*& handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t       handle,
-                                                  hiptensorTensorDescriptor_t*& desc,
-                                                  const uint32_t                numModes,
-                                                  const int64_t                 lens[],
-                                                  const int64_t                 strides[],
-                                                  hiptensorDataType_t           dataType,
-                                                  uint32_t alignmentRequirement)
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
+                                                  hiptensorTensorDescriptor_t* desc,
+                                                  const uint32_t               numModes,
+                                                  const int64_t                lens[],
+                                                  const int64_t                strides[],
+                                                  hiptensorDataType_t          dataType,
+                                                  uint32_t                     alignmentRequirement)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -122,7 +122,7 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t       
              "handle=0x%0*llX, desc=0x%llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
              "dataType=0x%02X, alignmentRequirement=0x%02d",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)desc,
              (unsigned int)numModes,
              (unsigned long long)lens,
@@ -190,20 +190,20 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t       
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
+    auto realHandle = hiptensor::Handle::toHandle(handle->fields);
     if(dataType == HIPTENSOR_R_64F && !realHandle->getDevice().supportsF64())
     {
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
-    desc = new hiptensorTensorDescriptor_t;
+    *desc = new hiptensorTensorDescriptor;
     if(strides)
     {
         // Construct with both given lengths and strides
-        *desc = {dataType,
-                 std::vector<std::size_t>(lens, lens + numModes),
-                 std::vector<std::size_t>(strides, strides + numModes),
-                 alignmentRequirement};
+        **desc = {dataType,
+                  std::vector<std::size_t>(lens, lens + numModes),
+                  std::vector<std::size_t>(strides, strides + numModes),
+                  alignmentRequirement};
     }
     else
     {
@@ -216,21 +216,21 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t       
             auto                     lensVector = std::vector<std::size_t>(lens, lens + numModes);
             std::vector<std::size_t> stridesVector
                 = hiptensor::stridesFromLengths(lensVector, options->isColMajorStrides());
-            *desc = {dataType, lensVector, stridesVector, alignmentRequirement};
+            **desc = {dataType, lensVector, stridesVector, alignmentRequirement};
         }
         else
         {
-            *desc = {dataType,
-                     std::vector<std::size_t>(),
-                     std::vector<std::size_t>(),
-                     alignmentRequirement};
+            **desc = {dataType,
+                      std::vector<std::size_t>(),
+                      std::vector<std::size_t>(),
+                      alignmentRequirement};
         }
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t* desc)
+hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -300,7 +300,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t handl
              sizeof(msg),
              "handle=0x%0*llX, ptr=0x%llX, dataType=0x%d, alignmentRequirement=0x%02X",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)ptr,
              (uint32_t)dataType,
              (unsigned int)*alignmentRequirement);
@@ -332,7 +332,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t handl
     }
 }
 
-hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t* desc)
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();

@@ -117,51 +117,51 @@ auto elementaryTrinaryOpWithCpu(hiptensorDataType_t inputType,
     const ComputeType betaValue  = 2.1f;
     const ComputeType gammaValue = 1.2f;
 
-    hiptensorHandle_t* handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
+    hiptensorHandle_t handle;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-    hiptensorTensorDescriptor_t* descA;
-    uint32_t                     alignmentRequirementA;
+    hiptensorTensorDescriptor_t descA;
+    uint32_t                    alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-        *handle, inExtent.data(), inputType, &alignmentRequirementA));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          descA,
+        handle, inExtent.data(), inputType, &alignmentRequirementA));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &descA,
                                                           ninMode,
                                                           inExtent.data(),
                                                           NULL /* stride */,
                                                           inputType,
                                                           alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t* descB;
-    uint32_t                     alignmentRequirementB;
+    hiptensorTensorDescriptor_t descB;
+    uint32_t                    alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-        *handle, inExtent.data(), inputType, &alignmentRequirementB));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          descB,
+        handle, inExtent.data(), inputType, &alignmentRequirementB));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &descB,
                                                           ninMode,
                                                           inExtent.data(),
                                                           NULL /* stride */,
                                                           inputType,
                                                           alignmentRequirementB));
 
-    hiptensorTensorDescriptor_t* descC;
-    uint32_t                     alignmentRequirementC;
+    hiptensorTensorDescriptor_t descC;
+    uint32_t                    alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-        *handle, inExtent.data(), inputType, &alignmentRequirementC));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          descC,
+        handle, inExtent.data(), inputType, &alignmentRequirementC));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &descC,
                                                           ninMode,
                                                           inExtent.data(),
                                                           NULL /* stride */,
                                                           inputType,
                                                           alignmentRequirementC));
 
-    hiptensorTensorDescriptor_t* descD;
-    uint32_t                     alignmentRequirementD;
+    hiptensorTensorDescriptor_t descD;
+    uint32_t                    alignmentRequirementD;
     CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-        *handle, outputExtent.data(), outputType, &alignmentRequirementD));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          descD,
+        handle, outputExtent.data(), outputType, &alignmentRequirementD));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &descD,
                                                           noutputMode,
                                                           outputExtent.data(),
                                                           NULL /* stride */,

@@ -32,26 +32,26 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t            handle,
-                                              const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t                      modeA[],
-                                              const void*                        beta,
-                                              const void*                        B,
-                                              const hiptensorTensorDescriptor_t* descB,
-                                              const int32_t                      modeB[],
-                                              const void*                        gamma,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t                      modeC[],
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t                      modeD[],
-                                              hiptensorOperator_t                opAB,
-                                              hiptensorOperator_t                opABC,
-                                              hipDataType                        typeScalar,
-                                              const hipStream_t                  stream)
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           handle,
+                                              const void*                       alpha,
+                                              const void*                       A,
+                                              const hiptensorTensorDescriptor_t descA,
+                                              const int32_t                     modeA[],
+                                              const void*                       beta,
+                                              const void*                       B,
+                                              const hiptensorTensorDescriptor_t descB,
+                                              const int32_t                     modeB[],
+                                              const void*                       gamma,
+                                              const void*                       C,
+                                              const hiptensorTensorDescriptor_t descC,
+                                              const int32_t                     modeC[],
+                                              void*                             D,
+                                              const hiptensorTensorDescriptor_t descD,
+                                              const int32_t                     modeD[],
+                                              hiptensorOperator_t               opAB,
+                                              hiptensorOperator_t               opABC,
+                                              hiptensorDataType_t               typeScalar,
+                                              const hipStream_t                 stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -65,7 +65,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           
              "gamma=%p, C=%p, descC=%p, modeC=%p, "
              "D=%p, descD=%p, modeD=%p, "
              "opAB=0x%02X, opABC=0x%02X, typeScalar=0x%02X, stream=%p",
-             &handle,
+             handle,
              alpha,
              A,
              descA,
@@ -89,7 +89,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           
     logger->logAPITrace("hiptensorElementwiseTrinary", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, alpha);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, A);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);

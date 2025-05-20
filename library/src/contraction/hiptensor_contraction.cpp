@@ -62,20 +62,20 @@ inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolu
     return result;
 }
 
-hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
-                                             hiptensorOperationDescriptor_t*&   desc,
-                                             const hiptensorTensorDescriptor_t* descA,
-                                             const int32_t                      modeA[],
-                                             hiptensorOperator_t                opA,
-                                             const hiptensorTensorDescriptor_t* descB,
-                                             const int32_t                      modeB[],
-                                             hiptensorOperator_t                opB,
-                                             const hiptensorTensorDescriptor_t* descC,
-                                             const int32_t                      modeC[],
-                                             hiptensorOperator_t                opC,
-                                             const hiptensorTensorDescriptor_t* descD,
-                                             const int32_t                      modeD[],
-                                             hiptensorComputeDescriptor_t       descCompute)
+hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t           handle,
+                                             hiptensorOperationDescriptor_t*   desc,
+                                             const hiptensorTensorDescriptor_t descA,
+                                             const int32_t                     modeA[],
+                                             hiptensorOperator_t               opA,
+                                             const hiptensorTensorDescriptor_t descB,
+                                             const int32_t                     modeB[],
+                                             hiptensorOperator_t               opB,
+                                             const hiptensorTensorDescriptor_t descC,
+                                             const int32_t                     modeC[],
+                                             hiptensorOperator_t               opC,
+                                             const hiptensorTensorDescriptor_t descD,
+                                             const int32_t                     modeD[],
+                                             hiptensorComputeDescriptor_t      descCompute)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -88,7 +88,7 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
              "descB=0x%llX, modeB=0x%llX, opB=0x%02X, descC=0x%llX, modeC=0x%llX, "
              "opC=0x%02X, descD=0x%llX, modeD=0x%llX, descCompute=0x%02X",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)desc,
              (unsigned long long)descA,
              (unsigned long long)modeA,
@@ -105,11 +105,10 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
 
     logger->logAPITrace("hiptensorCreateContraction", msg);
 
-    desc = new hiptensorOperationDescriptor_t;
+    *desc = new hiptensorOperationDescriptor;
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descB);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descD);
@@ -149,16 +148,17 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
                                  ? hiptensorOperationId_t::SCALE_COMPLEX_CONTRACTION
                                  : hiptensorOperationId_t::SCALE_CONTRACTION;
 
-        *desc = {(int32_t)contractionOp,
-                 descCompute,
-                 {*descA,
-                  *descB,
-                  {hiptensor::NONE_TYPE,
-                   std::vector<std::size_t>(descD->mLengths.size(), 0),
-                   std::vector<std::size_t>(descD->mStrides.size(), 0)},
-                  *descD},
-                 {opA, opB},
-                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
+        hiptensorTensorDescriptor tempC = {hiptensor::NONE_TYPE,
+                                           std::vector<std::size_t>(descD->mLengths.size(), 0),
+                                           std::vector<std::size_t>(descD->mStrides.size(), 0),
+                                           0,
+                                           (hiptensorOperator_t)0};
+
+        **desc = {(int32_t)contractionOp,
+                  descCompute,
+                  {descA, descB, &tempC, descD},
+                  {opA, opB},
+                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
     }
     else
     {
@@ -180,11 +180,11 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
                                  ? hiptensorOperationId_t::BILINEAR_COMPLEX_CONTRACTION
                                  : hiptensorOperationId_t::BILINEAR_CONTRACTION;
 
-        *desc = {(int32_t)contractionOp,
-                 descCompute,
-                 {*descA, *descB, *descC, *descD},
-                 {opA, opB, opC},
-                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
+        **desc = {(int32_t)contractionOp,
+                  descCompute,
+                  {descA, descB, descC, descD},
+                  {opA, opB, opC},
+                  {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -203,21 +203,21 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handl
              sizeof(msg),
              "handle=0x%0*llX, find=0x%llX, algo=0x%02X",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)find,
              (int)algo);
 
     logger->logAPITrace("hiptensorInitContractionFind", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
     if(checkResult != HIPTENSOR_STATUS_SUCCESS)
     {
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
@@ -274,10 +274,10 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handl
     }
 }
 
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t               handle,
-                                                       const hiptensorOperationDescriptor_t* desc,
-                                                       const hiptensorContractionFind_t*     find,
-                                                       const hiptensorWorksizePreference_t   pref,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t              handle,
+                                                       const hiptensorOperationDescriptor_t desc,
+                                                       const hiptensorContractionFind_t*    find,
+                                                       const hiptensorWorksizePreference_t  pref,
                                                        uint64_t* workspaceSize)
 {
     using hiptensor::Logger;
@@ -289,7 +289,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t  
              sizeof(msg),
              "handle=0x%0*llX, desc=0x%llX, find=0x%llX, pref=0x%02X, workspaceSize=0x%04lX",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)desc,
              (unsigned long long)find,
              (unsigned int)pref,
@@ -297,7 +297,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t  
     logger->logAPITrace("hiptensorContractionGetWorkspaceSize", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, workspaceSize);
@@ -317,17 +317,17 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t  
                               nullptr,
                               nullptr,
                               nullptr,
-                              desc->mTensorDesc[0].mLengths,
-                              desc->mTensorDesc[0].mStrides,
+                              desc->mTensorDesc[0]->mLengths,
+                              desc->mTensorDesc[0]->mStrides,
                               desc->mTensorMode[0],
-                              desc->mTensorDesc[1].mLengths,
-                              desc->mTensorDesc[1].mStrides,
+                              desc->mTensorDesc[1]->mLengths,
+                              desc->mTensorDesc[1]->mStrides,
                               desc->mTensorMode[1],
-                              desc->mTensorDesc[2].mLengths,
-                              desc->mTensorDesc[2].mStrides,
+                              desc->mTensorDesc[2]->mLengths,
+                              desc->mTensorDesc[2]->mStrides,
                               desc->mTensorMode[2],
-                              desc->mTensorDesc[3].mLengths,
-                              desc->mTensorDesc[3].mStrides,
+                              desc->mTensorDesc[3]->mLengths,
+                              desc->mTensorDesc[3]->mStrides,
                               desc->mTensorMode[2],
                               nullptr))
         {
@@ -352,11 +352,11 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t  
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t               handle,
-                                               hiptensorContractionPlan_t*           plan,
-                                               const hiptensorOperationDescriptor_t* desc,
-                                               const hiptensorContractionFind_t*     find,
-                                               const uint64_t                        workspaceSize)
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t              handle,
+                                               hiptensorContractionPlan_t*          plan,
+                                               const hiptensorOperationDescriptor_t desc,
+                                               const hiptensorContractionFind_t*    find,
+                                               const uint64_t                       workspaceSize)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -368,7 +368,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
              sizeof(msg),
              "handle=0x%0*llX, plan=0x%llX, desc=0x%llX, find=0x%llX, workspaceSize=0x%04lX",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)plan,
              (unsigned long long)desc,
              (unsigned long long)find,
@@ -376,7 +376,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
     logger->logAPITrace("hiptensorInitContractionPlan", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, find);
@@ -385,7 +385,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
@@ -409,10 +409,10 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
     auto candidates = toContractionSolutionVec(find->mCandidates);
 
     auto computeType = desc->mComputeType;
-    auto ADataType   = desc->mTensorDesc[0].mType;
-    auto BDataType   = desc->mTensorDesc[1].mType;
-    auto DDataType   = desc->mTensorDesc[2].mType;
-    auto EDataType   = desc->mTensorDesc[3].mType;
+    auto ADataType   = desc->mTensorDesc[0]->mType;
+    auto BDataType   = desc->mTensorDesc[1]->mType;
+    auto DDataType   = desc->mTensorDesc[2]->mType;
+    auto EDataType   = desc->mTensorDesc[3]->mType;
 
     // Query contraction solutions for the correct contraction operation and type
     auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}
@@ -437,20 +437,20 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
         result = hiptensor::bruteForceModel(&winner,
                                             candidates,
                                             ADataType,
-                                            desc->mTensorDesc[0].mLengths,
-                                            desc->mTensorDesc[0].mStrides,
+                                            desc->mTensorDesc[0]->mLengths,
+                                            desc->mTensorDesc[0]->mStrides,
                                             desc->mTensorMode[0],
                                             BDataType,
-                                            desc->mTensorDesc[1].mLengths,
-                                            desc->mTensorDesc[1].mStrides,
+                                            desc->mTensorDesc[1]->mLengths,
+                                            desc->mTensorDesc[1]->mStrides,
                                             desc->mTensorMode[1],
                                             DDataType,
-                                            desc->mTensorDesc[2].mLengths,
-                                            desc->mTensorDesc[2].mStrides,
+                                            desc->mTensorDesc[2]->mLengths,
+                                            desc->mTensorDesc[2]->mStrides,
                                             desc->mTensorMode[2],
                                             EDataType,
-                                            desc->mTensorDesc[3].mLengths,
-                                            desc->mTensorDesc[3].mStrides,
+                                            desc->mTensorDesc[3]->mLengths,
+                                            desc->mTensorDesc[3]->mStrides,
                                             desc->mTensorMode[2],
                                             desc->mComputeType,
                                             workspaceSize);
@@ -460,20 +460,20 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
         result = hiptensor::actorCriticModel(&winner,
                                              solutionQ.solutions(),
                                              ADataType,
-                                             desc->mTensorDesc[0].mLengths,
-                                             desc->mTensorDesc[0].mStrides,
+                                             desc->mTensorDesc[0]->mLengths,
+                                             desc->mTensorDesc[0]->mStrides,
                                              desc->mTensorMode[0],
                                              BDataType,
-                                             desc->mTensorDesc[1].mLengths,
-                                             desc->mTensorDesc[1].mStrides,
+                                             desc->mTensorDesc[1]->mLengths,
+                                             desc->mTensorDesc[1]->mStrides,
                                              desc->mTensorMode[1],
                                              DDataType,
-                                             desc->mTensorDesc[2].mLengths,
-                                             desc->mTensorDesc[2].mStrides,
+                                             desc->mTensorDesc[2]->mLengths,
+                                             desc->mTensorDesc[2]->mStrides,
                                              desc->mTensorMode[2],
                                              EDataType,
-                                             desc->mTensorDesc[3].mLengths,
-                                             desc->mTensorDesc[3].mStrides,
+                                             desc->mTensorDesc[3]->mLengths,
+                                             desc->mTensorDesc[3]->mStrides,
                                              desc->mTensorMode[2],
                                              desc->mComputeType,
                                              workspaceSize);
@@ -509,7 +509,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t          
     logger->logPerformanceTrace("hiptensorInitContractionPlan", msg);
 
     // Assign the contraction descriptor
-    plan->mContractionDesc = *desc;
+    plan->mContractionDesc = desc;
     plan->mSolution        = winner;
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -544,7 +544,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
         else
         {
             auto alphaValue = hiptensor::readVal<hiptensor::ScalarData>(
-                alpha, plan->mContractionDesc.mComputeType);
+                alpha, plan->mContractionDesc->mComputeType);
             snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%s", std::to_string(alphaValue).c_str());
         }
 
@@ -555,7 +555,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
         else
         {
             auto betaValue = hiptensor::readVal<hiptensor::ScalarData>(
-                beta, plan->mContractionDesc.mComputeType);
+                beta, plan->mContractionDesc->mComputeType);
             snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
         }
     }
@@ -570,7 +570,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
              "handle=0x%0*llX, plan=0x%llX, %s, A=0x%llX, B=0x%llX, %s, "
              "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
              2 * (int)sizeof(void*),
-             (unsigned long long)&handle,
+             (unsigned long long)handle,
              (unsigned long long)plan,
              alphaMsg,
              (unsigned long long)A,
@@ -585,7 +585,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
     logger->logAPITrace("hiptensorContraction", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
-    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, &handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, alpha);
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, A);
@@ -597,7 +597,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle.fields);
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
@@ -630,18 +630,18 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
                                                  beta,
                                                  C,
                                                  D,
-                                                 plan->mContractionDesc.mTensorDesc[0].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[0].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[0],
-                                                 plan->mContractionDesc.mTensorDesc[1].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[1].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[1],
-                                                 plan->mContractionDesc.mTensorDesc[2].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[2].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[2],
-                                                 plan->mContractionDesc.mTensorDesc[3].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[3].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[2],
+                                                 plan->mContractionDesc->mTensorDesc[0]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[0]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[0],
+                                                 plan->mContractionDesc->mTensorDesc[1]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[1]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[1],
+                                                 plan->mContractionDesc->mTensorDesc[2]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[2]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[2],
+                                                 plan->mContractionDesc->mTensorDesc[3]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[3]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[2],
                                                  workspace,
                                                  workspaceSize,
                                                  StreamConfig{
@@ -687,18 +687,18 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
                                                  beta,
                                                  C,
                                                  D,
-                                                 plan->mContractionDesc.mTensorDesc[0].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[0].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[0],
-                                                 plan->mContractionDesc.mTensorDesc[1].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[1].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[1],
-                                                 plan->mContractionDesc.mTensorDesc[2].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[2].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[2],
-                                                 plan->mContractionDesc.mTensorDesc[3].mLengths,
-                                                 plan->mContractionDesc.mTensorDesc[3].mStrides,
-                                                 plan->mContractionDesc.mTensorMode[2],
+                                                 plan->mContractionDesc->mTensorDesc[0]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[0]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[0],
+                                                 plan->mContractionDesc->mTensorDesc[1]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[1]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[1],
+                                                 plan->mContractionDesc->mTensorDesc[2]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[2]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[2],
+                                                 plan->mContractionDesc->mTensorDesc[3]->mLengths,
+                                                 plan->mContractionDesc->mTensorDesc[3]->mStrides,
+                                                 plan->mContractionDesc->mTensorMode[2],
                                                  workspace,
                                                  workspaceSize,
                                                  StreamConfig{stream, false});

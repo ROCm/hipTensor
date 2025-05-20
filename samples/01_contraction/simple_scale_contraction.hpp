@@ -82,8 +82,8 @@ int scaleContractionSample(void* alpha)
         b_ns_ks_lengths.push_back(extent[mode]);
     }
 
-    hiptensorHandle_t* handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(handle));
+    hiptensorHandle_t handle;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
@@ -152,36 +152,36 @@ int scaleContractionSample(void* alpha)
     /********************************************
    * Initialize tensors with the input lengths *
    ********************************************/
-    hiptensorTensorDescriptor_t* a_ms_ks;
-    uint32_t                     alignmentRequirementA;
+    hiptensorTensorDescriptor_t a_ms_ks;
+    uint32_t                    alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, A_d, typeA, &alignmentRequirementA));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          a_ms_ks,
+        hiptensorGetAlignmentRequirement(handle, A_d, typeA, &alignmentRequirementA));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &a_ms_ks,
                                                           nmodeA,
                                                           a_ms_ks_lengths.data(),
                                                           NULL, /*stride*/
                                                           typeA,
                                                           alignmentRequirementA));
 
-    hiptensorTensorDescriptor_t* b_ns_ks;
-    uint32_t                     alignmentRequirementB;
+    hiptensorTensorDescriptor_t b_ns_ks;
+    uint32_t                    alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, B_d, typeB, &alignmentRequirementB));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          b_ns_ks,
+        hiptensorGetAlignmentRequirement(handle, B_d, typeB, &alignmentRequirementB));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &b_ns_ks,
                                                           nmodeB,
                                                           b_ns_ks_lengths.data(),
                                                           NULL, /*stride*/
                                                           typeB,
                                                           alignmentRequirementB));
 
-    hiptensorTensorDescriptor_t* d_ms_ns;
-    uint32_t                     alignmentRequirementD;
+    hiptensorTensorDescriptor_t d_ms_ns;
+    uint32_t                    alignmentRequirementD;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(*handle, D_d, typeD, &alignmentRequirementD));
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(*handle,
-                                                          d_ms_ns,
+        hiptensorGetAlignmentRequirement(handle, D_d, typeD, &alignmentRequirementD));
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &d_ms_ns,
                                                           nmodeD,
                                                           d_ms_ns_lengths.data(),
                                                           NULL, /*stride*/
@@ -205,9 +205,9 @@ int scaleContractionSample(void* alpha)
     std::cout << "b_ns_ks: " << b_ns_ks << std::endl;
     std::cout << "d_ms_ns: " << d_ms_ns << std::endl;
 
-    hiptensorOperationDescriptor_t* desc;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(*handle,
-                                                     desc,
+    hiptensorOperationDescriptor_t desc;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(handle,
+                                                     &desc,
                                                      a_ms_ks,
                                                      modeA.data(),
                                                      HIPTENSOR_OP_IDENTITY,
@@ -225,8 +225,7 @@ int scaleContractionSample(void* alpha)
    ***************************/
 
     hiptensorContractionFind_t find;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorInitContractionFind(*handle, &find, HIPTENSOR_ALGO_ACTOR_CRITIC));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionFind(handle, &find, HIPTENSOR_ALGO_ACTOR_CRITIC));
 
     /**********************
    * Query workspace
@@ -234,7 +233,7 @@ int scaleContractionSample(void* alpha)
 
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
-        *handle, desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
+        handle, desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
 
     void* workspace = nullptr;
 
@@ -249,11 +248,11 @@ int scaleContractionSample(void* alpha)
     std::cout << "Initializing contraction plan..." << std::endl;
 
     hiptensorContractionPlan_t plan;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(*handle, &plan, desc, &find, worksize));
+    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, desc, &find, worksize));
 
     std::cout << "Launching contraction kernel..." << std::endl;
 
-    CHECK_HIPTENSOR_ERROR(hiptensorContraction(*handle,
+    CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
                                                &plan,
                                                alpha,
                                                A_d,

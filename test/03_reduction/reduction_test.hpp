@@ -63,9 +63,9 @@ namespace hiptensor
         virtual ~ReductionTest() = default;
 
     protected: // Functions
-        ReductionTest(ReductionTest&&)            = delete;
-        ReductionTest(ReductionTest const&)       = delete;
-        ReductionTest& operator=(ReductionTest&)  = delete;
+        ReductionTest(ReductionTest&&)      = delete;
+        ReductionTest(ReductionTest const&) = delete;
+        ReductionTest& operator=(ReductionTest&) = delete;
         ReductionTest& operator=(ReductionTest&&) = delete;
 
         bool checkDevice(hipDataType datatype, hiptensorComputeType_t computeDataType) const;
@@ -92,9 +92,9 @@ namespace hiptensor
 
     protected:
         // Workspace items
-        hiptensorHandle_t* handle = nullptr;
+        hiptensorHandle_t handle = nullptr;
 
-        hiptensorTensorDescriptor_t a_ms_ks, b_ns_ks, c_ms_ns, d_ms_ns;
+        hiptensorTensorDescriptor_t descA, descC, descD;
 
         // Execution flow control
         uint32_t mRepeats;
