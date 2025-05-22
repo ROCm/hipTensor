@@ -32,7 +32,7 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t            handle,
                                               const void*                        alpha,
                                               const void*                        A,
                                               const hiptensorTensorDescriptor_t* descA,

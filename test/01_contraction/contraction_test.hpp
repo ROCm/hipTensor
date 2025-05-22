@@ -79,9 +79,9 @@ namespace hiptensor
         virtual ~ContractionTest() = default;
 
     protected: // Functions
-        ContractionTest(ContractionTest&&)      = delete;
-        ContractionTest(ContractionTest const&) = delete;
-        ContractionTest& operator=(ContractionTest&) = delete;
+        ContractionTest(ContractionTest&&)            = delete;
+        ContractionTest(ContractionTest const&)       = delete;
+        ContractionTest& operator=(ContractionTest&)  = delete;
         ContractionTest& operator=(ContractionTest&&) = delete;
 
         bool checkDevice(hiptensorDataType_t datatype) const;
@@ -109,7 +109,7 @@ namespace hiptensor
 
     protected:
         // Workspace items
-        hiptensorHandle_t*               handle = nullptr;
+        hiptensorHandle_t                handle = nullptr;
         hiptensorContractionPlan_t       plan;
         hiptensorContractionDescriptor_t desc;
         hiptensorContractionFind_t       find;

@@ -42,7 +42,7 @@ using namespace ck::tensor_operation::device;
 
 namespace
 {
-    hiptensorStatus_t checkReductionInputData(const hiptensorHandle_t*           handle,
+    hiptensorStatus_t checkReductionInputData(const hiptensorHandle_t            handle,
                                               const void*                        alpha,
                                               const void*                        A,
                                               const hiptensorTensorDescriptor_t* descA,
@@ -144,7 +144,7 @@ namespace
     }
 }
 
-hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
                                      const void*                        alpha,
                                      const void*                        A,
                                      const hiptensorTensorDescriptor_t* descA,
@@ -377,7 +377,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
     return errorCode;
 }
 
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t            handle,
                                                      const void*                        A,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],

@@ -115,7 +115,7 @@ auto permuteWithCpu(hiptensorDataType_t typeA,
     }
 
     const floatTypeCompute alphaValue = 2.1f;
-    hiptensorHandle_t*     handle;
+    hiptensorHandle_t      handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(

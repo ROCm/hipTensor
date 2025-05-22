@@ -410,8 +410,8 @@ namespace hiptensor
             }
             std::vector<int64_t> strideC = strideD;
 
-            hiptensorStatus_t  err;
-            hiptensorHandle_t* handle;
+            hiptensorStatus_t err;
+            hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
             hiptensorTensorDescriptor_t descA;

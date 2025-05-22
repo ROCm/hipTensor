@@ -89,7 +89,7 @@ auto reduceWithCpu(hiptensorDataType_t          typeA,
                           -3314.1, -3332.1, -3350.1, -3368.1, -3386.1, -3404.1, -3422.1, -3440.1};
     }
 
-    hiptensorHandle_t* handle;
+    hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
     hiptensorTensorDescriptor_t descA;

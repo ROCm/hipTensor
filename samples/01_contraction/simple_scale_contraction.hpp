@@ -82,7 +82,7 @@ int scaleContractionSample(void* alpha)
         b_ns_ks_lengths.push_back(extent[mode]);
     }
 
-    hiptensorHandle_t* handle;
+    hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));

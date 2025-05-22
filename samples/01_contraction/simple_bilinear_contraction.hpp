@@ -83,7 +83,7 @@ int bilinearContractionSample(void* alpha, void* beta)
         b_ns_ks_lengths.push_back(extent[mode]);
     }
 
-    hiptensorHandle_t* handle;
+    hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));

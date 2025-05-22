@@ -218,10 +218,12 @@ typedef enum
 } hiptensorLogLevel_t;
 
 //! @brief hipTensor's library context
-struct hiptensorHandle_t
+struct hiptensorHandle
 {
     int64_t fields[512];
 };
+
+typedef struct hiptensorHandle* hiptensorHandle_t;
 
 //! @brief Structure representing a tensor descriptor
 //!

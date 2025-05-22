@@ -117,7 +117,7 @@ auto elementaryTrinaryOpWithCpu(hiptensorDataType_t inputType,
     const ComputeType betaValue  = 2.1f;
     const ComputeType gammaValue = 1.2f;
 
-    hiptensorHandle_t* handle;
+    hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
     hiptensorTensorDescriptor_t descA;

@@ -62,7 +62,7 @@ inline auto toVoidVec(std::unordered_map<std::size_t, hiptensor::ContractionSolu
     return result;
 }
 
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
                                                      hiptensorContractionDescriptor_t*  desc,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],
@@ -152,16 +152,16 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                      || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
                                  ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
                                  : hiptensor::ContractionOpId_t::SCALE;
-        *desc = {(int32_t)contractionOp,
-                 typeCompute,
-                 {*descA,
-                  *descB,
-                  {hiptensor::NONE_TYPE,
-                   std::vector<std::size_t>(descD->mLengths.size(), 0),
-                   std::vector<std::size_t>(descD->mStrides.size(), 0)},
-                  *descD},
-                 {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD},
-                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
+        *desc              = {(int32_t)contractionOp,
+                              typeCompute,
+                              {*descA,
+                               *descB,
+                               {hiptensor::NONE_TYPE,
+                                std::vector<std::size_t>(descD->mLengths.size(), 0),
+                                std::vector<std::size_t>(descD->mStrides.size(), 0)},
+                               *descD},
+                              {alignmentRequirementA, alignmentRequirementB, 0, alignmentRequirementD},
+                              {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeDV}}};
     }
     else
     {
@@ -182,20 +182,20 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
                                      || typeCompute == HIPTENSOR_COMPUTE_DESC_C64F
                                  ? hiptensor::ContractionOpId_t::BILINEAR_COMPLEX
                                  : hiptensor::ContractionOpId_t::BILINEAR;
-        *desc = {(int32_t)contractionOp,
-                 typeCompute,
-                 {*descA, *descB, *descC, *descD},
-                 {alignmentRequirementA,
-                  alignmentRequirementB,
-                  alignmentRequirementC,
-                  alignmentRequirementD},
-                 {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
+        *desc              = {(int32_t)contractionOp,
+                              typeCompute,
+                              {*descA, *descB, *descC, *descD},
+                              {alignmentRequirementA,
+                               alignmentRequirementB,
+                               alignmentRequirementC,
+                               alignmentRequirementD},
+                              {std::vector<std::vector<int32_t>>{modeAV, modeBV, modeCV, modeDV}}};
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
+hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handle,
                                                hiptensorContractionFind_t* find,
                                                const hiptensorAlgo_t       algo)
 {
@@ -279,7 +279,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
     }
 }
 
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t handle,
                                                        const hiptensorContractionDescriptor_t* desc,
                                                        const hiptensorContractionFind_t*       find,
                                                        const hiptensorWorksizePreference_t     pref,
@@ -357,7 +357,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t                 handle,
                                                hiptensorContractionPlan_t*             plan,
                                                const hiptensorContractionDescriptor_t* desc,
                                                const hiptensorContractionFind_t*       find,
@@ -520,7 +520,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
+hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
                                        const hiptensorContractionPlan_t* plan,
                                        const void*                       alpha,
                                        const void*                       A,

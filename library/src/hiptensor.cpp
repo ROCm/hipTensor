@@ -33,7 +33,7 @@
 #include "logger.hpp"
 #include "util.hpp"
 
-hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -44,7 +44,7 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
         msg, sizeof(msg), "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
     logger->logAPITrace("hiptensorCreate", msg);
 
-    (*handle) = new hiptensorHandle_t;
+    (*handle) = new hiptensorHandle;
 
     if(*handle == nullptr)
     {
@@ -85,7 +85,7 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -104,7 +104,7 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
+hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      handle,
                                                 hiptensorTensorDescriptor_t* desc,
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
@@ -264,7 +264,7 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error)
         return "HIPTENSOR_STATUS_UNKNOWN";
 }
 
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t            handle,
                                                    const void*                        ptr,
                                                    const hiptensorTensorDescriptor_t* desc,
                                                    uint32_t* alignmentRequirement)

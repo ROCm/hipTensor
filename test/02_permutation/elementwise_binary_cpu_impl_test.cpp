@@ -115,9 +115,9 @@ auto elementaryBinaryOpWithCpu(hiptensorDataType_t inputType,
                59.4, 191.4, 323.4, 125.4, 257.4, 389.4, 62.7, 194.7, 326.7, 128.7, 260.7, 392.7};
     }
 
-    const ComputeType  alphaValue = 2.1f;
-    const ComputeType  gammaValue = 1.2f;
-    hiptensorHandle_t* handle;
+    const ComputeType alphaValue = 2.1f;
+    const ComputeType gammaValue = 1.2f;
+    hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,

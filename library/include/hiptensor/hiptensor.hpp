@@ -38,12 +38,12 @@
 //! hiptensorCreate().
 //! @param[out] handle Pointer to hiptensorHandle_t pointer
 //! @returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
-hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle);
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle);
 
 //! @brief De-allocates the instance of hiptensorHandle_t
 //! @param[out] handle Pointer to hiptensorHandle_t
 //! @returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
-hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle);
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle);
 
 //! @brief Initializes a tensor descriptor
 //! @param[in] handle Opaque handle holding hipTensor's library context.
@@ -57,7 +57,7 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle);
 //! @param[in] unaryOp Unary operator that will be applied to the tensor.
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
+hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      handle,
                                                 hiptensorTensorDescriptor_t* desc,
                                                 const uint32_t               numModes,
                                                 const int64_t                lens[],
@@ -90,7 +90,7 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error);
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle,
                                        const void*                        alpha,
                                        const void*                        A,
                                        const hiptensorTensorDescriptor_t* descA,
@@ -134,7 +134,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 //! @return HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes are invalid.
 //! @return HIPTENSOR_STATUS_SUCCESS if the operation completes successfully.
 //! @return HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            handle,
                                              const void*                        alpha,
                                              const void*                        A,
                                              const hiptensorTensorDescriptor_t* descA,
@@ -183,7 +183,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
 //! @return HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @return HIPTENSOR_STATUS_INVALID_VALUE if input data is invalid.
 //! @return HIPTENSOR_STATUS_ARCH_MISMATCH if the device is not ready or the architecture is unsupported.
-hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t            handle,
                                               const void*                        alpha,
                                               const void*                        A,
                                               const hiptensorTensorDescriptor_t* descA,
@@ -212,7 +212,7 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*          
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported parameter is passed.
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t            handle,
                                                    const void*                        ptr,
                                                    const hiptensorTensorDescriptor_t* desc,
                                                    uint32_t* alignmentRequirement);
@@ -235,7 +235,7 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*     
 //! @param[in] typeCompute Datatype for the intermediate computation  T = A * B.
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
                                                      hiptensorContractionDescriptor_t*  desc,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],
@@ -261,7 +261,7 @@ hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*   
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
+hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t     handle,
                                                hiptensorContractionFind_t* find,
                                                const hiptensorAlgo_t       algo);
 
@@ -274,7 +274,7 @@ hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handl
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
+hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t handle,
                                                        const hiptensorContractionDescriptor_t* desc,
                                                        const hiptensorContractionFind_t*       find,
                                                        const hiptensorWorksizePreference_t     pref,
@@ -295,7 +295,7 @@ hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* 
 //! @retval HIPTENSOR_STATUS_SUCCESS If a viable candidate has been found.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find or desc is not
 //! initialized.
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
+hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t                 handle,
                                                hiptensorContractionPlan_t*             plan,
                                                const hiptensorContractionDescriptor_t* desc,
                                                const hiptensorContractionFind_t*       find,
@@ -322,7 +322,7 @@ hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*         
 //! initialized.
 //! @retval HIPTENSOR_STATUS_CK_ERROR if some unknown composable_kernel (CK)
 //! error has occurred (e.g., no instance supported by inputs).
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
+hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
                                        const hiptensorContractionPlan_t* plan,
                                        const void*                       alpha,
                                        const void*                       A,
@@ -359,7 +359,7 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 
-hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
                                      const void*                        alpha,
                                      const void*                        A,
                                      const hiptensorTensorDescriptor_t* descA,
@@ -394,7 +394,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t*           handle,
+hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t            handle,
                                                      const void*                        A,
                                                      const hiptensorTensorDescriptor_t* descA,
                                                      const int32_t                      modeA[],

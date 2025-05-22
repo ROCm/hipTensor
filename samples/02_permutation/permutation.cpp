@@ -104,8 +104,8 @@ int main()
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, A, sizeA, hipMemcpyDefault));
 
-    hiptensorStatus_t  err;
-    hiptensorHandle_t* handle;
+    hiptensorStatus_t err;
+    hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 

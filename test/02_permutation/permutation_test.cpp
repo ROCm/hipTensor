@@ -312,8 +312,8 @@ namespace hiptensor
             for(auto mode : modeB)
                 extentB.push_back(extent[mode]);
 
-            hiptensorStatus_t  err;
-            hiptensorHandle_t* handle;
+            hiptensorStatus_t err;
+            hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
             hiptensorTensorDescriptor_t descA;
