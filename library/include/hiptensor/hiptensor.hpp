@@ -80,6 +80,21 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
                                                   uint32_t alignmentRequirement);
 hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc);
 
+hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t  descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t  descB,
+                                             const int32_t                      modeB[],
+                                             hiptensorOperator_t                opB,
+                                             const hiptensorTensorDescriptor_t  descC,
+                                             const int32_t                      modeC[],
+                                             hiptensorOperator_t                opC,
+                                             const hiptensorTensorDescriptor_t  descD,
+                                             const int32_t                      modeD[],
+                                             const hiptensorComputeDescriptor_t descCompute);
+
 hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc);
 
 hiptensorStatus_t
@@ -128,6 +143,18 @@ hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handl
                                       uint64_t                             workspaceSizeLimit);
 
 hiptensorStatus_t hiptensorDestroyPlan(hiptensorPlan_t plan);
+
+hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
+                                    const hiptensorPlan_t   plan,
+                                    const void*             alpha,
+                                    const void*             A,
+                                    const void*             B,
+                                    const void*             beta,
+                                    const void*             C,
+                                    void*                   D,
+                                    void*                   workspace,
+                                    uint64_t                workspaceSize,
+                                    hipStream_t             stream);
 
 //! @brief Returns the description string for an error code
 //! @param[in] error Error code to convert to string.

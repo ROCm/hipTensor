@@ -261,6 +261,23 @@ typedef enum
     HIPTENSOR_JIT_MODE_DEFAULT = 1,
 } hiptensorJitMode_t;
 
+typedef struct hiptensorOperationDescriptor* hiptensorOperationDescriptor_t;
+typedef struct hiptensorPlan*                hiptensorPlan_t;
+typedef struct hiptensorPlanPreference*      hiptensorPlanPreference_t;
+typedef struct hiptensorHandle*              hiptensorHandle_t;
+typedef struct hiptensorTensorDescriptor*    hiptensorTensorDescriptor_t;
+
+//! @brief Logging callback
+//! The specified callback is invoked whenever logging is enabled and a message is generated.
+//! @param logContext The logging context enum
+//! @param funcName A string holding the function name where the logging message was generated
+//! @param msg A string holding the logging message
+typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
+                                          const char* funcName,
+                                          const char* msg);
+
+// TODO shouble be private start
+
 //! @brief hipTensor's library context
 struct hiptensorHandle
 {
@@ -276,11 +293,30 @@ struct hiptensorOperationDescriptor
     uint32_t            mPaddingLeft;
     uint32_t            mPaddingRighT;
     void*               mPaddingValue;
+
+    hiptensorTensorDescriptor_t mDescA;
+    std::vector<int32_t>        mModeA;
+    hiptensorOperator_t         mOpA;
+
+    hiptensorTensorDescriptor_t mDescB;
+    std::vector<int32_t>        mModeB;
+    hiptensorOperator_t         mOpB;
+
+    hiptensorTensorDescriptor_t mDescC;
+    std::vector<int32_t>        mModeC;
+    hiptensorOperator_t         mOpC;
+
+    hiptensorTensorDescriptor_t mDescD;
+    std::vector<int32_t>        mModeD;
+
+    hiptensorComputeDescriptor_t mDescCompute;
 };
 
 struct hiptensorPlan
 {
-    uint64_t mRequiredWorkspace;
+    uint64_t                       mRequiredWorkspace;
+    hiptensorOperationDescriptor_t mOpDesc;
+    hiptensorPlanPreference_t      mPref;
 };
 
 struct hiptensorPlanPreference
@@ -288,9 +324,12 @@ struct hiptensorPlanPreference
     hiptensorAutotuneMode_t mAutotuneMode;
     hiptensorCacheMode_t    mCacheMode;
     int32_t                 mIncrementalCount;
-    hiptensorAlgo_t         mAlgo;
     int32_t                 mKernelrank;
     hiptensorJitMode_t      mJit;
+
+    hiptensorAlgo_t mSelectionAlgorithm;
+    //! A vector of the solver candidates
+    std::vector<void*> mCandidates;
 };
 
 //! @brief Structure representing a tensor descriptor
@@ -348,20 +387,6 @@ struct hiptensorContractionPlan_t
     //! Contraction parameters
     hiptensorContractionDescriptor_t mContractionDesc;
 };
-
-typedef struct hiptensorOperationDescriptor* hiptensorOperationDescriptor_t;
-typedef struct hiptensorPlan*                hiptensorPlan_t;
-typedef struct hiptensorPlanPreference*      hiptensorPlanPreference_t;
-typedef struct hiptensorHandle*              hiptensorHandle_t;
-typedef struct hiptensorTensorDescriptor*    hiptensorTensorDescriptor_t;
-
-//! @brief Logging callback
-//! The specified callback is invoked whenever logging is enabled and a message is generated.
-//! @param logContext The logging context enum
-//! @param funcName A string holding the function name where the logging message was generated
-//! @param msg A string holding the logging message
-typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
-                                          const char* funcName,
-                                          const char* msg);
+// TODO shouble be private end
 
 #endif // HIPTENSOR_TYPES_HPP

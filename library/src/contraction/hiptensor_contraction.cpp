@@ -716,3 +716,136 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
 
     return errorCode;
 }
+
+hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t  descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t  descB,
+                                             const int32_t                      modeB[],
+                                             hiptensorOperator_t                opB,
+                                             const hiptensorTensorDescriptor_t  descC,
+                                             const int32_t                      modeC[],
+                                             hiptensorOperator_t                opC,
+                                             const hiptensorTensorDescriptor_t  descD,
+                                             const int32_t                      modeD[],
+                                             const hiptensorComputeDescriptor_t descCompute)
+{
+    *desc = new hiptensorOperationDescriptor();
+
+    (*desc)->mTag          = 0;
+    (*desc)->mScalarType   = HIPTENSOR_R_32F; // TODO change to descCompute
+    (*desc)->mFlops        = 0;
+    (*desc)->mMovedBytes   = 0;
+    (*desc)->mPaddingLeft  = 0;
+    (*desc)->mPaddingRighT = 0;
+    (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mDescA = descA;
+    (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA   = opA;
+
+    (*desc)->mDescB = descB;
+    (*desc)->mModeB = std::vector<int32_t>(modeB, modeB + descB->mLengths.size());
+    (*desc)->mOpB   = opB;
+
+    (*desc)->mDescC = descC;
+    (*desc)->mModeC = std::vector<int32_t>(modeC, modeC + descC->mLengths.size());
+    (*desc)->mOpC   = opC;
+
+    (*desc)->mDescD = descD;
+    (*desc)->mModeD = std::vector<int32_t>(modeD, modeD + descD->mLengths.size());
+
+    (*desc)->mDescCompute = descCompute;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
+                                    const hiptensorPlan_t   plan,
+                                    const void*             alpha,
+                                    const void*             A,
+                                    const void*             B,
+                                    const void*             beta,
+                                    const void*             C,
+                                    void*                   D,
+                                    void*                   workspace,
+                                    uint64_t                workspaceSize,
+                                    hipStream_t             stream)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   handle,
+                                                  hiptensorPlanPreference_t pref,
+                                                  hiptensorAlgo_t           algo,
+                                                  hiptensorJitMode_t        jitMode)
+{
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    char              msg[512];
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, pref);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return checkResult;
+    }
+
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+
+    // Ensure current HIP device is same as the handle.
+    hiptensor::HipDevice currentDevice;
+    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                 (int)currentDevice.getDeviceId(),
+                 (int)realHandle->getDevice().getDeviceId(),
+                 hiptensorGetErrorString(errorCode));
+
+        logger->logError("contractionCreatePlanPreference", msg);
+        return errorCode;
+    }
+
+    if(algo == HIPTENSOR_ALGO_DEFAULT || algo == HIPTENSOR_ALGO_DEFAULT_PATIENT
+       || algo == HIPTENSOR_ALGO_ACTOR_CRITIC)
+    {
+        // Update the stored selection algorithm
+        pref->mSelectionAlgorithm = algo;
+
+        // For now, enumerate all known contraction kernels.
+        // Using the hipDevice, determine if the device supports F64
+        auto& instances = hiptensor::ContractionSolutionInstances::instance();
+        auto  solnQ     = instances->allSolutions();
+
+        // Can do more checking for scale / bilinear, etc. if we need to.
+
+        if(solnQ.solutionCount() == 0)
+        {
+            // No kernels found!
+            auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+            snprintf(msg,
+                     sizeof(msg),
+                     "Internal Error : No Kernels Found (%s)",
+                     hiptensorGetErrorString(errorCode));
+            logger->logError("hiptensorInitContractionFind", msg);
+            return errorCode;
+        }
+
+        // Extract the solutions to the candidates vector.
+        pref->mCandidates = toVoidVec(solnQ.solutions());
+
+        return HIPTENSOR_STATUS_SUCCESS;
+    }
+    else
+    {
+        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
+        snprintf(msg, sizeof(msg), "Invalid Algo Value (%s)", hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorInitContractionFind", msg);
+        return errorCode;
+    }
+}

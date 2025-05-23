@@ -254,6 +254,7 @@ hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t d
 
 hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc)
 {
+    delete desc;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -277,16 +278,22 @@ hiptensorStatus_t
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
+hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   handle,
+                                                  hiptensorPlanPreference_t pref,
+                                                  hiptensorAlgo_t           algo,
+                                                  hiptensorJitMode_t        jitMode);
 hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
                                                 hiptensorPlanPreference_t* pref,
                                                 hiptensorAlgo_t            algo,
                                                 hiptensorJitMode_t         jitMode)
 {
-    return HIPTENSOR_STATUS_SUCCESS;
+    *pref = new hiptensorPlanPreference();
+    return contractionCreatePlanPreference(handle, *pref, algo, jitMode);
 }
 
 hiptensorStatus_t hiptensorDestroyPlanPreference(hiptensorPlanPreference_t pref)
 {
+    delete pref;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -323,11 +330,16 @@ hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handl
                                       const hiptensorPlanPreference_t      pref,
                                       uint64_t                             workspaceSizeLimit)
 {
+    (*plan)                     = new hiptensorPlan();
+    (*plan)->mRequiredWorkspace = workspaceSizeLimit;
+    (*plan)->mOpDesc            = desc;
+    (*plan)->mPref              = pref;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorDestroyPlan(hiptensorPlan_t plan)
 {
+    delete plan;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
