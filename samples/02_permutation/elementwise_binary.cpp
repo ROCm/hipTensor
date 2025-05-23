@@ -126,32 +126,17 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
-    hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descA,
-                                                        nmodeA,
-                                                        extentA.data(),
-                                                        nullptr /* stride */,
-                                                        typeA,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descA = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descA, nmodeA, extentA.data(), nullptr /* stride */, typeA, 0));
 
-    hiptensorTensorDescriptor_t descC;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descC,
-                                                        nmodeC,
-                                                        extentC.data(),
-                                                        nullptr /* stride */,
-                                                        typeC,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descC = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descC, nmodeC, extentC.data(), nullptr /* stride */, typeC, 0));
 
-    hiptensorTensorDescriptor_t descD;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descD,
-                                                        nmodeD,
-                                                        extentD.data(),
-                                                        nullptr /* stride */,
-                                                        typeD,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descD = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descD, nmodeD, extentD.data(), nullptr /* stride */, typeD, 0));
 
     using hiptensor::HiptensorOptions;
     auto& options = HiptensorOptions::instance();
@@ -163,14 +148,14 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
                                                      &alpha,
                                                      A_d,
-                                                     &descA,
+                                                     descA,
                                                      modeA.data(),
                                                      &gamma,
                                                      C_d,
-                                                     &descC,
+                                                     descC,
                                                      modeC.data(),
                                                      D_d,
-                                                     &descD,
+                                                     descD,
                                                      modeD.data(),
                                                      HIPTENSOR_OP_ADD,
                                                      typeCompute,
@@ -228,6 +213,21 @@ int main()
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    if(descA)
+    {
+        hiptensorDestroyTensorDescriptor(descA);
+        descA = nullptr;
+    }
+    if(descC)
+    {
+        hiptensorDestroyTensorDescriptor(descC);
+        descC = nullptr;
+    }
+    if(descD)
+    {
+        hiptensorDestroyTensorDescriptor(descD);
+        descD = nullptr;
+    }
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(C);
     HIPTENSOR_FREE_HOST(D);

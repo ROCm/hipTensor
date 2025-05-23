@@ -32,21 +32,21 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            handle,
-                                             const void*                        alpha,
-                                             const void*                        A,
-                                             const hiptensorTensorDescriptor_t* descA,
-                                             const int32_t                      modeA[],
-                                             const void*                        gamma,
-                                             const void*                        C,
-                                             const hiptensorTensorDescriptor_t* descC,
-                                             const int32_t                      modeC[],
-                                             void*                              D,
-                                             const hiptensorTensorDescriptor_t* descD,
-                                             const int32_t                      modeD[],
-                                             hiptensorOperator_t                opAC,
-                                             hiptensorDataType_t                typeScalar,
-                                             hipStream_t                        stream)
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t           handle,
+                                             const void*                       alpha,
+                                             const void*                       A,
+                                             const hiptensorTensorDescriptor_t descA,
+                                             const int32_t                     modeA[],
+                                             const void*                       gamma,
+                                             const void*                       C,
+                                             const hiptensorTensorDescriptor_t descC,
+                                             const int32_t                     modeC[],
+                                             void*                             D,
+                                             const hiptensorTensorDescriptor_t descD,
+                                             const int32_t                     modeD[],
+                                             hiptensorOperator_t               opAC,
+                                             hiptensorDataType_t               typeScalar,
+                                             hipStream_t                       stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -144,7 +144,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            
         {descD->mType},
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
-        {opAC, descA->mUnaryOp, descC->mUnaryOp},
+        {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
         hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
@@ -158,7 +158,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            
                                      {descD->mLengths},
                                      {descD->mStrides},
                                      {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                     {opAC, descA->mUnaryOp, descC->mUnaryOp},
+                                     {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
                                      {A, C},
                                      {D});
 

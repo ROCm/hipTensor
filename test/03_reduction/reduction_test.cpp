@@ -414,33 +414,28 @@ namespace hiptensor
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-            hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, acDataType, aOp));
+            hiptensorTensorDescriptor_t descA = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, acDataType, 0));
 
-            hiptensorTensorDescriptor_t descC;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descC, nmodeC, extentC.data(), strideC.data(), acDataType, cOp));
+            hiptensorTensorDescriptor_t descC = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descC, nmodeC, extentC.data(), strideC.data(), acDataType, 0));
 
-            hiptensorTensorDescriptor_t descD;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descD,
-                                                                nmodeD,
-                                                                extentD.data(),
-                                                                strideD.data(),
-                                                                acDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            hiptensorTensorDescriptor_t descD = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descD, nmodeD, extentD.data(), strideD.data(), acDataType, 0));
 
             uint64_t worksize = 0;
             CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
                                                                      resource->deviceA().get(),
-                                                                     &descA,
+                                                                     descA,
                                                                      modeA.data(),
                                                                      resource->deviceC().get(),
-                                                                     &descC,
+                                                                     descC,
                                                                      modeC.data(),
                                                                      resource->deviceD().get(),
-                                                                     &descD,
+                                                                     descD,
                                                                      modeD.data(),
                                                                      reduceOp,
                                                                      computeDataType,
@@ -461,14 +456,14 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorReduction(handle,
                                                      (const void*)&alphaValue,
                                                      resource->deviceA().get(),
-                                                     &descA,
+                                                     descA,
                                                      modeA.data(),
                                                      (const void*)&betaValue,
                                                      resource->deviceC().get(),
-                                                     &descC,
+                                                     descC,
                                                      modeC.data(),
                                                      resource->deviceD().get(),
-                                                     &descD,
+                                                     descD,
                                                      modeD.data(),
                                                      reduceOp,
                                                      computeDataType,
@@ -513,14 +508,14 @@ namespace hiptensor
 
                 CHECK_HIPTENSOR_ERROR(hiptensorReductionReference(&alphaValue,
                                                                   resource->hostA().get(),
-                                                                  &descA,
+                                                                  descA,
                                                                   modeA.data(),
                                                                   &betaValue,
                                                                   resource->hostC().get(),
-                                                                  &descC,
+                                                                  descC,
                                                                   modeC.data(),
                                                                   resource->hostReference().get(),
-                                                                  &descD,
+                                                                  descD,
                                                                   modeD.data(),
                                                                   reduceOp,
                                                                   computeDataType,
@@ -602,6 +597,21 @@ namespace hiptensor
             if(!mHeaderPrinted)
             {
                 mHeaderPrinted = true;
+            }
+            if(descA)
+            {
+                hiptensorDestroyTensorDescriptor(descA);
+                descA = nullptr;
+            }
+            if(descC)
+            {
+                hiptensorDestroyTensorDescriptor(descC);
+                descC = nullptr;
+            }
+            if(descD)
+            {
+                hiptensorDestroyTensorDescriptor(descD);
+                descD = nullptr;
             }
         }
     }

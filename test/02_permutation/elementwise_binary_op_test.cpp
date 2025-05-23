@@ -364,22 +364,17 @@ namespace hiptensor
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-            hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, dataType, Aop));
+            hiptensorTensorDescriptor_t descA = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, dataType, 0));
 
-            hiptensorTensorDescriptor_t descC;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descC, nmodeC, extentC.data(), NULL /* stride */, dataType, Cop));
+            hiptensorTensorDescriptor_t descC = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descC, nmodeC, extentC.data(), NULL /* stride */, dataType, 0));
 
-            hiptensorTensorDescriptor_t descD;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descD,
-                                                                nmodeD,
-                                                                extentD.data(),
-                                                                NULL /* stride */,
-                                                                dataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            hiptensorTensorDescriptor_t descD = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descD, nmodeD, extentD.data(), NULL /* stride */, dataType, 0));
 
             float alphaValue{};
             if(computeDataType == HIPTENSOR_R_16F)
@@ -416,14 +411,14 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
                                                              &alphaValue,
                                                              resource->deviceInput1().get(),
-                                                             &descA,
+                                                             descA,
                                                              modeA.data(),
                                                              &gammaValue,
                                                              resource->deviceInput2().get(),
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              resource->deviceOutput().get(),
-                                                             &descD,
+                                                             descD,
                                                              modeD.data(),
                                                              ACop,
                                                              computeDataType,
@@ -474,14 +469,14 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
                         &alphaValue,
                         (const double*)resource->hostInput1().get(),
-                        &descA,
+                        descA,
                         modeA.data(),
                         &gammaValue,
                         (const double*)resource->hostInput2().get(),
-                        &descC,
+                        descC,
                         modeC.data(),
                         (double*)resource->hostReference().get(),
-                        &descD,
+                        descD,
                         modeD.data(),
                         ACop,
                         computeDataType,
@@ -500,14 +495,14 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
                         &alphaValue,
                         (const float*)resource->hostInput1().get(),
-                        &descA,
+                        descA,
                         modeA.data(),
                         &gammaValue,
                         (const float*)resource->hostInput2().get(),
-                        &descC,
+                        descC,
                         modeC.data(),
                         (float*)resource->hostReference().get(),
-                        &descD,
+                        descD,
                         modeD.data(),
                         ACop,
                         computeDataType,
@@ -525,14 +520,14 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryOpReference(
                         &alphaValue,
                         (const _Float16*)resource->hostInput1().get(),
-                        &descA,
+                        descA,
                         modeA.data(),
                         &gammaValue,
                         (const _Float16*)resource->hostInput2().get(),
-                        &descC,
+                        descC,
                         modeC.data(),
                         (_Float16*)resource->hostReference().get(),
-                        &descD,
+                        descD,
                         modeD.data(),
                         ACop,
                         computeDataType,
@@ -551,6 +546,22 @@ namespace hiptensor
             } // if (testOptions->performValidation())
 
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+
+            if(descA)
+            {
+                hiptensorDestroyTensorDescriptor(descA);
+                descA = nullptr;
+            }
+            if(descC)
+            {
+                hiptensorDestroyTensorDescriptor(descC);
+                descC = nullptr;
+            }
+            if(descD)
+            {
+                hiptensorDestroyTensorDescriptor(descD);
+                descD = nullptr;
+            }
         }
 
         using Options        = hiptensor::HiptensorOptions;

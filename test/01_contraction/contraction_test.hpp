@@ -116,7 +116,10 @@ namespace hiptensor
         uint64_t                         worksize;
         void*                            workspace = nullptr;
 
-        hiptensorTensorDescriptor_t a_ms_ks, b_ns_ks, c_ms_ns, d_ms_ns;
+        hiptensorTensorDescriptor_t a_ms_ks = nullptr;
+        hiptensorTensorDescriptor_t b_ns_ks = nullptr;
+        hiptensorTensorDescriptor_t c_ms_ns = nullptr;
+        hiptensorTensorDescriptor_t d_ms_ns = nullptr;
 
         // Execution flow control
         uint32_t mRepeats;

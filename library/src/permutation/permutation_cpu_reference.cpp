@@ -28,15 +28,15 @@
 #include "permutation_cpu_reference_impl.hpp"
 #include "permutation_cpu_reference_instances.hpp"
 
-hiptensorStatus_t hiptensorPermutationReference(const void*                        alpha,
-                                                const void*                        A,
-                                                const hiptensorTensorDescriptor_t* descA,
-                                                const int32_t                      modeA[],
-                                                void*                              B,
-                                                const hiptensorTensorDescriptor_t* descB,
-                                                const int32_t                      modeB[],
-                                                const hiptensorDataType_t          typeScalar,
-                                                const hipStream_t                  stream)
+hiptensorStatus_t hiptensorPermutationReference(const void*                       alpha,
+                                                const void*                       A,
+                                                const hiptensorTensorDescriptor_t descA,
+                                                const int32_t                     modeA[],
+                                                void*                             B,
+                                                const hiptensorTensorDescriptor_t descB,
+                                                const int32_t                     modeB[],
+                                                const hiptensorDataType_t         typeScalar,
+                                                const hipStream_t                 stream)
 {
     const int32_t dim       = descA->mLengths.size();
     auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
@@ -53,7 +53,7 @@ hiptensorStatus_t hiptensorPermutationReference(const void*                     
                                           {descB->mType},
                                           {{modeA, modeA + descA->mLengths.size()}},
                                           {{modeB, modeB + descB->mLengths.size()}},
-                                          {descA->mUnaryOp, descB->mUnaryOp},
+                                          {HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
                                           hiptensor::ElementwiseExecutionSpaceType_t::HOST);
 
     for(auto refCandidate : refCandidates)
@@ -65,7 +65,7 @@ hiptensorStatus_t hiptensorPermutationReference(const void*                     
                                   {descB->mLengths},
                                   {descB->mStrides},
                                   {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
-                                  {descA->mUnaryOp},
+                                  {HIPTENSOR_OP_IDENTITY},
                                   {A},
                                   {B}))
         {
@@ -77,18 +77,18 @@ hiptensorStatus_t hiptensorPermutationReference(const void*                     
     return HIPTENSOR_STATUS_INTERNAL_ERROR;
 }
 
-hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*                        alpha,
-                                                        const void*                        A,
-                                                        const hiptensorTensorDescriptor_t* descA,
-                                                        const int32_t                      modeA[],
-                                                        const void*                        gamma,
-                                                        const void*                        C,
-                                                        const hiptensorTensorDescriptor_t* descC,
-                                                        const int32_t                      modeC[],
-                                                        void*                              D,
-                                                        const hiptensorTensorDescriptor_t* descD,
-                                                        const int32_t                      modeD[],
-                                                        hiptensorOperator_t                opAC,
+hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*                       alpha,
+                                                        const void*                       A,
+                                                        const hiptensorTensorDescriptor_t descA,
+                                                        const int32_t                     modeA[],
+                                                        const void*                       gamma,
+                                                        const void*                       C,
+                                                        const hiptensorTensorDescriptor_t descC,
+                                                        const int32_t                     modeC[],
+                                                        void*                             D,
+                                                        const hiptensorTensorDescriptor_t descD,
+                                                        const int32_t                     modeD[],
+                                                        hiptensorOperator_t               opAC,
                                                         hiptensorDataType_t typeScalar,
                                                         hipStream_t         stream)
 {
@@ -113,7 +113,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*             
         {descD->mType},
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
-        {descA->mUnaryOp, descC->mUnaryOp},
+        {HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
         hiptensor::ElementwiseExecutionSpaceType_t::HOST);
 
     for(auto refCandidate : refCandidates)
@@ -126,7 +126,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*             
                                   {descD->mLengths},
                                   {descD->mStrides},
                                   {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {opAC, descA->mUnaryOp, descC->mUnaryOp},
+                                  {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
                                   {A, C},
                                   {D}))
         {
@@ -138,23 +138,23 @@ hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*             
     return HIPTENSOR_STATUS_INTERNAL_ERROR;
 }
 
-hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const void*                        alpha,
-                                                         const void*                        A,
-                                                         const hiptensorTensorDescriptor_t* descA,
-                                                         const int32_t                      modeA[],
-                                                         const void*                        beta,
-                                                         const void*                        B,
-                                                         const hiptensorTensorDescriptor_t* descB,
-                                                         const int32_t                      modeB[],
-                                                         const void*                        gamma,
-                                                         const void*                        C,
-                                                         const hiptensorTensorDescriptor_t* descC,
-                                                         const int32_t                      modeC[],
-                                                         void*                              D,
-                                                         const hiptensorTensorDescriptor_t* descD,
-                                                         const int32_t                      modeD[],
-                                                         hiptensorOperator_t                opAB,
-                                                         hiptensorOperator_t                opABC,
+hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const void*                       alpha,
+                                                         const void*                       A,
+                                                         const hiptensorTensorDescriptor_t descA,
+                                                         const int32_t                     modeA[],
+                                                         const void*                       beta,
+                                                         const void*                       B,
+                                                         const hiptensorTensorDescriptor_t descB,
+                                                         const int32_t                     modeB[],
+                                                         const void*                       gamma,
+                                                         const void*                       C,
+                                                         const hiptensorTensorDescriptor_t descC,
+                                                         const int32_t                     modeC[],
+                                                         void*                             D,
+                                                         const hiptensorTensorDescriptor_t descD,
+                                                         const int32_t                     modeD[],
+                                                         hiptensorOperator_t               opAB,
+                                                         hiptensorOperator_t               opABC,
                                                          hiptensorDataType_t typeScalar,
                                                          hipStream_t         stream)
 {
@@ -177,32 +177,33 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const void*            
         gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
-    auto refCandidates
-        = instances->query({alphaF, betaF, gammaF},
-                           descA->mLengths,
-                           {descA->mType, descB->mType, descC->mType},
-                           {descD->mType},
-                           {{modeA, modeA + descA->mLengths.size()},
-                            {modeB, modeB + descB->mLengths.size()},
-                            {modeC, modeC + descC->mLengths.size()}},
-                           {{modeD, modeD + descD->mLengths.size()}},
-                           {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                           hiptensor::ElementwiseExecutionSpaceType_t::HOST);
+    auto refCandidates = instances->query(
+        {alphaF, betaF, gammaF},
+        descA->mLengths,
+        {descA->mType, descB->mType, descC->mType},
+        {descD->mType},
+        {{modeA, modeA + descA->mLengths.size()},
+         {modeB, modeB + descB->mLengths.size()},
+         {modeC, modeC + descC->mLengths.size()}},
+        {{modeD, modeD + descD->mLengths.size()}},
+        {opABC, opAB, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+        hiptensor::ElementwiseExecutionSpaceType_t::HOST);
 
     for(auto refCandidate : refCandidates)
     {
-        if(refCandidate->initArgs({alphaF, betaF, gammaF},
-                                  {descA->mLengths, descB->mLengths, descC->mLengths},
-                                  {descA->mStrides, descB->mStrides, descC->mStrides},
-                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
-                                   std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
-                                   std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
-                                  {descD->mLengths},
-                                  {descD->mStrides},
-                                  {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                                  {A, B, C},
-                                  {D}))
+        if(refCandidate->initArgs(
+               {alphaF, betaF, gammaF},
+               {descA->mLengths, descB->mLengths, descC->mLengths},
+               {descA->mStrides, descB->mStrides, descC->mStrides},
+               {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
+                std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+               {descD->mLengths},
+               {descD->mStrides},
+               {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+               {opABC, opAB, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+               {A, B, C},
+               {D}))
         {
             (*refCandidate)();
             return HIPTENSOR_STATUS_SUCCESS;

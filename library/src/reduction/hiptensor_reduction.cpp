@@ -42,22 +42,22 @@ using namespace ck::tensor_operation::device;
 
 namespace
 {
-    hiptensorStatus_t checkReductionInputData(const hiptensorHandle_t            handle,
-                                              const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t*                     modeA,
-                                              const void*                        beta,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t*                     modeC,
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t*                     modeD,
-                                              hiptensorOperator_t                opReduce,
-                                              hiptensorComputeDescriptor_t       typeCompute,
-                                              void*                              workspace,
-                                              uint64_t                           workspaceSize)
+    hiptensorStatus_t checkReductionInputData(const hiptensorHandle_t           handle,
+                                              const void*                       alpha,
+                                              const void*                       A,
+                                              const hiptensorTensorDescriptor_t descA,
+                                              const int32_t*                    modeA,
+                                              const void*                       beta,
+                                              const void*                       C,
+                                              const hiptensorTensorDescriptor_t descC,
+                                              const int32_t*                    modeC,
+                                              void*                             D,
+                                              const hiptensorTensorDescriptor_t descD,
+                                              const int32_t*                    modeD,
+                                              hiptensorOperator_t               opReduce,
+                                              hiptensorComputeDescriptor_t      typeCompute,
+                                              void*                             workspace,
+                                              uint64_t                          workspaceSize)
     {
         // Log API access
         using hiptensor::Logger;
@@ -121,8 +121,9 @@ namespace
         auto modeSetC = std::set<int32_t>(modeC, modeC + descC->mLengths.size());
 
         auto compareDescCD = [](auto&& left, auto&& right) {
-            auto copyLeft     = left;
-            copyLeft.mUnaryOp = right.mUnaryOp; // compare these 2 desc except mUnaryOp
+            auto copyLeft = left;
+            copyLeft.mAlignmentRequirement
+                = right.mAlignmentRequirement; // compare these 2 desc except mAlignmentRequirement
             return copyLeft == right;
         };
 
@@ -144,23 +145,23 @@ namespace
     }
 }
 
-hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
-                                     const void*                        alpha,
-                                     const void*                        A,
-                                     const hiptensorTensorDescriptor_t* descA,
-                                     const int32_t                      modeA[],
-                                     const void*                        beta,
-                                     const void*                        C,
-                                     const hiptensorTensorDescriptor_t* descC,
-                                     const int32_t                      modeC[],
-                                     void*                              D,
-                                     const hiptensorTensorDescriptor_t* descD,
-                                     const int32_t                      modeD[],
-                                     hiptensorOperator_t                opReduce,
-                                     hiptensorComputeDescriptor_t       typeCompute,
-                                     void*                              workspace,
-                                     uint64_t                           workspaceSize,
-                                     hipStream_t                        stream)
+hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
+                                     const void*                       alpha,
+                                     const void*                       A,
+                                     const hiptensorTensorDescriptor_t descA,
+                                     const int32_t                     modeA[],
+                                     const void*                       beta,
+                                     const void*                       C,
+                                     const hiptensorTensorDescriptor_t descC,
+                                     const int32_t                     modeC[],
+                                     void*                             D,
+                                     const hiptensorTensorDescriptor_t descD,
+                                     const int32_t                     modeD[],
+                                     hiptensorOperator_t               opReduce,
+                                     hiptensorComputeDescriptor_t      typeCompute,
+                                     void*                             workspace,
+                                     uint64_t                          workspaceSize,
+                                     hipStream_t                       stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -323,8 +324,8 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
                                                 descC->mLengths,
                                                 descC->mStrides,
                                                 {modeC, modeC + descC->mLengths.size()},
-                                                descA->mUnaryOp,
-                                                descC->mUnaryOp,
+                                                HIPTENSOR_OP_IDENTITY,
+                                                HIPTENSOR_OP_IDENTITY,
                                                 alphaValue,
                                                 betaValue,
                                                 A,
@@ -377,18 +378,18 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
     return errorCode;
 }
 
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t            handle,
-                                                     const void*                        A,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
-                                                     const void*                        C,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
-                                                     const void*                        D,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
-                                                     hiptensorOperator_t                opReduce,
-                                                     hiptensorComputeDescriptor_t       typeCompute,
+hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t           handle,
+                                                     const void*                       A,
+                                                     const hiptensorTensorDescriptor_t descA,
+                                                     const int32_t                     modeA[],
+                                                     const void*                       C,
+                                                     const hiptensorTensorDescriptor_t descC,
+                                                     const int32_t                     modeC[],
+                                                     const void*                       D,
+                                                     const hiptensorTensorDescriptor_t descD,
+                                                     const int32_t                     modeD[],
+                                                     hiptensorOperator_t               opReduce,
+                                                     hiptensorComputeDescriptor_t      typeCompute,
                                                      uint64_t* workspaceSize)
 {
     *workspaceSize = 0;

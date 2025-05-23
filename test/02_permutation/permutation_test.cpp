@@ -316,18 +316,13 @@ namespace hiptensor
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-            hiptensorTensorDescriptor_t descA;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, abDataType, Aop));
+            hiptensorTensorDescriptor_t descA = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, abDataType, 0));
 
-            hiptensorTensorDescriptor_t descB;
-            CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                                &descB,
-                                                                nmodeB,
-                                                                extentB.data(),
-                                                                NULL /* stride */,
-                                                                abDataType,
-                                                                HIPTENSOR_OP_IDENTITY));
+            hiptensorTensorDescriptor_t descB = nullptr;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, abDataType, 0));
 
             float alphaValue{};
             if(computeDataType == HIPTENSOR_R_16F)
@@ -347,10 +342,10 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
                                                        &alphaValue,
                                                        resource->deviceInput1().get(),
-                                                       &descA,
+                                                       descA,
                                                        modeA.data(),
                                                        resource->deviceOutput().get(),
-                                                       &descB,
+                                                       descB,
                                                        modeB.data(),
                                                        computeDataType,
                                                        0 /* stream */));
@@ -395,10 +390,10 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(&alphaValue,
                                                       (const float*)resource->hostInput1().get(),
-                                                      &descA,
+                                                      descA,
                                                       modeA.data(),
                                                       (float*)resource->hostReference().get(),
-                                                      &descB,
+                                                      descB,
                                                       modeB.data(),
                                                       computeDataType,
                                                       0 /* stream */));
@@ -415,10 +410,10 @@ namespace hiptensor
                     CHECK_HIPTENSOR_ERROR(
                         hiptensorPermutationReference(&alphaValue,
                                                       (const _Float16*)resource->hostInput1().get(),
-                                                      &descA,
+                                                      descA,
                                                       modeA.data(),
                                                       (_Float16*)resource->hostReference().get(),
-                                                      &descB,
+                                                      descB,
                                                       modeB.data(),
                                                       computeDataType,
                                                       0 /* stream */));
@@ -436,6 +431,17 @@ namespace hiptensor
             } // if (testOptions->performValidation())
 
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+
+            if(descA)
+            {
+                hiptensorDestroyTensorDescriptor(descA);
+                descA = nullptr;
+            }
+            if(descB)
+            {
+                hiptensorDestroyTensorDescriptor(descB);
+                descB = nullptr;
+            }
         }
 
         using Options        = hiptensor::HiptensorOptions;

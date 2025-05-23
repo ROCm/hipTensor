@@ -91,32 +91,32 @@ int bilinearContractionSample(void* alpha, void* beta)
     /********************************************
    * Initialize tensors with the input lengths *
    ********************************************/
-    hiptensorTensorDescriptor_t a_ms_ks;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &a_ms_ks,
-                                                        nmodeA,
-                                                        a_ms_ks_lengths.data(),
-                                                        NULL, /*stride*/
-                                                        typeA,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t a_ms_ks = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &a_ms_ks,
+                                                          nmodeA,
+                                                          a_ms_ks_lengths.data(),
+                                                          NULL, /*stride*/
+                                                          typeA,
+                                                          0));
 
-    hiptensorTensorDescriptor_t b_ns_ks;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &b_ns_ks,
-                                                        nmodeB,
-                                                        b_ns_ks_lengths.data(),
-                                                        NULL, /*stride*/
-                                                        typeB,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t b_ns_ks = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &b_ns_ks,
+                                                          nmodeB,
+                                                          b_ns_ks_lengths.data(),
+                                                          NULL, /*stride*/
+                                                          typeB,
+                                                          0));
 
-    hiptensorTensorDescriptor_t c_ms_ns;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &c_ms_ns,
-                                                        nmodeC,
-                                                        c_ms_ns_lengths.data(),
-                                                        NULL, /*stride*/
-                                                        typeC,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t c_ms_ns = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &c_ms_ns,
+                                                          nmodeC,
+                                                          c_ms_ns_lengths.data(),
+                                                          NULL, /*stride*/
+                                                          typeC,
+                                                          0));
 
     /**********************
    * Allocating data
@@ -201,37 +201,33 @@ int bilinearContractionSample(void* alpha, void* beta)
    ************************************************/
     uint32_t alignmentRequirementA;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, A_d, &a_ms_ks, &alignmentRequirementA));
+        hiptensorGetAlignmentRequirement(handle, A_d, a_ms_ks, &alignmentRequirementA));
 
     uint32_t alignmentRequirementB;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, B_d, &b_ns_ks, &alignmentRequirementB));
+        hiptensorGetAlignmentRequirement(handle, B_d, b_ns_ks, &alignmentRequirementB));
 
     uint32_t alignmentRequirementC;
     CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, C_d, &c_ms_ns, &alignmentRequirementC));
+        hiptensorGetAlignmentRequirement(handle, C_d, c_ms_ns, &alignmentRequirementC));
 
     /*******************************
    * Create Contraction Descriptor
    *******************************/
 
-    std::cout << "a_ms_ks: " << a_ms_ks << std::endl;
-    std::cout << "b_ns_ks: " << b_ns_ks << std::endl;
-    std::cout << "c_ms_ns: " << c_ms_ns << std::endl;
-
     hiptensorContractionDescriptor_t desc;
     CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(handle,
                                                              &desc,
-                                                             &a_ms_ks,
+                                                             a_ms_ks,
                                                              modeA.data(),
                                                              alignmentRequirementA,
-                                                             &b_ns_ks,
+                                                             b_ns_ks,
                                                              modeB.data(),
                                                              alignmentRequirementB,
-                                                             &c_ms_ns,
+                                                             c_ms_ns,
                                                              modeC.data(),
                                                              alignmentRequirementC,
-                                                             &c_ms_ns,
+                                                             c_ms_ns,
                                                              modeC.data(),
                                                              alignmentRequirementC,
                                                              typeCompute));
@@ -332,6 +328,21 @@ int bilinearContractionSample(void* alpha, void* beta)
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    if(a_ms_ks)
+    {
+        hiptensorDestroyTensorDescriptor(a_ms_ks);
+        a_ms_ks = nullptr;
+    }
+    if(b_ns_ks)
+    {
+        hiptensorDestroyTensorDescriptor(b_ns_ks);
+        b_ns_ks = nullptr;
+    }
+    if(c_ms_ns)
+    {
+        hiptensorDestroyTensorDescriptor(c_ms_ns);
+        c_ms_ns = nullptr;
+    }
 
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(B);

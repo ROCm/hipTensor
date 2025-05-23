@@ -57,13 +57,14 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle);
 //! @param[in] unaryOp Unary operator that will be applied to the tensor.
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      handle,
-                                                hiptensorTensorDescriptor_t* desc,
-                                                const uint32_t               numModes,
-                                                const int64_t                lens[],
-                                                const int64_t                strides[],
-                                                hiptensorDataType_t          dataType,
-                                                hiptensorOperator_t          unaryOp);
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
+                                                  hiptensorTensorDescriptor_t* desc,
+                                                  const uint32_t               numModes,
+                                                  const int64_t                lens[],
+                                                  const int64_t                strides[],
+                                                  hiptensorDataType_t          dataType,
+                                                  uint32_t alignmentRequirement);
+hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc);
 
 //! @brief Returns the description string for an error code
 //! @param[in] error Error code to convert to string.
@@ -90,16 +91,16 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error);
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle,
-                                       const void*                        alpha,
-                                       const void*                        A,
-                                       const hiptensorTensorDescriptor_t* descA,
-                                       const int32_t                      modeA[],
-                                       void*                              B,
-                                       const hiptensorTensorDescriptor_t* descB,
-                                       const int32_t                      modeB[],
-                                       const hiptensorDataType_t          typeScalar,
-                                       const hipStream_t                  stream);
+hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t           handle,
+                                       const void*                       alpha,
+                                       const void*                       A,
+                                       const hiptensorTensorDescriptor_t descA,
+                                       const int32_t                     modeA[],
+                                       void*                             B,
+                                       const hiptensorTensorDescriptor_t descB,
+                                       const int32_t                     modeB[],
+                                       const hiptensorDataType_t         typeScalar,
+                                       const hipStream_t                 stream);
 
 //! @brief Performs an element-wise tensor operation on two input tensors.
 //!
@@ -134,21 +135,21 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle
 //! @return HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes are invalid.
 //! @return HIPTENSOR_STATUS_SUCCESS if the operation completes successfully.
 //! @return HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            handle,
-                                             const void*                        alpha,
-                                             const void*                        A,
-                                             const hiptensorTensorDescriptor_t* descA,
-                                             const int32_t                      modeA[],
-                                             const void*                        gamma,
-                                             const void*                        C,
-                                             const hiptensorTensorDescriptor_t* descC,
-                                             const int32_t                      modeC[],
-                                             void*                              D,
-                                             const hiptensorTensorDescriptor_t* descD,
-                                             const int32_t                      modeD[],
-                                             hiptensorOperator_t                opAC,
-                                             hiptensorDataType_t                typeScalar,
-                                             hipStream_t                        stream);
+hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t           handle,
+                                             const void*                       alpha,
+                                             const void*                       A,
+                                             const hiptensorTensorDescriptor_t descA,
+                                             const int32_t                     modeA[],
+                                             const void*                       gamma,
+                                             const void*                       C,
+                                             const hiptensorTensorDescriptor_t descC,
+                                             const int32_t                     modeC[],
+                                             void*                             D,
+                                             const hiptensorTensorDescriptor_t descD,
+                                             const int32_t                     modeD[],
+                                             hiptensorOperator_t               opAC,
+                                             hiptensorDataType_t               typeScalar,
+                                             hipStream_t                       stream);
 
 //! @brief Performs an element-wise tensor operation with three input tensors.
 //!
@@ -183,26 +184,26 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t            
 //! @return HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @return HIPTENSOR_STATUS_INVALID_VALUE if input data is invalid.
 //! @return HIPTENSOR_STATUS_ARCH_MISMATCH if the device is not ready or the architecture is unsupported.
-hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t            handle,
-                                              const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t                      modeA[],
-                                              const void*                        beta,
-                                              const void*                        B,
-                                              const hiptensorTensorDescriptor_t* descB,
-                                              const int32_t                      modeB[],
-                                              const void*                        gamma,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t                      modeC[],
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t                      modeD[],
-                                              hiptensorOperator_t                opAB,
-                                              hiptensorOperator_t                opABC,
-                                              hiptensorDataType_t                typeScalar,
-                                              const hipStream_t                  stream);
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           handle,
+                                              const void*                       alpha,
+                                              const void*                       A,
+                                              const hiptensorTensorDescriptor_t descA,
+                                              const int32_t                     modeA[],
+                                              const void*                       beta,
+                                              const void*                       B,
+                                              const hiptensorTensorDescriptor_t descB,
+                                              const int32_t                     modeB[],
+                                              const void*                       gamma,
+                                              const void*                       C,
+                                              const hiptensorTensorDescriptor_t descC,
+                                              const int32_t                     modeC[],
+                                              void*                             D,
+                                              const hiptensorTensorDescriptor_t descD,
+                                              const int32_t                     modeD[],
+                                              hiptensorOperator_t               opAB,
+                                              hiptensorOperator_t               opABC,
+                                              hiptensorDataType_t               typeScalar,
+                                              const hipStream_t                 stream);
 
 //! @brief Computes the alignment requirement for a given pointer and descriptor.
 //! @param[in] handle Opaque handle holding hipTensor's library context.
@@ -212,9 +213,9 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported parameter is passed.
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t            handle,
-                                                   const void*                        ptr,
-                                                   const hiptensorTensorDescriptor_t* desc,
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t           handle,
+                                                   const void*                       ptr,
+                                                   const hiptensorTensorDescriptor_t desc,
                                                    uint32_t* alignmentRequirement);
 
 //! @brief Initializes a contraction descriptor for the tensor contraction problem.
@@ -235,19 +236,19 @@ hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t      
 //! @param[in] typeCompute Datatype for the intermediate computation  T = A * B.
 //! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t            handle,
-                                                     hiptensorContractionDescriptor_t*  desc,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
+hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t           handle,
+                                                     hiptensorContractionDescriptor_t* desc,
+                                                     const hiptensorTensorDescriptor_t descA,
+                                                     const int32_t                     modeA[],
                                                      const uint32_t alignmentRequirementA,
-                                                     const hiptensorTensorDescriptor_t* descB,
-                                                     const int32_t                      modeB[],
+                                                     const hiptensorTensorDescriptor_t descB,
+                                                     const int32_t                     modeB[],
                                                      const uint32_t alignmentRequirementB,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
+                                                     const hiptensorTensorDescriptor_t descC,
+                                                     const int32_t                     modeC[],
                                                      const uint32_t alignmentRequirementC,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
+                                                     const hiptensorTensorDescriptor_t descD,
+                                                     const int32_t                     modeD[],
                                                      const uint32_t alignmentRequirementD,
                                                      hiptensorComputeDescriptor_t typeCompute);
 
@@ -359,23 +360,23 @@ hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t           handle,
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 
-hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
-                                     const void*                        alpha,
-                                     const void*                        A,
-                                     const hiptensorTensorDescriptor_t* descA,
-                                     const int32_t                      modeA[],
-                                     const void*                        beta,
-                                     const void*                        C,
-                                     const hiptensorTensorDescriptor_t* descC,
-                                     const int32_t                      modeC[],
-                                     void*                              D,
-                                     const hiptensorTensorDescriptor_t* descD,
-                                     const int32_t                      modeD[],
-                                     hiptensorOperator_t                opReduce,
-                                     hiptensorComputeDescriptor_t       typeCompute,
-                                     void*                              workspace,
-                                     uint64_t                           workspaceSize,
-                                     hipStream_t                        stream);
+hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
+                                     const void*                       alpha,
+                                     const void*                       A,
+                                     const hiptensorTensorDescriptor_t descA,
+                                     const int32_t                     modeA[],
+                                     const void*                       beta,
+                                     const void*                       C,
+                                     const hiptensorTensorDescriptor_t descC,
+                                     const int32_t                     modeC[],
+                                     void*                             D,
+                                     const hiptensorTensorDescriptor_t descD,
+                                     const int32_t                     modeD[],
+                                     hiptensorOperator_t               opReduce,
+                                     hiptensorComputeDescriptor_t      typeCompute,
+                                     void*                             workspace,
+                                     uint64_t                          workspaceSize,
+                                     hipStream_t                       stream);
 
 //! @brief Determines the required workspaceSize for a given tensor reduction (see \ref hiptensorReduction)
 //! @param[in] handle Opaque handle holding hipTensor's library context.
@@ -394,18 +395,18 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t            handle,
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t            handle,
-                                                     const void*                        A,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
-                                                     const void*                        C,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
-                                                     const void*                        D,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
-                                                     hiptensorOperator_t                opReduce,
-                                                     hiptensorComputeDescriptor_t       typeCompute,
+hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t           handle,
+                                                     const void*                       A,
+                                                     const hiptensorTensorDescriptor_t descA,
+                                                     const int32_t                     modeA[],
+                                                     const void*                       C,
+                                                     const hiptensorTensorDescriptor_t descC,
+                                                     const int32_t                     modeC[],
+                                                     const void*                       D,
+                                                     const hiptensorTensorDescriptor_t descD,
+                                                     const int32_t                     modeD[],
+                                                     hiptensorOperator_t               opReduce,
+                                                     hiptensorComputeDescriptor_t      typeCompute,
                                                      uint64_t* workspaceSize);
 
 //! @brief Registers a callback function that will be invoked by logger calls.

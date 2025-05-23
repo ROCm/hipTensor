@@ -104,13 +104,13 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      handle,
-                                                hiptensorTensorDescriptor_t* desc,
-                                                const uint32_t               numModes,
-                                                const int64_t                lens[],
-                                                const int64_t                strides[],
-                                                hiptensorDataType_t          dataType,
-                                                hiptensorOperator_t          unaryOp)
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
+                                                  hiptensorTensorDescriptor_t* desc,
+                                                  const uint32_t               numModes,
+                                                  const int64_t                lens[],
+                                                  const int64_t                strides[],
+                                                  hiptensorDataType_t          dataType,
+                                                  uint32_t                     alignmentRequirement)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -119,19 +119,18 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      han
     char msg[256];
     snprintf(msg,
              sizeof(msg),
-             "handle=0x%0*llX, desc=0x%llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
-             "dataType=0x%02X, unaryOp=0x%02X",
+             "handle=0x%0*llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
+             "dataType=0x%02X, alignmentRequirement=0x%02X",
              2 * (int)sizeof(void*),
              (unsigned long long)handle,
-             (unsigned long long)desc,
              (unsigned int)numModes,
              (unsigned long long)lens,
              (unsigned long long)strides,
              (unsigned int)dataType,
-             (unsigned int)unaryOp);
-    logger->logAPITrace("hiptensorInitTensorDescriptor", msg);
+             (unsigned int)alignmentRequirement);
+    logger->logAPITrace("hiptensorCreateTensorDescriptor", msg);
 
-    if(handle == nullptr || desc == nullptr)
+    if(handle == nullptr)
     {
         auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
         if(handle == nullptr)
@@ -148,17 +147,14 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      han
                      "Initialization Error : contraction descriptor = nullptr (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        logger->logError("hiptensorInitTensorDescriptor", msg);
+        logger->logError("hiptensorCreateTensorDescriptor", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     if((lens == nullptr && strides != nullptr)
        || ((dataType != HIPTENSOR_R_16F) && (dataType != HIPTENSOR_R_16BF)
            && (dataType != HIPTENSOR_R_32F) && (dataType != HIPTENSOR_R_64F)
-           && (dataType != HIPTENSOR_C_32F) && (dataType != HIPTENSOR_C_64F))
-       || ((unaryOp == HIPTENSOR_OP_ADD) || (unaryOp == HIPTENSOR_OP_MUL)
-           || (unaryOp == HIPTENSOR_OP_MIN) || (unaryOp == HIPTENSOR_OP_MAX)
-           || (unaryOp == HIPTENSOR_OP_UNKNOWN)))
+           && (dataType != HIPTENSOR_C_32F) && (dataType != HIPTENSOR_C_64F)))
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
         if(lens == nullptr && strides != nullptr)
@@ -168,15 +164,6 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      han
                      "Tensor Initialization Error : lens = nullptr and strides != nullptr (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        else if((unaryOp == HIPTENSOR_OP_ADD) || (unaryOp == HIPTENSOR_OP_MUL)
-                || (unaryOp == HIPTENSOR_OP_MIN) || (unaryOp == HIPTENSOR_OP_MAX)
-                || (unaryOp == HIPTENSOR_OP_UNKNOWN))
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Tensor Initialization Error : op is not a valid unary operator (%s) ",
-                     hiptensorGetErrorString(errorCode));
-        }
         else
         {
             snprintf(msg,
@@ -184,7 +171,7 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      han
                      "Tensor Initialization Error : datatype should be float or double (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        logger->logError("hiptensorInitTensorDescriptor", msg);
+        logger->logError("hiptensorCreateTensorDescriptor", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
@@ -194,13 +181,15 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      han
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
+    *desc = new hiptensorTensorDescriptor();
+
     if(strides)
     {
         // Construct with both given lengths and strides
-        *desc = {dataType,
-                 std::vector<std::size_t>(lens, lens + numModes),
-                 std::vector<std::size_t>(strides, strides + numModes),
-                 unaryOp};
+        **desc = {dataType,
+                  std::vector<std::size_t>(lens, lens + numModes),
+                  std::vector<std::size_t>(strides, strides + numModes),
+                  alignmentRequirement};
     }
     else
     {
@@ -213,14 +202,23 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t      han
             auto                     lensVector = std::vector<std::size_t>(lens, lens + numModes);
             std::vector<std::size_t> stridesVector
                 = hiptensor::stridesFromLengths(lensVector, options->isColMajorStrides());
-            *desc = {dataType, lensVector, stridesVector, unaryOp};
+            **desc = {dataType, lensVector, stridesVector, alignmentRequirement};
         }
         else
         {
-            *desc = {dataType, std::vector<std::size_t>(), std::vector<std::size_t>(), unaryOp};
+            **desc = {dataType,
+                      std::vector<std::size_t>(),
+                      std::vector<std::size_t>(),
+                      alignmentRequirement};
         }
     }
 
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc)
+{
+    delete desc;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -264,9 +262,9 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error)
         return "HIPTENSOR_STATUS_UNKNOWN";
 }
 
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t            handle,
-                                                   const void*                        ptr,
-                                                   const hiptensorTensorDescriptor_t* desc,
+hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t           handle,
+                                                   const void*                       ptr,
+                                                   const hiptensorTensorDescriptor_t desc,
                                                    uint32_t* alignmentRequirement)
 {
     using hiptensor::Logger;

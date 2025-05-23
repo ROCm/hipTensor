@@ -32,26 +32,26 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t            handle,
-                                              const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t                      modeA[],
-                                              const void*                        beta,
-                                              const void*                        B,
-                                              const hiptensorTensorDescriptor_t* descB,
-                                              const int32_t                      modeB[],
-                                              const void*                        gamma,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t                      modeC[],
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t                      modeD[],
-                                              hiptensorOperator_t                opAB,
-                                              hiptensorOperator_t                opABC,
-                                              hiptensorDataType_t                typeScalar,
-                                              const hipStream_t                  stream)
+hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           handle,
+                                              const void*                       alpha,
+                                              const void*                       A,
+                                              const hiptensorTensorDescriptor_t descA,
+                                              const int32_t                     modeA[],
+                                              const void*                       beta,
+                                              const void*                       B,
+                                              const hiptensorTensorDescriptor_t descB,
+                                              const int32_t                     modeB[],
+                                              const void*                       gamma,
+                                              const void*                       C,
+                                              const hiptensorTensorDescriptor_t descC,
+                                              const int32_t                     modeC[],
+                                              void*                             D,
+                                              const hiptensorTensorDescriptor_t descD,
+                                              const int32_t                     modeD[],
+                                              hiptensorOperator_t               opAB,
+                                              hiptensorOperator_t               opABC,
+                                              hiptensorDataType_t               typeScalar,
+                                              const hipStream_t                 stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -154,34 +154,34 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           
     }
 
     auto& instances = hiptensor::PermutationSolutionInstances::instance();
-    auto  solutions
-        = instances->query({alphaF, betaF, gammaF},
-                           descA->mLengths,
-                           {descA->mType, descB->mType, descC->mType},
-                           {descD->mType},
-                           {{modeA, modeA + descA->mLengths.size()},
-                            {modeB, modeB + descB->mLengths.size()},
-                            {modeC, modeC + descC->mLengths.size()}},
-                           {{modeD, modeD + descD->mLengths.size()}},
-                           {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                           hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
+    auto  solutions = instances->query(
+        {alphaF, betaF, gammaF},
+        descA->mLengths,
+        {descA->mType, descB->mType, descC->mType},
+        {descD->mType},
+        {{modeA, modeA + descA->mLengths.size()},
+          {modeB, modeB + descB->mLengths.size()},
+          {modeC, modeC + descC->mLengths.size()}},
+        {{modeD, modeD + descD->mLengths.size()}},
+        {opABC, opAB, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+        hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
     for(auto pSolution : solutions)
     {
-        canRun
-            = pSolution->initArgs({alphaF, betaF, gammaF},
-                                  {descA->mLengths, descB->mLengths, descC->mLengths},
-                                  {descA->mStrides, descB->mStrides, descC->mStrides},
-                                  {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
-                                   std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
-                                   std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
-                                  {descD->mLengths},
-                                  {descD->mStrides},
-                                  {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                  {opABC, opAB, descA->mUnaryOp, descB->mUnaryOp, descC->mUnaryOp},
-                                  {A, B, C},
-                                  {D});
+        canRun = pSolution->initArgs(
+            {alphaF, betaF, gammaF},
+            {descA->mLengths, descB->mLengths, descC->mLengths},
+            {descA->mStrides, descB->mStrides, descC->mStrides},
+            {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+             std::vector<int32_t>(modeB, modeB + descB->mLengths.size()),
+             std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+            {descD->mLengths},
+            {descD->mStrides},
+            {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+            {opABC, opAB, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+            {A, B, C},
+            {D});
 
         if(canRun)
         {

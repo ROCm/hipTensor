@@ -120,61 +120,61 @@ auto elementaryTrinaryOpWithCpu(hiptensorDataType_t inputType,
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-    hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descA,
-                                                        ninMode,
-                                                        inExtent.data(),
-                                                        NULL /* stride */,
-                                                        inputType,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descA = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descA, ninMode, inExtent.data(), NULL /* stride */, inputType, 0));
 
-    hiptensorTensorDescriptor_t descB;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descB,
-                                                        ninMode,
-                                                        inExtent.data(),
-                                                        NULL /* stride */,
-                                                        inputType,
-                                                        HIPTENSOR_OP_IDENTITY));
-    hiptensorTensorDescriptor_t descC;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descC,
-                                                        ninMode,
-                                                        inExtent.data(),
-                                                        NULL /* stride */,
-                                                        inputType,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descB = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descB, ninMode, inExtent.data(), NULL /* stride */, inputType, 0));
+    hiptensorTensorDescriptor_t descC = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descC, ninMode, inExtent.data(), NULL /* stride */, inputType, 0));
 
-    hiptensorTensorDescriptor_t descD;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(handle,
-                                                        &descD,
-                                                        noutputMode,
-                                                        outputExtent.data(),
-                                                        NULL /* stride */,
-                                                        outputType,
-                                                        HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descD = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descD, noutputMode, outputExtent.data(), NULL /* stride */, outputType, 0));
 
     hiptensorElementwiseTrinaryOpReference(&alphaValue,
                                            aArray.data(),
-                                           &descA,
+                                           descA,
                                            inMode.data(),
                                            &betaValue,
                                            bArray.data(),
-                                           &descB,
+                                           descB,
                                            inMode.data(),
                                            &gammaValue,
                                            cArray.data(),
-                                           &descC,
+                                           descC,
                                            inMode.data(),
                                            dArray.data(),
-                                           &descD,
+                                           descD,
                                            outputMode.data(),
                                            HIPTENSOR_OP_ADD,
                                            HIPTENSOR_OP_ADD,
                                            typeCompute,
                                            0);
 
+    if(descA)
+    {
+        hiptensorDestroyTensorDescriptor(descA);
+        descA = nullptr;
+    }
+    if(descB)
+    {
+        hiptensorDestroyTensorDescriptor(descB);
+        descB = nullptr;
+    }
+    if(descC)
+    {
+        hiptensorDestroyTensorDescriptor(descC);
+        descC = nullptr;
+    }
+    if(descD)
+    {
+        hiptensorDestroyTensorDescriptor(descD);
+        descD = nullptr;
+    }
     return compareEqual(referenceArray.data(),
                         dArray.data(),
                         dArray.size(),

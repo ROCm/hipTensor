@@ -29,20 +29,20 @@
 #include "reduction_cpu_reference_impl.hpp"
 #include "reduction_cpu_reference_instances.hpp"
 
-hiptensorStatus_t hiptensorReductionReference(const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t                      modeA[],
-                                              const void*                        beta,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t                      modeC[],
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t                      modeD[],
-                                              hiptensorOperator_t                opReduce,
-                                              hiptensorComputeDescriptor_t       typeCompute,
-                                              hipStream_t                        stream)
+hiptensorStatus_t hiptensorReductionReference(const void*                       alpha,
+                                              const void*                       A,
+                                              const hiptensorTensorDescriptor_t descA,
+                                              const int32_t                     modeA[],
+                                              const void*                       beta,
+                                              const void*                       C,
+                                              const hiptensorTensorDescriptor_t descC,
+                                              const int32_t                     modeC[],
+                                              void*                             D,
+                                              const hiptensorTensorDescriptor_t descD,
+                                              const int32_t                     modeD[],
+                                              hiptensorOperator_t               opReduce,
+                                              hiptensorComputeDescriptor_t      typeCompute,
+                                              hipStream_t                       stream)
 {
     int  rankA        = descA->mLengths.size();
     int  numReduceDim = descA->mLengths.size() - descD->mLengths.size();
@@ -120,8 +120,8 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                                 descC->mLengths,
                                                 descC->mStrides,
                                                 {modeC, modeC + descC->mLengths.size()},
-                                                descA->mUnaryOp,
-                                                descC->mUnaryOp,
+                                                HIPTENSOR_OP_IDENTITY,
+                                                HIPTENSOR_OP_IDENTITY,
                                                 alphaD,
                                                 betaD,
                                                 A,

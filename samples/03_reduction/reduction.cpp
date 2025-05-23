@@ -118,26 +118,26 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
-    hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descA = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, 0));
 
-    hiptensorTensorDescriptor_t descC;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descC = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, 0));
 
     const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
 
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
                                                              A_d,
-                                                             &descA,
+                                                             descA,
                                                              modeA.data(),
                                                              C_d,
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              C_d,
-                                                             &descC,
+                                                             descC,
                                                              modeC.data(),
                                                              opReduce,
                                                              typeCompute,
@@ -155,14 +155,14 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorReduction(handle,
                                              (const void*)&alpha,
                                              A_d,
-                                             &descA,
+                                             descA,
                                              modeA.data(),
                                              (const void*)&beta,
                                              C_d,
-                                             &descC,
+                                             descC,
                                              modeC.data(),
                                              C_d,
-                                             &descC,
+                                             descC,
                                              modeC.data(),
                                              opReduce,
                                              typeCompute,
@@ -210,6 +210,16 @@ int main()
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    if(descA)
+    {
+        hiptensorDestroyTensorDescriptor(descA);
+        descA = nullptr;
+    }
+    if(descC)
+    {
+        hiptensorDestroyTensorDescriptor(descC);
+        descC = nullptr;
+    }
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(C);
     HIPTENSOR_FREE_DEVICE(A_d);

@@ -32,16 +32,16 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle,
-                                       const void*                        alpha,
-                                       const void*                        A,
-                                       const hiptensorTensorDescriptor_t* descA,
-                                       const int32_t                      modeA[],
-                                       void*                              B,
-                                       const hiptensorTensorDescriptor_t* descB,
-                                       const int32_t                      modeB[],
-                                       const hiptensorDataType_t          typeScalar,
-                                       const hipStream_t                  stream)
+hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t           handle,
+                                       const void*                       alpha,
+                                       const void*                       A,
+                                       const hiptensorTensorDescriptor_t descA,
+                                       const int32_t                     modeA[],
+                                       void*                             B,
+                                       const hiptensorTensorDescriptor_t descB,
+                                       const int32_t                     modeB[],
+                                       const hiptensorDataType_t         typeScalar,
+                                       const hipStream_t                 stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -118,7 +118,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle
                                       {descB->mType},
                                       {{modeA, modeA + descA->mLengths.size()}},
                                       {{modeB, modeB + descB->mLengths.size()}},
-                                      {descA->mUnaryOp, descB->mUnaryOp},
+                                      {HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
                                       hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
@@ -131,7 +131,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t            handle
                                      {descB->mLengths},
                                      {descB->mStrides},
                                      {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
-                                     {descA->mUnaryOp},
+                                     {HIPTENSOR_OP_IDENTITY},
                                      {A},
                                      {B});
 

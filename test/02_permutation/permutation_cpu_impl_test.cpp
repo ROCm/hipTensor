@@ -117,24 +117,34 @@ auto permuteWithCpu(hiptensorDataType_t typeA,
     const floatTypeCompute alphaValue = 2.1f;
     hiptensorHandle_t      handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
-    hiptensorTensorDescriptor_t descA;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descA = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, 0));
 
-    hiptensorTensorDescriptor_t descB;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitTensorDescriptor(
-        handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, HIPTENSOR_OP_IDENTITY));
+    hiptensorTensorDescriptor_t descB = nullptr;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
+        handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, 0));
 
     hiptensorPermutationReference(&alphaValue,
                                   aArray.data(),
-                                  &descA,
+                                  descA,
                                   modeA.data(),
                                   bArray.data(),
-                                  &descB,
+                                  descB,
                                   modeB.data(),
                                   typeCompute,
                                   0);
 
+    if(descA)
+    {
+        hiptensorDestroyTensorDescriptor(descA);
+        descA = nullptr;
+    }
+    if(descB)
+    {
+        hiptensorDestroyTensorDescriptor(descB);
+        descB = nullptr;
+    }
     return compareEqual(referenceArray.data(),
                         bArray.data(),
                         bArray.size(),
