@@ -45,6 +45,20 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle);
 //! @returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
 hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle);
 
+hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
+                                                 const uint32_t    numEntries);
+
+hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
+                                                      const char              filename[]);
+
+hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
+                                                       const char        filename[],
+                                                       uint32_t*         numCachelinesRead);
+
+hiptensorStatus_t hiptensorWriteKernelCacheToFile(const hiptensorHandle_t handle,
+                                                  const char              filename[]);
+
+hiptensorStatus_t hiptensorReadKernelCacheFromFile(hiptensorHandle_t handle, const char filename[]);
 //! @brief Initializes a tensor descriptor
 //! @param[in] handle Opaque handle holding hipTensor's library context.
 //! @param[out] desc Pointer to the allocated tensor descriptor object.
@@ -66,10 +80,61 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
                                                   uint32_t alignmentRequirement);
 hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc);
 
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc);
+
+hiptensorStatus_t
+    hiptensorOperationDescriptorSetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             const void*                             buf,
+                                             size_t                                  sizeInBytes);
+
+hiptensorStatus_t
+    hiptensorOperationDescriptorGetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             void*                                   buf,
+                                             size_t                                  sizeInBytes);
+
+hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
+                                                hiptensorPlanPreference_t* pref,
+                                                hiptensorAlgo_t            algo,
+                                                hiptensorJitMode_t         jitMode);
+
+hiptensorStatus_t hiptensorDestroyPlanPreference(hiptensorPlanPreference_t pref);
+
+hiptensorStatus_t hiptensorPlanPreferenceSetAttribute(const hiptensorHandle_t            handle,
+                                                      hiptensorPlanPreference_t          pref,
+                                                      hiptensorPlanPreferenceAttribute_t attr,
+                                                      const void*                        buf,
+                                                      size_t sizeInBytes);
+
+hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
+                                            const hiptensorPlan_t    plan,
+                                            hiptensorPlanAttribute_t attr,
+                                            void*                    buf,
+                                            size_t                   sizeInBytes);
+
+hiptensorStatus_t hiptensorEstimateWorkspaceSize(const hiptensorHandle_t              handle,
+                                                 const hiptensorOperationDescriptor_t desc,
+                                                 const hiptensorPlanPreference_t      planPref,
+                                                 const hiptensorWorksizePreference_t  workspacePref,
+                                                 uint64_t* workspaceSizeEstimate);
+
+hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t*                     plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit);
+
+hiptensorStatus_t hiptensorDestroyPlan(hiptensorPlan_t plan);
+
 //! @brief Returns the description string for an error code
 //! @param[in] error Error code to convert to string.
 //! @retval the error string.
 const char* hiptensorGetErrorString(const hiptensorStatus_t error);
+
+size_t hiptensorGetVersion();
 
 //! @brief Tensor permutation
 //! @details This function computes the permuation operation:

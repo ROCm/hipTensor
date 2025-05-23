@@ -104,6 +104,36 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
+hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
+                                                 const uint32_t    numEntries)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
+                                                      const char              filename[])
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
+                                                       const char        filename[],
+                                                       uint32_t*         numCachelinesRead)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorWriteKernelCacheToFile(const hiptensorHandle_t handle,
+                                                  const char              filename[])
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorReadKernelCacheFromFile(hiptensorHandle_t handle, const char filename[])
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
 hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
                                                   hiptensorTensorDescriptor_t* desc,
                                                   const uint32_t               numModes,
@@ -219,6 +249,85 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
 hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc)
 {
     delete desc;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t
+    hiptensorOperationDescriptorSetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             const void*                             buf,
+                                             size_t                                  sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t
+    hiptensorOperationDescriptorGetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             void*                                   buf,
+                                             size_t                                  sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
+                                                hiptensorPlanPreference_t* pref,
+                                                hiptensorAlgo_t            algo,
+                                                hiptensorJitMode_t         jitMode)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyPlanPreference(hiptensorPlanPreference_t pref)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorPlanPreferenceSetAttribute(const hiptensorHandle_t            handle,
+                                                      hiptensorPlanPreference_t          pref,
+                                                      hiptensorPlanPreferenceAttribute_t attr,
+                                                      const void*                        buf,
+                                                      size_t sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
+                                            const hiptensorPlan_t    plan,
+                                            hiptensorPlanAttribute_t attr,
+                                            void*                    buf,
+                                            size_t                   sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorEstimateWorkspaceSize(const hiptensorHandle_t              handle,
+                                                 const hiptensorOperationDescriptor_t desc,
+                                                 const hiptensorPlanPreference_t      planPref,
+                                                 const hiptensorWorksizePreference_t  workspacePref,
+                                                 uint64_t* workspaceSizeEstimate)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t*                     plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyPlan(hiptensorPlan_t plan)
+{
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
