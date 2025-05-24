@@ -742,9 +742,10 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
     (*desc)->mPaddingRighT = 0;
     (*desc)->mPaddingValue = nullptr;
 
-    (*desc)->mDescA = descA;
-    (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
-    (*desc)->mOpA   = opA;
+    (*desc)->mOperationType = HIPTENSOR_CONTRACTION;
+    (*desc)->mDescA         = descA;
+    (*desc)->mModeA         = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA           = opA;
 
     (*desc)->mDescB = descB;
     (*desc)->mModeB = std::vector<int32_t>(modeB, modeB + descB->mLengths.size());
@@ -773,7 +774,202 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
                                     uint64_t                workspaceSize,
                                     hipStream_t             stream)
 {
-    return HIPTENSOR_STATUS_SUCCESS;
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+    char msg[512];
+    char alphaMsg[32];
+    char betaMsg[32];
+
+    if(plan != nullptr)
+    {
+        if(alpha == nullptr)
+        {
+            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=NULL");
+        }
+        else
+        {
+            auto alphaValue
+                = hiptensor::readVal<hiptensor::ScalarData>(alpha, plan->mOpDesc->mDescCompute);
+            snprintf(alphaMsg, sizeof(alphaMsg), "alpha=%s", std::to_string(alphaValue).c_str());
+        }
+
+        if(beta == nullptr)
+        {
+            snprintf(betaMsg, sizeof(betaMsg), "beta=NULL");
+        }
+        else
+        {
+            auto betaValue
+                = hiptensor::readVal<hiptensor::ScalarData>(beta, plan->mOpDesc->mDescCompute);
+            snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
+        }
+    }
+    else
+    {
+        snprintf(alphaMsg, sizeof(alphaMsg), "alpha=NULL");
+        snprintf(betaMsg, sizeof(betaMsg), "beta=NULL");
+    }
+
+    snprintf(msg,
+             sizeof(msg),
+             "handle=0x%0*llX, plan=0x%llX, %s, A=0x%llX, B=0x%llX, %s, "
+             "C=0x%llX, D=0x%llX, workspace=0x%llX, workspaceSize=0x%04lX, stream=0x%llX",
+             2 * (int)sizeof(void*),
+             (unsigned long long)handle,
+             (unsigned long long)plan,
+             alphaMsg,
+             (unsigned long long)A,
+             (unsigned long long)B,
+             betaMsg,
+             (unsigned long long)C,
+             (unsigned long long)D,
+             (unsigned long long)workspace,
+             (unsigned long)workspaceSize,
+             (unsigned long long)stream);
+
+    logger->logAPITrace("hiptensorContraction", msg);
+
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, alpha);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, A);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, B);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_INVALID_VALUE, D);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return checkResult;
+    }
+
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+
+    // Ensure current HIP device is same as the handle.
+    hiptensor::HipDevice currentDevice;
+    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                 (int)currentDevice.getDeviceId(),
+                 (int)realHandle->getDevice().getDeviceId(),
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+        return errorCode;
+    }
+
+    auto*             cSolution = (hiptensor::ContractionSolution*)(plan->mPref->mSolution);
+    hiptensorStatus_t errorCode = HIPTENSOR_STATUS_SUCCESS;
+    float             time      = 0.0f;
+
+    // Perform contraction with timing if LOG_LEVEL_PERF_TRACE
+    if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+    {
+        using hiptensor::HiptensorOptions;
+        auto& options = HiptensorOptions::instance();
+
+        std::tie(errorCode, time) = (*cSolution)(alpha,
+                                                 A,
+                                                 B,
+                                                 beta,
+                                                 C,
+                                                 D,
+                                                 plan->mOpDesc->mDescA->mLengths,
+                                                 plan->mOpDesc->mDescA->mStrides,
+                                                 plan->mOpDesc->mModeA,
+                                                 plan->mOpDesc->mDescB->mLengths,
+                                                 plan->mOpDesc->mDescB->mStrides,
+                                                 plan->mOpDesc->mModeB,
+                                                 plan->mOpDesc->mDescC->mLengths,
+                                                 plan->mOpDesc->mDescC->mStrides,
+                                                 plan->mOpDesc->mModeC,
+                                                 plan->mOpDesc->mDescD->mLengths,
+                                                 plan->mOpDesc->mDescD->mStrides,
+                                                 plan->mOpDesc->mModeC,
+                                                 workspace,
+                                                 workspaceSize,
+                                                 StreamConfig{
+                                                     stream, // stream id
+                                                     true, // time_kernel
+                                                     0, // log_level
+                                                     options->coldRuns(), // cold_niters
+                                                     options->hotRuns(), // nrepeat
+                                                 });
+
+        if(errorCode == HIPTENSOR_STATUS_SUCCESS)
+        {
+            int32_t m, n, k;
+            std::tie(m, n, k) = cSolution->problemDims();
+            auto flops        = std::size_t(2) * m * n * k;
+            auto bytes        = cSolution->problemBytes();
+
+            hiptensor::PerfMetrics metrics = {
+                cSolution->uid(), // id
+                cSolution->kernelName(), // name
+                time, // avg time
+                static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
+                static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
+            };
+
+            // log perf metrics (not name/id)
+            snprintf(msg,
+                     sizeof(msg),
+                     "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops/s, %0.3f GB/s",
+                     metrics.mKernelUid,
+                     metrics.mKernelName.c_str(),
+                     metrics.mAvgTimeMs,
+                     metrics.mTflops,
+                     metrics.mBandwidth);
+            logger->logPerformanceTrace("hiptensorContraction", msg);
+        }
+    }
+    else // Perform contraction without timing
+    {
+        std::tie(errorCode, time) = (*cSolution)(alpha,
+                                                 A,
+                                                 B,
+                                                 beta,
+                                                 C,
+                                                 D,
+                                                 plan->mOpDesc->mDescA->mLengths,
+                                                 plan->mOpDesc->mDescA->mStrides,
+                                                 plan->mOpDesc->mModeA,
+                                                 plan->mOpDesc->mDescB->mLengths,
+                                                 plan->mOpDesc->mDescB->mStrides,
+                                                 plan->mOpDesc->mModeB,
+                                                 plan->mOpDesc->mDescC->mLengths,
+                                                 plan->mOpDesc->mDescC->mStrides,
+                                                 plan->mOpDesc->mModeC,
+                                                 plan->mOpDesc->mDescD->mLengths,
+                                                 plan->mOpDesc->mDescD->mStrides,
+                                                 plan->mOpDesc->mModeC,
+                                                 workspace,
+                                                 workspaceSize,
+                                                 StreamConfig{stream, false});
+    }
+
+    if(errorCode == HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE)
+    {
+        snprintf(msg,
+                 sizeof(msg),
+                 "Insufficient workspace: req: %lu alloc: %lu (%s)",
+                 cSolution->workspaceSize(),
+                 workspaceSize,
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+    }
+    else if(errorCode == HIPTENSOR_STATUS_INTERNAL_ERROR)
+    {
+        snprintf(msg,
+                 sizeof(msg),
+                 "Selected kernel is unable to solve the problem (%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorContraction", msg);
+    }
+
+    return errorCode;
 }
 
 hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   handle,
@@ -848,4 +1044,178 @@ hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   hand
         logger->logError("hiptensorInitContractionFind", msg);
         return errorCode;
     }
+}
+
+hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t                      plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit)
+{
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    // Log API access
+
+    char msg[256];
+
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, plan);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, desc);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, pref);
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return checkResult;
+    }
+
+    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
+
+    // Ensure current HIP device is same as the handle.
+    hiptensor::HipDevice currentDevice;
+    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    {
+        auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Device mismatch error: current device id: %d, handle device id: %d (%s)",
+                 (int)currentDevice.getDeviceId(),
+                 (int)realHandle->getDevice().getDeviceId(),
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorInitContractionPlan", msg);
+        return HIPTENSOR_STATUS_ARCH_MISMATCH;
+    }
+
+    // At this point, we need to format inputs for kernels as they will be tested via selection model.
+    // Brute force method currently uses CK kernel format, so we will adjust inputs to that style.
+
+    // Convert to concrete contraction solutions
+    auto& instances = hiptensor::ContractionSolutionInstances::instance();
+    auto  solnQ     = instances->allSolutions();
+
+    // Can do more checking for scale / bilinear, etc. if we need to.
+
+    if(solnQ.solutionCount() == 0)
+    {
+        // No kernels found!
+        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Internal Error : No Kernels Found (%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorInitContractionFind", msg);
+        return errorCode;
+    }
+
+    // Extract the solutions to the candidates vector.
+    pref->mCandidates = toVoidVec(solnQ.solutions());
+    auto candidates   = toContractionSolutionVec(pref->mCandidates);
+
+    auto computeType = desc->mDescCompute;
+    auto ADataType   = desc->mDescA->mType;
+    auto BDataType   = desc->mDescB->mType;
+    auto DDataType   = desc->mDescC->mType;
+    auto EDataType   = desc->mDescD->mType;
+
+    // Query contraction solutions for the correct contraction operation and type
+    auto solutionQ = hiptensor::ContractionSolutionRegistry::Query{candidates}
+                         .query((hiptensor::ContractionOpId_t)desc->mContractionOpId)
+                         .query(ADataType, BDataType, DDataType, EDataType, computeType);
+
+    candidates = toContractionSolutionVec(solutionQ.solutions());
+
+    // Measure timing for solution selection
+    hipEvent_t startEvent, stopEvent;
+    CHECK_HIP_ERROR(hipEventCreate(&startEvent));
+    CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
+
+    CHECK_HIP_ERROR(hipEventRecord(startEvent));
+
+    // Launch selection algorithm
+    hiptensor::ContractionSolution* winner = nullptr;
+    auto                            result = HIPTENSOR_STATUS_INTERNAL_ERROR;
+    if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
+       || pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
+    {
+        result = hiptensor::bruteForceModel(&winner,
+                                            candidates,
+                                            ADataType,
+                                            desc->mDescA->mLengths,
+                                            desc->mDescA->mStrides,
+                                            desc->mModeA,
+                                            BDataType,
+                                            desc->mDescB->mLengths,
+                                            desc->mDescB->mStrides,
+                                            desc->mModeB,
+                                            DDataType,
+                                            desc->mDescC->mLengths,
+                                            desc->mDescC->mStrides,
+                                            desc->mModeC,
+                                            EDataType,
+                                            desc->mDescD->mLengths,
+                                            desc->mDescD->mStrides,
+                                            desc->mModeC,
+                                            desc->mDescCompute,
+                                            workspaceSizeLimit);
+    }
+    else if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
+    {
+        result = hiptensor::actorCriticModel(&winner,
+                                             solutionQ.solutions(),
+                                             ADataType,
+                                             desc->mDescA->mLengths,
+                                             desc->mDescA->mStrides,
+                                             desc->mModeA,
+                                             BDataType,
+                                             desc->mDescB->mLengths,
+                                             desc->mDescB->mStrides,
+                                             desc->mModeB,
+                                             DDataType,
+                                             desc->mDescC->mLengths,
+                                             desc->mDescC->mStrides,
+                                             desc->mModeC,
+                                             EDataType,
+                                             desc->mDescD->mLengths,
+                                             desc->mDescD->mStrides,
+                                             desc->mModeC,
+                                             desc->mDescCompute,
+                                             workspaceSizeLimit);
+    }
+
+    CHECK_HIP_ERROR(hipEventRecord(stopEvent));
+    CHECK_HIP_ERROR(hipEventSynchronize(stopEvent));
+
+    auto elapsedTimeMs = 0.0f;
+    CHECK_HIP_ERROR(hipEventElapsedTime(&elapsedTimeMs, startEvent, stopEvent));
+
+    CHECK_HIP_ERROR(hipEventDestroy(startEvent));
+    CHECK_HIP_ERROR(hipEventDestroy(stopEvent));
+
+    if(result != HIPTENSOR_STATUS_SUCCESS)
+    {
+        snprintf(msg,
+                 sizeof(msg),
+                 "Init contraction plan not successful (%s)",
+                 hiptensorGetErrorString(result));
+        logger->logError("hiptensorInitContractionPlan", msg);
+        return result;
+    }
+
+    // Log the selected contraction solution and selection timing
+    snprintf(msg,
+             sizeof(msg),
+             "Algo: %d, KernelId: %lu, KernelName: %s, SelectionTime: %0.3f ms",
+             pref->mSelectionAlgorithm,
+             winner->uid(),
+             winner->kernelName().c_str(),
+             elapsedTimeMs);
+    logger->logPerformanceTrace("hiptensorInitContractionPlan", msg);
+
+    // Assign the contraction descriptor
+    pref->mSolution          = winner;
+    plan->mRequiredWorkspace = workspaceSizeLimit;
+    plan->mOpDesc            = desc;
+    plan->mPref              = pref;
+
+    return HIPTENSOR_STATUS_SUCCESS;
 }
