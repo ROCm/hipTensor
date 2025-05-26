@@ -365,16 +365,6 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            //CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
-            //                                           &alphaValue,
-            //                                           resource->deviceInput1().get(),
-            //                                           descA,
-            //                                           modeA.data(),
-            //                                           resource->deviceOutput().get(),
-            //                                           descB,
-            //                                           modeB.data(),
-            //                                           computeDataType,
-            //                                           0 /* stream */));
             CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
                             plan,
                             &alphaValue, 

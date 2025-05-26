@@ -223,28 +223,28 @@ hiptensorContractionGetWorkspaceSize
 Element-wise operations
 =======================
 
-hiptensorPermutation
+hiptensorPermute
 ----------------------------------
 
-.. doxygenfunction:: hiptensorPermutation
+.. doxygenfunction:: hiptensorPermute
 
-hiptensorElementwiseBinary
+hiptensorElementwiseBinaryExecute
 ----------------------------------
 
-.. doxygenfunction:: hiptensorElementwiseBinary
+.. doxygenfunction:: hiptensorElementwiseBinaryExecute
 
-hiptensorElementwiseTrinary
+hiptensorElementwiseTrinaryExecute
 ----------------------------------
 
-.. doxygenfunction:: hiptensorElementwiseTrinary
+.. doxygenfunction:: hiptensorElementwiseTrinaryExecute
 
 Reduction operations
 ======================
 
-hiptensorReduction
+hiptensorReduce
 ----------------------------------
 
-.. doxygenfunction::  hiptensorReduction
+.. doxygenfunction::  hiptensorReduce
 
 hiptensorReductionGetWorkspaceSize
 ----------------------------------

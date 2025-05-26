@@ -121,7 +121,7 @@ namespace hiptensor
                  "Initialization Error : %s = nullptr (%s)",
                  paramName.c_str(),
                  hiptensorGetErrorString(errorCode));
-        logger.logError("hiptensorPermutation", msg);
+        logger.logError("hiptensorPermute", msg);
     };
 
     /** @name static_for

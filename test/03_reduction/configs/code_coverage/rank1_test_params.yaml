@@ -14,5 +14,5 @@ Operators:
   - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_ADD]
 Output Dims:
   - []
-  - [0] # This test case covers hiptensorElementwiseBinary delegate
+  - [0] # This test case covers hiptensorElementwiseBinaryExecute delegate
 ...

@@ -425,6 +425,23 @@ namespace hiptensor
             hiptensorTensorDescriptor_t descD = nullptr;
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
                 handle, &descD, nmodeD, extentD.data(), strideD.data(), acDataType, 0));
+            
+            hiptensorComputeDescriptor_t const descCompute = convertToComputeType(dataTypes[1]);
+            hiptensorOperationDescriptor_t desc;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateReduction(
+                                  handle, &desc,
+                                  descA, modeA.data(), aOp,
+                                  descC, modeC.data(), cOp,
+                                  descD, modeD.data(),
+                                  reduceOp, descCompute));
+
+            const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
+            hiptensorPlanPreference_t planPref;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(
+                                       handle,
+                                       &planPref,
+                                       algo,
+                                       HIPTENSOR_JIT_MODE_NONE));
 
             uint64_t worksize = 0;
             CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
@@ -442,6 +459,13 @@ namespace hiptensor
                                                                      &worksize));
             resource->setupWorkspace(worksize);
 
+            hiptensorPlan_t plan;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
+                         &plan,
+                         desc,
+                         planPref,
+                         worksize));
+
             void*  work = resource->deviceWorkspace().get();
             double alphaValue{};
             double betaValue{};
@@ -453,23 +477,10 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorReduction(handle,
-                                                     (const void*)&alphaValue,
-                                                     resource->deviceA().get(),
-                                                     descA,
-                                                     modeA.data(),
-                                                     (const void*)&betaValue,
-                                                     resource->deviceC().get(),
-                                                     descC,
-                                                     modeC.data(),
-                                                     resource->deviceD().get(),
-                                                     descD,
-                                                     modeD.data(),
-                                                     reduceOp,
-                                                     computeDataType,
-                                                     work,
-                                                     worksize,
-                                                     0 /* stream */));
+            CHECK_HIPTENSOR_ERROR(hiptensorReduce(handle, plan,
+                    (const void*)&alphaValue, resource->deviceA().get(),
+                    (const void*)&betaValue,  resource->deviceC().get(), 
+                                              resource->deviceD().get(), work, worksize, 0));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))

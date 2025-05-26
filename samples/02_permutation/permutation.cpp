@@ -38,40 +38,6 @@
 
 #include "common.hpp"
 
-struct GPUTimer
-{
-    GPUTimer() 
-    {
-        CHECK_HIP_ERROR(hipEventCreate(&start_));
-        CHECK_HIP_ERROR(hipEventCreate(&stop_));
-        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
-    }
-
-    ~GPUTimer() 
-    {
-        CHECK_HIP_ERROR(hipEventDestroy(start_));
-        CHECK_HIP_ERROR(hipEventDestroy(stop_));
-    }
-
-    void start() 
-    {
-        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
-    }
-
-    float seconds() 
-    {
-        CHECK_HIP_ERROR(hipEventRecord(stop_, nullptr));
-        CHECK_HIP_ERROR(hipEventSynchronize(stop_));
-        float time;
-        CHECK_HIP_ERROR(hipEventElapsedTime(&time, start_, stop_));
-        return static_cast<float>(time * 1e-3);
-    }
-
-private:
-    hipEvent_t start_, stop_;
-};
-
-
 int main()
 {
     if(!isF32Supported())
@@ -216,31 +182,14 @@ int main()
     /**********************
      * Run
      **********************/
+    using hiptensor::HiptensorOptions;
+    auto& options = HiptensorOptions::instance();
+    options->setColdRuns(5);
+    options->setHotRuns(50);
 
-    double minTimeHIPTENSOR = 1e100;
-    for (int i = 0; i < 3; i++)
-    {
-        GPUTimer timer;
-        timer.start();
-
-        CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
-                        plan,
-                        &alpha, A_d, C_d, nullptr /* stream */));
-
-        auto time = timer.seconds();
-        minTimeHIPTENSOR = (minTimeHIPTENSOR < time) ? minTimeHIPTENSOR : time;
-    }
-
-    /*************************/
-
-    double transferedBytes = 2.0 * sizeC;
-    transferedBytes /= 1e9;
-    printf("cuTensor: %.2f GB/s\n", transferedBytes / minTimeHIPTENSOR);
-
-//    using hiptensor::HiptensorOptions;
-//    auto& options = HiptensorOptions::instance();
-//    options->setColdRuns(5);
-//    options->setHotRuns(50);
+    CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
+                    plan,
+                    &alpha, A_d, C_d, nullptr /* stream */))    
 
 #if !NDEBUG
     bool printElements = false;

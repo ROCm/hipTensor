@@ -286,7 +286,7 @@ hiptensorStatus_t hiptensorCreatePermutation(
 {
     *desc = new hiptensorOperationDescriptor();
     (*desc)->mTag = 0;
-    (*desc)->mScalarType = HIPTENSOR_R_32F;
+    (*desc)->mScalarType = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops = 0.0f;
     (*desc)->mMovedBytes = 0.0f;
     (*desc)->mPaddingLeft = 0u;
@@ -320,7 +320,7 @@ hiptensorStatus_t hiptensorCreateElementwiseBinary(
 {
     *desc = new hiptensorOperationDescriptor();
     (*desc)->mTag = 0;
-    (*desc)->mScalarType = HIPTENSOR_R_32F;
+    (*desc)->mScalarType = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops = 0.0f;
     (*desc)->mMovedBytes = 0.0f;
     (*desc)->mPaddingLeft = 0u;
@@ -355,7 +355,7 @@ hiptensorStatus_t hiptensorCreateElementwiseTrinary(
 {
     *desc = new hiptensorOperationDescriptor();
     (*desc)->mTag = 0;
-    (*desc)->mScalarType = HIPTENSOR_R_32F;
+    (*desc)->mScalarType = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops = 0.0f;
     (*desc)->mMovedBytes = 0.0f;
     (*desc)->mPaddingLeft = 0u;
@@ -378,6 +378,39 @@ hiptensorStatus_t hiptensorCreateElementwiseTrinary(
     
     return HIPTENSOR_STATUS_SUCCESS;
 }
+
+hiptensorStatus_t hiptensorCreateReduction(
+                 const hiptensorHandle_t handle, hiptensorOperationDescriptor_t* desc,
+                 const hiptensorTensorDescriptor_t descA, const int32_t modeA[], hiptensorOperator_t opA,
+                 const hiptensorTensorDescriptor_t descC, const int32_t modeC[], hiptensorOperator_t opC,
+                 const hiptensorTensorDescriptor_t descD, const int32_t modeD[],
+                 hiptensorOperator_t opReduce, const hiptensorComputeDescriptor_t descCompute)
+{
+    *desc = new hiptensorOperationDescriptor();
+    (*desc)->mTag = 0;
+    (*desc)->mScalarType = *hiptensor::convertToHipTensorDataType(descCompute);
+    (*desc)->mFlops = 0.0f;
+    (*desc)->mMovedBytes = 0.0f;
+    (*desc)->mPaddingLeft = 0u;
+    (*desc)->mPaddingRighT = 0u;
+    (*desc)->mPaddingValue = nullptr;
+    (*desc)->mDescA = descA;
+    (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA = opA;
+    (*desc)->mDescB = nullptr;
+    (*desc)->mModeB = {};
+    (*desc)->mOpB = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescC = descC;
+    (*desc)->mModeC = std::vector<int32_t>(modeC, modeC + descC->mLengths.size());
+    (*desc)->mOpC = opC;
+    (*desc)->mDescD = descD;
+    (*desc)->mModeD = std::vector<int32_t>(modeD, modeD + descD->mLengths.size());
+    (*desc)->mOpAC = opReduce;
+    (*desc)->mOpABC = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescCompute = descCompute;
+    
+    return HIPTENSOR_STATUS_SUCCESS;    
+}                 
 
 hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   handle,
                                                   hiptensorPlanPreference_t pref,

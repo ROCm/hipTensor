@@ -113,7 +113,7 @@ namespace
                      "Unsupported Data Type Error : The combination of data types of A, C and D "
                      "and compute type is not supported. (%s)",
                      hiptensorGetErrorString(errorCode));
-            logger->logError("hiptensorReduction", msg);
+            logger->logError("hiptensorReduce", msg);
             return errorCode;
         }
 
@@ -137,7 +137,7 @@ namespace
                      "Unsupported Data Error : The descriptor of C and D should be same and "
                      " modes of C should be subset of modes A. (%s)",
                      hiptensorGetErrorString(errorCode));
-            logger->logError("hiptensorReduction", msg);
+            logger->logError("hiptensorReduce", msg);
             return errorCode;
         }
 
@@ -145,31 +145,49 @@ namespace
     }
 }
 
-hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
-                                     const void*                       alpha,
-                                     const void*                       A,
-                                     const hiptensorTensorDescriptor_t descA,
-                                     const int32_t                     modeA[],
-                                     const void*                       beta,
-                                     const void*                       C,
-                                     const hiptensorTensorDescriptor_t descC,
-                                     const int32_t                     modeC[],
-                                     void*                             D,
-                                     const hiptensorTensorDescriptor_t descD,
-                                     const int32_t                     modeD[],
-                                     hiptensorOperator_t               opReduce,
-                                     hiptensorComputeDescriptor_t      typeCompute,
-                                     void*                             workspace,
-                                     uint64_t                          workspaceSize,
-                                     hipStream_t                       stream)
+hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t           handle,
+                                                     const void*                       A,
+                                                     const hiptensorTensorDescriptor_t descA,
+                                                     const int32_t                     modeA[],
+                                                     const void*                       C,
+                                                     const hiptensorTensorDescriptor_t descC,
+                                                     const int32_t                     modeC[],
+                                                     const void*                       D,
+                                                     const hiptensorTensorDescriptor_t descD,
+                                                     const int32_t                     modeD[],
+                                                     hiptensorOperator_t               opReduce,
+                                                     hiptensorComputeDescriptor_t      typeCompute,
+                                                     uint64_t* workspaceSize)
+{
+    *workspaceSize = 0;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorReduce(
+                 const hiptensorHandle_t handle, const hiptensorPlan_t plan,
+                 const void* alpha, const void* A,
+                 const void* beta,  const void* C,
+                                          void* D,
+                 void* workspace, uint64_t workspaceSize,
+                 hipStream_t stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
-    char  msg[2048];
 
+    hiptensorOperationDescriptor_t opDes = plan -> mOpDesc;
+    const hiptensorTensorDescriptor_t descA = opDes -> mDescA;
+    const int32_t                    *modeA = opDes -> mModeA.data();
+    const hiptensorTensorDescriptor_t descC = opDes -> mDescC;
+    const int32_t                    *modeC = opDes -> mModeC.data();
+    const hiptensorTensorDescriptor_t descD = opDes -> mDescD;
+    const int32_t                    *modeD = opDes -> mModeD.data();
+    hiptensorOperator_t            opReduce = opDes -> mOpAC;
+    hiptensorComputeDescriptor_t  typeCompute = opDes -> mDescCompute;
+
+    char  msg[2048];
     snprintf(msg,
              sizeof(msg),
-             "hiptensorReduction: handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, beta=%p, C=%p, "
+             "hiptensorReduce: handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, beta=%p, C=%p, "
              "descC=%p, modeC=%p, D=%p, descD=%p, modeD=%p, opReduce=%s, typeCompute=%s, "
              "workspace=%p, workspaceSize=%lu, stream=%p",
              handle,
@@ -190,7 +208,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
              workspaceSize,
              stream);
 
-    logger->logAPITrace("hiptensorReduction", msg);
+    logger->logAPITrace("hiptensorReduce", msg);
 
     if(auto errorCode = checkReductionInputData(handle,
                                                 alpha,
@@ -218,21 +236,10 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
         // Composable Kernels (CK) does not handle reductions where the input and
         // output tensors maintain the same rank. For those scenarios, employ
         // elementwise binary operations.
-        return hiptensorElementwiseBinary(handle,
-                                          alpha,
-                                          A,
-                                          descA,
-                                          modeA,
-                                          beta,
-                                          C,
-                                          descC,
-                                          modeC,
-                                          D,
-                                          descD,
-                                          modeD,
-                                          HIPTENSOR_OP_ADD,
-                                          *hiptensor::convertToHipTensorDataType(typeCompute),
-                                          stream);
+        return hiptensorElementwiseBinaryExecute(handle, plan,
+                                                 alpha, A,
+                                                 beta,  C,
+                                                        D, stream);          
     }
 
     auto& instances = hiptensor::ReductionSolutionInstances::instance();
@@ -243,7 +250,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
                  sizeof(msg),
                  "Internal Error : ReductionSolutionInstances is empty (%s)",
                  hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorReduction", msg);
+        logger->logError("hiptensorReduce", msg);
         return errorCode;
     }
 
@@ -276,7 +283,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
                  sizeof(msg),
                  "Internal Error : querySolutions returns 0 kernel. (%s)",
                  hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorReduction", msg);
+        logger->logError("hiptensorReduce", msg);
         return errorCode;
     }
 
@@ -362,7 +369,7 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
                          metrics.mAvgTimeMs,
                          metrics.mTflops,
                          metrics.mBandwidth);
-                logger->logPerformanceTrace("hiptensorReduction", msg);
+                logger->logPerformanceTrace("hiptensorReduce", msg);
             }
 
             return HIPTENSOR_STATUS_SUCCESS;
@@ -374,24 +381,6 @@ hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t           handle,
              sizeof(msg),
              "No kernel is able to solve the problem (%s)",
              hiptensorGetErrorString(errorCode));
-    logger->logError("hiptensorReduction", msg);
+    logger->logError("hiptensorReduce", msg);
     return errorCode;
-}
-
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t           handle,
-                                                     const void*                       A,
-                                                     const hiptensorTensorDescriptor_t descA,
-                                                     const int32_t                     modeA[],
-                                                     const void*                       C,
-                                                     const hiptensorTensorDescriptor_t descC,
-                                                     const int32_t                     modeC[],
-                                                     const void*                       D,
-                                                     const hiptensorTensorDescriptor_t descD,
-                                                     const int32_t                     modeD[],
-                                                     hiptensorOperator_t               opReduce,
-                                                     hiptensorComputeDescriptor_t      typeCompute,
-                                                     uint64_t* workspaceSize)
-{
-    *workspaceSize = 0;
-    return HIPTENSOR_STATUS_SUCCESS;
-}
+}                 

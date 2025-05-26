@@ -38,39 +38,6 @@
 
 #include "common.hpp"
 
-struct GPUTimer
-{
-    GPUTimer() 
-    {
-        CHECK_HIP_ERROR(hipEventCreate(&start_));
-        CHECK_HIP_ERROR(hipEventCreate(&stop_));
-        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
-    }
-
-    ~GPUTimer() 
-    {
-        CHECK_HIP_ERROR(hipEventDestroy(start_));
-        CHECK_HIP_ERROR(hipEventDestroy(stop_));
-    }
-
-    void start() 
-    {
-        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
-    }
-
-    float seconds() 
-    {
-        CHECK_HIP_ERROR(hipEventRecord(stop_, nullptr));
-        CHECK_HIP_ERROR(hipEventSynchronize(stop_));
-        float time;
-        CHECK_HIP_ERROR(hipEventElapsedTime(&time, start_, stop_));
-        return static_cast<float>(time * 1e-3);
-    }
-
-private:
-    hipEvent_t start_, stop_;
-};
-
 int main()
 {
     if(!isF32Supported())
@@ -87,7 +54,6 @@ int main()
     hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
     hiptensorDataType_t typeC       = HIPTENSOR_R_32F;
     hiptensorDataType_t typeD       = HIPTENSOR_R_32F;
-    //hiptensorDataType_t typeCompute = HIPTENSOR_R_32F;
     hiptensorComputeDescriptor_t const descCompute = HIPTENSOR_COMPUTE_DESC_32F;
 
     floatTypeCompute alpha = (floatTypeCompute)1.0f;
@@ -235,33 +201,15 @@ int main()
     /**********************
      * Run
      **********************/
+    using hiptensor::HiptensorOptions;
+    auto& options = HiptensorOptions::instance();
+    options->setColdRuns(5);
+    options->setHotRuns(50);
 
-    double minTimeHIPTENSOR = 1e100;
-    for (int i = 0; i < 3; i++)
-    {
-        GPUTimer timer;
-        timer.start();
-        CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryExecute(handle, plan,
-                                               (void*)&alpha, A_d,
-                                               (void*)&gamma, C_d,
-                                                              D_d, nullptr /* stream */));
-        auto time = timer.seconds();
-        minTimeHIPTENSOR = (minTimeHIPTENSOR < time)? minTimeHIPTENSOR : time;
-    }
-
-    /*************************/
-
-    double transferedBytes = sizeC;
-    transferedBytes += ((float)alpha != 0.f) ? sizeA : 0;
-    transferedBytes += ((float)gamma != 0.f) ? sizeC : 0;
-    transferedBytes /= 1e9;
-    printf("hipTensor: %.2f GB/s\n", transferedBytes / minTimeHIPTENSOR);
-
-    //using hiptensor::HiptensorOptions;
-    //auto& options = HiptensorOptions::instance();
-    //options->setColdRuns(5);
-    //options->setHotRuns(50);
- 
+    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryExecute(handle, plan,
+                                           (void*)&alpha, A_d,
+                                           (void*)&gamma, C_d,
+                                                          D_d, nullptr /* stream */));
 #if !NDEBUG
     bool printElements = false;
     bool storeElements = false;

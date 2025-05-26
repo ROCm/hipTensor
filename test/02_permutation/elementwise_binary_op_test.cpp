@@ -429,22 +429,6 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            //CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
-            //                                                 &alphaValue,
-            //                                                 resource->deviceInput1().get(),
-            //                                                 descA,
-            //                                                 modeA.data(),
-            //                                                 &gammaValue,
-            //                                                 resource->deviceInput2().get(),
-            //                                                 descC,
-            //                                                 modeC.data(),
-            //                                                 resource->deviceOutput().get(),
-            //                                                 descD,
-            //                                                 modeD.data(),
-            //                                                 ACop,
-            //                                                 computeDataType,
-            //                                                 0 /* stream */));
-
             CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryExecute(handle, plan,
                                                         (void*)&alphaValue, 
                                                         resource->deviceInput1().get(),
