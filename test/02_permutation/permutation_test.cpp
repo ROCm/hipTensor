@@ -312,17 +312,43 @@ namespace hiptensor
             for(auto mode : modeB)
                 extentB.push_back(extent[mode]);
 
-            hiptensorStatus_t err;
+            //hiptensorStatus_t err;
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
             hiptensorTensorDescriptor_t descA = nullptr;
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-                handle, &descA, nmodeA, extentA.data(), NULL /* stride */, abDataType, 0));
+                handle, &descA, nmodeA, extentA.data(), nullptr /* stride */, abDataType, 0));
 
             hiptensorTensorDescriptor_t descB = nullptr;
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-                handle, &descB, nmodeB, extentB.data(), NULL /* stride */, abDataType, 0));
+                handle, &descB, nmodeB, extentB.data(), nullptr /* stride */, abDataType, 0));
+
+            hiptensorComputeDescriptor_t const descCompute = convertToComputeType(computeDataType);
+            hiptensorOperationDescriptor_t  desc;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePermutation(handle,
+                                                   &desc,
+                                                   descA,
+                                                   modeA.data(),
+                                                   Aop,
+                                                   descB,
+                                                   modeB.data(),
+                                                   descCompute));
+
+            const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
+            hiptensorPlanPreference_t  planPref;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(handle,
+                                                      &planPref,
+                                                      algo,
+                                                      HIPTENSOR_JIT_MODE_NONE));
+        
+            hiptensorPlan_t  plan;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
+                                            &plan,
+                                            desc,
+                                            planPref,
+                                            0 /* workspaceSizeLimit */));
+
 
             float alphaValue{};
             if(computeDataType == HIPTENSOR_R_16F)
@@ -339,16 +365,22 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
-                                                       &alphaValue,
-                                                       resource->deviceInput1().get(),
-                                                       descA,
-                                                       modeA.data(),
-                                                       resource->deviceOutput().get(),
-                                                       descB,
-                                                       modeB.data(),
-                                                       computeDataType,
-                                                       0 /* stream */));
+            //CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
+            //                                           &alphaValue,
+            //                                           resource->deviceInput1().get(),
+            //                                           descA,
+            //                                           modeA.data(),
+            //                                           resource->deviceOutput().get(),
+            //                                           descB,
+            //                                           modeB.data(),
+            //                                           computeDataType,
+            //                                           0 /* stream */));
+            CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
+                            plan,
+                            &alphaValue, 
+                            resource->deviceInput1().get(), 
+                            resource->deviceOutput().get(), 
+                            nullptr /* stream */));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))

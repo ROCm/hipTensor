@@ -228,3 +228,201 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t           h
     logger->logError("hiptensorElementwiseBinary", msg);
     return errorCode;
 }
+
+
+hiptensorStatus_t hiptensorElementwiseBinaryExecute(
+                 const hiptensorHandle_t handle, const hiptensorPlan_t plan,
+                 const void* alpha, const void* A,
+                 const void* gamma, const void* C,
+                                          void* D, hipStream_t stream)
+{
+    using hiptensor::Logger;
+    auto& logger = Logger::instance();
+
+    hiptensorOperationDescriptor_t opDes = plan -> mOpDesc;
+    const hiptensorTensorDescriptor_t descA = opDes -> mDescA;
+    const int32_t                    *modeA = opDes -> mModeA.data();
+    const hiptensorTensorDescriptor_t descC = opDes -> mDescC;
+    const int32_t                    *modeC = opDes -> mModeC.data();
+    const hiptensorTensorDescriptor_t descD = opDes -> mDescD;
+    const int32_t                    *modeD = opDes -> mModeD.data();
+    hiptensorOperator_t                opAC = opDes -> mOpAC;
+    const hiptensorDataType_t    typeScalar = opDes -> mScalarType;
+
+    // Log API access
+    char msg[2048];
+    snprintf(msg,
+             sizeof(msg),
+             "handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, "
+             "gamma=%p, C=%p, descC=%p, modeC=%p, "
+             "D=%p, descD=%p, modeD=%p, "
+             "opAC=0x%02X, typeScalar=0x%02X, stream=%p",
+             handle,
+             alpha,
+             A,
+             descA,
+             modeA,
+             gamma,
+             C,
+             descC,
+             modeC,
+             D,
+             descD,
+             modeD,
+             opAC,
+             (unsigned int)typeScalar,
+             stream);
+
+    logger->logAPITrace("hiptensorElementwiseBinary", msg);
+
+    hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, alpha);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, A);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descA);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeA);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, gamma);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, C);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descC);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeC);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, D);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, descD);
+    CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, modeD);
+
+    if(checkResult != HIPTENSOR_STATUS_SUCCESS)
+    {
+        return checkResult;
+    }
+
+    constexpr std::array<std::array<hiptensorDataType_t, 3>, 6> validDataTypes
+        = {{// typeA, typeC, typeScalar
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F},
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF},
+            {HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F}}};
+
+    std::array<hiptensorDataType_t, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
+    if(descC->mType != descD->mType
+       || std::none_of(validDataTypes.cbegin(),
+                       validDataTypes.cend(),
+                       [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))
+    {
+        auto errorCode = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        snprintf(msg,
+                 sizeof(msg),
+                 "Unsupported Data Type Error : The combination of data types for input tensors A, "
+                 "C, and D is not supported. "
+                 "See the link for details "
+                 "https://rocm.docs.amd.com/projects/hipTensor/en/docs-6.5.0/api-reference/"
+                 "api-reference.html "
+                 "(%s)",
+                 hiptensorGetErrorString(errorCode));
+        logger->logError("hiptensorElementwiseBinary", msg);
+        return errorCode;
+    }
+
+    float alphaF;
+    if(alpha != nullptr)
+    {
+        alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
+    }
+    float gammaF;
+    if(gamma != nullptr)
+    {
+        gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
+    }
+
+    auto& instances = hiptensor::PermutationSolutionInstances::instance();
+    auto  solutions = instances->query(
+        {alphaF, gammaF},
+        descA->mLengths,
+        {descA->mType, descC->mType},
+        {descD->mType},
+        {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
+        {{modeD, modeD + descD->mLengths.size()}},
+        {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+        hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
+
+    bool canRun = false;
+    for(auto pSolution : solutions)
+    {
+        canRun = pSolution->initArgs({alphaF, gammaF},
+                                     {descA->mLengths, descC->mLengths},
+                                     {descA->mStrides, descC->mStrides},
+                                     {std::vector<int32_t>(modeA, modeA + descA->mLengths.size()),
+                                      std::vector<int32_t>(modeC, modeC + descC->mLengths.size())},
+                                     {descD->mLengths},
+                                     {descD->mStrides},
+                                     {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
+                                     {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+                                     {A, C},
+                                     {D});
+
+        if(canRun)
+        {
+            // Perform permutation with timing if LOG_LEVEL_PERF_TRACE
+            if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
+            {
+                using hiptensor::HiptensorOptions;
+                auto& options = HiptensorOptions::instance();
+
+                auto time = (*pSolution)(StreamConfig{
+                    stream, // stream id
+                    true, // time_kernel
+                    0, // log_level
+                    options->coldRuns(), // cold_niters
+                    options->hotRuns(), // nrepeat
+                });
+                if(time < 0)
+                {
+                    return HIPTENSOR_STATUS_CK_ERROR;
+                }
+
+                auto flops = std::size_t(5) * pSolution->problemSize();
+                auto bytes = (hiptensor::hiptensorDataTypeSize(descA->mType)
+                              + hiptensor::hiptensorDataTypeSize(descC->mType)
+                              + hiptensor::hiptensorDataTypeSize(descD->mType))
+                             * pSolution->problemSize();
+
+                hiptensor::PerfMetrics metrics = {
+                    pSolution->uid(), // id
+                    pSolution->kernelName(), // name
+                    time, // avg time
+                    static_cast<float>(flops) / static_cast<float>(1.E9) / time, // tflops
+                    static_cast<float>(bytes) / static_cast<float>(1.E6) / time // BW
+                };
+
+                // log perf metrics (not name/id)
+                snprintf(msg,
+                         sizeof(msg),
+                         "KernelId: %lu KernelName: %s, %0.3f ms, %0.3f TFlops/s, %0.3f GB/s",
+                         metrics.mKernelUid,
+                         metrics.mKernelName.c_str(),
+                         metrics.mAvgTimeMs,
+                         metrics.mTflops,
+                         metrics.mBandwidth);
+                logger->logPerformanceTrace("hiptensorElementwiseBinary", msg);
+            }
+            // Perform permutation without timing
+            else
+            {
+                if((*pSolution)(StreamConfig{stream, false}) < 0)
+                {
+                    return HIPTENSOR_STATUS_CK_ERROR;
+                }
+            }
+
+            return HIPTENSOR_STATUS_SUCCESS;
+        }
+    }
+
+    auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+    snprintf(msg,
+             sizeof(msg),
+             "Selected kernel is unable to solve the problem (%s)",
+             hiptensorGetErrorString(errorCode));
+    logger->logError("hiptensorElementwiseBinary", msg);
+    return errorCode;
+}

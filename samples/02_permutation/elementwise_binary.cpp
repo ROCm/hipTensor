@@ -38,6 +38,39 @@
 
 #include "common.hpp"
 
+struct GPUTimer
+{
+    GPUTimer() 
+    {
+        CHECK_HIP_ERROR(hipEventCreate(&start_));
+        CHECK_HIP_ERROR(hipEventCreate(&stop_));
+        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
+    }
+
+    ~GPUTimer() 
+    {
+        CHECK_HIP_ERROR(hipEventDestroy(start_));
+        CHECK_HIP_ERROR(hipEventDestroy(stop_));
+    }
+
+    void start() 
+    {
+        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
+    }
+
+    float seconds() 
+    {
+        CHECK_HIP_ERROR(hipEventRecord(stop_, nullptr));
+        CHECK_HIP_ERROR(hipEventSynchronize(stop_));
+        float time;
+        CHECK_HIP_ERROR(hipEventElapsedTime(&time, start_, stop_));
+        return static_cast<float>(time * 1e-3);
+    }
+
+private:
+    hipEvent_t start_, stop_;
+};
+
 int main()
 {
     if(!isF32Supported())
@@ -54,10 +87,14 @@ int main()
     hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
     hiptensorDataType_t typeC       = HIPTENSOR_R_32F;
     hiptensorDataType_t typeD       = HIPTENSOR_R_32F;
-    hiptensorDataType_t typeCompute = HIPTENSOR_R_32F;
+    //hiptensorDataType_t typeCompute = HIPTENSOR_R_32F;
+    hiptensorComputeDescriptor_t const descCompute = HIPTENSOR_COMPUTE_DESC_32F;
+
+    floatTypeCompute alpha = (floatTypeCompute)1.0f;
+    floatTypeCompute gamma = (floatTypeCompute)2.0f;
 
     /**********************
-	  \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+     * Computing: D_{c,w,h} = alpha * A_{w,h,c}  + gamma * C_{w,h,c}
      **********************/
 
     std::vector<int> modeA{'w', 'h', 'c'};
@@ -112,6 +149,10 @@ int main()
     CHECK_HIP_ERROR(hipHostMalloc((void**)&C, sizeof(floatTypeC) * elementsC));
     CHECK_HIP_ERROR(hipHostMalloc((void**)&D, sizeof(floatTypeD) * elementsD));
 
+    /*******************
+     * Initialize data
+     *******************/
+
     for(size_t i = 0; i < elementsA; i++)
     {
         A[i] = (float)i;
@@ -121,10 +162,17 @@ int main()
     CHECK_HIP_ERROR(hipMemcpy(A_d, A, sizeA, hipMemcpyDefault));
     CHECK_HIP_ERROR(hipMemcpy(C_d, C, sizeC, hipMemcpyDefault));
 
-    hiptensorStatus_t err;
+    /*************************
+     * hipTensor
+     *************************/
+
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
+
+    /**********************
+     * Create Tensor Descriptors
+     **********************/
 
     hiptensorTensorDescriptor_t descA = nullptr;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
@@ -138,29 +186,82 @@ int main()
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
         handle, &descD, nmodeD, extentD.data(), nullptr /* stride */, typeD, 0));
 
-    using hiptensor::HiptensorOptions;
-    auto& options = HiptensorOptions::instance();
-    options->setColdRuns(5);
-    options->setHotRuns(50);
-    const floatTypeCompute alpha = 1.0f;
-    const floatTypeCompute gamma = 2.0f;
+    /*******************************
+     * Create Elementwise Binary Descriptor
+     *******************************/
 
-    CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinary(handle,
-                                                     &alpha,
-                                                     A_d,
-                                                     descA,
-                                                     modeA.data(),
-                                                     &gamma,
-                                                     C_d,
-                                                     descC,
-                                                     modeC.data(),
-                                                     D_d,
-                                                     descD,
-                                                     modeD.data(),
-                                                     HIPTENSOR_OP_ADD,
-                                                     typeCompute,
-                                                     0 /* stream */));
+    hiptensorOperationDescriptor_t  desc;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateElementwiseBinary(handle, &desc,
+                                                 descA, modeA.data(), /* unary operator A  */ HIPTENSOR_OP_IDENTITY,
+                                                 descC, modeC.data(), /* unary operator C  */ HIPTENSOR_OP_IDENTITY,
+                                                 descD, modeD.data(), /* unary operator AC */ HIPTENSOR_OP_ADD,
+                                                 descCompute));
 
+    /*****************************
+     * Optional (but recommended): ensure that the scalar type is correct.
+     *****************************/
+
+    hiptensorDataType_t scalarType;
+    CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorGetAttribute(handle, desc,
+                                                         HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE,
+                                                         (void*)&scalarType,
+                                                         sizeof(scalarType)));
+
+    assert(scalarType == CUTENSOR_R_32F);
+
+    /**************************
+    * Set the algorithm to use
+    ***************************/
+
+    const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
+
+    hiptensorPlanPreference_t  planPref;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(handle,
+                                              &planPref,
+                                              algo,
+                                              HIPTENSOR_JIT_MODE_NONE));
+
+    /**************************
+     * Create Plan
+     **************************/
+
+    hiptensorPlan_t  plan;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
+                                    &plan,
+                                    desc,
+                                    planPref,
+                                    0 /* workspaceSizeLimit */));
+
+    /**********************
+     * Run
+     **********************/
+
+    double minTimeHIPTENSOR = 1e100;
+    for (int i = 0; i < 3; i++)
+    {
+        GPUTimer timer;
+        timer.start();
+        CHECK_HIPTENSOR_ERROR(hiptensorElementwiseBinaryExecute(handle, plan,
+                                               (void*)&alpha, A_d,
+                                               (void*)&gamma, C_d,
+                                                              D_d, nullptr /* stream */));
+        auto time = timer.seconds();
+        minTimeHIPTENSOR = (minTimeHIPTENSOR < time)? minTimeHIPTENSOR : time;
+    }
+
+    /*************************/
+
+    double transferedBytes = sizeC;
+    transferedBytes += ((float)alpha != 0.f) ? sizeA : 0;
+    transferedBytes += ((float)gamma != 0.f) ? sizeC : 0;
+    transferedBytes /= 1e9;
+    printf("hipTensor: %.2f GB/s\n", transferedBytes / minTimeHIPTENSOR);
+
+    //using hiptensor::HiptensorOptions;
+    //auto& options = HiptensorOptions::instance();
+    //options->setColdRuns(5);
+    //options->setHotRuns(50);
+ 
 #if !NDEBUG
     bool printElements = false;
     bool storeElements = false;
@@ -213,21 +314,13 @@ int main()
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
-    if(descA)
-    {
-        hiptensorDestroyTensorDescriptor(descA);
-        descA = nullptr;
-    }
-    if(descC)
-    {
-        hiptensorDestroyTensorDescriptor(descC);
-        descC = nullptr;
-    }
-    if(descD)
-    {
-        hiptensorDestroyTensorDescriptor(descD);
-        descD = nullptr;
-    }
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
+
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(C);
     HIPTENSOR_FREE_HOST(D);

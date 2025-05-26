@@ -309,6 +309,9 @@ struct hiptensorOperationDescriptor
     hiptensorTensorDescriptor_t mDescD;
     std::vector<int32_t>        mModeD;
 
+    hiptensorOperator_t         mOpAC;
+    hiptensorOperator_t         mOpABC;
+
     hiptensorComputeDescriptor_t mDescCompute;
 };
 

@@ -111,6 +111,82 @@ hiptensorStatus_t
                                              void*                                   buf,
                                              size_t                                  sizeInBytes);
 
+/**
+ * \brief This function creates an operation descriptor for a tensor permutation.
+ *
+ * \details The tensor permutation has the following general form:
+ * \f[ B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha op_A(A_{\Pi^A(i_0,i_1,...,i_n)}) \f]
+ *
+ * Consequently, this function performs an out-of-place tensor permutation and is a specialization of \ref hiptensorCreateElementwiseBinary.
+ *
+ * Where
+ *    - A and B are multi-mode tensors (of arbitrary data types),
+ *    - \f$\Pi^A, \Pi^B\f$ are permutation operators that permute the modes of A, B respectively,
+ *    - \f$op_A\f$ is an unary element-wise operators (e.g., IDENTITY, SQR, CONJUGATE), and
+ *    - \f$\Psi\f$ is specified in the tensor descriptor descA.
+ *
+ * Broadcasting (of a mode) can be achieved by simply omitting that mode from the respective tensor.
+ *
+ * Modes may appear in any order. The only <b>restrictions</b> are:
+ *    - modes that appear in A _must_ also appear in the output tensor.
+ *    - each mode may appear in each tensor at most once.
+ *
+ * Supported data-type combinations are:
+ *
+ * \verbatim embed:rst:leading-asterisk
+ * +--------------------+--------------------+-------------------------------+
+ * |      typeA         |      typeB         |   descCompute                 |
+ * +====================+====================+===============================+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_16F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_COMPUTE_DESC_16BF  |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_64F   |  HIPTENSOR_R_64F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_64F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_R_64F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_C_32F   |  HIPTENSOR_C_32F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_C_64F   |  HIPTENSOR_C_64F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_C_32F   |  HIPTENSOR_C_64F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +--------------------+--------------------+-------------------------------+
+ * |  HIPTENSOR_C_64F   |  HIPTENSOR_C_32F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +--------------------+--------------------+-------------------------------+
+ * \endverbatim
+ *
+ * \param[in] handle Opaque handle holding hipTENSOR's library context.
+ * \param[out] desc This opaque struct gets allocated and filled with the information that encodes the requested permutation.
+ * \param[in] descA The descriptor that holds information about the data type, modes, and strides of A.
+ * \param[in] modeA Array of size descA->numModes that holds the names of the modes of A (e.g., if A_{a,b,c} => modeA = {'a','b','c'})
+ * \param[in] opA Unary operator that will be applied to each element of A before it is further processed. The original data of this tensor remains unchanged.
+ * \param[in] descB The descriptor that holds information about the data type, modes, and strides of B.
+ * \param[in] modeB Array of size descB->numModes that holds the names of the modes of B
+ * \param[in] descCompute Determines the precision in which this operations is performed.
+ * \retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \remarks calls asynchronous functions, no reentrant, and thread-safe
+ */
+hiptensorStatus_t hiptensorCreatePermutation(
+                 const hiptensorHandle_t handle, hiptensorOperationDescriptor_t* desc,
+                 const hiptensorTensorDescriptor_t descA, const int32_t modeA[], hiptensorOperator_t opA,
+                 const hiptensorTensorDescriptor_t descB, const int32_t modeB[],
+                 const hiptensorComputeDescriptor_t descCompute);
+
 hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
                                                 hiptensorPlanPreference_t* pref,
                                                 hiptensorAlgo_t            algo,
@@ -193,6 +269,93 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t           handle,
                                        const int32_t                     modeB[],
                                        const hiptensorDataType_t         typeScalar,
                                        const hipStream_t                 stream);
+//! @brief Tensor permutation
+//! @details This function computes the permuation operation:
+//! \f[
+//! B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)})
+//! \f]
+//! @param[in] handle Opaque handle holding hipTensor's library context.
+//! @param[in] plan Opaque handle holding all information about the desired tensor permutation (created by \ref hiptensorCreatePermutation followed by \ref hiptensorCreatePlan).
+//! @param[in] alpha Scaling factor for A of the type typeScalar. Pointer to the host memory.
+//! If alpha is zero, A is not read and the corresponding unary operator is not applied.
+//! @param[in] A Multi-mode tensor of type typeA with nmodeA modes. Pointer to the GPU-accessible memory.
+//! @param[in,out] B Multi-mode tensor of type typeB with nmodeB modes. Pointer to the GPU-accessible memory.
+//! @param[in] stream HIP stream to perform all operations.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+hiptensorStatus_t  hiptensorPermute(const hiptensorHandle_t handle, 
+                                    const hiptensorPlan_t plan,
+                                    const void* alpha, 
+                                    const void* A,
+                                    void* B, 
+                                    const hipStream_t stream);
+
+/**
+ * \brief This function creates an operation descriptor for an elementwise binary operation.
+ *
+ * \details The binary operation has the following general form:
+ * \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+ *
+ * Call \ref hiptensorElementwiseBinaryExecute to perform the actual operation.
+ *
+ * Supported data-type combinations are:
+ *
+ * \verbatim embed:rst:leading-asterisk
+ * +-------------------+-------------------+------------------------------+
+ * |     typeA         |     typeC         |  descCompute                 |
+ * +===================+===================+==============================+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_16F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_COMPUTE_DESC_16BF  |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_64F   |  HIPTENSOR_R_64F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_C_32F   |  HIPTENSOR_C_32F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_C_64F   |  HIPTENSOR_C_64F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_32F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_R_64F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +-------------------+-------------------+------------------------------+
+ * |  HIPTENSOR_C_64F   |  HIPTENSOR_C_32F   |  HIPTENSOR_COMPUTE_DESC_64F   |
+ * +-------------------+-------------------+------------------------------+
+ * \endverbatim
+ *
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[out] desc This opaque struct gets allocated and filled with the information that encodes the requested elementwise operation.
+ * \param[in] descA The descriptor that holds the information about the data type, modes, and strides of A.
+ * \param[in] modeA Array (in host memory) of size descA->numModes that holds the names of the modes of A (e.g., if A_{a,b,c} => modeA = {'a','b','c'}). The modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to \ref hiptensorCreateTensorDescriptor.
+ * \param[in] opA Unary operator that will be applied to each element of A before it is further processed. The original data of this tensor remains unchanged.
+ * \param[in] descC The descriptor that holds information about the data type, modes, and strides of C.
+ * \param[in] modeC Array (in host memory) of size descC->numModes that holds the names of the modes of C. The modeC[i] corresponds to extent[i] and stride[i] of the \ref hiptensorCreateTensorDescriptor.
+ * \param[in] opC Unary operator that will be applied to each element of C before it is further processed. The original data of this tensor remains unchanged.
+ * \param[in] descD The descriptor that holds information about the data type, modes, and strides of D. Notice that we currently request descD and descC to be identical.
+ * \param[in] modeD Array (in host memory) of size descD->numModes that holds the names of the modes of D. The modeD[i] corresponds to extent[i] and stride[i] of the \ref hiptensorCreateTensorDescriptor.
+ * \param[in] opAC Element-wise binary operator (see \f$\Phi_{AC}\f$ above).
+ * \param[in] descCompute Determines the precision in which this operations is performed.
+ * \retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \remarks calls asynchronous functions, no reentrant, and thread-safe
+ */
+hiptensorStatus_t hiptensorCreateElementwiseBinary(
+                 const hiptensorHandle_t handle, hiptensorOperationDescriptor_t* desc,
+                 const hiptensorTensorDescriptor_t descA, const int32_t modeA[], hiptensorOperator_t opA,
+                 const hiptensorTensorDescriptor_t descC, const int32_t modeC[], hiptensorOperator_t opC,
+                 const hiptensorTensorDescriptor_t descD, const int32_t modeD[],
+                 hiptensorOperator_t opAC,
+                 const hiptensorComputeDescriptor_t descCompute);
+
 
 //! @brief Performs an element-wise tensor operation on two input tensors.
 //!
@@ -242,6 +405,127 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t           h
                                              hiptensorOperator_t               opAC,
                                              hiptensorDataType_t               typeScalar,
                                              hipStream_t                       stream);
+
+                                             
+/**
+ * \brief Performs an element-wise tensor operation for two input tensors (see \ref hiptensorCreateElementwiseBinary)
+ *
+ * \details This function performs a element-wise tensor operation of the form:
+ * \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+ *
+ * See \ref hiptensorCreateElementwiseBinary() for details.
+ *
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[in] plan Opaque handle holding all information about the desired elementwise operation (created by \ref hiptensorCreateElementwiseBinary followed by \ref hiptensorCreatePlan).
+ * \param[in] alpha Scaling factor for A (see \ref hiptensorOperationDescriptorGetAttribute(desc, HIPTENSOR_OPERATION_SCALAR_TYPE) to query the expected data type). Pointer to the host memory. If alpha is zero, A is not read and the corresponding unary operator is not applied.
+ * \param[in] A Multi-mode tensor (described by `descA` as part of \ref hiptensorCreateElementwiseBinary). Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
+ * \param[in] gamma Scaling factor for C (see \ref hiptensorOperationDescriptorGetAttribute(desc, HIPTENSOR_OPERATION_SCALAR_TYPE) to query the expected data type). Pointer to the host memory. If gamma is zero, C is not read and the corresponding unary operator is not applied.
+ * \param[in] C Multi-mode tensor (described by `descC` as part of \ref hiptensorCreateElementwiseBinary). Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
+ * \param[out] D Multi-mode tensor (described by `descD` as part of \ref hiptensorCreateElementwiseBinary). Pointer to the GPU-accessible memory (`C` and `D` may be identical, if and only if `descC == descD`).
+ * \param[in] stream The CUDA stream used to perform the operation.
+ * \retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \remarks calls asynchronous functions, no reentrant, and thread-safe
+ */
+hiptensorStatus_t hiptensorElementwiseBinaryExecute(
+                 const hiptensorHandle_t handle, const hiptensorPlan_t plan,
+                 const void* alpha, const void* A,
+                 const void* gamma, const void* C,
+                                          void* D, hipStream_t stream);
+
+/**
+ * \brief This function creates an operation descriptor that encodes an elementwise trinary operation.
+ *
+ * \details Said trinary operation has the following general form:
+ * \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{ABC}(\Phi_{AB}(\alpha op_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \beta op_B(B_{\Pi^B(i_0,i_1,...,i_n)})), \gamma op_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+ *
+ * Where
+ *    - A,B,C,D are multi-mode tensors (of arbitrary data types).
+ *    - \f$\Pi^A, \Pi^B, \Pi^C \f$ are permutation operators that permute the modes of A, B, and C respectively.
+ *    - \f$op_{A},op_{B},op_{C}\f$ are unary element-wise operators (e.g., IDENTITY, CONJUGATE).
+ *    - \f$\Phi_{ABC}, \Phi_{AB}\f$ are binary element-wise operators (e.g., ADD, MUL, MAX, MIN).
+ *
+ * Notice that the broadcasting (of a mode) can be achieved by simply omitting that mode from the respective tensor.
+ *
+ * Moreover, modes may appear in any order, giving users a greater flexibility. The only <b>restrictions</b> are:
+ *    - modes that appear in A or B _must_ also appear in the output tensor; a mode that only appears in the input would be contracted and such an operation would be covered by either \ref hiptensorContract or \ref hiptensorReduce.
+ *    - each mode may appear in each tensor at most once.
+ *
+ * Input tensors may be read even if the value
+ * of the corresponding scalar is zero.
+ *
+ * Examples:
+ *    - \f$ D_{a,b,c,d} = A_{b,d,a,c}\f$
+ *    - \f$ D_{a,b,c,d} = 2.2 * A_{b,d,a,c} + 1.3 * B_{c,b,d,a}\f$
+ *    - \f$ D_{a,b,c,d} = 2.2 * A_{b,d,a,c} + 1.3 * B_{c,b,d,a} + C_{a,b,c,d}\f$
+ *    - \f$ D_{a,b,c,d} = min((2.2 * A_{b,d,a,c} + 1.3 * B_{c,b,d,a}), C_{a,b,c,d})\f$
+ *
+ * Call \ref hiptensorElementwiseTrinaryExecute to perform the actual operation.
+ *
+ * Please use \ref hiptensorDestroyOperationDescriptor to deallocated the descriptor once it is no longer used.
+ *
+ * Supported data-type combinations are:
+ *
+ * \verbatim embed:rst:leading-asterisk
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |     typeA         |     typeB         |     typeC         |  descCompute               |
+ * +===================+===================+===================+============================+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_16F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_32F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_COMPUTE_DESC_16BF|
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_R_16BF  |  HIPTENSOR_COMPUTE_DESC_32F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_32F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_32F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_64F   |  HIPTENSOR_R_64F   |  HIPTENSOR_R_64F   |  HIPTENSOR_COMPUTE_DESC_64F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_C_32F   |  HIPTENSOR_C_32F   |  HIPTENSOR_C_32F   |  HIPTENSOR_COMPUTE_DESC_32F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_C_64F   |  HIPTENSOR_C_64F   |  HIPTENSOR_C_64F   |  HIPTENSOR_COMPUTE_DESC_64F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_32F   |  HIPTENSOR_R_32F   |  HIPTENSOR_R_16F   |  HIPTENSOR_COMPUTE_DESC_32F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_R_64F   |  HIPTENSOR_R_64F   |  HIPTENSOR_R_32F   |  HIPTENSOR_COMPUTE_DESC_64F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * |  HIPTENSOR_C_64F   |  HIPTENSOR_C_64F   |  HIPTENSOR_C_32F   |  HIPTENSOR_COMPUTE_DESC_64F |
+ * +-------------------+-------------------+-------------------+----------------------------+
+ * \endverbatim
+ *
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[out] desc This opaque struct gets allocated and filled with the information that encodes the requested elementwise operation.
+ * \param[in] descA A descriptor that holds the information about the data type, modes, and strides of A.
+ * \param[in] modeA Array (in host memory) of size descA->numModes that holds the names of the modes of A (e.g., if \f$A_{a,b,c}\f$ then modeA = {'a','b','c'}). The modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to \ref hiptensorCreateTensorDescriptor.
+ * \param[in] opA Unary operator that will be applied to each element of A before it is further processed. The original data of this tensor remains unchanged.
+ * \param[in] descB A descriptor that holds information about the data type, modes, and strides of B.
+ * \param[in] modeB Array (in host memory) of size descB->numModes that holds the names of the modes of B. modeB[i] corresponds to extent[i] and stride[i] of the \ref hiptensorCreateTensorDescriptor
+ * \param[in] opB Unary operator that will be applied to each element of B before it is further processed. The original data of this tensor remains unchanged.
+ * \param[in] descC A descriptor that holds information about the data type, modes, and strides of C.
+ * \param[in] modeC Array (in host memory) of size descC->numModes that holds the names of the modes of C. The modeC[i] corresponds to extent[i] and stride[i] of the \ref hiptensorCreateTensorDescriptor.
+ * \param[in] opC Unary operator that will be applied to each element of C before it is further processed. The original data of this tensor remains unchanged.
+ * \param[in] descD A descriptor that holds information about the data type, modes, and strides of D. Notice that we currently request descD and descC to be identical.
+ * \param[in] modeD Array (in host memory) of size descD->numModes that holds the names of the modes of D. The modeD[i] corresponds to extent[i] and stride[i] of the \ref hiptensorCreateTensorDescriptor.
+ * \param[in] opAB Element-wise binary operator (see \f$\Phi_{AB}\f$ above).
+ * \param[in] opABC Element-wise binary operator (see \f$\Phi_{ABC}\f$ above).
+ * \param[in] descCompute Determines the precision in which this operations is performed.
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
+ * \retval HIPTENSOR_STATUS_ARCH_MISMATCH if the device is either not ready, or the target architecture is not supported.
+ * \remarks calls asynchronous functions, no reentrant, and thread-safe
+ */
+hiptensorStatus_t hiptensorCreateElementwiseTrinary(
+                 const hiptensorHandle_t handle, hiptensorOperationDescriptor_t* desc,
+                 const hiptensorTensorDescriptor_t descA, const int32_t modeA[], hiptensorOperator_t opA,
+                 const hiptensorTensorDescriptor_t descB, const int32_t modeB[], hiptensorOperator_t opB,
+                 const hiptensorTensorDescriptor_t descC, const int32_t modeC[], hiptensorOperator_t opC,
+                 const hiptensorTensorDescriptor_t descD, const int32_t modeD[],
+                 hiptensorOperator_t opAB, hiptensorOperator_t opABC,
+                 const hiptensorComputeDescriptor_t descCompute);
 
 //! @brief Performs an element-wise tensor operation with three input tensors.
 //!
@@ -296,6 +580,38 @@ hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t           
                                               hiptensorOperator_t               opABC,
                                               hiptensorDataType_t               typeScalar,
                                               const hipStream_t                 stream);
+
+/**
+ * \brief Performs an element-wise tensor operation for three input tensors (see \ref hiptensorCreateElementwiseTrinary)
+ *
+ * \details This function performs a element-wise tensor operation of the form:
+ * \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{ABC}(\Phi_{AB}(\alpha op_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \beta op_B(B_{\Pi^B(i_0,i_1,...,i_n)})), \gamma op_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+ *
+ * See \ref hiptensorCreateElementwiseTrinary() for details.
+ *
+ * \param[in] handle Opaque handle holding hipTensor's library context.
+ * \param[in] plan Opaque handle holding all information about the desired elementwise operation (created by \ref hiptensorCreateElementwiseTrinary followed by \ref hiptensorCreatePlan).
+ * \param[in] alpha Scaling factor for A (see \ref hiptensorOperationDescriptorGetAttribute(desc, HIPTENSOR_OPERATION_SCALAR_TYPE) to query the expected data type). Pointer to the host memory. If alpha is zero, A is not read and the corresponding unary operator is not applied.
+ * \param[in] A Multi-mode tensor (described by `descA` as part of \ref hiptensorCreateElementwiseTrinary). Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
+ * \param[in] beta Scaling factor for B (see \ref hiptensorOperationDescriptorGetAttribute(desc, HIPTENSOR_OPERATION_SCALAR_TYPE) to query the expected data type). Pointer to the host memory. If beta is zero, B is not read and the corresponding unary operator is not applied.
+ * \param[in] B Multi-mode tensor (described by `descB` as part of \ref hiptensorCreateElementwiseTrinary). Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
+ * \param[in] gamma Scaling factor for C (see \ref hiptensorOperationDescriptorGetAttribute(desc, HIPTENSOR_OPERATION_SCALAR_TYPE) to query the expected data type). Pointer to the host memory. If gamma is zero, C is not read and the corresponding unary operator is not applied.
+ * \param[in] C Multi-mode tensor (described by `descC` as part of \ref hiptensorCreateElementwiseTrinary). Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
+ * \param[out] D Multi-mode tensor (described by `descD` as part of \ref hiptensorCreateElementwiseTrinary). Pointer to the GPU-accessible memory (`C` and `D` may be identical, if and only if `descC == descD`).
+ * \param[in] stream The CUDA stream used to perform the operation.
+ * \retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
+ * \retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
+ * \retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
+ * \retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+ * \remarks calls asynchronous functions, no reentrant, and thread-safe
+ */
+hiptensorStatus_t hiptensorElementwiseTrinaryExecute(
+                 const hiptensorHandle_t handle, const hiptensorPlan_t plan,
+                 const void* alpha, const void* A,
+                 const void* beta,  const void* B,
+                 const void* gamma, const void* C,
+                                          void* D, hipStream_t stream);
+
 
 //! @brief Computes the alignment requirement for a given pointer and descriptor.
 //! @param[in] handle Opaque handle holding hipTensor's library context.

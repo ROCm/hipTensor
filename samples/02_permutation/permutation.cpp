@@ -38,6 +38,40 @@
 
 #include "common.hpp"
 
+struct GPUTimer
+{
+    GPUTimer() 
+    {
+        CHECK_HIP_ERROR(hipEventCreate(&start_));
+        CHECK_HIP_ERROR(hipEventCreate(&stop_));
+        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
+    }
+
+    ~GPUTimer() 
+    {
+        CHECK_HIP_ERROR(hipEventDestroy(start_));
+        CHECK_HIP_ERROR(hipEventDestroy(stop_));
+    }
+
+    void start() 
+    {
+        CHECK_HIP_ERROR(hipEventRecord(start_, nullptr));
+    }
+
+    float seconds() 
+    {
+        CHECK_HIP_ERROR(hipEventRecord(stop_, nullptr));
+        CHECK_HIP_ERROR(hipEventSynchronize(stop_));
+        float time;
+        CHECK_HIP_ERROR(hipEventElapsedTime(&time, start_, stop_));
+        return static_cast<float>(time * 1e-3);
+    }
+
+private:
+    hipEvent_t start_, stop_;
+};
+
+
 int main()
 {
     if(!isF32Supported())
@@ -52,7 +86,9 @@ int main()
 
     hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
     hiptensorDataType_t typeC       = HIPTENSOR_R_32F;
-    hiptensorDataType_t typeCompute = HIPTENSOR_R_32F;
+    hiptensorComputeDescriptor_t const descCompute = HIPTENSOR_COMPUTE_DESC_32F;
+
+    floatTypeCompute alpha = (floatTypeCompute)1.0f;
 
     /**********************
       B_{w, h, c, n} = 1.0 *  \textsl{IDENTITY}(A_{c, n, h, w})
@@ -97,6 +133,10 @@ int main()
     CHECK_HIP_ERROR(hipHostMalloc((void**)&A, sizeof(floatTypeA) * elementsA));
     CHECK_HIP_ERROR(hipHostMalloc((void**)&C, sizeof(floatTypeC) * elementsC));
 
+    /*******************
+     * Initialize data
+     *******************/
+
     for(size_t i = 0; i < elementsA; i++)
     {
         A[i] = (float)i;
@@ -104,34 +144,103 @@ int main()
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, A, sizeA, hipMemcpyDefault));
 
-    hiptensorStatus_t err;
+    /*************************
+     * hipTensor
+    *************************/
+
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
+    /**********************
+     * Create Tensor Descriptors
+     **********************/
+
     hiptensorTensorDescriptor_t descA;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), NULL /* stride */, typeA, 0));
+        handle, &descA, nmodeA, extentA.data(), nullptr /* stride */, typeA, 0));
 
     hiptensorTensorDescriptor_t descC;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        handle, &descC, nmodeC, extentC.data(), NULL /* stride */, typeC, 0));
+        handle, &descC, nmodeC, extentC.data(), nullptr /* stride */, typeC, 0));
 
-    using hiptensor::HiptensorOptions;
-    auto& options = HiptensorOptions::instance();
-    options->setColdRuns(5);
-    options->setHotRuns(50);
-    const floatTypeCompute one = 1.0f;
-    CHECK_HIPTENSOR_ERROR(hiptensorPermutation(handle,
-                                               &one,
-                                               A_d,
-                                               descA,
-                                               modeA.data(),
-                                               C_d,
-                                               descC,
-                                               modeC.data(),
-                                               typeCompute,
-                                               0 /* stream */));
+    /*******************************
+     * Create Permutation Descriptor
+     *******************************/
+
+    hiptensorOperationDescriptor_t  desc;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePermutation(handle,
+                                           &desc,
+                                           descA,
+                                           modeA.data(),
+                                           HIPTENSOR_OP_IDENTITY,
+                                           descC,
+                                           modeC.data(),
+                                           descCompute));
+
+    /*****************************
+     * Optional (but recommended): ensure that the scalar type is correct.
+     *****************************/
+
+    hiptensorDataType_t scalarType;
+    CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorGetAttribute(handle, desc,
+                                                         HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE,
+                                                         (void*)&scalarType,
+                                                         sizeof(scalarType)));
+
+    assert(scalarType == HIPTENSOR_R_32F);
+
+    /**************************
+    * Set the algorithm to use
+    ***************************/
+
+    const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
+
+    hiptensorPlanPreference_t  planPref;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(handle,
+                                              &planPref,
+                                              algo,
+                                              HIPTENSOR_JIT_MODE_NONE));
+
+    /**************************
+     * Create Plan
+     **************************/
+
+    hiptensorPlan_t  plan;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
+                                    &plan,
+                                    desc,
+                                    planPref,
+                                    0 /* workspaceSizeLimit */));
+
+    /**********************
+     * Run
+     **********************/
+
+    double minTimeHIPTENSOR = 1e100;
+    for (int i = 0; i < 3; i++)
+    {
+        GPUTimer timer;
+        timer.start();
+
+        CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
+                        plan,
+                        &alpha, A_d, C_d, nullptr /* stream */));
+
+        auto time = timer.seconds();
+        minTimeHIPTENSOR = (minTimeHIPTENSOR < time) ? minTimeHIPTENSOR : time;
+    }
+
+    /*************************/
+
+    double transferedBytes = 2.0 * sizeC;
+    transferedBytes /= 1e9;
+    printf("cuTensor: %.2f GB/s\n", transferedBytes / minTimeHIPTENSOR);
+
+//    using hiptensor::HiptensorOptions;
+//    auto& options = HiptensorOptions::instance();
+//    options->setColdRuns(5);
+//    options->setHotRuns(50);
 
 #if !NDEBUG
     bool printElements = false;
@@ -174,16 +283,12 @@ int main()
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
-    if(descA)
-    {
-        hiptensorDestroyTensorDescriptor(descA);
-        descA = nullptr;
-    }
-    if(descC)
-    {
-        hiptensorDestroyTensorDescriptor(descC);
-        descC = nullptr;
-    }
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
+
     HIPTENSOR_FREE_HOST(A);
     HIPTENSOR_FREE_HOST(C);
     HIPTENSOR_FREE_DEVICE(A_d);
