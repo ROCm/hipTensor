@@ -486,10 +486,10 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
             CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryExecute(handle, plan,
-                                                (void*)&alpha, resource->deviceInput1().get(),
-                                                (void*)&beta , resource->deviceInput2().get(),
-                                                (void*)&gamma, resource->deviceInput3().get(),
-                                                               resource->deviceOutput().get(), 0));
+                                                (void*)&alphaValue, resource->deviceInput1().get(),
+                                                (void*)&betaValue , resource->deviceInput2().get(),
+                                                (void*)&gammaValue, resource->deviceInput3().get(),
+                                                                    resource->deviceOutput().get(), 0));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
