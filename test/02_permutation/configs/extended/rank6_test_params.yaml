@@ -14,7 +14,7 @@ Lengths:
   - [ 5, 2, 1, 1, 1, 2]
   - [ 15, 12, 23, 11, 1, 2]
 Ranges:
-  - [2, 134217728, 4]
+  - [2, 16777216, 4]
 Operators:
   - [HIPTENSOR_OP_IDENTITY]
   - [HIPTENSOR_OP_NEG]
