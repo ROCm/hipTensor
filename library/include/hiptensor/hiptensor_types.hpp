@@ -37,7 +37,7 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
-//! @breif hipTensor data types
+//! @brief hipTensor data types
 typedef enum hiptensorDataType_t
 {
     HIPTENSOR_R_32F      = 0,
