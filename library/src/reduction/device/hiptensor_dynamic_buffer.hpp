@@ -26,7 +26,6 @@
 #ifndef REDUCTION_DEVICE_HIPTENSOR_DYNAMIC_BUFFER
 #define REDUCTION_DEVICE_HIPTENSOR_DYNAMIC_BUFFER
 
-#include "amd_buffer_addressing.hpp"
 #include "c_style_pointer_cast.hpp"
 #include "ck/ck.hpp"
 #include "ck/utility/data_type.hpp"
