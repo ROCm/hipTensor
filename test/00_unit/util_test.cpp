@@ -138,8 +138,8 @@ TEST(workSizePrefToStringTest, UtilTest)
 {
     EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_MIN).c_str(),
                  "HIPTENSOR_WORKSPACE_MIN");
-    EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_RECOMMENDED).c_str(),
-                 "HIPTENSOR_WORKSPACE_RECOMMENDED");
+    EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_DEFAULT).c_str(),
+                 "HIPTENSOR_WORKSPACE_DEFAULT");
     EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_MAX).c_str(),
                  "HIPTENSOR_WORKSPACE_MAX");
 }

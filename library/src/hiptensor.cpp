@@ -313,12 +313,22 @@ hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
+hiptensorStatus_t contractionGetWorkspaceSize(const hiptensorHandle_t              handle,
+                                              const hiptensorOperationDescriptor_t desc,
+                                              const hiptensorPlanPreference_t      planPref,
+                                              const hiptensorWorksizePreference_t  workspacePref,
+                                              uint64_t* workspaceSizeEstimate);
 hiptensorStatus_t hiptensorEstimateWorkspaceSize(const hiptensorHandle_t              handle,
                                                  const hiptensorOperationDescriptor_t desc,
                                                  const hiptensorPlanPreference_t      planPref,
                                                  const hiptensorWorksizePreference_t  workspacePref,
                                                  uint64_t* workspaceSizeEstimate)
 {
+    if(desc->mOperationType == HIPTENSOR_CONTRACTION)
+    {
+        return contractionGetWorkspaceSize(
+            handle, desc, planPref, workspacePref, workspaceSizeEstimate);
+    }
     return HIPTENSOR_STATUS_SUCCESS;
 }
 

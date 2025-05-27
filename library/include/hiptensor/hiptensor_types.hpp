@@ -192,7 +192,7 @@ typedef enum
     //! At least one algorithm will be available
     HIPTENSOR_WORKSPACE_MIN = 1,
     //! The most suitable algorithm will be available
-    HIPTENSOR_WORKSPACE_RECOMMENDED = 2,
+    HIPTENSOR_WORKSPACE_DEFAULT = 2,
     //! All algorithms will be available
     HIPTENSOR_WORKSPACE_MAX = 3,
 

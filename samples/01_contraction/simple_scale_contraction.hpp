@@ -82,41 +82,6 @@ int scaleContractionSample(void* alpha)
         b_ns_ks_lengths.push_back(extent[mode]);
     }
 
-    hiptensorHandle_t handle;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
-
-    CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
-
-    /********************************************
-   * Initialize tensors with the input lengths *
-   ********************************************/
-    hiptensorTensorDescriptor_t a_ms_ks;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
-                                                          &a_ms_ks,
-                                                          nmodeA,
-                                                          a_ms_ks_lengths.data(),
-                                                          NULL, /*stride*/
-                                                          typeA,
-                                                          0));
-
-    hiptensorTensorDescriptor_t b_ns_ks;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
-                                                          &b_ns_ks,
-                                                          nmodeB,
-                                                          b_ns_ks_lengths.data(),
-                                                          NULL, /*stride*/
-                                                          typeB,
-                                                          0));
-
-    hiptensorTensorDescriptor_t d_ms_ns;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
-                                                          &d_ms_ns,
-                                                          nmodeD,
-                                                          d_ms_ns_lengths.data(),
-                                                          NULL, /*stride*/
-                                                          typeD,
-                                                          0));
-
     /**********************
    * Allocating data
    **********************/
@@ -191,53 +156,95 @@ int scaleContractionSample(void* alpha)
     /************************************************
    * Retrieve the memory alignment for each tensor
    ************************************************/
-    uint32_t alignmentRequirementA;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, A_d, a_ms_ks, &alignmentRequirementA));
+    uint32_t alignmentRequirement
+        = 1; // TODO Should be alignment of the global-memory device pointers
+    hiptensorHandle_t handle;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
-    uint32_t alignmentRequirementB;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, B_d, b_ns_ks, &alignmentRequirementB));
+    CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
-    uint32_t alignmentRequirementD;
-    CHECK_HIPTENSOR_ERROR(
-        hiptensorGetAlignmentRequirement(handle, D_d, d_ms_ns, &alignmentRequirementD));
+    /********************************************
+   * Initialize tensors with the input lengths *
+   ********************************************/
+    hiptensorTensorDescriptor_t a_ms_ks;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &a_ms_ks,
+                                                          nmodeA,
+                                                          a_ms_ks_lengths.data(),
+                                                          NULL, /*stride*/
+                                                          typeA,
+                                                          alignmentRequirement));
+
+    hiptensorTensorDescriptor_t b_ns_ks;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &b_ns_ks,
+                                                          nmodeB,
+                                                          b_ns_ks_lengths.data(),
+                                                          NULL, /*stride*/
+                                                          typeB,
+                                                          alignmentRequirement));
+
+    hiptensorTensorDescriptor_t d_ms_ns;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
+                                                          &d_ms_ns,
+                                                          nmodeD,
+                                                          d_ms_ns_lengths.data(),
+                                                          NULL, /*stride*/
+                                                          typeD,
+                                                          alignmentRequirement));
 
     /*******************************
    * Create Contraction Descriptor
    *******************************/
 
-    hiptensorContractionDescriptor_t desc;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(handle,
-                                                             &desc,
-                                                             a_ms_ks,
-                                                             modeA.data(),
-                                                             alignmentRequirementA,
-                                                             b_ns_ks,
-                                                             modeB.data(),
-                                                             alignmentRequirementB,
-                                                             nullptr,
-                                                             nullptr,
-                                                             0,
-                                                             d_ms_ns,
-                                                             modeD.data(),
-                                                             alignmentRequirementD,
-                                                             typeCompute));
+    hiptensorOperationDescriptor_t desc;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(handle,
+                                                     &desc,
+                                                     a_ms_ks,
+                                                     modeA.data(),
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     b_ns_ks,
+                                                     modeB.data(),
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     nullptr,
+                                                     nullptr,
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     d_ms_ns,
+                                                     modeD.data(),
+                                                     typeCompute));
+
+#if 0 // TODO
+    hiptensorDataType_t scalarType;
+    CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorGetAttribute(handle,
+                desc,
+                HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE,
+                (void*)&scalarType,
+                sizeof(scalarType)));
+#endif
     /**************************
    * Set the algorithm to use
    ***************************/
-
-    hiptensorContractionFind_t find;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionFind(handle, &find, HIPTENSOR_ALGO_ACTOR_CRITIC));
+    hiptensorPlanPreference_t planPref;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(
+        handle, &planPref, HIPTENSOR_ALGO_ACTOR_CRITIC, HIPTENSOR_JIT_MODE_NONE));
 
     /**********************
    * Query workspace
    **********************/
 
     uint64_t worksize = 0;
-    CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
-        handle, &desc, &find, HIPTENSOR_WORKSPACE_RECOMMENDED, &worksize));
+    CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(
+        handle, desc, planPref, HIPTENSOR_WORKSPACE_DEFAULT, &worksize));
 
+    /**************************
+   * Create Contraction Plan
+   **************************/
+    std::cout << "Initializing contraction plan..." << std::endl;
+
+    hiptensorPlan_t plan;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle, &plan, desc, planPref, worksize));
+
+    // TODO query actually used workspace
     void* workspace = nullptr;
 
     if(worksize > 0)
@@ -245,27 +252,10 @@ int scaleContractionSample(void* alpha)
         CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&workspace), worksize));
     }
 
-    /**************************
-   * Create Contraction Plan
-   **************************/
-    std::cout << "Initializing contraction plan..." << std::endl;
-
-    hiptensorContractionPlan_t plan;
-    CHECK_HIPTENSOR_ERROR(hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
-
     std::cout << "Launching contraction kernel..." << std::endl;
 
-    CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
-                                               &plan,
-                                               alpha,
-                                               A_d,
-                                               B_d,
-                                               nullptr,
-                                               nullptr,
-                                               D_d,
-                                               workspace,
-                                               worksize,
-                                               0 /* stream */));
+    CHECK_HIPTENSOR_ERROR(hiptensorContract(
+        handle, plan, alpha, A_d, B_d, nullptr, nullptr, D_d, workspace, worksize, 0 /* stream */));
 
 #if !NDEBUG
     bool printElements = false;
@@ -319,19 +309,21 @@ int scaleContractionSample(void* alpha)
 #endif
 
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
     if(a_ms_ks)
     {
-        hiptensorDestroyTensorDescriptor(a_ms_ks);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(a_ms_ks));
         a_ms_ks = nullptr;
     }
     if(b_ns_ks)
     {
-        hiptensorDestroyTensorDescriptor(b_ns_ks);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(b_ns_ks));
         b_ns_ks = nullptr;
     }
     if(d_ms_ns)
     {
-        hiptensorDestroyTensorDescriptor(d_ms_ns);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(d_ms_ns));
         d_ms_ns = nullptr;
     }
 

@@ -308,6 +308,8 @@ namespace hiptensor
 
             CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(logLevel));
 
+            uint32_t alignmentRequirement
+                = 1; // TODO Should be alignment of the global-memory device pointers
             // lengths - m, n, u, v, h, k
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
                 handle,
@@ -316,7 +318,7 @@ namespace hiptensor
                 a_ms_ks_lengths.data(),
                 strides.empty() ? NULL : a_ms_ks_strides.data(), /*stride*/
                 ADataType,
-                0));
+                alignmentRequirement));
 
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
                 handle,
@@ -325,7 +327,7 @@ namespace hiptensor
                 b_ns_ks_lengths.data(),
                 strides.empty() ? NULL : b_ns_ks_strides.data(), /*stride*/
                 BDataType,
-                0));
+                alignmentRequirement));
 
             if(CDataType != NONE_TYPE)
             {
@@ -336,7 +338,7 @@ namespace hiptensor
                     cd_ms_ns_lengths.data(),
                     strides.empty() ? NULL : cd_ms_ns_strides.data(), /*stride*/
                     CDataType,
-                    0));
+                    alignmentRequirement));
             }
 
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
@@ -346,7 +348,7 @@ namespace hiptensor
                 cd_ms_ns_lengths.data(),
                 strides.empty() ? NULL : cd_ms_ns_strides.data(), /*stride*/
                 DDataType,
-                0));
+                alignmentRequirement));
 
             std::tuple<int32_t, int32_t, int32_t, int32_t> elementBytes(
                 hiptensorDataTypeSize(ADataType),
@@ -462,77 +464,46 @@ namespace hiptensor
 
             resource->copyDeviceToHostAll(elementBytes);
 
-            uint32_t alignmentRequirementA;
-            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                handle, resource->deviceA().get(), a_ms_ks, &alignmentRequirementA));
-
-            uint32_t alignmentRequirementB;
-            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                handle, resource->deviceB().get(), b_ns_ks, &alignmentRequirementB));
-
-            uint32_t alignmentRequirementC = 0;
-            if(CDataType != NONE_TYPE)
-            {
-                CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                    handle, resource->deviceC().get(), c_ms_ns, &alignmentRequirementC));
-            }
-
-            uint32_t alignmentRequirementD;
-            CHECK_HIPTENSOR_ERROR(hiptensorGetAlignmentRequirement(
-                handle, resource->deviceD().get(), d_ms_ns, &alignmentRequirementD));
-
-            CHECK_HIPTENSOR_ERROR(hiptensorInitContractionDescriptor(
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(
                 handle,
                 &desc,
                 a_ms_ks,
                 a_ms_ks_modes.data(),
-                alignmentRequirementA,
+                HIPTENSOR_OP_IDENTITY,
                 b_ns_ks,
                 b_ns_ks_modes.data(),
-                alignmentRequirementB,
+                HIPTENSOR_OP_IDENTITY,
                 (CDataType != NONE_TYPE) ? c_ms_ns : nullptr,
                 (CDataType != NONE_TYPE) ? cd_ms_ns_modes.data() : nullptr,
-                alignmentRequirementC,
+                HIPTENSOR_OP_IDENTITY,
                 d_ms_ns,
                 cd_ms_ns_modes.data(),
-                alignmentRequirementD,
                 computeType));
+#if 0 // TODO
+            hiptensorDataType_t scalarType;
+            CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorGetAttribute(handle,
+                        desc,
+                        HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE,
+                        (void*)&scalarType,
+                        sizeof(scalarType)));
+#endif
+
             /**************************
             * Set the algorithm to use
             ***************************/
 
-            CHECK_HIPTENSOR_ERROR(hiptensorInitContractionFind(handle, &find, algorithm));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(
+                handle, &planPref, algorithm, HIPTENSOR_JIT_MODE_NONE));
 
             /**********************
             * Query workspace
             **********************/
-            CHECK_HIPTENSOR_ERROR(hiptensorContractionGetWorkspaceSize(
-                handle, &desc, &find, workSizePref, &worksize));
+            CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(
+                handle, desc, planPref, HIPTENSOR_WORKSPACE_DEFAULT, &worksize));
 
             if(worksize > 0)
             {
                 CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&workspace), worksize));
-            }
-
-            if(a_ms_ks)
-            {
-                hiptensorDestroyTensorDescriptor(a_ms_ks);
-                a_ms_ks = nullptr;
-            }
-            if(b_ns_ks)
-            {
-                hiptensorDestroyTensorDescriptor(b_ns_ks);
-                b_ns_ks = nullptr;
-            }
-            if(c_ms_ns)
-            {
-                hiptensorDestroyTensorDescriptor(c_ms_ns);
-                c_ms_ns = nullptr;
-            }
-            if(d_ms_ns)
-            {
-                hiptensorDestroyTensorDescriptor(d_ms_ns);
-                d_ms_ns = nullptr;
             }
         }
     }
@@ -781,8 +752,7 @@ namespace hiptensor
             writeVal(&alphaBuf, computeType, ScalarData(computeType, alpha[0], alpha[1]));
             writeVal(&betaBuf, computeType, ScalarData(computeType, beta[0], beta[1]));
 
-            CHECK_HIPTENSOR_ERROR(
-                hiptensorInitContractionPlan(handle, &plan, &desc, &find, worksize));
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle, &plan, desc, planPref, worksize));
 
             auto resource = getResource();
 
@@ -791,17 +761,17 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorContraction(handle,
-                                                       &plan,
-                                                       (void*)&alphaBuf,
-                                                       resource->deviceA().get(),
-                                                       resource->deviceB().get(),
-                                                       (void*)&betaBuf,
-                                                       resource->deviceC().get(),
-                                                       resource->deviceD().get(),
-                                                       workspace,
-                                                       worksize,
-                                                       0 /* stream */));
+            CHECK_HIPTENSOR_ERROR(hiptensorContract(handle,
+                                                    plan,
+                                                    (void*)&alphaBuf,
+                                                    resource->deviceA().get(),
+                                                    resource->deviceB().get(),
+                                                    (void*)&betaBuf,
+                                                    resource->deviceC().get(),
+                                                    resource->deviceD().get(),
+                                                    workspace,
+                                                    worksize,
+                                                    0 /* stream */));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
@@ -858,7 +828,7 @@ namespace hiptensor
 
             if(testOptions->performValidation())
             {
-                CHECK_HIPTENSOR_ERROR(hiptensorContractionReference(&plan,
+                CHECK_HIPTENSOR_ERROR(hiptensorContractionReference(plan,
                                                                     (void*)&alphaBuf,
                                                                     resource->hostA().get(),
                                                                     resource->hostB().get(),
@@ -867,16 +837,16 @@ namespace hiptensor
                                                                     resource->hostD().get(),
                                                                     a_ms_ks->mLengths,
                                                                     a_ms_ks->mStrides,
-                                                                    desc.mTensorMode[0],
+                                                                    desc->mModeA,
                                                                     b_ns_ks->mLengths,
                                                                     b_ns_ks->mStrides,
-                                                                    desc.mTensorMode[1],
+                                                                    desc->mModeB,
                                                                     d_ms_ns->mLengths,
                                                                     d_ms_ns->mStrides,
-                                                                    desc.mTensorMode[2],
+                                                                    desc->mModeC,
                                                                     d_ms_ns->mLengths,
                                                                     d_ms_ns->mStrides,
-                                                                    desc.mTensorMode[2],
+                                                                    desc->mModeD,
                                                                     ADataType,
                                                                     BDataType,
                                                                     CDataType,
@@ -991,6 +961,31 @@ namespace hiptensor
         if(mRunFlag)
         {
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
+
+            if(a_ms_ks)
+            {
+                hiptensorDestroyTensorDescriptor(a_ms_ks);
+                a_ms_ks = nullptr;
+            }
+            if(b_ns_ks)
+            {
+                hiptensorDestroyTensorDescriptor(b_ns_ks);
+                b_ns_ks = nullptr;
+            }
+            if(c_ms_ns)
+            {
+                hiptensorDestroyTensorDescriptor(c_ms_ns);
+                c_ms_ns = nullptr;
+            }
+            if(d_ms_ns)
+            {
+                hiptensorDestroyTensorDescriptor(d_ms_ns);
+                d_ms_ns = nullptr;
+            }
+            HIPTENSOR_FREE_DEVICE(workspace);
         }
     }
 

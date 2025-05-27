@@ -52,11 +52,11 @@ Operators:
 Worksize Prefs:
   # Workspace size selection:
     # HIPTENSOR_WORKSPACE_MIN - At least one algorithm will be available
-    # HIPTENSOR_WORKSPACE_RECOMMENDED - The most suitable algorithm will be available
+    # HIPTENSOR_WORKSPACE_DEFAULT - The most suitable algorithm will be available
     # HIPTENSOR_WORKSPACE_MAX - All algorithms will be available
 
   # Example:
-  - HIPTENSOR_WORKSPACE_RECOMMENDED
+  - HIPTENSOR_WORKSPACE_DEFAULT
 Alphas:
   # Scaling parameter for A*B of data type 'typeCompute'
 
