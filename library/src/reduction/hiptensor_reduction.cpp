@@ -236,6 +236,7 @@ hiptensorStatus_t hiptensorReduce(
         // Composable Kernels (CK) does not handle reductions where the input and
         // output tensors maintain the same rank. For those scenarios, employ
         // elementwise binary operations.
+        plan->mOpDesc->mOpAC = HIPTENSOR_OP_ADD;
         return hiptensorElementwiseBinaryExecute(handle, plan,
                                                  alpha, A,
                                                  beta,  C,
