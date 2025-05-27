@@ -368,8 +368,8 @@ namespace hiptensor
         {
         case HIPTENSOR_WORKSPACE_MIN:
             return "HIPTENSOR_WORKSPACE_MIN";
-        case HIPTENSOR_WORKSPACE_RECOMMENDED:
-            return "HIPTENSOR_WORKSPACE_RECOMMENDED";
+        case HIPTENSOR_WORKSPACE_DEFAULT:
+            return "HIPTENSOR_WORKSPACE_DEFAULT";
         case HIPTENSOR_WORKSPACE_MAX:
             return "HIPTENSOR_WORKSPACE_MAX";
         default:

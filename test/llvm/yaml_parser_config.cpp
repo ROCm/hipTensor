@@ -187,8 +187,7 @@ namespace llvm
             static void enumeration(IO& io, hiptensorWorksizePreference_t& value)
             {
                 io.enumCase(value, "HIPTENSOR_WORKSPACE_MIN", HIPTENSOR_WORKSPACE_MIN);
-                io.enumCase(
-                    value, "HIPTENSOR_WORKSPACE_RECOMMENDED", HIPTENSOR_WORKSPACE_RECOMMENDED);
+                io.enumCase(value, "HIPTENSOR_WORKSPACE_DEFAULT", HIPTENSOR_WORKSPACE_DEFAULT);
                 io.enumCase(value, "HIPTENSOR_WORKSPACE_MAX", HIPTENSOR_WORKSPACE_MAX);
             }
         };

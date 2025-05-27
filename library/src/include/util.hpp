@@ -80,6 +80,16 @@ namespace hiptensor
         return std::accumulate(lengths.begin(), lengths.end(), T{1}, std::multiplies<T>());
     }
 
+    inline std::vector<std::size_t> getTensorLengths(const hiptensorTensorDescriptor_t desc)
+    {
+        return desc ? desc->mLengths : std::vector<std::size_t>{};
+    }
+
+    inline std::vector<std::size_t> getTensorStrides(const hiptensorTensorDescriptor_t desc)
+    {
+        return desc ? desc->mStrides : std::vector<std::size_t>{};
+    }
+
     // Get the rank of a tensor based on its strides
     // Ex: a_ms_ks_lengths = [5, 6, 3, 4]
     //     a_ms_ks_strides = [1, 5, 30, 90] (col major)

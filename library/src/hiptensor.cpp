@@ -278,6 +278,7 @@ hiptensorStatus_t
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
+
 hiptensorStatus_t hiptensorCreatePermutation(
                  const hiptensorHandle_t handle, hiptensorOperationDescriptor_t* desc,
                  const hiptensorTensorDescriptor_t descA, const int32_t modeA[], hiptensorOperator_t opA,
@@ -416,13 +417,16 @@ hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   hand
                                                   hiptensorPlanPreference_t pref,
                                                   hiptensorAlgo_t           algo,
                                                   hiptensorJitMode_t        jitMode);
+
 hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
                                                 hiptensorPlanPreference_t* pref,
                                                 hiptensorAlgo_t            algo,
                                                 hiptensorJitMode_t         jitMode)
 {
-    *pref = new hiptensorPlanPreference();
-    return contractionCreatePlanPreference(handle, *pref, algo, jitMode);
+    *pref                        = new hiptensorPlanPreference();
+    (*pref)->mSelectionAlgorithm = algo;
+    (*pref)->mJit                = jitMode;
+    return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorDestroyPlanPreference(hiptensorPlanPreference_t pref)
@@ -449,15 +453,30 @@ hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
+hiptensorStatus_t contractionGetWorkspaceSize(const hiptensorHandle_t              handle,
+                                              const hiptensorOperationDescriptor_t desc,
+                                              const hiptensorPlanPreference_t      planPref,
+                                              const hiptensorWorksizePreference_t  workspacePref,
+                                              uint64_t* workspaceSizeEstimate);
 hiptensorStatus_t hiptensorEstimateWorkspaceSize(const hiptensorHandle_t              handle,
                                                  const hiptensorOperationDescriptor_t desc,
                                                  const hiptensorPlanPreference_t      planPref,
                                                  const hiptensorWorksizePreference_t  workspacePref,
                                                  uint64_t* workspaceSizeEstimate)
 {
+    if(desc->mOperationType == HIPTENSOR_CONTRACTION)
+    {
+        return contractionGetWorkspaceSize(
+            handle, desc, planPref, workspacePref, workspaceSizeEstimate);
+    }
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
+hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t                      plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit);
 hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handle,
                                       hiptensorPlan_t*                     plan,
                                       const hiptensorOperationDescriptor_t desc,
@@ -468,6 +487,11 @@ hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handl
     (*plan)->mRequiredWorkspace = workspaceSizeLimit;
     (*plan)->mOpDesc            = desc;
     (*plan)->mPref              = pref;
+
+    if(desc->mOperationType == HIPTENSOR_CONTRACTION)
+    {
+        return contractionInitPlan(handle, *plan, desc, pref, workspaceSizeLimit);
+    }
     return HIPTENSOR_STATUS_SUCCESS;
 }
 

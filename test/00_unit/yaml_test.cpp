@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     auto yee          = hiptensor::ContractionTestParams{};
     yee.mLogLevelMask = (hiptensorLogLevel_t)(HIPTENSOR_LOG_LEVEL_OFF);
     yee.mDataTypes    = {
-        // clang-format off
+           // clang-format off
                 {HIPTENSOR_R_32F, HIPTENSOR_R_32F, hiptensor::NONE_TYPE, HIPTENSOR_R_32F, HIPTENSOR_R_32F}, // scale F32
                 {HIPTENSOR_C_32F, HIPTENSOR_C_32F, hiptensor::NONE_TYPE, HIPTENSOR_C_32F, HIPTENSOR_C_32F}, // scale F32 Complex
                 {HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F}, // bilinear F32
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
         = {HIPTENSOR_ALGO_DEFAULT, HIPTENSOR_ALGO_DEFAULT_PATIENT, HIPTENSOR_ALGO_ACTOR_CRITIC};
     yee.mOperators = {HIPTENSOR_OP_IDENTITY};
     yee.mWorkSizePrefs
-        = {HIPTENSOR_WORKSPACE_RECOMMENDED, HIPTENSOR_WORKSPACE_MIN, HIPTENSOR_WORKSPACE_MAX};
+        = {HIPTENSOR_WORKSPACE_DEFAULT, HIPTENSOR_WORKSPACE_MIN, HIPTENSOR_WORKSPACE_MAX};
     yee.mLogLevelMask
         = {hiptensorLogLevel_t(HIPTENSOR_LOG_LEVEL_ERROR | HIPTENSOR_LOG_LEVEL_PERF_TRACE)};
     yee.mProblemLengths

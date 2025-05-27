@@ -37,7 +37,7 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
-//! @breif hipTensor data types
+//! @brief hipTensor data types
 typedef enum hiptensorDataType_t
 {
     HIPTENSOR_R_32F      = 0,
@@ -192,7 +192,7 @@ typedef enum
     //! At least one algorithm will be available
     HIPTENSOR_WORKSPACE_MIN = 1,
     //! The most suitable algorithm will be available
-    HIPTENSOR_WORKSPACE_RECOMMENDED = 2,
+    HIPTENSOR_WORKSPACE_DEFAULT = 2,
     //! All algorithms will be available
     HIPTENSOR_WORKSPACE_MAX = 3,
 
@@ -278,6 +278,15 @@ typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
 
 // TODO shouble be private start
 
+typedef enum hiptensorOperationType_t
+{
+    HIPTENSOR_CONTRACTION         = 0,
+    HIPTENSOR_PERMUTATION         = 1,
+    HIPTENSOR_ELEMENTWISE_BINARY  = 2,
+    HIPTENSOR_ELEMENTWISE_TRINARY = 3,
+    HIPTENSOR_REDUCTION           = 4,
+} hiptensorOperationType_t;
+
 //! @brief hipTensor's library context
 struct hiptensorHandle
 {
@@ -294,6 +303,8 @@ struct hiptensorOperationDescriptor
     uint32_t            mPaddingRighT;
     void*               mPaddingValue;
 
+    hiptensorOperationType_t    mOperationType;
+    int32_t                     mContractionOpId;
     hiptensorTensorDescriptor_t mDescA;
     std::vector<int32_t>        mModeA;
     hiptensorOperator_t         mOpA;
@@ -333,6 +344,7 @@ struct hiptensorPlanPreference
     hiptensorAlgo_t mSelectionAlgorithm;
     //! A vector of the solver candidates
     std::vector<void*> mCandidates;
+    void*              mSolution;
 };
 
 //! @brief Structure representing a tensor descriptor
