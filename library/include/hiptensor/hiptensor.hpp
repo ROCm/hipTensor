@@ -481,7 +481,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
 //! @param[in] descD Must be identical to descC for now.
 //! @param[in] modeD Must be identical to modeC for now.
 //! @param[in] opReduce binary operator used to reduce elements of A.
-//! @param[in] typeCompute All arithmetic is performed using this data type.
+//! @param[in] descCompute All arithmetic is performed using this data type.
 //!
 //! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if operation is not supported.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
@@ -502,6 +502,8 @@ hiptensorStatus_t hiptensorCreateReduction(const hiptensorHandle_t            ha
 
 //! @brief Performs the tensor reduction that is encoded by `plan`.
 //!
+//! @param[in] handle An opaque handle representing the hipTensor library context.
+//! @param[in] plan Opaque handle with elementwise operation information.
 //! @param[in] alpha Scaling for A. Its data type is determined by 'descCompute'. Pointer to the host memory.
 //! @param[in] A Pointer to the data corresponding to A in device memory. Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
 //! @param[in] beta Scaling for C. Its data type is determined by 'descCompute'. Pointer to the host memory.
