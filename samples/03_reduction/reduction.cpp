@@ -170,20 +170,12 @@ int main()
      **********************/
 
     uint64_t worksize = 0;
-    CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
-                                                             A_d,
-                                                             descA,
-                                                             modeA.data(),
-                                                             C_d,
-                                                             descC,
-                                                             modeC.data(),
-                                                             C_d,
-                                                             descC,
-                                                             modeC.data(),
-                                                             opReduce,
-                                                             typeCompute,
-                                                             &worksize));
-
+    const hiptensorWorksizePreference_t workspacePref = HIPTENSOR_WORKSPACE_DEFAULT;
+    CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(handle,
+                                          desc,
+                                          planPref,
+                                          workspacePref,
+                                          &worksize));
     void* work = nullptr;
     if(worksize > 0)
     {
@@ -193,7 +185,7 @@ int main()
             worksize = 0;
         }
     }
-  
+
     /**************************
      * Create Plan
      **************************/

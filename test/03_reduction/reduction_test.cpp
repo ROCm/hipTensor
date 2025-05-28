@@ -447,19 +447,13 @@ namespace hiptensor
                 hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
             uint64_t worksize = 0;
-            CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
-                                                                     resource->deviceA().get(),
-                                                                     descA,
-                                                                     modeA.data(),
-                                                                     resource->deviceC().get(),
-                                                                     descC,
-                                                                     modeC.data(),
-                                                                     resource->deviceD().get(),
-                                                                     descD,
-                                                                     modeD.data(),
-                                                                     reduceOp,
-                                                                     computeDataType,
-                                                                     &worksize));
+            const hiptensorWorksizePreference_t workspacePref = HIPTENSOR_WORKSPACE_DEFAULT;
+            CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(handle,
+                                                  desc,
+                                                  planPref,
+                                                  workspacePref,
+                                                  &worksize));
+ 
             resource->setupWorkspace(worksize);
 
             hiptensorPlan_t plan;

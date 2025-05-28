@@ -246,11 +246,6 @@ hiptensorReduce
 
 .. doxygenfunction::  hiptensorReduce
 
-hiptensorReductionGetWorkspaceSize
-----------------------------------
-
-.. doxygenfunction::  hiptensorReductionGetWorkspaceSize
-
 Logging functions
 =================
 

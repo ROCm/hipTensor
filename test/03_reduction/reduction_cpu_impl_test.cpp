@@ -102,20 +102,29 @@ auto reduceWithCpu(hiptensorDataType_t          typeA,
 
     const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
 
+    hiptensorOperationDescriptor_t desc;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreateReduction(
+                          handle, &desc,
+                          descA, modeA.data(), HIPTENSOR_OP_IDENTITY,
+                          descC, modeC.data(), HIPTENSOR_OP_IDENTITY,
+                          descC, modeC.data(),
+                          opReduce, typeCompute));
+
+    const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
+    hiptensorPlanPreference_t planPref;
+    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(
+                               handle,
+                               &planPref,
+                               algo,
+                               HIPTENSOR_JIT_MODE_NONE));
+
     uint64_t worksize = 0;
-    CHECK_HIPTENSOR_ERROR(hiptensorReductionGetWorkspaceSize(handle,
-                                                             aArray.data(),
-                                                             descA,
-                                                             modeA.data(),
-                                                             cArray.data(),
-                                                             descC,
-                                                             modeC.data(),
-                                                             cArray.data(),
-                                                             descC,
-                                                             modeC.data(),
-                                                             opReduce,
-                                                             typeCompute,
-                                                             &worksize));
+    const hiptensorWorksizePreference_t workspacePref = HIPTENSOR_WORKSPACE_DEFAULT;
+    CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(handle,
+                                          desc,
+                                          planPref,
+                                          workspacePref,
+                                          &worksize));
 
     double alphaValue{};
     double betaValue{};
