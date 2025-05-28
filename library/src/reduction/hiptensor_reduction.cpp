@@ -145,24 +145,6 @@ namespace
     }
 }
 
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t           handle,
-                                                     const void*                       A,
-                                                     const hiptensorTensorDescriptor_t descA,
-                                                     const int32_t                     modeA[],
-                                                     const void*                       C,
-                                                     const hiptensorTensorDescriptor_t descC,
-                                                     const int32_t                     modeC[],
-                                                     const void*                       D,
-                                                     const hiptensorTensorDescriptor_t descD,
-                                                     const int32_t                     modeD[],
-                                                     hiptensorOperator_t               opReduce,
-                                                     hiptensorComputeDescriptor_t      typeCompute,
-                                                     uint64_t* workspaceSize)
-{
-    *workspaceSize = 0;
-    return HIPTENSOR_STATUS_SUCCESS;
-}
-
 hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
                                   const hiptensorPlan_t   plan,
                                   const void*             alpha,
