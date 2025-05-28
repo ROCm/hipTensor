@@ -50,8 +50,8 @@ int main()
     typedef float floatTypeC;
     typedef float floatTypeCompute;
 
-    hiptensorDataType_t typeA       = HIPTENSOR_R_32F;
-    hiptensorDataType_t typeC       = HIPTENSOR_R_32F;
+    hiptensorDataType_t                typeA       = HIPTENSOR_R_32F;
+    hiptensorDataType_t                typeC       = HIPTENSOR_R_32F;
     hiptensorComputeDescriptor_t const descCompute = HIPTENSOR_COMPUTE_DESC_32F;
 
     floatTypeCompute alpha = (floatTypeCompute)1.0f;
@@ -134,27 +134,27 @@ int main()
      * Create Permutation Descriptor
      *******************************/
 
-    hiptensorOperationDescriptor_t  desc;
+    hiptensorOperationDescriptor_t desc;
     CHECK_HIPTENSOR_ERROR(hiptensorCreatePermutation(handle,
-                                           &desc,
-                                           descA,
-                                           modeA.data(),
-                                           HIPTENSOR_OP_IDENTITY,
-                                           descC,
-                                           modeC.data(),
-                                           descCompute));
+                                                     &desc,
+                                                     descA,
+                                                     modeA.data(),
+                                                     HIPTENSOR_OP_IDENTITY,
+                                                     descC,
+                                                     modeC.data(),
+                                                     descCompute));
 
     /*****************************
      * Optional (but recommended): ensure that the scalar type is correct.
      *****************************/
 
-    hiptensorDataType_t scalarType;
-    CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorGetAttribute(handle, desc,
-                                                         HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE,
-                                                         (void*)&scalarType,
-                                                         sizeof(scalarType)));
-
-    assert(scalarType == HIPTENSOR_R_32F);
+    // hiptensorDataType_t scalarType;
+    // CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorGetAttribute(handle, desc,
+    // HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE,
+    // (void*)&scalarType,
+    // sizeof(scalarType)));
+    //
+    // assert(scalarType == HIPTENSOR_R_32F);
 
     /**************************
     * Set the algorithm to use
@@ -162,22 +162,17 @@ int main()
 
     const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
 
-    hiptensorPlanPreference_t  planPref;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(handle,
-                                              &planPref,
-                                              algo,
-                                              HIPTENSOR_JIT_MODE_NONE));
+    hiptensorPlanPreference_t planPref;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
     /**************************
      * Create Plan
      **************************/
 
-    hiptensorPlan_t  plan;
-    CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
-                                    &plan,
-                                    desc,
-                                    planPref,
-                                    0 /* workspaceSizeLimit */));
+    hiptensorPlan_t plan;
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorCreatePlan(handle, &plan, desc, planPref, 0 /* workspaceSizeLimit */));
 
     /**********************
      * Run
@@ -187,9 +182,7 @@ int main()
     options->setColdRuns(5);
     options->setHotRuns(50);
 
-    CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
-                    plan,
-                    &alpha, A_d, C_d, nullptr /* stream */))    
+    CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle, plan, &alpha, A_d, C_d, nullptr /* stream */))
 
 #if !NDEBUG
     bool printElements = false;

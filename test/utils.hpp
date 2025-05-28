@@ -43,6 +43,7 @@
 #include <hiptensor/internal/hiptensor_utility.hpp>
 #include <hiptensor/internal/types.hpp>
 
+#include "data_types.hpp"
 #include "device/common.hpp"
 #include "hip_resource.hpp"
 #include "type_traits.hpp"

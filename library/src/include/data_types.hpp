@@ -38,6 +38,97 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+typedef enum hiptensorOperationType_t
+{
+    HIPTENSOR_CONTRACTION         = 0,
+    HIPTENSOR_PERMUTATION         = 1,
+    HIPTENSOR_ELEMENTWISE_BINARY  = 2,
+    HIPTENSOR_ELEMENTWISE_TRINARY = 3,
+    HIPTENSOR_REDUCTION           = 4,
+} hiptensorOperationType_t;
+
+//! @brief hipTensor's library context
+struct hiptensorHandle
+{
+    int64_t fields[512];
+};
+
+struct hiptensorOperationDescriptor
+{
+    int32_t             mTag;
+    hiptensorDataType_t mScalarType;
+    float               mFlops;
+    float               mMovedBytes;
+    uint32_t            mPaddingLeft;
+    uint32_t            mPaddingRighT;
+    void*               mPaddingValue;
+
+    hiptensorOperationType_t    mOperationType;
+    int32_t                     mContractionOpId;
+    hiptensorTensorDescriptor_t mDescA;
+    std::vector<int32_t>        mModeA;
+    hiptensorOperator_t         mOpA;
+
+    hiptensorTensorDescriptor_t mDescB;
+    std::vector<int32_t>        mModeB;
+    hiptensorOperator_t         mOpB;
+
+    hiptensorTensorDescriptor_t mDescC;
+    std::vector<int32_t>        mModeC;
+    hiptensorOperator_t         mOpC;
+
+    hiptensorTensorDescriptor_t mDescD;
+    std::vector<int32_t>        mModeD;
+
+    hiptensorOperator_t         mOpAC;
+    hiptensorOperator_t         mOpABC;
+
+    hiptensorComputeDescriptor_t mDescCompute;
+};
+
+struct hiptensorPlan
+{
+    uint64_t                       mRequiredWorkspace;
+    hiptensorOperationDescriptor_t mOpDesc;
+    hiptensorPlanPreference_t      mPref;
+};
+
+struct hiptensorPlanPreference
+{
+    hiptensorAutotuneMode_t mAutotuneMode;
+    hiptensorCacheMode_t    mCacheMode;
+    int32_t                 mIncrementalCount;
+    int32_t                 mKernelrank;
+    hiptensorJitMode_t      mJit;
+
+    hiptensorAlgo_t mSelectionAlgorithm;
+    //! A vector of the solver candidates
+    std::vector<void*> mCandidates;
+    void*              mSolution;
+};
+
+//! @brief Structure representing a tensor descriptor
+//!
+//! Represents a descriptor for the tensor with the given properties of
+//! data type, lengths, strides and element-wise unary operation.
+//! Constructed with hiptensorInitTensorDescriptor() function.
+struct hiptensorTensorDescriptor
+{
+    //! Data type of the tensors enum selection
+    hiptensorDataType_t mType;
+    //! Lengths of the tensor
+    std::vector<std::size_t> mLengths;
+    //! Strides of the tensor
+    std::vector<std::size_t> mStrides;
+    uint32_t                 mAlignmentRequirement;
+};
+
+bool inline operator==(const hiptensorTensorDescriptor& lhs, const hiptensorTensorDescriptor& rhs)
+{
+    return lhs.mType == rhs.mType && lhs.mLengths == rhs.mLengths && lhs.mStrides == rhs.mStrides
+           && lhs.mAlignmentRequirement == rhs.mAlignmentRequirement;
+}
+
 // clang-format on
 
 namespace hiptensor

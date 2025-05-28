@@ -40,40 +40,34 @@
 //! @brief hipTensor data types
 typedef enum hiptensorDataType_t
 {
-    HIPTENSOR_R_32F      = 0,
-    HIPTENSOR_R_64F      = 1,
-    HIPTENSOR_R_16F      = 2,
-    HIPTENSOR_R_8I       = 3,
-    HIPTENSOR_C_32F      = 4,
-    HIPTENSOR_C_64F      = 5,
-    HIPTENSOR_C_16F      = 6,
-    HIPTENSOR_C_8I       = 7,
-    HIPTENSOR_R_8U       = 8,
-    HIPTENSOR_C_8U       = 9,
-    HIPTENSOR_R_32I      = 10,
-    HIPTENSOR_C_32I      = 11,
-    HIPTENSOR_R_32U      = 12,
-    HIPTENSOR_C_32U      = 13,
-    HIPTENSOR_R_16BF     = 14,
-    HIPTENSOR_C_16BF     = 15,
-    HIPTENSOR_R_4I       = 16,
-    HIPTENSOR_C_4I       = 17,
-    HIPTENSOR_R_4U       = 18,
-    HIPTENSOR_C_4U       = 19,
-    HIPTENSOR_R_16I      = 20,
-    HIPTENSOR_C_16I      = 21,
-    HIPTENSOR_R_16U      = 22,
-    HIPTENSOR_C_16U      = 23,
-    HIPTENSOR_R_64I      = 24,
-    HIPTENSOR_C_64I      = 25,
-    HIPTENSOR_R_64U      = 26,
-    HIPTENSOR_C_64U      = 27,
-    HIPTENSOR_R_8F_E4M3  = 28,
-    HIPTENSOR_R_8F_E5M2  = 29,
-    HIPTENSOR_R_8F_UE8M0 = 30,
-    HIPTENSOR_R_6F_E2M3  = 31,
-    HIPTENSOR_R_6F_E3M2  = 32,
-    HIPTENSOR_R_4F_E2M1  = 33,
+    HIPTENSOR_R_32F  = 0,
+    HIPTENSOR_R_64F  = 1,
+    HIPTENSOR_R_16F  = 2,
+    HIPTENSOR_R_8I   = 3,
+    HIPTENSOR_C_32F  = 4,
+    HIPTENSOR_C_64F  = 5,
+    HIPTENSOR_C_16F  = 6,
+    HIPTENSOR_C_8I   = 7,
+    HIPTENSOR_R_8U   = 8,
+    HIPTENSOR_C_8U   = 9,
+    HIPTENSOR_R_32I  = 10,
+    HIPTENSOR_C_32I  = 11,
+    HIPTENSOR_R_32U  = 12,
+    HIPTENSOR_C_32U  = 13,
+    HIPTENSOR_R_16BF = 14,
+    HIPTENSOR_C_16BF = 15,
+    HIPTENSOR_R_4I   = 16,
+    HIPTENSOR_C_4I   = 17,
+    HIPTENSOR_R_4U   = 18,
+    HIPTENSOR_C_4U   = 19,
+    HIPTENSOR_R_16I  = 20,
+    HIPTENSOR_C_16I  = 21,
+    HIPTENSOR_R_16U  = 22,
+    HIPTENSOR_C_16U  = 23,
+    HIPTENSOR_R_64I  = 24,
+    HIPTENSOR_C_64I  = 25,
+    HIPTENSOR_R_64U  = 26,
+    HIPTENSOR_C_64U  = 27,
 } hiptensorDataType_t;
 
 //! @brief hipTensor status type enumeration
@@ -275,133 +269,5 @@ typedef struct hiptensorTensorDescriptor*    hiptensorTensorDescriptor_t;
 typedef void (*hiptensorLoggerCallback_t)(int32_t     logContext,
                                           const char* funcName,
                                           const char* msg);
-
-// TODO shouble be private start
-
-typedef enum hiptensorOperationType_t
-{
-    HIPTENSOR_CONTRACTION         = 0,
-    HIPTENSOR_PERMUTATION         = 1,
-    HIPTENSOR_ELEMENTWISE_BINARY  = 2,
-    HIPTENSOR_ELEMENTWISE_TRINARY = 3,
-    HIPTENSOR_REDUCTION           = 4,
-} hiptensorOperationType_t;
-
-//! @brief hipTensor's library context
-struct hiptensorHandle
-{
-    int64_t fields[512];
-};
-
-struct hiptensorOperationDescriptor
-{
-    int32_t             mTag;
-    hiptensorDataType_t mScalarType;
-    float               mFlops;
-    float               mMovedBytes;
-    uint32_t            mPaddingLeft;
-    uint32_t            mPaddingRighT;
-    void*               mPaddingValue;
-
-    hiptensorOperationType_t    mOperationType;
-    int32_t                     mContractionOpId;
-    hiptensorTensorDescriptor_t mDescA;
-    std::vector<int32_t>        mModeA;
-    hiptensorOperator_t         mOpA;
-
-    hiptensorTensorDescriptor_t mDescB;
-    std::vector<int32_t>        mModeB;
-    hiptensorOperator_t         mOpB;
-
-    hiptensorTensorDescriptor_t mDescC;
-    std::vector<int32_t>        mModeC;
-    hiptensorOperator_t         mOpC;
-
-    hiptensorTensorDescriptor_t mDescD;
-    std::vector<int32_t>        mModeD;
-
-    hiptensorOperator_t         mOpAC;
-    hiptensorOperator_t         mOpABC;
-
-    hiptensorComputeDescriptor_t mDescCompute;
-};
-
-struct hiptensorPlan
-{
-    uint64_t                       mRequiredWorkspace;
-    hiptensorOperationDescriptor_t mOpDesc;
-    hiptensorPlanPreference_t      mPref;
-};
-
-struct hiptensorPlanPreference
-{
-    hiptensorAutotuneMode_t mAutotuneMode;
-    hiptensorCacheMode_t    mCacheMode;
-    int32_t                 mIncrementalCount;
-    int32_t                 mKernelrank;
-    hiptensorJitMode_t      mJit;
-
-    hiptensorAlgo_t mSelectionAlgorithm;
-    //! A vector of the solver candidates
-    std::vector<void*> mCandidates;
-    void*              mSolution;
-};
-
-//! @brief Structure representing a tensor descriptor
-//!
-//! Represents a descriptor for the tensor with the given properties of
-//! data type, lengths, strides and element-wise unary operation.
-//! Constructed with hiptensorInitTensorDescriptor() function.
-struct hiptensorTensorDescriptor
-{
-    //! Data type of the tensors enum selection
-    hiptensorDataType_t mType;
-    //! Lengths of the tensor
-    std::vector<std::size_t> mLengths;
-    //! Strides of the tensor
-    std::vector<std::size_t> mStrides;
-    uint32_t                 mAlignmentRequirement;
-};
-
-//! @brief Structure representing a tensor contraction descriptor
-//!
-//! Represents contraction descriptor with the given properties of internal
-//! contraction op (either scale or bilinear), the internal compute type,
-//! as well as all of the input tensor descriptors, their alignment requirements
-//! and modes.
-//! Constructed with hiptensorInitContractionDescriptor() function.
-struct hiptensorContractionDescriptor_t
-{
-    //! Enum that differentiates the internal contraction operation
-    int32_t mContractionOpId;
-    //! Compute type for the contraction
-    hiptensorComputeDescriptor_t mComputeType;
-    //! Cache of tensor descriptors
-    std::vector<hiptensorTensorDescriptor> mTensorDesc;
-    //! Cache of alignment requirements
-    std::vector<uint32_t> mAlignmentReq;
-    //! Tensor modes
-    std::vector<std::vector<int32_t>> mTensorMode;
-};
-
-//! @brief hipTensor structure representing the contraction selection algorithm and candidates.
-struct hiptensorContractionFind_t
-{
-    //! Id of the selection algorithm
-    hiptensorAlgo_t mSelectionAlgorithm;
-    //! A vector of the solver candidates
-    std::vector<void*> mCandidates;
-};
-
-//! @brief hipTensor structure representing a contraction plan.
-//! Constructed with the hiptensorInitContractionPlan() function.
-struct hiptensorContractionPlan_t
-{
-    //! Final solution candidate
-    void* mSolution;
-    //! Contraction parameters
-    hiptensorContractionDescriptor_t mContractionDesc;
-};
-// TODO shouble be private end
 
 #endif // HIPTENSOR_TYPES_HPP

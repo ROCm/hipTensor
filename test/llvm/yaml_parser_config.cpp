@@ -40,7 +40,6 @@
 namespace hiptensor
 {
     struct NoneType;
-    static constexpr hiptensorDataType_t NONE_TYPE = (hiptensorDataType_t)31;
 }
 
 // namespace hiptensor

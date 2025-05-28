@@ -308,8 +308,7 @@ namespace hiptensor
 
             CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(logLevel));
 
-            uint32_t alignmentRequirement
-                = 1; // TODO Should be alignment of the global-memory device pointers
+            uint32_t alignmentRequirement = 1;
             // lengths - m, n, u, v, h, k
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
                 handle,

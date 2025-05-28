@@ -189,7 +189,7 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
                                       : hiptensor::ContractionOpId_t::SCALE);
 
     (*desc)->mTag          = 0;
-    (*desc)->mScalarType   = HIPTENSOR_R_32F; // TODO change to descCompute
+    (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops        = 0;
     (*desc)->mMovedBytes   = 0;
     (*desc)->mPaddingLeft  = 0;

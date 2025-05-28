@@ -164,8 +164,7 @@ int bilinearContractionSample(void* alpha, void* beta)
     /************************************************
    * Retrieve the memory alignment for each tensor
    ************************************************/
-    uint32_t alignmentRequirement
-        = 1; // TODO Should be alignment of the global-memory device pointers
+    uint32_t          alignmentRequirement = 1;
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
