@@ -286,6 +286,7 @@ hiptensorStatus_t hiptensorCreatePermutation(
                  const hiptensorComputeDescriptor_t descCompute)
 {
     *desc = new hiptensorOperationDescriptor();
+
     (*desc)->mTag = 0;
     (*desc)->mScalarType = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops = 0.0f;
@@ -293,6 +294,10 @@ hiptensorStatus_t hiptensorCreatePermutation(
     (*desc)->mPaddingLeft = 0u;
     (*desc)->mPaddingRighT = 0u;
     (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType = HIPTENSOR_PERMUTATION;
+    (*desc)->mContractionOpId = 0;
+
     (*desc)->mDescA = descA;
     (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
     (*desc)->mOpA = opA;
@@ -327,6 +332,10 @@ hiptensorStatus_t hiptensorCreateElementwiseBinary(
     (*desc)->mPaddingLeft = 0u;
     (*desc)->mPaddingRighT = 0u;
     (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType = HIPTENSOR_ELEMENTWISE_BINARY;
+    (*desc)->mContractionOpId = 0;
+
     (*desc)->mDescA = descA;
     (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
     (*desc)->mOpA = opA;
@@ -362,6 +371,10 @@ hiptensorStatus_t hiptensorCreateElementwiseTrinary(
     (*desc)->mPaddingLeft = 0u;
     (*desc)->mPaddingRighT = 0u;
     (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType = HIPTENSOR_ELEMENTWISE_TRINARY;
+    (*desc)->mContractionOpId = 0;
+
     (*desc)->mDescA = descA;
     (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
     (*desc)->mOpA = opA;
@@ -395,6 +408,10 @@ hiptensorStatus_t hiptensorCreateReduction(
     (*desc)->mPaddingLeft = 0u;
     (*desc)->mPaddingRighT = 0u;
     (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType = HIPTENSOR_REDUCTION;
+    (*desc)->mContractionOpId = 0;
+
     (*desc)->mDescA = descA;
     (*desc)->mModeA = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
     (*desc)->mOpA = opA;
