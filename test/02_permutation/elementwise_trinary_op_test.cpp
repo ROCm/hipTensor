@@ -415,30 +415,32 @@ namespace hiptensor
                                                                   HIPTENSOR_OP_IDENTITY));
 
             hiptensorComputeDescriptor_t const descCompute = convertToComputeType(computeDataType);
-            hiptensorOperationDescriptor_t desc;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreateElementwiseTrinary(handle, 
-                                                          &desc,
-                                                          descA, modeA.data(), Aop,
-                                                          descB, modeB.data(), Bop,
-                                                          descC, modeC.data(), Cop,
-                                                          descD, modeD.data(),
-                                                          ABop,
-                                                          ABCop,
-                                                          descCompute));
+            hiptensorOperationDescriptor_t     desc;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreateElementwiseTrinary(handle,
+                                                                    &desc,
+                                                                    descA,
+                                                                    modeA.data(),
+                                                                    Aop,
+                                                                    descB,
+                                                                    modeB.data(),
+                                                                    Bop,
+                                                                    descC,
+                                                                    modeC.data(),
+                                                                    Cop,
+                                                                    descD,
+                                                                    modeD.data(),
+                                                                    ABop,
+                                                                    ABCop,
+                                                                    descCompute));
 
-            const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
-            hiptensorPlanPreference_t  planPref;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(handle,
-                                                      &planPref,
-                                                      algo,
-                                                      HIPTENSOR_JIT_MODE_NONE));
-        
-            hiptensorPlan_t  plan;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
-                                            &plan,
-                                            desc,
-                                            planPref,
-                                            0 /*workspaceSizeEstimate*/));          
+            const hiptensorAlgo_t     algo = HIPTENSOR_ALGO_DEFAULT;
+            hiptensorPlanPreference_t planPref;
+            CHECK_HIPTENSOR_ERROR(
+                hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
+
+            hiptensorPlan_t plan;
+            CHECK_HIPTENSOR_ERROR(
+                hiptensorCreatePlan(handle, &plan, desc, planPref, 0 /*workspaceSizeEstimate*/));
 
             float alphaValue{};
             if(computeDataType == HIPTENSOR_R_16F)
@@ -485,11 +487,16 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventCreate(&stopEvent));
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
-            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryExecute(handle, plan,
-                                                (void*)&alphaValue, resource->deviceInput1().get(),
-                                                (void*)&betaValue , resource->deviceInput2().get(),
-                                                (void*)&gammaValue, resource->deviceInput3().get(),
-                                                                    resource->deviceOutput().get(), 0));
+            CHECK_HIPTENSOR_ERROR(hiptensorElementwiseTrinaryExecute(handle,
+                                                                     plan,
+                                                                     (void*)&alphaValue,
+                                                                     resource->deviceInput1().get(),
+                                                                     (void*)&betaValue,
+                                                                     resource->deviceInput2().get(),
+                                                                     (void*)&gammaValue,
+                                                                     resource->deviceInput3().get(),
+                                                                     resource->deviceOutput().get(),
+                                                                     0));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
@@ -543,14 +550,17 @@ namespace hiptensor
                         (const double*)resource->hostInput1().get(),
                         descA,
                         modeA.data(),
+                        Aop,
                         &betaValue,
                         (const double*)resource->hostInput2().get(),
                         descB,
                         modeB.data(),
+                        Bop,
                         &gammaValue,
                         (const double*)resource->hostInput3().get(),
                         descC,
                         modeC.data(),
+                        Cop,
                         (double*)resource->hostReference().get(),
                         descD,
                         modeD.data(),
@@ -574,14 +584,17 @@ namespace hiptensor
                         (const float*)resource->hostInput1().get(),
                         descA,
                         modeA.data(),
+                        Aop,
                         &betaValue,
                         (const float*)resource->hostInput2().get(),
                         descB,
                         modeB.data(),
+                        Bop,
                         &gammaValue,
                         (const float*)resource->hostInput3().get(),
                         descC,
                         modeC.data(),
+                        Cop,
                         (float*)resource->hostReference().get(),
                         descD,
                         modeD.data(),
@@ -604,14 +617,17 @@ namespace hiptensor
                         (const _Float16*)resource->hostInput1().get(),
                         descA,
                         modeA.data(),
+                        Aop,
                         &betaValue,
                         (const _Float16*)resource->hostInput2().get(),
                         descB,
                         modeB.data(),
+                        Bop,
                         &gammaValue,
                         (const _Float16*)resource->hostInput3().get(),
                         descC,
                         modeC.data(),
+                        Cop,
                         (_Float16*)resource->hostReference().get(),
                         descD,
                         modeD.data(),

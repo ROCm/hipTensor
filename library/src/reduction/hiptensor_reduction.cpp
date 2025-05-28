@@ -163,28 +163,33 @@ hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t    
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorReduce(
-                 const hiptensorHandle_t handle, const hiptensorPlan_t plan,
-                 const void* alpha, const void* A,
-                 const void* beta,  const void* C,
-                                          void* D,
-                 void* workspace, uint64_t workspaceSize,
-                 hipStream_t stream)
+hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
+                                  const hiptensorPlan_t   plan,
+                                  const void*             alpha,
+                                  const void*             A,
+                                  const void*             beta,
+                                  const void*             C,
+                                  void*                   D,
+                                  void*                   workspace,
+                                  uint64_t                workspaceSize,
+                                  hipStream_t             stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
-    hiptensorOperationDescriptor_t opDes = plan -> mOpDesc;
-    const hiptensorTensorDescriptor_t descA = opDes -> mDescA;
-    const int32_t                    *modeA = opDes -> mModeA.data();
-    const hiptensorTensorDescriptor_t descC = opDes -> mDescC;
-    const int32_t                    *modeC = opDes -> mModeC.data();
-    const hiptensorTensorDescriptor_t descD = opDes -> mDescD;
-    const int32_t                    *modeD = opDes -> mModeD.data();
-    hiptensorOperator_t            opReduce = opDes -> mOpAC;
-    hiptensorComputeDescriptor_t  typeCompute = opDes -> mDescCompute;
+    hiptensorOperationDescriptor_t    opDes       = plan->mOpDesc;
+    const hiptensorTensorDescriptor_t descA       = opDes->mDescA;
+    const int32_t*                    modeA       = opDes->mModeA.data();
+    const hiptensorTensorDescriptor_t descC       = opDes->mDescC;
+    const int32_t*                    modeC       = opDes->mModeC.data();
+    const hiptensorTensorDescriptor_t descD       = opDes->mDescD;
+    const int32_t*                    modeD       = opDes->mModeD.data();
+    hiptensorOperator_t               opA         = opDes->mOpA;
+    hiptensorOperator_t               opC         = opDes->mOpC;
+    hiptensorOperator_t               opReduce    = opDes->mOpAC;
+    hiptensorComputeDescriptor_t      typeCompute = opDes->mDescCompute;
 
-    char  msg[2048];
+    char msg[2048];
     snprintf(msg,
              sizeof(msg),
              "hiptensorReduce: handle=%p, alpha=%p, A=%p, descA=%p, modeA=%p, beta=%p, C=%p, "
@@ -237,10 +242,7 @@ hiptensorStatus_t hiptensorReduce(
         // output tensors maintain the same rank. For those scenarios, employ
         // elementwise binary operations.
         plan->mOpDesc->mOpAC = HIPTENSOR_OP_ADD;
-        return hiptensorElementwiseBinaryExecute(handle, plan,
-                                                 alpha, A,
-                                                 beta,  C,
-                                                        D, stream);          
+        return hiptensorElementwiseBinaryExecute(handle, plan, alpha, A, beta, C, D, stream);
     }
 
     auto& instances = hiptensor::ReductionSolutionInstances::instance();
@@ -332,8 +334,8 @@ hiptensorStatus_t hiptensorReduce(
                                                 descC->mLengths,
                                                 descC->mStrides,
                                                 {modeC, modeC + descC->mLengths.size()},
-                                                HIPTENSOR_OP_IDENTITY,
-                                                HIPTENSOR_OP_IDENTITY,
+                                                opA,
+                                                opC,
                                                 alphaValue,
                                                 betaValue,
                                                 A,
@@ -384,4 +386,4 @@ hiptensorStatus_t hiptensorReduce(
              hiptensorGetErrorString(errorCode));
     logger->logError("hiptensorReduce", msg);
     return errorCode;
-}                 
+}

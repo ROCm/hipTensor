@@ -325,30 +325,18 @@ namespace hiptensor
                 handle, &descB, nmodeB, extentB.data(), nullptr /* stride */, abDataType, 0));
 
             hiptensorComputeDescriptor_t const descCompute = convertToComputeType(computeDataType);
-            hiptensorOperationDescriptor_t  desc;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreatePermutation(handle,
-                                                   &desc,
-                                                   descA,
-                                                   modeA.data(),
-                                                   Aop,
-                                                   descB,
-                                                   modeB.data(),
-                                                   descCompute));
+            hiptensorOperationDescriptor_t     desc;
+            CHECK_HIPTENSOR_ERROR(hiptensorCreatePermutation(
+                handle, &desc, descA, modeA.data(), Aop, descB, modeB.data(), descCompute));
 
-            const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
-            hiptensorPlanPreference_t  planPref;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(handle,
-                                                      &planPref,
-                                                      algo,
-                                                      HIPTENSOR_JIT_MODE_NONE));
-        
-            hiptensorPlan_t  plan;
-            CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle,
-                                            &plan,
-                                            desc,
-                                            planPref,
-                                            0 /* workspaceSizeLimit */));
+            const hiptensorAlgo_t     algo = HIPTENSOR_ALGO_DEFAULT;
+            hiptensorPlanPreference_t planPref;
+            CHECK_HIPTENSOR_ERROR(
+                hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
+            hiptensorPlan_t plan;
+            CHECK_HIPTENSOR_ERROR(
+                hiptensorCreatePlan(handle, &plan, desc, planPref, 0 /* workspaceSizeLimit */));
 
             float alphaValue{};
             if(computeDataType == HIPTENSOR_R_16F)
@@ -366,11 +354,11 @@ namespace hiptensor
             CHECK_HIP_ERROR(hipEventRecord(startEvent));
 
             CHECK_HIPTENSOR_ERROR(hiptensorPermute(handle,
-                            plan,
-                            &alphaValue, 
-                            resource->deviceInput1().get(), 
-                            resource->deviceOutput().get(), 
-                            nullptr /* stream */));
+                                                   plan,
+                                                   &alphaValue,
+                                                   resource->deviceInput1().get(),
+                                                   resource->deviceOutput().get(),
+                                                   nullptr /* stream */));
 
             CHECK_HIP_ERROR(hipEventRecord(stopEvent));
             CHECK_HIP_ERROR(hipEventSynchronize(stopEvent))
@@ -414,6 +402,7 @@ namespace hiptensor
                                                       (const float*)resource->hostInput1().get(),
                                                       descA,
                                                       modeA.data(),
+                                                      Aop,
                                                       (float*)resource->hostReference().get(),
                                                       descB,
                                                       modeB.data(),
@@ -434,6 +423,7 @@ namespace hiptensor
                                                       (const _Float16*)resource->hostInput1().get(),
                                                       descA,
                                                       modeA.data(),
+                                                      Aop,
                                                       (_Float16*)resource->hostReference().get(),
                                                       descB,
                                                       modeB.data(),

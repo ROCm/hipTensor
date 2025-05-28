@@ -32,24 +32,29 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseBinaryExecute(
-                 const hiptensorHandle_t handle, const hiptensorPlan_t plan,
-                 const void* alpha, const void* A,
-                 const void* gamma, const void* C,
-                                          void* D, hipStream_t stream)
+hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t handle,
+                                                    const hiptensorPlan_t   plan,
+                                                    const void*             alpha,
+                                                    const void*             A,
+                                                    const void*             gamma,
+                                                    const void*             C,
+                                                    void*                   D,
+                                                    hipStream_t             stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
-    hiptensorOperationDescriptor_t opDes = plan -> mOpDesc;
-    const hiptensorTensorDescriptor_t descA = opDes -> mDescA;
-    const int32_t                    *modeA = opDes -> mModeA.data();
-    const hiptensorTensorDescriptor_t descC = opDes -> mDescC;
-    const int32_t                    *modeC = opDes -> mModeC.data();
-    const hiptensorTensorDescriptor_t descD = opDes -> mDescD;
-    const int32_t                    *modeD = opDes -> mModeD.data();
-    hiptensorOperator_t                opAC = opDes -> mOpAC;
-    const hiptensorDataType_t    typeScalar = opDes -> mScalarType;
+    hiptensorOperationDescriptor_t    opDes      = plan->mOpDesc;
+    const hiptensorTensorDescriptor_t descA      = opDes->mDescA;
+    const int32_t*                    modeA      = opDes->mModeA.data();
+    const hiptensorTensorDescriptor_t descC      = opDes->mDescC;
+    const int32_t*                    modeC      = opDes->mModeC.data();
+    const hiptensorTensorDescriptor_t descD      = opDes->mDescD;
+    const int32_t*                    modeD      = opDes->mModeD.data();
+    hiptensorOperator_t               opA        = opDes->mOpA;
+    hiptensorOperator_t               opC        = opDes->mOpC;
+    hiptensorOperator_t               opAC       = opDes->mOpAC;
+    const hiptensorDataType_t         typeScalar = opDes->mScalarType;
 
     // Log API access
     char msg[2048];
@@ -144,7 +149,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(
         {descD->mType},
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
-        {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+        {opAC, opA, opC},
         hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
@@ -158,7 +163,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(
                                      {descD->mLengths},
                                      {descD->mStrides},
                                      {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                     {opAC, HIPTENSOR_OP_IDENTITY, HIPTENSOR_OP_IDENTITY},
+                                     {opAC, opA, opC},
                                      {A, C},
                                      {D});
 
