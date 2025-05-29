@@ -255,10 +255,19 @@ typedef enum
     HIPTENSOR_JIT_MODE_DEFAULT = 1,
 } hiptensorJitMode_t;
 
+//! @brief Pointer to hiptensorOperationDescriptor
 typedef struct hiptensorOperationDescriptor* hiptensorOperationDescriptor_t;
+
+//! @brief Pointer to hiptensorPlan
 typedef struct hiptensorPlan*                hiptensorPlan_t;
+
+//! @brief Pointer to hiptensorPlanPreference
 typedef struct hiptensorPlanPreference*      hiptensorPlanPreference_t;
+
+//! @brief Pointer to hiptensorHandle
 typedef struct hiptensorHandle*              hiptensorHandle_t;
+
+//! @brief Pointer to hiptensorTensorDescriptor
 typedef struct hiptensorTensorDescriptor*    hiptensorTensorDescriptor_t;
 
 //! @brief Logging callback

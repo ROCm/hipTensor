@@ -11,13 +11,12 @@ hipTensor currently supports the following AMDGPU architectures:
 
 * CDNA class GPU featuring matrix core support: gfx908, gfx90a, gfx942, gfx950 as 'gfx9'
 
-:::{note}
-Double precision FP64 datatype support requires gfx90a, gfx942 or gfx950
-:::
+> [!NOTE]
+> Double precision FP64 datatype support requires gfx90a, gfx942 or gfx950
 
 Dependencies:
 
-* Minimum ROCm version support is 6.0.
+* Minimum ROCm version support is 7.0.
 * Minimum cmake version support is 3.14.
 * Minimum ROCm-cmake version support is 0.8.0.
 * Minimum Composable Kernel version support is composable_kernel 1.1.0 for ROCm 6.0.2 (or ROCm package composablekernel-dev).

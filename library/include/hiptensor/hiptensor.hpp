@@ -16,7 +16,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTIHIPLAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -318,12 +318,8 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
 
 //! @brief Returns a descriptive string for a given error code.
 //! @param[in] error The error code to convert to a string.
-//! @retval A string describing the error.
+//! @retval ErrorString A string describing the error.
 const char* hiptensorGetErrorString(const hiptensorStatus_t error);
-
-//! @brief Returns the hipTensor library version.
-//! @retval The hipTensor library version as a size_t.
-size_t hiptensorGetVersion();
 
 //! @brief Executes tensor permutation
 //! @details Computes the permutation operation:
@@ -379,6 +375,18 @@ hiptensorStatus_t hiptensorCreateElementwiseBinary(const hiptensorHandle_t      
                                                    const hiptensorComputeDescriptor_t descCompute);
 
 //! @brief Executes element-wise tensor operation on two input tensors.
+//!
+//! @details This function computes the element-wise operation:
+//! \f[
+//! D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{AC}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)}))
+//! \f]
+//! where:
+//!   - \f$D\f$ is the output tensor.
+//!   - \f$A\f$ and \f$C\f$ are the input tensors.
+//!   - \f$\alpha\f$ and \f$\gamma\f$ are scalar scaling factors.
+//!   - \f$\Psi_A\f$ and \f$\Psi_C\f$ are unary operators (applied only if \f$\alpha\f$ and \f$\gamma\f$ are non-zero).
+//!   - \f$\Phi_{AC}\f$ is a binary element-wise operator.
+//!   - \f$\Pi^A\f$ and \f$\Pi^C\f$ represent mode permutations.
 //!
 //! @param[in] handle Opaque handle containing hipTensor's library context.
 //! @param[in] plan Opaque handle with elementwise operation information.
@@ -442,6 +450,13 @@ hiptensorStatus_t hiptensorCreateElementwiseTrinary(const hiptensorHandle_t     
 
 //! @brief Executes element-wise tensor operation on three input tensors.
 //!
+//! @details This function computes the element-wise operation:
+//! \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{ABC}(\Phi_{AB}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \beta \Psi_B(B_{\Pi^B(i_0,i_1,...,i_n)})), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
+//!
+//! Tensor modes can appear in any order, providing flexibility. However, the following restrictions apply:
+//!   - Modes present in \f$A\f$ or \f$B\f$ must also be present in the output tensor \f$D\f$. Modes only in inputs would imply contraction, which is handled by hiptensorContraction or hiptensorReduction.
+//!   - Each mode can appear at most once in each tensor.
+//!
 //! @param[in] handle Opaque handle containing hipTensor's library context.
 //! @param[in] plan Opaque handle with elementwise operation information.
 //! @param[in] alpha Scaling factor for A. Host memory pointer.
@@ -456,7 +471,6 @@ hiptensorStatus_t hiptensorCreateElementwiseTrinary(const hiptensorHandle_t     
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE When tensor dimensions or modes contain illegal values
 //! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
-//! @remarks Calls asynchronous functions, not reentrant, and thread-safe
 hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t handle,
                                                      const hiptensorPlan_t   plan,
                                                      const void*             alpha,
@@ -560,8 +574,8 @@ hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask);
 hiptensorStatus_t hiptensorLoggerForceDisable();
 
 //! @brief Queries the HIP runtime version.
-//! @retval -1 if the operation failed.
-//! @retval An integer representing the HIP runtime version if the operation succeeded.
+//! @retval -1 If the operation failed.
+//! @retval Integer An integer representing the HIP runtime version if the operation succeeded.
 int hiptensorGetHiprtVersion();
 
 #endif // HIPTENSOR_API_HPP
