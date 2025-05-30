@@ -69,11 +69,11 @@ GPU support
 -------------------------------------------
 
 hipTensor is supported on the AMD CDNA class GPUs featuring matrix core support,
-including the gfx908, gfx90a, gfx942, and gfx950 GPUs (collectively labeled as gfx9).
+including the gfx908, gfx90a, gfx940, gfx941, and gfx942 GPUs (collectively labeled as gfx9).
 
 .. note::
 
-   Double precision ``FP64`` datatype support requires the gfx90a, gfx942, or gfx950.
+   Double precision ``FP64`` datatype support requires the gfx90a, gfx940, gfx941, or gfx942.
 
 Dependencies
 -------------------------------------------
@@ -151,7 +151,7 @@ Here are the available options to build the hipTensor library, with or without c
         -   **Default value**
     *   -   ``GPU_TARGETS``
         -   Build the code for specific GPU target(s)
-        -   ``gfx908``; ``gfx90a``; ``gfx942``; ``gfx950``
+        -   ``gfx908``; ``gfx90a``; ``gfx942``
     *   -   ``HIPTENSOR_BUILD_TESTS``
         -   Build the tests
         -   ``ON``
