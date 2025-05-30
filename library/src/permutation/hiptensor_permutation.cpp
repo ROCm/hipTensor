@@ -32,19 +32,22 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
-                                       const void*                        alpha,
-                                       const void*                        A,
-                                       const hiptensorTensorDescriptor_t* descA,
-                                       const int32_t                      modeA[],
-                                       void*                              B,
-                                       const hiptensorTensorDescriptor_t* descB,
-                                       const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar,
-                                       const hipStream_t                  stream)
+hiptensorStatus_t hiptensorPermute(const hiptensorHandle_t handle,
+                                   const hiptensorPlan_t   plan,
+                                   const void*             alpha,
+                                   const void*             A,
+                                   void*                   B,
+                                   const hipStream_t       stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
+
+    hiptensorOperationDescriptor_t    opDes      = plan->mOpDesc;
+    const hiptensorTensorDescriptor_t descA      = opDes->mDescA;
+    const int32_t*                    modeA      = opDes->mModeA.data();
+    const hiptensorTensorDescriptor_t descB      = opDes->mDescB;
+    const int32_t*                    modeB      = opDes->mModeB.data();
+    const hiptensorDataType_t         typeScalar = opDes->mScalarType;
 
     // Log API access
     char msg[2048];
@@ -63,7 +66,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
              (unsigned int)typeScalar,
              stream);
 
-    logger->logAPITrace("hiptensorPermutation", msg);
+    logger->logAPITrace("hiptensorPermute", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
@@ -80,13 +83,13 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
         return checkResult;
     }
 
-    constexpr std::array<std::array<hipDataType, 2>, 3> validDataTypes
+    constexpr std::array<std::array<hiptensorDataType_t, 2>, 3> validDataTypes
         = {{// typeA, typeC, typeScalar
-            {HIP_R_16F, HIP_R_16F},
-            {HIP_R_16F, HIP_R_32F},
-            {HIP_R_32F, HIP_R_32F}}};
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F},
+            {HIPTENSOR_R_16F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_32F, HIPTENSOR_R_32F}}};
 
-    std::array<hipDataType, 2> inputTensorTypes = {descA->mType, typeScalar};
+    std::array<hiptensorDataType_t, 2> inputTensorTypes = {descA->mType, typeScalar};
     if(std::none_of(validDataTypes.cbegin(),
                     validDataTypes.cend(),
                     [&inputTensorTypes](auto&& types) { return types == inputTensorTypes; }))
@@ -101,7 +104,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                  "api-reference.html "
                  "(%s)",
                  hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorPermutation", msg);
+        logger->logError("hiptensorPermute", msg);
         return errorCode;
     }
 
@@ -118,7 +121,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                       {descB->mType},
                                       {{modeA, modeA + descA->mLengths.size()}},
                                       {{modeB, modeB + descB->mLengths.size()}},
-                                      {descA->mUnaryOp, descB->mUnaryOp},
+                                      {plan->mOpDesc->mOpA, plan->mOpDesc->mOpB},
                                       hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
@@ -131,7 +134,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                                      {descB->mLengths},
                                      {descB->mStrides},
                                      {std::vector<int32_t>(modeB, modeB + descB->mLengths.size())},
-                                     {descA->mUnaryOp},
+                                     {plan->mOpDesc->mOpA},
                                      {A},
                                      {B});
 
@@ -156,8 +159,8 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                 }
 
                 auto flops = std::size_t(2) * pSolution->problemSize();
-                auto bytes = (hiptensor::hipDataTypeSize(descA->mType)
-                              + hiptensor::hipDataTypeSize(descB->mType))
+                auto bytes = (hiptensor::hiptensorDataTypeSize(descA->mType)
+                              + hiptensor::hiptensorDataTypeSize(descB->mType))
                              * pSolution->problemSize();
 
                 hiptensor::PerfMetrics metrics = {
@@ -177,7 +180,7 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
                          metrics.mAvgTimeMs,
                          metrics.mTflops,
                          metrics.mBandwidth);
-                logger->logPerformanceTrace("hiptensorPermutation", msg);
+                logger->logPerformanceTrace("hiptensorPermute", msg);
             }
             // Perform permutation without timing
             else
@@ -197,6 +200,6 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
              sizeof(msg),
              "Selected kernel is unable to solve the problem (%s)",
              hiptensorGetErrorString(errorCode));
-    logger->logError("hiptensorPermutation", msg);
+    logger->logError("hiptensorPermute", msg);
     return errorCode;
 }

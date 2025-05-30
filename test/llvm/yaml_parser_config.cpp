@@ -40,7 +40,6 @@
 namespace hiptensor
 {
     struct NoneType;
-    static constexpr hipDataType NONE_TYPE = (hipDataType)31;
 }
 
 // namespace hiptensor
@@ -51,7 +50,7 @@ namespace hiptensor
 //     struct ContractionTestParams
 //     {
 
-//         using TestDataTypeT = std::vector<hipDataType>;
+//         using TestDataTypeT = std::vector<hiptensorDataType_t>;
 
 //         using AlgorithmT = hiptensorAlgo_t;
 //         using OperatorT = hiptensorOperator_t;
@@ -91,12 +90,12 @@ LLVM_YAML_STRONG_TYPEDEF(double, GammaT);
 // - val0
 // - val1
 // ...
-LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hipDataType)
+LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(hiptensorDataType_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorAlgo_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorOperator_t)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorOperator_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(hiptensorWorksizePreference_t)
-LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hipDataType>)
+LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<hiptensorDataType_t>)
 LLVM_YAML_IS_FLOW_SEQUENCE_VECTOR(std::vector<std::size_t>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::size_t>>)
 LLVM_YAML_IS_SEQUENCE_VECTOR(std::vector<std::vector<std::vector<std::size_t>>>)
@@ -118,16 +117,16 @@ namespace llvm
         ///
 
         template <>
-        struct ScalarEnumerationTraits<hipDataType>
+        struct ScalarEnumerationTraits<hiptensorDataType_t>
         {
-            static void enumeration(IO& io, hipDataType& value)
+            static void enumeration(IO& io, hiptensorDataType_t& value)
             {
-                io.enumCase(value, "HIP_R_16F", HIP_R_16F);
-                io.enumCase(value, "HIP_R_16BF", HIP_R_16BF);
-                io.enumCase(value, "HIP_R_32F", HIP_R_32F);
-                io.enumCase(value, "HIP_R_64F", HIP_R_64F);
-                io.enumCase(value, "HIP_C_32F", HIP_C_32F);
-                io.enumCase(value, "HIP_C_64F", HIP_C_64F);
+                io.enumCase(value, "HIPTENSOR_R_16F", HIPTENSOR_R_16F);
+                io.enumCase(value, "HIPTENSOR_R_16BF", HIPTENSOR_R_16BF);
+                io.enumCase(value, "HIPTENSOR_R_32F", HIPTENSOR_R_32F);
+                io.enumCase(value, "HIPTENSOR_R_64F", HIPTENSOR_R_64F);
+                io.enumCase(value, "HIPTENSOR_C_32F", HIPTENSOR_C_32F);
+                io.enumCase(value, "HIPTENSOR_C_64F", HIPTENSOR_C_64F);
                 io.enumCase(value, "NONE_TYPE", hiptensor::NONE_TYPE);
             }
         };
@@ -187,8 +186,7 @@ namespace llvm
             static void enumeration(IO& io, hiptensorWorksizePreference_t& value)
             {
                 io.enumCase(value, "HIPTENSOR_WORKSPACE_MIN", HIPTENSOR_WORKSPACE_MIN);
-                io.enumCase(
-                    value, "HIPTENSOR_WORKSPACE_RECOMMENDED", HIPTENSOR_WORKSPACE_RECOMMENDED);
+                io.enumCase(value, "HIPTENSOR_WORKSPACE_DEFAULT", HIPTENSOR_WORKSPACE_DEFAULT);
                 io.enumCase(value, "HIPTENSOR_WORKSPACE_MAX", HIPTENSOR_WORKSPACE_MAX);
             }
         };
@@ -290,7 +288,8 @@ namespace llvm
                                (std::vector<std::vector<double>>&)(doc.betas()),
                                std::vector<std::vector<double>>(doc.alphas().size()));
                 io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
-                io.mapOptional("Random Ranges", (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
+                io.mapOptional("Random Ranges",
+                               (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
                 // If problem ranges are given then problem lengths are optional
                 if(doc.problemRanges().size() != 0 && doc.problemRandRanges().size() != 0)
                 {
@@ -328,7 +327,7 @@ namespace llvm
             {
 
                 if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0
-                    && doc.problemRandRanges().size() == 0)
+                   && doc.problemRandRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
@@ -392,19 +391,18 @@ namespace llvm
                                std::vector<GammaT>(doc.alphas().size()));
 
                 io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
-                io.mapOptional("Random Ranges", (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
+                io.mapOptional("Random Ranges",
+                               (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
                 // If problem ranges are given then problem lengths are optional
                 if(doc.problemRanges().size() != 0 && doc.problemRandRanges().size() != 0)
                 {
-                    io.mapOptional(
-                        "Lengths",
-                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
+                    io.mapOptional("Lengths",
+                                   (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 else
                 {
-                    io.mapRequired(
-                        "Lengths",
-                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
+                    io.mapRequired("Lengths",
+                                   (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 io.mapRequired("Permuted Dims", doc.permutedDims());
                 io.mapRequired("Operators", (doc.operators()));
@@ -415,7 +413,7 @@ namespace llvm
             {
 
                 if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0
-                    && doc.problemRandRanges().size() == 0)
+                   && doc.problemRandRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }
@@ -465,19 +463,18 @@ namespace llvm
                 io.mapRequired("Alphas", (std::vector<AlphaT>&)(doc.alphas()));
                 io.mapRequired("Betas", (std::vector<BetaT>&)(doc.betas()));
                 io.mapOptional("Ranges", (std::vector<std::vector<size_t>>&)doc.problemRanges());
-                io.mapOptional("Random Ranges", (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
+                io.mapOptional("Random Ranges",
+                               (std::vector<std::vector<size_t>>&)doc.problemRandRanges());
                 // If problem ranges are given then problem lengths are optional
                 if(doc.problemRanges().size() != 0 && doc.problemRandRanges().size() != 0)
                 {
-                    io.mapOptional(
-                        "Lengths",
-                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
+                    io.mapOptional("Lengths",
+                                   (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 else
                 {
-                    io.mapRequired(
-                        "Lengths",
-                        (std::vector<std::vector<size_t>>&)doc.problemLengths());
+                    io.mapRequired("Lengths",
+                                   (std::vector<std::vector<size_t>>&)doc.problemLengths());
                 }
                 io.mapRequired("Output Dims", doc.outputDims());
                 io.mapRequired("Operators", (doc.operators()));
@@ -488,7 +485,7 @@ namespace llvm
             {
 
                 if(doc.problemLengths().size() == 0 && doc.problemRanges().size() == 0
-                    && doc.problemRandRanges().size() == 0)
+                   && doc.problemRandRanges().size() == 0)
                 {
                     return "Error: Empty Lengths";
                 }

@@ -63,7 +63,7 @@ TEST(CheckApiParamsTest, UtilTest)
 
 TEST(hiptensorGetVersionTest, UtilTest)
 {
-    EXPECT_EQ(hiptensorGetVersion(), 1006000);
+    EXPECT_EQ(hiptensorGetVersion(), 2000000);
 }
 
 TEST(logLevelToStringTest, UtilTest)
@@ -114,14 +114,14 @@ TEST(opTypeToStringTest, UtilTest)
     EXPECT_STREQ(hiptensor::opTypeToString(HIPTENSOR_OP_MIN).c_str(), "HIPTENSOR_OP_MIN");
 }
 
-TEST(convertToHipDataTypeTypeToStringTest, UtilTest)
+TEST(convertToHipTensorDataTypeTypeToStringTest, UtilTest)
 {
-    EXPECT_EQ(hiptensor::convertToHipDataType(HIPTENSOR_COMPUTE_16BF), HIP_R_16BF);
-    EXPECT_EQ(hiptensor::convertToHipDataType(HIPTENSOR_COMPUTE_16F), HIP_R_16F);
-    EXPECT_EQ(hiptensor::convertToHipDataType(HIPTENSOR_COMPUTE_32F), HIP_R_32F);
-    EXPECT_EQ(hiptensor::convertToHipDataType(HIPTENSOR_COMPUTE_64F), HIP_R_64F);
-    EXPECT_EQ(hiptensor::convertToHipDataType(HIPTENSOR_COMPUTE_C32F), HIP_C_32F);
-    EXPECT_EQ(hiptensor::convertToHipDataType(HIPTENSOR_COMPUTE_C64F), HIP_C_64F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_16BF), HIPTENSOR_R_16BF);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_16F), HIPTENSOR_R_16F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_32F), HIPTENSOR_R_32F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_64F), HIPTENSOR_R_64F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_C32F), HIPTENSOR_C_32F);
+    EXPECT_EQ(hiptensor::convertToHipTensorDataType(HIPTENSOR_COMPUTE_DESC_C64F), HIPTENSOR_C_64F);
 }
 
 TEST(algoTypeToStringTest, UtilTest)
@@ -138,8 +138,8 @@ TEST(workSizePrefToStringTest, UtilTest)
 {
     EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_MIN).c_str(),
                  "HIPTENSOR_WORKSPACE_MIN");
-    EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_RECOMMENDED).c_str(),
-                 "HIPTENSOR_WORKSPACE_RECOMMENDED");
+    EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_DEFAULT).c_str(),
+                 "HIPTENSOR_WORKSPACE_DEFAULT");
     EXPECT_STREQ(hiptensor::workSizePrefToString(HIPTENSOR_WORKSPACE_MAX).c_str(),
                  "HIPTENSOR_WORKSPACE_MAX");
 }

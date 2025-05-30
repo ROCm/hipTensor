@@ -39,21 +39,21 @@ namespace hiptensor
 {
     struct ReductionSolutionParams
     {
-        ReductionSolutionParams()                                          = default;
-        virtual ~ReductionSolutionParams()                                 = default;
-        ReductionSolutionParams(ReductionSolutionParams const&)            = default;
-        ReductionSolutionParams(ReductionSolutionParams&&)                 = default;
+        ReductionSolutionParams()                               = default;
+        virtual ~ReductionSolutionParams()                      = default;
+        ReductionSolutionParams(ReductionSolutionParams const&) = default;
+        ReductionSolutionParams(ReductionSolutionParams&&)      = default;
         ReductionSolutionParams& operator=(ReductionSolutionParams const&) = default;
-        ReductionSolutionParams& operator=(ReductionSolutionParams&&)      = default;
+        ReductionSolutionParams& operator=(ReductionSolutionParams&&) = default;
 
         virtual int32_t rankIn() const        = 0;
         virtual int32_t numReducedDim() const = 0;
         virtual bool    propagateNan() const  = 0;
         virtual bool    outputIndex() const   = 0;
 
-        virtual hipDataType            typeIn() const  = 0;
-        virtual hiptensorComputeType_t typeAcc() const = 0;
-        virtual hipDataType            typeOut() const = 0;
+        virtual hiptensorDataType_t          typeIn() const  = 0;
+        virtual hiptensorComputeDescriptor_t typeAcc() const = 0;
+        virtual hiptensorDataType_t          typeOut() const = 0;
 
         virtual hiptensorOperator_t opReduce() const = 0;
     };

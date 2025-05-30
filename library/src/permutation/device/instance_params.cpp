@@ -29,11 +29,11 @@
 namespace ck::tensor_operation::device::instance
 {
     std::vector<hiptensor::Uid>
-        getHashCodeOfBestPerfInstances(std::vector<hipDataType> const&       typeIn,
-                                       std::vector<hipDataType> const&       typeOut,
-                                       hiptensor::PermutationOpId_t          scale,
-                                       index_t                               numDim,
-                                       hiptensor::InstanceHyperParams const& hyperParams)
+        getHashCodeOfBestPerfInstances(std::vector<hiptensorDataType_t> const& typeIn,
+                                       std::vector<hiptensorDataType_t> const& typeOut,
+                                       hiptensor::PermutationOpId_t            scale,
+                                       index_t                                 numDim,
+                                       hiptensor::InstanceHyperParams const&   hyperParams)
     {
         std::vector<hiptensor::Uid> hashCodes;
         // - scalarPerVectorSeq is 0 when it is CPU reference instance.
@@ -46,26 +46,26 @@ namespace ck::tensor_operation::device::instance
         if (typeIn.size() == 1)
         {
             if (numDim == 2) {
-                if (typeIn[0] == HIP_R_16F) {
+                if (typeIn[0] == HIPTENSOR_R_16F) {
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {64  , 32  , 128 , 8 , 8 , {0 , 1} , {2} , {2}})));
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {64  , 32  , 128 , 8 , 8 , {0 , 1} , {1} , {1}})));
-                } else if (typeIn[0] == HIP_R_32F) {
+                } else if (typeIn[0] == HIPTENSOR_R_32F) {
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 64  , 64  , 4 , 4 , {0 , 1} , {2} , {2}})));
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 64  , 64  , 4 , 4 , {0 , 1} , {1} , {1}})));
                 }
             } else if (numDim == 3) {
-                if (typeIn[0] == HIP_R_16F) {
+                if (typeIn[0] == HIPTENSOR_R_16F) {
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 128 , 128 , 8 , 8 , {0 , 1} , {2} , {2}})));
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 128 , 128 , 8 , 8 , {0 , 1} , {1} , {1}})));
-                } else if (typeIn[0] == HIP_R_32F) {
+                } else if (typeIn[0] == HIPTENSOR_R_32F) {
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 64  , 64  , 4 , 4 , {0 , 1} , {2} , {2}})));
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 64  , 64  , 4 , 4 , {0 , 1} , {1} , {1}})));
                 }
             } else if (numDim == 4) {
-                if (typeIn[0] == HIP_R_16F) {
+                if (typeIn[0] == HIPTENSOR_R_16F) {
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {64  , 128 , 32  , 8  , 8  , {0 , 1} , {2}  , {2}})));
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {64  , 128 , 32  , 8  , 8  , {0 , 1} , {1}  , {1}})));
-                } else if (typeIn[0] == HIP_R_32F) {
+                } else if (typeIn[0] == HIPTENSOR_R_32F) {
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 64  , 64  , 4 , 4 , {0 , 1} , {2} , {2}})));
                     hashCodes.push_back(hiptensor::Hash{}( DeviceElementwiseParams::Gen(typeIn , typeOut , scale , numDim , {256 , 64  , 64  , 4 , 4 , {0 , 1} , {1} , {1}})));
                 }

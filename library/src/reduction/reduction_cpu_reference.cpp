@@ -29,20 +29,22 @@
 #include "reduction_cpu_reference_impl.hpp"
 #include "reduction_cpu_reference_instances.hpp"
 
-hiptensorStatus_t hiptensorReductionReference(const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t                      modeA[],
-                                              const void*                        beta,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t                      modeC[],
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t                      modeD[],
-                                              hiptensorOperator_t                opReduce,
-                                              hiptensorComputeType_t             typeCompute,
-                                              hipStream_t                        stream)
+hiptensorStatus_t hiptensorReductionReference(const void*                       alpha,
+                                              const void*                       A,
+                                              const hiptensorTensorDescriptor_t descA,
+                                              const int32_t                     modeA[],
+                                              const hiptensorOperator_t         opA,
+                                              const void*                       beta,
+                                              const void*                       C,
+                                              const hiptensorTensorDescriptor_t descC,
+                                              const int32_t                     modeC[],
+                                              const hiptensorOperator_t         opC,
+                                              void*                             D,
+                                              const hiptensorTensorDescriptor_t descD,
+                                              const int32_t                     modeD[],
+                                              hiptensorOperator_t               opReduce,
+                                              hiptensorComputeDescriptor_t      typeCompute,
+                                              hipStream_t                       stream)
 {
     int  rankA        = descA->mLengths.size();
     int  numReduceDim = descA->mLengths.size() - descD->mLengths.size();
@@ -50,10 +52,10 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
     auto DDataType    = descD->mType;
 
     auto internalTypeCompute = typeCompute;
-    if(typeCompute == HIPTENSOR_COMPUTE_16F || typeCompute == HIPTENSOR_COMPUTE_16BF)
+    if(typeCompute == HIPTENSOR_COMPUTE_DESC_16F || typeCompute == HIPTENSOR_COMPUTE_DESC_16BF)
     {
         // CK does not support f16 or bf16 as compute type
-        internalTypeCompute = HIPTENSOR_COMPUTE_32F;
+        internalTypeCompute = HIPTENSOR_COMPUTE_DESC_32F;
     }
 
     if(descA->mLengths.size() == descD->mLengths.size())
@@ -61,20 +63,23 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         // Composable Kernels (CK) does not handle reductions where the input and
         // output tensors maintain the same rank. For those scenarios, employ
         // elementwise binary operations.
-        return hiptensorElementwiseBinaryOpReference(alpha,
-                                                     A,
-                                                     descA,
-                                                     modeA,
-                                                     beta,
-                                                     C,
-                                                     descC,
-                                                     modeC,
-                                                     D,
-                                                     descD,
-                                                     modeD,
-                                                     HIPTENSOR_OP_ADD,
-                                                     *hiptensor::convertToHipDataType(typeCompute),
-                                                     stream);
+        return hiptensorElementwiseBinaryOpReference(
+            alpha,
+            A,
+            descA,
+            modeA,
+            opA,
+            beta,
+            C,
+            descC,
+            modeC,
+            opC,
+            D,
+            descD,
+            modeD,
+            HIPTENSOR_OP_ADD,
+            *hiptensor::convertToHipTensorDataType(typeCompute),
+            stream);
     }
 
     auto& instances = hiptensor::ReductionCpuReferenceInstances::instance();
@@ -105,7 +110,7 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
         CHECK_HIP_ERROR(hipMemcpy(D,
                                   C,
                                   hiptensor::elementsFromLengths(descC->mLengths)
-                                      * hiptensor::hipDataTypeSize(descC->mType),
+                                      * hiptensor::hiptensorDataTypeSize(descC->mType),
                                   hipMemcpyHostToHost));
     }
 
@@ -119,8 +124,8 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                                 descC->mLengths,
                                                 descC->mStrides,
                                                 {modeC, modeC + descC->mLengths.size()},
-                                                descA->mUnaryOp,
-                                                descC->mUnaryOp,
+                                                opA,
+                                                opC,
                                                 alphaD,
                                                 betaD,
                                                 A,

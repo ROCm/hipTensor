@@ -84,7 +84,7 @@ namespace hiptensor
         ContractionTest& operator=(ContractionTest&)  = delete;
         ContractionTest& operator=(ContractionTest&&) = delete;
 
-        bool checkDevice(hipDataType datatype) const;
+        bool checkDevice(hiptensorDataType_t datatype) const;
         bool checkSizes() const;
         void reset();
 
@@ -99,24 +99,27 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream&          stream,
-                           hipDataType            DDataType,
-                           hiptensorComputeType_t computeType,
-                           bool                   omitHeader,
-                           bool                   omitSkipped,
-                           bool                   omitFailed,
-                           bool                   omitPassed) const;
+        void reportResults(std::ostream&                stream,
+                           hiptensorDataType_t          DDataType,
+                           hiptensorComputeDescriptor_t computeType,
+                           bool                         omitHeader,
+                           bool                         omitSkipped,
+                           bool                         omitFailed,
+                           bool                         omitPassed) const;
 
     protected:
         // Workspace items
-        hiptensorHandle_t*               handle = nullptr;
-        hiptensorContractionPlan_t       plan;
-        hiptensorContractionDescriptor_t desc;
-        hiptensorContractionFind_t       find;
-        uint64_t                         worksize;
-        void*                            workspace = nullptr;
+        hiptensorHandle_t              handle = nullptr;
+        hiptensorPlan_t                plan;
+        hiptensorOperationDescriptor_t desc;
+        hiptensorPlanPreference_t      planPref;
+        uint64_t                       worksize;
+        void*                          workspace = nullptr;
 
-        hiptensorTensorDescriptor_t a_ms_ks, b_ns_ks, c_ms_ns, d_ms_ns;
+        hiptensorTensorDescriptor_t a_ms_ks = nullptr;
+        hiptensorTensorDescriptor_t b_ns_ks = nullptr;
+        hiptensorTensorDescriptor_t c_ms_ns = nullptr;
+        hiptensorTensorDescriptor_t d_ms_ns = nullptr;
 
         // Execution flow control
         uint32_t mRepeats;

@@ -67,7 +67,7 @@ namespace hiptensor
         PermutationTest& operator=(PermutationTest&)  = delete;
         PermutationTest& operator=(PermutationTest&&) = delete;
 
-        bool checkDevice(hipDataType datatype) const;
+        bool checkDevice(hiptensorDataType_t datatype) const;
         bool checkSizes() const;
         void reset();
 
@@ -82,16 +82,16 @@ namespace hiptensor
         void Warmup() {}
         void RunKernel();
 
-        void reportResults(std::ostream& stream,
-                           hipDataType   DDataType,
-                           bool          omitHeader,
-                           bool          omitSkipped,
-                           bool          omitFailed,
-                           bool          omitPassed) const;
+        void reportResults(std::ostream&       stream,
+                           hiptensorDataType_t DDataType,
+                           bool                omitHeader,
+                           bool                omitSkipped,
+                           bool                omitFailed,
+                           bool                omitPassed) const;
 
     protected:
         // Workspace items
-        hiptensorHandle_t* handle = nullptr;
+        hiptensorHandle_t handle = nullptr;
 
         hiptensorTensorDescriptor_t a_ms_ks, b_ns_ks, c_ms_ns, d_ms_ns;
 

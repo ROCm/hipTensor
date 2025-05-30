@@ -59,12 +59,12 @@ namespace hiptensor
     template <typename DeviceOp>
     struct ContractionSolutionParamsImpl : public ContractionSolutionParams
     {
-        ContractionSolutionParamsImpl()                                                = default;
-        ~ContractionSolutionParamsImpl()                                               = default;
-        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl const&)            = default;
-        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl&&)                 = default;
+        ContractionSolutionParamsImpl()                                     = default;
+        ~ContractionSolutionParamsImpl()                                    = default;
+        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl const&) = default;
+        ContractionSolutionParamsImpl(ContractionSolutionParamsImpl&&)      = default;
         ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl const&) = default;
-        ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl&&)      = default;
+        ContractionSolutionParamsImpl& operator=(ContractionSolutionParamsImpl&&) = default;
 
         using MetaTraitsT = MetaTraits<DeviceOp>;
 
@@ -83,29 +83,29 @@ namespace hiptensor
             return MetaTraitsT::DimsK;
         }
 
-        hipDataType typeA() const override
+        hiptensorDataType_t typeA() const override
         {
-            return HipDataType_v<typename MetaTraitsT::ADataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::ADataT>;
         }
 
-        hipDataType typeB() const override
+        hiptensorDataType_t typeB() const override
         {
-            return HipDataType_v<typename MetaTraitsT::BDataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::BDataT>;
         }
 
-        hipDataType typeC() const override
+        hiptensorDataType_t typeC() const override
         {
-            return HipDataType_v<typename MetaTraitsT::DDataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::DDataT>;
         }
 
-        hipDataType typeD() const override
+        hiptensorDataType_t typeD() const override
         {
-            return HipDataType_v<typename MetaTraitsT::EDataT>;
+            return HipTensorDataType_v<typename MetaTraitsT::EDataT>;
         }
 
-        hiptensorComputeType_t typeCompute() const override
+        hiptensorComputeDescriptor_t typeCompute() const override
         {
-            return convertToComputeType(HipDataType_v<typename MetaTraitsT::ComputeDataT>);
+            return convertToComputeType(HipTensorDataType_v<typename MetaTraitsT::ComputeDataT>);
         }
 
         hiptensorOperator_t opA() const override

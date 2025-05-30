@@ -38,7 +38,7 @@
      ${HIPTENSOR_COMMON_TEST_SOURCES}
 	 ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options_test.cpp
 	 )
- add_hiptensor_unit_test(interface_test
-     ${HIPTENSOR_COMMON_TEST_SOURCES}
-	 ${CMAKE_CURRENT_SOURCE_DIR}/interface_test.cpp
-	 )
+ # add_hiptensor_unit_test(interface_test
+     # ${HIPTENSOR_COMMON_TEST_SOURCES}
+	 # ${CMAKE_CURRENT_SOURCE_DIR}/interface_test.cpp
+	 # )

@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HIP_RESOURCE_IMPL_HPP
-#define HIPTENSOR_HIP_RESOURCE_IMPL_HPP
+#ifndef HIPTENSOR_HIPTENSOR_RESOURCE_IMPL_HPP
+#define HIPTENSOR_HIPTENSOR_RESOURCE_IMPL_HPP
 
 #include <hip/hip_runtime_api.h>
 
@@ -51,7 +51,7 @@ namespace hiptensor
 
     auto HipResource::allocHost(int64_t numBytes) -> HostPtrT
     {
-        void* data;
+        void*  data;
         data = operator new(numBytes);
         return HostPtrT(data, HostDeleter());
     }
@@ -93,4 +93,4 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif //HIPTENSOR_HIP_RESOURCE_IMPL_HPP
+#endif //HIPTENSOR_HIPTENSOR_RESOURCE_IMPL_HPP

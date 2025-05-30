@@ -2,7 +2,7 @@
 
 Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-## (Unreleased) hipTensor 1.6.0 for ROCm 6.5.0
+## (Unreleased) hipTensor 2.0.0 for ROCm 7.0.0
 
 ### Added
 
@@ -10,11 +10,40 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * Added element-wise trinary operation support.
 * Added support for new GPU target gfx950.
 * Added dynamic unary and binary operator support for element-wise operations and permutation.
-* Added a CMake check for `f8` datatype availability
+* Added a CMake check for `f8` datatype availability.
+* Added `hiptensorDestroyOperationDescriptor` to free all resources related to the provided descriptor.
+* Added `hiptensorOperationDescriptorSetAttribute` to set attribute of a `hiptensorOperationDescriptor_t` object.
+* Added `hiptensorOperationDescriptorGetAttribute` to retrieve an attribute of the provided `hiptensorOperationDescriptor_t` object.
+* Added `hiptensorCreatePlanPreference` to allocate the `hiptensorPlanPreference_t` and enabled users to limit the applicable kernels for a given plan or operation.
+* Added `hiptensorDestroyPlanPreference` to free all resources related to the provided preference.
+* Added `hiptensorPlanPreferenceSetAttribute` to set attribute of a `hiptensorPlanPreference_t` object.
+* Added `hiptensorPlanGetAttribute` to retrieve information about an already-created plan.
+* Added `hiptensorEstimateWorkspaceSize` to determine the required workspaceSize for the given operation.
+* Added `hiptensorCreatePlan` to allocate a `hiptensorPlan_t` object, select an appropriate kernel for a given operation and prepare a plan that encodes the execution.
+* Added `hiptensorDestroyPlan` to free all resources related to the provided plan.
 
 ### Changed
 
-* Removed architecture support for gfx940 and gfx941
+* Removed architecture support for gfx940 and gfx941.
+* Generalized opaque buffer now for any descriptor.
+* Replaced `hipDataType` with `hiptensorDataType_t` for all supported types, for example, `HIP_R_32F` to `HIPTENSOR_R_32F`.
+* Replaced `hiptensorComputeType_t` with `hiptensorComputeDescriptor_t` for all supported types.
+* Replaced `hiptensorInitTensorDescriptor` with `hiptensorCreateTensorDescriptor`.
+* Changed handle type and API usage from `*handle` to `handle`.
+* Replaced `hiptensorContractionDescriptor_t` with `hipTensorOperationDescriptor_t`.
+* Replaced `hiptensorInitContractionDescriptor` with `hiptensorCreateContraction`.
+* Replaced `hiptensorContractionFind_t` with `hiptensorPlanPreference_t`.
+* Replaced `hiptensorInitContractionFind` with `hiptensorCreatePlanPreference`.
+* Replaced `hiptensorContractionGetWorkspaceSize` with `hiptensorEstimateWorkspaceSize`.
+* Replaced `HIPTENSOR_WORKSPACE_RECOMMENDED` with `HIPTENSOR_WORKSPACE_DEFAULT`.
+* Replaced `hiptensorContractionPlan_t` with `hiptensorPlan_t`.
+* Replaced `hiptensorInitContractionPlan` with `hiptensorCreatePlan`.
+* Replaced `hiptensorContraction` with `hiptensorContract`.
+* Replaced `hiptensorPermutation` with `hiptensorPermute`.
+* Replaced `hiptensorReduction` with `hiptensorReduce`.
+* Replaced `hiptensorElementwiseBinary` with `hiptensorElementwiseBinaryExecute`.
+* Replaced `hiptensorElementwiseTrinary` with `hiptensorElementwiseTrinaryExecute`.
+* Removed function `hiptensorReductionGetWorkspaceSize`.
 
 ## hipTensor 1.5.0 for ROCm 6.4.0
 

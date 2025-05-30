@@ -22,7 +22,7 @@ The available ROCm packages are:
 Prerequisites
 =============
 
-hipTensor requires a ROCm-enabled platform, using ROCm version 6.4 or later.
+hipTensor requires a ROCm-enabled platform, using ROCm version 7.0 or later.
 For more information, see :doc:`ROCm installation <rocm-install-on-linux:index>`
 and the `ROCm GitHub <https://github.com/ROCm/ROCm>`_.
 
@@ -83,10 +83,10 @@ The following dependencies are required:
 
 .. <!-- spellcheck-disable -->
 
-*  `ROCm <https://github.com/ROCm/ROCm>`_ (Version 6.4 or later)
+*  `ROCm <https://github.com/ROCm/ROCm>`_ (Version 7.0 or later)
 *  `CMake <https://cmake.org/>`_ (Version 3.14 or later)
 *  `rocm-cmake <https://github.com/ROCm/rocm-cmake>`_ (Version 0.8.0 or later)
-*  `HIP runtime <https://github.com/ROCm/hip>`_ (Version 6.4.0 or later) (Or the ROCm hip-runtime-amd package)
+*  `HIP runtime <https://github.com/ROCm/hip>`_ (Version 7.0.0 or later) (Or the ROCm hip-runtime-amd package)
 *  LLVM dev package (Version 7.0 or later) (Also available as the ROCm rocm-llvm-dev package)
 *  `composable kernel <https://github.com/ROCm/composable_kernel>`_ (hipTensor uses the amd-master branch, which is a stable and widely adopted version for development.)
 
@@ -100,7 +100,7 @@ Downloading hipTensor
 -------------------------------------------
 
 The hipTensor source code is available from the `hipTensor GitHub <https://github.com/ROCm/hipTensor>`_.
-ROCm version 6.4 or later is required.
+ROCm version 7.0 or later is required.
 
 To verify the ROCm version installed on an Ubuntu system, use this command:
 
@@ -127,7 +127,7 @@ To download hipTensor on ROCm version `x.y`, use this command:
    cd hipTensor
 
 Replace ``x.y`` in the above command with the version of ROCm installed on your machine.
-For example, if you have ROCm 6.4 installed, then replace ``release/rocm-rel-x.y`` with ``release/rocm-rel-6.4``.
+For example, if you have ROCm 7.0 installed, then replace ``release/rocm-rel-x.y`` with ``release/rocm-rel-7.0``.
 
 Build configuration
 -------------------------------------------
@@ -272,7 +272,7 @@ Executable name                                  Description
 ``bilinear_contraction_test_m4n4k4``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with half, single, and mixed precision datatypes of rank 8
 ``bilinear_contraction_test_m5n5k5``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with half, single, and mixed precision datatypes of rank 10
 ``bilinear_contraction_test_m6n6k6``             Bilinear contraction test [D = alpha * (A x B) + beta * C] with half, single, and mixed precision datatypes of rank 12
-``complex_bilinear_contraction_test_m1n2k1``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with complex single and double precision datatypes of rank 2
+``complex_bilinear_contraction_test_m1n1k1``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with complex single and double precision datatypes of rank 2
 ``complex_bilinear_contraction_test_m2n2k2``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with complex single and double precision datatypes of rank 4
 ``complex_bilinear_contraction_test_m3n3k3``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with complex single and double precision datatypes of rank 6
 ``complex_bilinear_contraction_test_m4n4k4``     Bilinear contraction test [D = alpha * (A x B) + beta * C] with complex single and double precision datatypes of rank 8

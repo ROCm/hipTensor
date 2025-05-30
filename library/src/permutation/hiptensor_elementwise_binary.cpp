@@ -32,24 +32,29 @@
 
 #include "hiptensor_options.hpp"
 
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
-                                             const void*                        alpha,
-                                             const void*                        A,
-                                             const hiptensorTensorDescriptor_t* descA,
-                                             const int32_t                      modeA[],
-                                             const void*                        gamma,
-                                             const void*                        C,
-                                             const hiptensorTensorDescriptor_t* descC,
-                                             const int32_t                      modeC[],
-                                             void*                              D,
-                                             const hiptensorTensorDescriptor_t* descD,
-                                             const int32_t                      modeD[],
-                                             hiptensorOperator_t                opAC,
-                                             hipDataType                        typeScalar,
-                                             hipStream_t                        stream)
+hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t handle,
+                                                    const hiptensorPlan_t   plan,
+                                                    const void*             alpha,
+                                                    const void*             A,
+                                                    const void*             gamma,
+                                                    const void*             C,
+                                                    void*                   D,
+                                                    hipStream_t             stream)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
+
+    hiptensorOperationDescriptor_t    opDes      = plan->mOpDesc;
+    const hiptensorTensorDescriptor_t descA      = opDes->mDescA;
+    const int32_t*                    modeA      = opDes->mModeA.data();
+    const hiptensorTensorDescriptor_t descC      = opDes->mDescC;
+    const int32_t*                    modeC      = opDes->mModeC.data();
+    const hiptensorTensorDescriptor_t descD      = opDes->mDescD;
+    const int32_t*                    modeD      = opDes->mModeD.data();
+    hiptensorOperator_t               opA        = opDes->mOpA;
+    hiptensorOperator_t               opC        = opDes->mOpC;
+    hiptensorOperator_t               opAC       = opDes->mOpAC;
+    const hiptensorDataType_t         typeScalar = opDes->mScalarType;
 
     // Log API access
     char msg[2048];
@@ -75,7 +80,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
              (unsigned int)typeScalar,
              stream);
 
-    logger->logAPITrace("hiptensorElementwiseBinary", msg);
+    logger->logAPITrace("hiptensorElementwiseBinaryExecute", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
     CheckApiParams(checkResult, *logger, HIPTENSOR_STATUS_NOT_INITIALIZED, handle);
@@ -96,16 +101,16 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
         return checkResult;
     }
 
-    constexpr std::array<std::array<hipDataType, 3>, 6> validDataTypes
+    constexpr std::array<std::array<hiptensorDataType_t, 3>, 6> validDataTypes
         = {{// typeA, typeC, typeScalar
-            {HIP_R_16F, HIP_R_16F, HIP_R_16F},
-            {HIP_R_16F, HIP_R_16F, HIP_R_32F},
-            {HIP_R_16BF, HIP_R_16BF, HIP_R_16BF},
-            {HIP_R_16BF, HIP_R_16BF, HIP_R_32F},
-            {HIP_R_32F, HIP_R_32F, HIP_R_32F},
-            {HIP_R_64F, HIP_R_64F, HIP_R_64F}}};
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F},
+            {HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF},
+            {HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F},
+            {HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F}}};
 
-    std::array<hipDataType, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
+    std::array<hiptensorDataType_t, 3> inputTensorTypes = {descA->mType, descC->mType, typeScalar};
     if(descC->mType != descD->mType
        || std::none_of(validDataTypes.cbegin(),
                        validDataTypes.cend(),
@@ -121,7 +126,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                  "api-reference.html "
                  "(%s)",
                  hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorElementwiseBinary", msg);
+        logger->logError("hiptensorElementwiseBinaryExecute", msg);
         return errorCode;
     }
 
@@ -144,7 +149,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
         {descD->mType},
         {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
         {{modeD, modeD + descD->mLengths.size()}},
-        {opAC, descA->mUnaryOp, descC->mUnaryOp},
+        {opAC, opA, opC},
         hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
 
     bool canRun = false;
@@ -158,7 +163,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                                      {descD->mLengths},
                                      {descD->mStrides},
                                      {std::vector<int32_t>(modeD, modeD + descD->mLengths.size())},
-                                     {opAC, descA->mUnaryOp, descC->mUnaryOp},
+                                     {opAC, opA, opC},
                                      {A, C},
                                      {D});
 
@@ -183,9 +188,9 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                 }
 
                 auto flops = std::size_t(5) * pSolution->problemSize();
-                auto bytes = (hiptensor::hipDataTypeSize(descA->mType)
-                              + hiptensor::hipDataTypeSize(descC->mType)
-                              + hiptensor::hipDataTypeSize(descD->mType))
+                auto bytes = (hiptensor::hiptensorDataTypeSize(descA->mType)
+                              + hiptensor::hiptensorDataTypeSize(descC->mType)
+                              + hiptensor::hiptensorDataTypeSize(descD->mType))
                              * pSolution->problemSize();
 
                 hiptensor::PerfMetrics metrics = {
@@ -205,7 +210,7 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
                          metrics.mAvgTimeMs,
                          metrics.mTflops,
                          metrics.mBandwidth);
-                logger->logPerformanceTrace("hiptensorElementwiseBinary", msg);
+                logger->logPerformanceTrace("hiptensorElementwiseBinaryExecute", msg);
             }
             // Perform permutation without timing
             else
@@ -225,6 +230,6 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
              sizeof(msg),
              "Selected kernel is unable to solve the problem (%s)",
              hiptensorGetErrorString(errorCode));
-    logger->logError("hiptensorElementwiseBinary", msg);
+    logger->logError("hiptensorElementwiseBinaryExecute", msg);
     return errorCode;
 }

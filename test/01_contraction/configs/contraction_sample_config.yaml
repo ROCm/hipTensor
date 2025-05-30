@@ -13,18 +13,18 @@ Log Level:
 Tensor Data Types:
   # Data types for tensorA, tensorB, tensorD, tensorE, typeCompute
   # Supported type combinations are:
-    # - [ HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_16F, HIP_R_32F ]
-    # - [ HIP_R_16BF, HIP_R_16BF, HIP_R_16BF, HIP_R_16BF, HIP_R_32F ]
-    # - [ HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F ]
-    # - [ HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_16F ]
-    # - [ HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_16BF ]
-    # - [ HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F ]
-    # - [ HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_64F, HIP_R_32F ]
-    # - [ HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F, HIP_C_32F ]
-    # - [ HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F, HIP_C_64F ]
+    # - [ HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_16F, HIPTENSOR_R_32F ]
+    # - [ HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_16BF, HIPTENSOR_R_32F ]
+    # - [ HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F ]
+    # - [ HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_16F ]
+    # - [ HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_16BF ]
+    # - [ HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F ]
+    # - [ HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_32F ]
+    # - [ HIPTENSOR_C_32F, HIPTENSOR_C_32F, HIPTENSOR_C_32F, HIPTENSOR_C_32F, HIPTENSOR_C_32F ]
+    # - [ HIPTENSOR_C_64F, HIPTENSOR_C_64F, HIPTENSOR_C_64F, HIPTENSOR_C_64F, HIPTENSOR_C_64F ]
 
   # Example:
-  - [ HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_32F, HIP_R_16F ]
+  - [ HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_32F, HIPTENSOR_R_16F ]
 Algorithm Types:
   # Algorithms for selecting tensor contraction kernels:
     # HIPTENSOR_ALGO_ACTOR_CRITIC - Uses novel actor-critic selection model
@@ -52,11 +52,11 @@ Operators:
 Worksize Prefs:
   # Workspace size selection:
     # HIPTENSOR_WORKSPACE_MIN - At least one algorithm will be available
-    # HIPTENSOR_WORKSPACE_RECOMMENDED - The most suitable algorithm will be available
+    # HIPTENSOR_WORKSPACE_DEFAULT - The most suitable algorithm will be available
     # HIPTENSOR_WORKSPACE_MAX - All algorithms will be available
 
   # Example:
-  - HIPTENSOR_WORKSPACE_RECOMMENDED
+  - HIPTENSOR_WORKSPACE_DEFAULT
 Alphas:
   # Scaling parameter for A*B of data type 'typeCompute'
 

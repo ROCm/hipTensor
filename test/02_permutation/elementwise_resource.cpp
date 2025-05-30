@@ -46,7 +46,7 @@ namespace hiptensor
         , mHostOutput(Base::allocHost(0))
         , mCurrentMatrixElement(0)
         , mOpType(ElementwiseOp::PERMUTATION)
-        , mCurrentDataType(HIP_R_32F)
+        , mCurrentDataType(HIPTENSOR_R_32F)
         , mCurrentAllocByte(0)
     {
     }
@@ -69,13 +69,13 @@ namespace hiptensor
     }
 
     // suppose that all input and output data types are same.
-    void ElementwiseResource::setupStorage(ProblemDims const& dimSizes,
-                                           hipDataType        dataType,
-                                           ElementwiseOp      opType)
+    void ElementwiseResource::setupStorage(ProblemDims const&  dimSizes,
+                                           hiptensorDataType_t dataType,
+                                           ElementwiseOp       opType)
     {
         mOpType                   = opType;
         auto requiredElementCount = getProduct(dimSizes);
-        auto requiredMemorySize   = requiredElementCount * hipDataTypeSize(dataType);
+        auto requiredMemorySize   = requiredElementCount * hiptensorDataTypeSize(dataType);
 
         bool needFillData = false;
         if(requiredMemorySize > mCurrentAllocByte)
@@ -133,7 +133,7 @@ namespace hiptensor
         Base::reallocDeviceHostPair(mDeviceReference, mHostReference, 0);
         mCurrentMatrixElement = 0;
         mOpType               = ElementwiseOp::PERMUTATION;
-        mCurrentDataType      = HIP_R_32F;
+        mCurrentDataType      = HIPTENSOR_R_32F;
         mCurrentAllocByte     = 0;
     }
 
@@ -141,11 +141,11 @@ namespace hiptensor
     {
         uint32_t seed = static_cast<uint32_t>(256);
 
-        if(mCurrentDataType == HIP_R_64F)
+        if(mCurrentDataType == HIPTENSOR_R_64F)
         {
             fillLaunchKernel<double>((double*)devicePtr.get(), mCurrentMatrixElement, seed);
         }
-        else if(mCurrentDataType == HIP_R_32F)
+        else if(mCurrentDataType == HIPTENSOR_R_32F)
         {
             fillLaunchKernel<float>((float*)devicePtr.get(), mCurrentMatrixElement, seed);
         }
@@ -188,7 +188,7 @@ namespace hiptensor
 
     size_t ElementwiseResource::getCurrentMatrixMemorySize() const
     {
-        return mCurrentMatrixElement * hipDataTypeSize(mCurrentDataType);
+        return mCurrentMatrixElement * hiptensorDataTypeSize(mCurrentDataType);
     }
 
     auto ElementwiseResource::hostInput1() -> HostPtrT&

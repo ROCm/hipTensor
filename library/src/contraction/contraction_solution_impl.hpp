@@ -114,12 +114,13 @@ namespace hiptensor
             if(alpha != nullptr)
             {
                 alphaF = hiptensor::readVal<ScalarData>(
-                    alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+                    alpha,
+                    convertToComputeType(HipTensorDataType_v<typename Traits::ComputeDataT>));
             }
             if(beta != nullptr)
             {
                 betaF = hiptensor::readVal<ScalarData>(
-                    beta, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+                    beta, convertToComputeType(HipTensorDataType_v<typename Traits::ComputeDataT>));
             }
 
             auto [normal_a_ms_ks_lengths,
@@ -255,7 +256,8 @@ namespace hiptensor
             if(alpha != nullptr)
             {
                 alphaF = hiptensor::readVal<ScalarData>(
-                    alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+                    alpha,
+                    convertToComputeType(HipTensorDataType_v<typename Traits::ComputeDataT>));
             }
 
             auto [normal_a_ms_ks_lengths,

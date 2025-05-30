@@ -70,7 +70,7 @@ namespace hiptensor
     private: // No public instantiation except make_unique.
              // No copy
         ElementwiseResource();
-        ElementwiseResource(const ElementwiseResource&)            = delete;
+        ElementwiseResource(const ElementwiseResource&) = delete;
         ElementwiseResource& operator=(const ElementwiseResource&) = delete;
 
         void   fillRandToInput(HostPtrT& hostPtr, DevicePtrT& devicePtr);
@@ -84,7 +84,9 @@ namespace hiptensor
         ElementwiseResource(ElementwiseResource&&);
         virtual ~ElementwiseResource() = default;
 
-        void setupStorage(ProblemDims const& dimSizes, hipDataType dataType, ElementwiseOp opType);
+        void setupStorage(ProblemDims const&  dimSizes,
+                          hiptensorDataType_t dataType,
+                          ElementwiseOp       opType);
         void copyOutputToHost();
         void copyReferenceToDevice();
 
@@ -116,8 +118,8 @@ namespace hiptensor
 
         ElementwiseOp mOpType;
         size_t        mCurrentMatrixElement; /**< Element count of Input[1,2,3]/Output */
-        hipDataType
-            mCurrentDataType; /**< Type size of element of Input[1,2,3]/Output, only support HIP_R_16F, HIP_R_32F, HIP_R_64F */
+        hiptensorDataType_t
+               mCurrentDataType; /**< Type size of element of Input[1,2,3]/Output, only support HIPTENSOR_R_16F, HIPTENSOR_R_32F, HIPTENSOR_R_64F */
         size_t mCurrentAllocByte; /**< Allocated size of memory */
     };
 
