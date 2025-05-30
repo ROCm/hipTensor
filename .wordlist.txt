@@ -10,6 +10,7 @@ composablekernel
 configs
 csv
 cuTensor
+elementwise
 gtest
 hipTensor
 hiptensor
