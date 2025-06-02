@@ -43,10 +43,10 @@ namespace hiptensor
     {
     protected:
         // Move only
-        PermutationSolutionRegistry()                                              = default;
-        PermutationSolutionRegistry(PermutationSolutionRegistry&&)                 = default;
-        PermutationSolutionRegistry& operator=(PermutationSolutionRegistry&&)      = default;
-        PermutationSolutionRegistry(PermutationSolutionRegistry const&)            = delete;
+        PermutationSolutionRegistry()                              = default;
+        PermutationSolutionRegistry(PermutationSolutionRegistry&&) = default;
+        PermutationSolutionRegistry& operator=(PermutationSolutionRegistry&&) = default;
+        PermutationSolutionRegistry(PermutationSolutionRegistry const&)       = delete;
         PermutationSolutionRegistry& operator=(PermutationSolutionRegistry const&) = delete;
 
         // Import permutation solutions for the registry to manage
@@ -59,8 +59,8 @@ namespace hiptensor
         std::vector<PermutationSolution*>
             query(std::vector<float> const&                scalarValues,
                   std::vector<std::size_t> const&          lengths,
-                  std::vector<hipDataType> const&          inDataTypes,
-                  std::vector<hipDataType> const&          outDataTypes,
+                  std::vector<hiptensorDataType_t> const&  inDataTypes,
+                  std::vector<hiptensorDataType_t> const&  outDataTypes,
                   std::vector<std::vector<int32_t>> const& inModesArray,
                   std::vector<std::vector<int32_t>> const& outModesArray,
                   std::vector<hiptensorOperator_t> const&  operators,

@@ -33,7 +33,7 @@
 #include "logger.hpp"
 #include "util.hpp"
 
-hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -44,7 +44,7 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
         msg, sizeof(msg), "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
     logger->logAPITrace("hiptensorCreate", msg);
 
-    (*handle) = new hiptensorHandle_t;
+    (*handle) = new hiptensorHandle;
 
     if(*handle == nullptr)
     {
@@ -85,7 +85,7 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -104,13 +104,43 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle)
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
-hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
-                                                hiptensorTensorDescriptor_t* desc,
-                                                const uint32_t               numModes,
-                                                const int64_t                lens[],
-                                                const int64_t                strides[],
-                                                hipDataType                  dataType,
-                                                hiptensorOperator_t          unaryOp)
+hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
+                                                 const uint32_t    numEntries)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
+                                                      const char              filename[])
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
+                                                       const char        filename[],
+                                                       uint32_t*         numCachelinesRead)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorWriteKernelCacheToFile(const hiptensorHandle_t handle,
+                                                  const char              filename[])
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorReadKernelCacheFromFile(hiptensorHandle_t handle, const char filename[])
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
+                                                  hiptensorTensorDescriptor_t* desc,
+                                                  const uint32_t               numModes,
+                                                  const int64_t                lens[],
+                                                  const int64_t                strides[],
+                                                  hiptensorDataType_t          dataType,
+                                                  uint32_t                     alignmentRequirement)
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
@@ -119,19 +149,18 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
     char msg[256];
     snprintf(msg,
              sizeof(msg),
-             "handle=0x%0*llX, desc=0x%llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
-             "dataType=0x%02X, unaryOp=0x%02X",
+             "handle=0x%0*llX, numModes=0x%02X, lens=0x%llX, strides=0x%llX,"
+             "dataType=0x%02X, alignmentRequirement=0x%02X",
              2 * (int)sizeof(void*),
              (unsigned long long)handle,
-             (unsigned long long)desc,
              (unsigned int)numModes,
              (unsigned long long)lens,
              (unsigned long long)strides,
              (unsigned int)dataType,
-             (unsigned int)unaryOp);
-    logger->logAPITrace("hiptensorInitTensorDescriptor", msg);
+             (unsigned int)alignmentRequirement);
+    logger->logAPITrace("hiptensorCreateTensorDescriptor", msg);
 
-    if(handle == nullptr || desc == nullptr)
+    if(handle == nullptr)
     {
         auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
         if(handle == nullptr)
@@ -148,16 +177,14 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                      "Initialization Error : contraction descriptor = nullptr (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        logger->logError("hiptensorInitTensorDescriptor", msg);
+        logger->logError("hiptensorCreateTensorDescriptor", msg);
         return HIPTENSOR_STATUS_NOT_INITIALIZED;
     }
 
     if((lens == nullptr && strides != nullptr)
-       || ((dataType != HIP_R_16F) && (dataType != HIP_R_16BF) && (dataType != HIP_R_32F)
-           && (dataType != HIP_R_64F) && (dataType != HIP_C_32F) && (dataType != HIP_C_64F))
-       || ((unaryOp == HIPTENSOR_OP_ADD) || (unaryOp == HIPTENSOR_OP_MUL)
-           || (unaryOp == HIPTENSOR_OP_MIN) || (unaryOp == HIPTENSOR_OP_MAX)
-           || (unaryOp == HIPTENSOR_OP_UNKNOWN)))
+       || ((dataType != HIPTENSOR_R_16F) && (dataType != HIPTENSOR_R_16BF)
+           && (dataType != HIPTENSOR_R_32F) && (dataType != HIPTENSOR_R_64F)
+           && (dataType != HIPTENSOR_C_32F) && (dataType != HIPTENSOR_C_64F)))
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
         if(lens == nullptr && strides != nullptr)
@@ -167,15 +194,6 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                      "Tensor Initialization Error : lens = nullptr and strides != nullptr (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        else if((unaryOp == HIPTENSOR_OP_ADD) || (unaryOp == HIPTENSOR_OP_MUL)
-                || (unaryOp == HIPTENSOR_OP_MIN) || (unaryOp == HIPTENSOR_OP_MAX)
-                || (unaryOp == HIPTENSOR_OP_UNKNOWN))
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Tensor Initialization Error : op is not a valid unary operator (%s) ",
-                     hiptensorGetErrorString(errorCode));
-        }
         else
         {
             snprintf(msg,
@@ -183,23 +201,25 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
                      "Tensor Initialization Error : datatype should be float or double (%s)",
                      hiptensorGetErrorString(errorCode));
         }
-        logger->logError("hiptensorInitTensorDescriptor", msg);
+        logger->logError("hiptensorCreateTensorDescriptor", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
     auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
-    if(dataType == HIP_R_64F && !realHandle->getDevice().supportsF64())
+    if(dataType == HIPTENSOR_R_64F && !realHandle->getDevice().supportsF64())
     {
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
+    *desc = new hiptensorTensorDescriptor();
+
     if(strides)
     {
         // Construct with both given lengths and strides
-        *desc = {dataType,
-                 std::vector<std::size_t>(lens, lens + numModes),
-                 std::vector<std::size_t>(strides, strides + numModes),
-                 unaryOp};
+        **desc = {dataType,
+                  std::vector<std::size_t>(lens, lens + numModes),
+                  std::vector<std::size_t>(strides, strides + numModes),
+                  alignmentRequirement};
     }
     else
     {
@@ -212,14 +232,310 @@ hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     han
             auto                     lensVector = std::vector<std::size_t>(lens, lens + numModes);
             std::vector<std::size_t> stridesVector
                 = hiptensor::stridesFromLengths(lensVector, options->isColMajorStrides());
-            *desc = {dataType, lensVector, stridesVector, unaryOp};
+            **desc = {dataType, lensVector, stridesVector, alignmentRequirement};
         }
         else
         {
-            *desc = {dataType, std::vector<std::size_t>(), std::vector<std::size_t>(), unaryOp};
+            **desc = {dataType,
+                      std::vector<std::size_t>(),
+                      std::vector<std::size_t>(),
+                      alignmentRequirement};
         }
     }
 
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc)
+{
+    delete desc;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc)
+{
+    delete desc;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t
+    hiptensorOperationDescriptorSetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             const void*                             buf,
+                                             size_t                                  sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t
+    hiptensorOperationDescriptorGetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             void*                                   buf,
+                                             size_t                                  sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreatePermutation(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t  descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t  descB,
+                                             const int32_t                      modeB[],
+                                             const hiptensorComputeDescriptor_t descCompute)
+{
+    *desc = new hiptensorOperationDescriptor();
+
+    (*desc)->mTag          = 0;
+    (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
+    (*desc)->mFlops        = 0.0f;
+    (*desc)->mMovedBytes   = 0.0f;
+    (*desc)->mPaddingLeft  = 0u;
+    (*desc)->mPaddingRighT = 0u;
+    (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType   = HIPTENSOR_PERMUTATION;
+    (*desc)->mContractionOpId = 0;
+
+    (*desc)->mDescA       = descA;
+    (*desc)->mModeA       = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA         = opA;
+    (*desc)->mDescB       = descB;
+    (*desc)->mModeB       = std::vector<int32_t>(modeB, modeB + descB->mLengths.size());
+    (*desc)->mOpB         = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescC       = nullptr;
+    (*desc)->mModeC       = {};
+    (*desc)->mOpC         = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescD       = nullptr;
+    (*desc)->mModeD       = {};
+    (*desc)->mOpAC        = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mOpABC       = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescCompute = descCompute;
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreateElementwiseBinary(const hiptensorHandle_t            handle,
+                                                   hiptensorOperationDescriptor_t*    desc,
+                                                   const hiptensorTensorDescriptor_t  descA,
+                                                   const int32_t                      modeA[],
+                                                   hiptensorOperator_t                opA,
+                                                   const hiptensorTensorDescriptor_t  descC,
+                                                   const int32_t                      modeC[],
+                                                   hiptensorOperator_t                opC,
+                                                   const hiptensorTensorDescriptor_t  descD,
+                                                   const int32_t                      modeD[],
+                                                   hiptensorOperator_t                opAC,
+                                                   const hiptensorComputeDescriptor_t descCompute)
+{
+    *desc                  = new hiptensorOperationDescriptor();
+    (*desc)->mTag          = 0;
+    (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
+    (*desc)->mFlops        = 0.0f;
+    (*desc)->mMovedBytes   = 0.0f;
+    (*desc)->mPaddingLeft  = 0u;
+    (*desc)->mPaddingRighT = 0u;
+    (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType   = HIPTENSOR_ELEMENTWISE_BINARY;
+    (*desc)->mContractionOpId = 0;
+
+    (*desc)->mDescA       = descA;
+    (*desc)->mModeA       = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA         = opA;
+    (*desc)->mDescB       = nullptr;
+    (*desc)->mModeB       = {};
+    (*desc)->mOpB         = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescC       = descC;
+    (*desc)->mModeC       = std::vector<int32_t>(modeC, modeC + descC->mLengths.size());
+    (*desc)->mOpC         = opC;
+    (*desc)->mDescD       = descD;
+    (*desc)->mModeD       = std::vector<int32_t>(modeD, modeD + descD->mLengths.size());
+    (*desc)->mOpAC        = opAC;
+    (*desc)->mOpABC       = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescCompute = descCompute;
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreateElementwiseTrinary(const hiptensorHandle_t            handle,
+                                                    hiptensorOperationDescriptor_t*    desc,
+                                                    const hiptensorTensorDescriptor_t  descA,
+                                                    const int32_t                      modeA[],
+                                                    hiptensorOperator_t                opA,
+                                                    const hiptensorTensorDescriptor_t  descB,
+                                                    const int32_t                      modeB[],
+                                                    hiptensorOperator_t                opB,
+                                                    const hiptensorTensorDescriptor_t  descC,
+                                                    const int32_t                      modeC[],
+                                                    hiptensorOperator_t                opC,
+                                                    const hiptensorTensorDescriptor_t  descD,
+                                                    const int32_t                      modeD[],
+                                                    hiptensorOperator_t                opAB,
+                                                    hiptensorOperator_t                opABC,
+                                                    const hiptensorComputeDescriptor_t descCompute)
+{
+    *desc                  = new hiptensorOperationDescriptor();
+    (*desc)->mTag          = 0;
+    (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
+    (*desc)->mFlops        = 0.0f;
+    (*desc)->mMovedBytes   = 0.0f;
+    (*desc)->mPaddingLeft  = 0u;
+    (*desc)->mPaddingRighT = 0u;
+    (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType   = HIPTENSOR_ELEMENTWISE_TRINARY;
+    (*desc)->mContractionOpId = 0;
+
+    (*desc)->mDescA       = descA;
+    (*desc)->mModeA       = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA         = opA;
+    (*desc)->mDescB       = descB;
+    (*desc)->mModeB       = std::vector<int32_t>(modeB, modeB + descB->mLengths.size());
+    (*desc)->mOpB         = opB;
+    (*desc)->mDescC       = descC;
+    (*desc)->mModeC       = std::vector<int32_t>(modeC, modeC + descC->mLengths.size());
+    (*desc)->mOpC         = opC;
+    (*desc)->mDescD       = descD;
+    (*desc)->mModeD       = std::vector<int32_t>(modeD, modeD + descD->mLengths.size());
+    (*desc)->mOpAC        = opAB;
+    (*desc)->mOpABC       = opABC;
+    (*desc)->mDescCompute = descCompute;
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorCreateReduction(const hiptensorHandle_t            handle,
+                                           hiptensorOperationDescriptor_t*    desc,
+                                           const hiptensorTensorDescriptor_t  descA,
+                                           const int32_t                      modeA[],
+                                           hiptensorOperator_t                opA,
+                                           const hiptensorTensorDescriptor_t  descC,
+                                           const int32_t                      modeC[],
+                                           hiptensorOperator_t                opC,
+                                           const hiptensorTensorDescriptor_t  descD,
+                                           const int32_t                      modeD[],
+                                           hiptensorOperator_t                opReduce,
+                                           const hiptensorComputeDescriptor_t descCompute)
+{
+    *desc                  = new hiptensorOperationDescriptor();
+    (*desc)->mTag          = 0;
+    (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
+    (*desc)->mFlops        = 0.0f;
+    (*desc)->mMovedBytes   = 0.0f;
+    (*desc)->mPaddingLeft  = 0u;
+    (*desc)->mPaddingRighT = 0u;
+    (*desc)->mPaddingValue = nullptr;
+
+    (*desc)->mOperationType   = HIPTENSOR_REDUCTION;
+    (*desc)->mContractionOpId = 0;
+
+    (*desc)->mDescA       = descA;
+    (*desc)->mModeA       = std::vector<int32_t>(modeA, modeA + descA->mLengths.size());
+    (*desc)->mOpA         = opA;
+    (*desc)->mDescB       = nullptr;
+    (*desc)->mModeB       = {};
+    (*desc)->mOpB         = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescC       = descC;
+    (*desc)->mModeC       = std::vector<int32_t>(modeC, modeC + descC->mLengths.size());
+    (*desc)->mOpC         = opC;
+    (*desc)->mDescD       = descD;
+    (*desc)->mModeD       = std::vector<int32_t>(modeD, modeD + descD->mLengths.size());
+    (*desc)->mOpAC        = opReduce;
+    (*desc)->mOpABC       = HIPTENSOR_OP_IDENTITY;
+    (*desc)->mDescCompute = descCompute;
+
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   handle,
+                                                  hiptensorPlanPreference_t pref,
+                                                  hiptensorAlgo_t           algo,
+                                                  hiptensorJitMode_t        jitMode);
+
+hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
+                                                hiptensorPlanPreference_t* pref,
+                                                hiptensorAlgo_t            algo,
+                                                hiptensorJitMode_t         jitMode)
+{
+    *pref                        = new hiptensorPlanPreference();
+    (*pref)->mSelectionAlgorithm = algo;
+    (*pref)->mJit                = jitMode;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyPlanPreference(hiptensorPlanPreference_t pref)
+{
+    delete pref;
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorPlanPreferenceSetAttribute(const hiptensorHandle_t            handle,
+                                                      hiptensorPlanPreference_t          pref,
+                                                      hiptensorPlanPreferenceAttribute_t attr,
+                                                      const void*                        buf,
+                                                      size_t sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
+                                            const hiptensorPlan_t    plan,
+                                            hiptensorPlanAttribute_t attr,
+                                            void*                    buf,
+                                            size_t                   sizeInBytes)
+{
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t contractionGetWorkspaceSize(const hiptensorHandle_t              handle,
+                                              const hiptensorOperationDescriptor_t desc,
+                                              const hiptensorPlanPreference_t      planPref,
+                                              const hiptensorWorksizePreference_t  workspacePref,
+                                              uint64_t* workspaceSizeEstimate);
+hiptensorStatus_t hiptensorEstimateWorkspaceSize(const hiptensorHandle_t              handle,
+                                                 const hiptensorOperationDescriptor_t desc,
+                                                 const hiptensorPlanPreference_t      planPref,
+                                                 const hiptensorWorksizePreference_t  workspacePref,
+                                                 uint64_t* workspaceSizeEstimate)
+{
+    if(desc->mOperationType == HIPTENSOR_CONTRACTION)
+    {
+        return contractionGetWorkspaceSize(
+            handle, desc, planPref, workspacePref, workspaceSizeEstimate);
+    }
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t                      plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit);
+hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t*                     plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit)
+{
+    (*plan)                     = new hiptensorPlan();
+    (*plan)->mRequiredWorkspace = workspaceSizeLimit;
+    (*plan)->mOpDesc            = desc;
+    (*plan)->mPref              = pref;
+
+    if(desc->mOperationType == HIPTENSOR_CONTRACTION)
+    {
+        return contractionInitPlan(handle, *plan, desc, pref, workspaceSizeLimit);
+    }
+    return HIPTENSOR_STATUS_SUCCESS;
+}
+
+hiptensorStatus_t hiptensorDestroyPlan(hiptensorPlan_t plan)
+{
+    delete plan;
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -261,73 +577,6 @@ const char* hiptensorGetErrorString(const hiptensorStatus_t error)
         return "HIPTENSOR_STATUS_IO_ERROR";
     else
         return "HIPTENSOR_STATUS_UNKNOWN";
-}
-
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
-                                                   const void*                        ptr,
-                                                   const hiptensorTensorDescriptor_t* desc,
-                                                   uint32_t* alignmentRequirement)
-{
-    using hiptensor::Logger;
-    auto& logger = Logger::instance();
-
-    // Log API access
-    char msg[256];
-    snprintf(msg,
-             sizeof(msg),
-             "handle=0x%0*llX, ptr=0x%llX, desc=0x%llX, alignmentRequirement=0x%02X",
-             2 * (int)sizeof(void*),
-             (unsigned long long)handle,
-             (unsigned long long)ptr,
-             (unsigned long long)desc,
-             (unsigned int)*alignmentRequirement);
-
-    logger->logAPITrace("hiptensorGetAlignmentRequirement", msg);
-
-    if(!handle || !desc)
-    {
-        auto errorCode = HIPTENSOR_STATUS_NOT_INITIALIZED;
-        if(!handle)
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Error : handle = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        else
-        {
-            snprintf(msg,
-                     sizeof(msg),
-                     "Error : contraction descriptor = nullptr (%s)",
-                     hiptensorGetErrorString(errorCode));
-        }
-        logger->logError("hiptensorGetAlignmentRequirement", msg);
-        return HIPTENSOR_STATUS_NOT_INITIALIZED;
-    }
-
-    *alignmentRequirement = 0u;
-    for(auto i = hiptensor::hipDataTypeSize(desc->mType); i <= 16u; i *= 2)
-    {
-        if((std::size_t)ptr % (std::size_t)i == 0)
-        {
-            *alignmentRequirement = i;
-        }
-    }
-
-    if(*alignmentRequirement == 0)
-    {
-        auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Error : alignment requirement is 0 (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorGetAlignmentRequirement", msg);
-        return HIPTENSOR_STATUS_INVALID_VALUE;
-    }
-    else
-    {
-        return HIPTENSOR_STATUS_SUCCESS;
-    }
 }
 
 hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback)

@@ -75,8 +75,8 @@ Data Types **<Ti / To / Tc>** = <Input type / Output Type / Compute Type>, where
 |                     |     cf64 / cf64 / cf64       |                     |                     |
 +---------------------+------------------------------+---------------------+---------------------+
 |                     |     f16 / f16 / \-           |  gfx908             | Rank2 - Rank6       |
-| Permutation         +------------------------------+  gfx90a             |                     |
-|                     |     f16 / f32 / \-           |  gfx942+            |                     |
+| Element-wise        +------------------------------+  gfx90a             |                     |
+| Operations          |     f16 / f32 / \-           |  gfx942+            |                     |
 |                     +------------------------------+                     |                     |
 |                     |     f32 / f32 / \-           |                     |                     |
 +---------------------+------------------------------+---------------------+---------------------+
@@ -104,15 +104,25 @@ hipTensor API objects
 
 .. <!-- spellcheck-disable -->
 
+hiptensorDataType_t
+-------------------
+
+.. doxygenenum::  hiptensorDataType_t
+
+hiptensorDataType_t
+-------------------
+
+.. doxygenenum::  hiptensorDataType_t
+
 hiptensorStatus_t
 -----------------
 
 .. doxygenenum::  hiptensorStatus_t
 
-hiptensorComputeType_t
-----------------------
+hiptensorComputeDescriptor_t
+----------------------------
 
-.. doxygenenum::  hiptensorComputeType_t
+.. doxygenenum::  hiptensorComputeDescriptor_t
 
 hiptensorOperator_t
 -------------------
@@ -130,39 +140,44 @@ hiptensorWorksizePreference_t
 .. doxygenenum::  hiptensorWorksizePreference_t
 
 hiptensorLogLevel_t
--------------------------------
+-------------------
 
 .. doxygenenum::  hiptensorLogLevel_t
 
-hiptensorHandle_t
------------------
+hiptensorOperationDescriptorAttribute_t
+---------------------------------------
 
-.. doxygenstruct::  hiptensorHandle_t
-   :members:
+.. doxygenenum::  hiptensorOperationDescriptorAttribute_t
 
-hiptensorTensorDescriptor_t
----------------------------
+hiptensorPlanPreferenceAttribute_t
+----------------------------------
 
-.. doxygenstruct::   hiptensorTensorDescriptor_t
-   :members:
+.. doxygenenum::  hiptensorPlanPreferenceAttribute_t
 
-hiptensorContractionDescriptor_t
---------------------------------
+hiptensorPlanAttribute_t
+------------------------
 
-.. doxygenstruct::  hiptensorContractionDescriptor_t
-   :members:
+.. doxygenenum::  hiptensorPlanAttribute_t
 
-hiptensorContractionFind_t
---------------------------
+hiptensorAutotuneMode_t
+-----------------------
 
-.. doxygenstruct::  hiptensorContractionFind_t
-   :members:
+.. doxygenenum::  hiptensorAutotuneMode_t
 
-hiptensorContractionPlan_t
---------------------------
+hiptensorCacheMode_t
+--------------------
 
-.. doxygenstruct::  hiptensorContractionPlan_t
-   :members:
+.. doxygenenum::  hiptensorCacheMode_t
+
+hiptensorJitMode_t
+------------------
+
+.. doxygenenum::  hiptensorJitMode_t
+
+hiptensorLoggerCallback_t
+-------------------------
+
+.. doxygentypedef::  hiptensorLoggerCallback_t
 
 Helper functions
 ================
@@ -177,79 +192,168 @@ hiptensorDestroy
 
 .. doxygenfunction::  hiptensorDestroy
 
-hiptensorInitTensorDescriptor
------------------------------
+hiptensorHandleResizePlanCache
+------------------------------
 
-.. doxygenfunction::  hiptensorInitTensorDescriptor
+.. doxygenfunction::  hiptensorHandleResizePlanCache
 
-hiptensorGetAlignmentRequirement
+hiptensorHandleWritePlanCacheToFile
+-----------------------------------
+
+.. doxygenfunction::  hiptensorHandleWritePlanCacheToFile
+
+hiptensorHandleReadPlanCacheFromFile
+------------------------------------
+
+.. doxygenfunction::  hiptensorHandleReadPlanCacheFromFile
+
+hiptensorWriteKernelCacheToFile
+-------------------------------
+
+.. doxygenfunction::  hiptensorWriteKernelCacheToFile
+
+hiptensorReadKernelCacheFromFile
 --------------------------------
 
-.. doxygenfunction::  hiptensorGetAlignmentRequirement
+.. doxygenfunction::  hiptensorReadKernelCacheFromFile
+
+hiptensorCreateTensorDescriptor
+-------------------------------
+
+.. doxygenfunction::  hiptensorCreateTensorDescriptor
+
+hiptensorDestroyTensorDescriptor
+--------------------------------
+
+.. doxygenfunction::  hiptensorDestroyTensorDescriptor
+
+hiptensorDestroyOperationDescriptor
+-----------------------------------
+
+.. doxygenfunction::  hiptensorDestroyOperationDescriptor
+
+hiptensorOperationDescriptorSetAttribute
+----------------------------------------
+
+.. doxygenfunction::  hiptensorOperationDescriptorSetAttribute
+
+hiptensorOperationDescriptorGetAttribute
+----------------------------------------
+
+.. doxygenfunction::  hiptensorOperationDescriptorGetAttribute
+
+hiptensorCreatePlanPreference
+-----------------------------
+
+.. doxygenfunction::  hiptensorCreatePlanPreference
+
+hiptensorDestroyPlanPreference
+------------------------------
+
+.. doxygenfunction::  hiptensorDestroyPlanPreference
+
+hiptensorPlanPreferenceSetAttribute
+-----------------------------------
+
+.. doxygenfunction::  hiptensorPlanPreferenceSetAttribute
+
+hiptensorPlanGetAttribute
+-------------------------
+
+.. doxygenfunction::  hiptensorPlanGetAttribute
+
+hiptensorEstimateWorkspaceSize
+------------------------------
+
+.. doxygenfunction::  hiptensorEstimateWorkspaceSize
+
+hiptensorCreatePlan
+-------------------
+
+.. doxygenfunction::  hiptensorCreatePlan
+
+hiptensorDestroyPlan
+--------------------
+
+.. doxygenfunction::  hiptensorDestroyPlan
 
 hiptensorGetErrorString
 -----------------------
 
 .. doxygenfunction::  hiptensorGetErrorString
 
+hiptensorGetVersion
+-------------------
+
+.. doxygenfunction::  hiptensorGetVersion
+
+hiptensorGetHiprtVersion
+------------------------
+
+.. doxygenfunction::  hiptensorGetHiprtVersion
+
+
 Contraction operations
 ======================
 
-hiptensorInitContractionDescriptor
-----------------------------------
+hiptensorCreateContraction
+--------------------------
 
-.. doxygenfunction::  hiptensorInitContractionDescriptor
+.. doxygenfunction::  hiptensorCreateContraction
 
-hiptensorInitContractionFind
-----------------------------
+hiptensorContract
+-----------------
 
-.. doxygenfunction::  hiptensorInitContractionFind
+.. doxygenfunction::  hiptensorContract
 
-hiptensorInitContractionPlan
-----------------------------
-
-.. doxygenfunction::  hiptensorInitContractionPlan
-
-hiptensorContraction
---------------------
-
-.. doxygenfunction::  hiptensorContraction
-
-hiptensorContractionGetWorkspaceSize
-------------------------------------
-
-.. doxygenfunction::  hiptensorContractionGetWorkspaceSize
 
 Element-wise operations
 =======================
 
-hiptensorPermutation
+hiptensorCreatePermutation
+--------------------------
+
+.. doxygenfunction::  hiptensorCreatePermutation
+
+hiptensorPermute
+----------------
+
+.. doxygenfunction::  hiptensorPermute
+
+hiptensorCreateElementwiseBinary
+--------------------------------
+
+.. doxygenfunction::  hiptensorCreateElementwiseBinary
+
+hiptensorElementwiseBinaryExecute
+---------------------------------
+
+.. doxygenfunction::  hiptensorElementwiseBinaryExecute
+
+hiptensorCreateElementwiseTrinary
+---------------------------------
+
+.. doxygenfunction::  hiptensorCreateElementwiseTrinary
+
+hiptensorElementwiseTrinaryExecute
 ----------------------------------
 
-.. doxygenfunction:: hiptensorPermutation
+.. doxygenfunction::  hiptensorElementwiseTrinaryExecute
 
-hiptensorElementwiseBinary
-----------------------------------
-
-.. doxygenfunction:: hiptensorElementwiseBinary
-
-hiptensorElementwiseTrinary
-----------------------------------
-
-.. doxygenfunction:: hiptensorElementwiseTrinary
 
 Reduction operations
 ======================
 
-hiptensorReduction
-----------------------------------
+hiptensorCreateReduction
+------------------------
 
-.. doxygenfunction::  hiptensorReduction
+.. doxygenfunction::  hiptensorCreateReduction
 
-hiptensorReductionGetWorkspaceSize
-----------------------------------
+hiptensorReduce
+---------------
 
-.. doxygenfunction::  hiptensorReductionGetWorkspaceSize
+.. doxygenfunction::  hiptensorReduce
+
 
 Logging functions
 =================
@@ -283,5 +387,6 @@ hiptensorLoggerForceDisable
 ---------------------------
 
 .. doxygenfunction::  hiptensorLoggerForceDisable
+
 
 .. <!-- spellcheck-enable -->

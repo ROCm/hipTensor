@@ -44,34 +44,34 @@ namespace hiptensor
 {
     hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,
                                       std::vector<ContractionSolution*> const& candidates,
-                                      hipDataType                              typeA,
+                                      hiptensorDataType_t                      typeA,
                                       std::vector<std::size_t> const&          a_ms_ks_lengths,
                                       std::vector<std::size_t> const&          a_ms_ks_strides,
                                       std::vector<int32_t> const&              a_ms_ks_modes,
-                                      hipDataType                              typeB,
+                                      hiptensorDataType_t                      typeB,
                                       std::vector<std::size_t> const&          b_ns_ks_lengths,
                                       std::vector<std::size_t> const&          b_ns_ks_strides,
                                       std::vector<int32_t> const&              b_ns_ks_modes,
-                                      hipDataType                              typeD,
+                                      hiptensorDataType_t                      typeD,
                                       std::vector<std::size_t> const&          d_ms_ns_lengths,
                                       std::vector<std::size_t> const&          d_ms_ns_strides,
                                       std::vector<int32_t> const&              d_ms_ns_modes,
-                                      hipDataType                              typeE,
+                                      hiptensorDataType_t                      typeE,
                                       std::vector<std::size_t> const&          e_ms_ns_lengths,
                                       std::vector<std::size_t> const&          e_ms_ns_strides,
                                       std::vector<int32_t> const&              e_ms_ns_modes,
-                                      hiptensorComputeType_t                   computeType,
+                                      hiptensorComputeDescriptor_t             computeType,
                                       const uint64_t                           workspaceSize)
     {
         // Make sure that we calculate full element space incase strides are not packed.
-        auto sizeA = elementsFromLengths(a_ms_ks_lengths) * hipDataTypeSize(typeA);
-        auto sizeB = elementsFromLengths(b_ns_ks_lengths) * hipDataTypeSize(typeB);
+        auto sizeA = elementsFromLengths(a_ms_ks_lengths) * hiptensorDataTypeSize(typeA);
+        auto sizeB = elementsFromLengths(b_ns_ks_lengths) * hiptensorDataTypeSize(typeB);
         auto sizeD = 0;
         if(typeD != NONE_TYPE)
         {
-            sizeD = elementsFromLengths(d_ms_ns_lengths) * hipDataTypeSize(typeD);
+            sizeD = elementsFromLengths(d_ms_ns_lengths) * hiptensorDataTypeSize(typeD);
         }
-        auto sizeE = elementsFromLengths(e_ms_ns_lengths) * hipDataTypeSize(typeE);
+        auto sizeE = elementsFromLengths(e_ms_ns_lengths) * hiptensorDataTypeSize(typeE);
 
         void *A_d, *B_d, *D_d, *E_d, *wspace;
 
@@ -79,13 +79,13 @@ namespace hiptensor
          * `alpha` and `beta` are void pointer. hiptensor uses readVal to load the value of alpha.
          * ```
          * alphaF = hiptensor::readVal<float>(
-         *      alpha, convertToComputeType(HipDataType_v<typename Traits::ComputeDataT>));
+         *      alpha, convertToComputeType(HipTensorDataType_v<typename Traits::ComputeDataT>));
          * ```
          * Hence, the `alpha` and `bete` need to point to a ComputeData value
          */
         ScalarData alpha;
         ScalarData beta;
-        if(computeType == HIPTENSOR_COMPUTE_C32F || computeType == HIPTENSOR_COMPUTE_C64F)
+        if(computeType == HIPTENSOR_COMPUTE_DESC_C32F || computeType == HIPTENSOR_COMPUTE_DESC_C64F)
         {
             writeVal(&alpha, computeType, {computeType, 1.02, 1.03});
             writeVal(&beta, computeType, {computeType, 1.04, 1.05});
@@ -215,19 +215,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -327,19 +327,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -448,19 +448,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -560,19 +560,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -675,19 +675,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -782,19 +782,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -897,19 +897,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1009,19 +1009,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1124,19 +1124,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1231,19 +1231,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1346,19 +1346,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1453,19 +1453,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1568,19 +1568,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1675,19 +1675,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1795,19 +1795,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -1907,19 +1907,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -2027,19 +2027,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -2139,19 +2139,19 @@ namespace hiptensor
         static hiptensorStatus_t
             selectWinner(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
@@ -2251,27 +2251,27 @@ namespace hiptensor
     hiptensorStatus_t
         actorCriticModel(ContractionSolution**                                   winner,
                          std::unordered_map<size_t, ContractionSolution*> const& candidates,
-                         hipDataType                                             typeA,
+                         hiptensorDataType_t                                     typeA,
                          std::vector<std::size_t> const&                         a_ms_ks_lengths,
                          std::vector<std::size_t> const&                         a_ms_ks_strides,
                          std::vector<int32_t> const&                             a_ms_ks_modes,
-                         hipDataType                                             typeB,
+                         hiptensorDataType_t                                     typeB,
                          std::vector<std::size_t> const&                         b_ns_ks_lengths,
                          std::vector<std::size_t> const&                         b_ns_ks_strides,
                          std::vector<int32_t> const&                             b_ns_ks_modes,
-                         hipDataType                                             typeD,
+                         hiptensorDataType_t                                     typeD,
                          std::vector<std::size_t> const&                         d_ms_ns_lengths,
                          std::vector<std::size_t> const&                         d_ms_ns_strides,
                          std::vector<int32_t> const&                             d_ms_ns_modes,
-                         hipDataType                                             typeE,
+                         hiptensorDataType_t                                     typeE,
                          std::vector<std::size_t> const&                         e_ms_ns_lengths,
                          std::vector<std::size_t> const&                         e_ms_ns_strides,
                          std::vector<int32_t> const&                             e_ms_ns_modes,
-                         hiptensorComputeType_t                                  computeType,
+                         hiptensorComputeDescriptor_t                            computeType,
                          const uint64_t                                          workspaceSize)
     {
-        if(typeA == HIP_R_16F && typeB == HIP_R_16F && typeD == NONE_TYPE && typeE == HIP_R_16F
-           && computeType == HIPTENSOR_COMPUTE_32F)
+        if(typeA == HIPTENSOR_R_16F && typeB == HIPTENSOR_R_16F && typeD == NONE_TYPE
+           && typeE == HIPTENSOR_R_16F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<_Float16,
                                         _Float16,
@@ -2298,8 +2298,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_16F && typeB == HIP_R_16F && typeD == HIP_R_16F && typeE == HIP_R_16F
-                && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_16F && typeB == HIPTENSOR_R_16F && typeD == HIPTENSOR_R_16F
+                && typeE == HIPTENSOR_R_16F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<_Float16,
                                         _Float16,
@@ -2326,8 +2326,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_16BF && typeB == HIP_R_16BF && typeD == NONE_TYPE
-                && typeE == HIP_R_16BF && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_16BF && typeB == HIPTENSOR_R_16BF && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_R_16BF && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<hip_bfloat16,
                                         hip_bfloat16,
@@ -2354,8 +2354,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_16BF && typeB == HIP_R_16BF && typeD == HIP_R_16BF
-                && typeE == HIP_R_16BF && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_16BF && typeB == HIPTENSOR_R_16BF && typeD == HIPTENSOR_R_16BF
+                && typeE == HIPTENSOR_R_16BF && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<hip_bfloat16,
                                         hip_bfloat16,
@@ -2382,8 +2382,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
-                && computeType == HIPTENSOR_COMPUTE_16F)
+        else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_16F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2410,8 +2410,8 @@ namespace hiptensor
                                                                 e_ms_ns_modes,
                                                                 workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
-                && computeType == HIPTENSOR_COMPUTE_16F)
+        else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == HIPTENSOR_R_32F
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_16F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2438,8 +2438,8 @@ namespace hiptensor
                                                                 e_ms_ns_modes,
                                                                 workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
-                && computeType == HIP_R_16BF)
+        else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_R_16BF)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2466,8 +2466,8 @@ namespace hiptensor
                                                                     e_ms_ns_modes,
                                                                     workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
-                && computeType == HIP_R_16BF)
+        else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == HIPTENSOR_R_32F
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_R_16BF)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2494,8 +2494,8 @@ namespace hiptensor
                                                                     e_ms_ns_modes,
                                                                     workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == NONE_TYPE && typeE == HIP_R_32F
-                && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2522,8 +2522,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_32F && typeB == HIP_R_32F && typeD == HIP_R_32F && typeE == HIP_R_32F
-                && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_32F && typeB == HIPTENSOR_R_32F && typeD == HIPTENSOR_R_32F
+                && typeE == HIPTENSOR_R_32F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<float,
                                         float,
@@ -2550,8 +2550,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == NONE_TYPE && typeE == HIP_R_64F
-                && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2578,8 +2578,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F && typeE == HIP_R_64F
-                && computeType == HIPTENSOR_COMPUTE_32F)
+        else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == HIPTENSOR_R_64F
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2606,8 +2606,8 @@ namespace hiptensor
                                                              e_ms_ns_modes,
                                                              workspaceSize);
         }
-        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == NONE_TYPE && typeE == HIP_R_64F
-                && computeType == HIPTENSOR_COMPUTE_64F)
+        else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_64F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2634,8 +2634,8 @@ namespace hiptensor
                                                               e_ms_ns_modes,
                                                               workspaceSize);
         }
-        else if(typeA == HIP_R_64F && typeB == HIP_R_64F && typeD == HIP_R_64F && typeE == HIP_R_64F
-                && computeType == HIPTENSOR_COMPUTE_64F)
+        else if(typeA == HIPTENSOR_R_64F && typeB == HIPTENSOR_R_64F && typeD == HIPTENSOR_R_64F
+                && typeE == HIPTENSOR_R_64F && computeType == HIPTENSOR_COMPUTE_DESC_64F)
         {
             return ActorCriticSelection<double,
                                         double,
@@ -2662,8 +2662,8 @@ namespace hiptensor
                                                               e_ms_ns_modes,
                                                               workspaceSize);
         }
-        else if(typeA == HIP_C_32F && typeB == HIP_C_32F && typeD == NONE_TYPE && typeE == HIP_C_32F
-                && computeType == HIPTENSOR_COMPUTE_C32F)
+        else if(typeA == HIPTENSOR_C_32F && typeB == HIPTENSOR_C_32F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_C_32F && computeType == HIPTENSOR_COMPUTE_DESC_C32F)
         {
             return ActorCriticSelection<hipFloatComplex,
                                         hipFloatComplex,
@@ -2690,8 +2690,8 @@ namespace hiptensor
                                                                        e_ms_ns_modes,
                                                                        workspaceSize);
         }
-        else if(typeA == HIP_C_32F && typeB == HIP_C_32F && typeD == HIP_C_32F && typeE == HIP_C_32F
-                && computeType == HIPTENSOR_COMPUTE_C32F)
+        else if(typeA == HIPTENSOR_C_32F && typeB == HIPTENSOR_C_32F && typeD == HIPTENSOR_C_32F
+                && typeE == HIPTENSOR_C_32F && computeType == HIPTENSOR_COMPUTE_DESC_C32F)
         {
             return ActorCriticSelection<hipFloatComplex,
                                         hipFloatComplex,
@@ -2718,8 +2718,8 @@ namespace hiptensor
                                                                        e_ms_ns_modes,
                                                                        workspaceSize);
         }
-        else if(typeA == HIP_C_64F && typeB == HIP_C_64F && typeD == NONE_TYPE && typeE == HIP_C_64F
-                && computeType == HIPTENSOR_COMPUTE_C64F)
+        else if(typeA == HIPTENSOR_C_64F && typeB == HIPTENSOR_C_64F && typeD == NONE_TYPE
+                && typeE == HIPTENSOR_C_64F && computeType == HIPTENSOR_COMPUTE_DESC_C64F)
         {
             return ActorCriticSelection<hipDoubleComplex,
                                         hipDoubleComplex,
@@ -2746,8 +2746,8 @@ namespace hiptensor
                                                                         e_ms_ns_modes,
                                                                         workspaceSize);
         }
-        else if(typeA == HIP_C_64F && typeB == HIP_C_64F && typeD == HIP_C_64F && typeE == HIP_C_64F
-                && computeType == HIPTENSOR_COMPUTE_C64F)
+        else if(typeA == HIPTENSOR_C_64F && typeB == HIPTENSOR_C_64F && typeD == HIPTENSOR_C_64F
+                && typeE == HIPTENSOR_C_64F && computeType == HIPTENSOR_COMPUTE_DESC_C64F)
         {
             return ActorCriticSelection<hipDoubleComplex,
                                         hipDoubleComplex,

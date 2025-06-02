@@ -13,12 +13,12 @@ Log Level:
 Tensor Data Types:
   # Data types for tensorA/B, typeCompute
   # Supported type combinations are:
-    # - [ HIP_R_32F, HIP_R_32F]
-    # - [ HIP_R_16F, HIP_R_16F]
-    # - [ HIP_R_16F, HIP_R_32F]
+    # - [ HIPTENSOR_R_32F, HIPTENSOR_R_32F]
+    # - [ HIPTENSOR_R_16F, HIPTENSOR_R_16F]
+    # - [ HIPTENSOR_R_16F, HIPTENSOR_R_32F]
 
   # Example:
-  - [ HIP_R_32F, HIP_R_32F ]
+  - [ HIPTENSOR_R_32F, HIPTENSOR_R_32F ]
 Alphas:
   # Scaling parameter for tensorA of data type 'typeCompute'
 

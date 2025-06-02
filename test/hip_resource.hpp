@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HIP_RESOURCE_HPP
-#define HIPTENSOR_HIP_RESOURCE_HPP
+#ifndef HIPTENSOR_HIPTENSOR_RESOURCE_HPP
+#define HIPTENSOR_HIPTENSOR_RESOURCE_HPP
 
 #include "common.hpp"
 #include <memory>
@@ -43,8 +43,8 @@ namespace hiptensor
         HipResource() = default;
 
     private: // No Copy
-        HipResource(HipResource&&)                 = delete;
-        HipResource(const HipResource&)            = delete;
+        HipResource(HipResource&&)      = delete;
+        HipResource(const HipResource&) = delete;
         HipResource& operator=(const HipResource&) = delete;
 
     public:
@@ -73,4 +73,4 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HIP_RESOURCE_HPP
+#endif // HIPTENSOR_HIPTENSOR_RESOURCE_HPP

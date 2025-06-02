@@ -41,10 +41,10 @@ int main(int argc, char* argv[])
     typedef float        CDataType;
     typedef hip_bfloat16 floatTypeCompute;
 
-    constexpr hipDataType            typeA       = HIP_R_32F;
-    constexpr hipDataType            typeB       = HIP_R_32F;
-    constexpr hipDataType            typeC       = HIP_R_32F;
-    constexpr hiptensorComputeType_t typeCompute = HIPTENSOR_COMPUTE_16BF;
+    constexpr hiptensorDataType_t          typeA       = HIPTENSOR_R_32F;
+    constexpr hiptensorDataType_t          typeB       = HIPTENSOR_R_32F;
+    constexpr hiptensorDataType_t          typeC       = HIPTENSOR_R_32F;
+    constexpr hiptensorComputeDescriptor_t typeCompute = HIPTENSOR_COMPUTE_DESC_16BF;
 
     floatTypeCompute alpha{1.0f};
     floatTypeCompute beta{1.0f};

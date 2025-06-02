@@ -31,118 +31,154 @@
 
 namespace hiptensor
 {
-    // Specialize overrides for runtime HipDataType
+    // Specialize overrides for runtime HipTensorDataType
     template <>
-    struct HipDataType<hip_bfloat16>
+    struct HipTensorDataType<hip_bfloat16>
     {
-        static constexpr auto value = HIP_R_16BF;
+        static constexpr auto value = HIPTENSOR_R_16BF;
     };
 
     template <>
-    struct HipDataType<_Float16>
+    struct HipTensorDataType<_Float16>
     {
-        static constexpr auto value = HIP_R_16F;
+        static constexpr auto value = HIPTENSOR_R_16F;
     };
 
     template <>
 
-    struct HipDataType<float>
+    struct HipTensorDataType<float>
     {
-        static constexpr auto value = HIP_R_32F;
+        static constexpr auto value = HIPTENSOR_R_32F;
     };
 
     template <>
-    struct HipDataType<double>
+    struct HipTensorDataType<double>
     {
-        static constexpr auto value = HIP_R_64F;
+        static constexpr auto value = HIPTENSOR_R_64F;
     };
 
     template <>
-    struct HipDataType<int8_t>
+    struct HipTensorDataType<int8_t>
     {
-        static constexpr auto value = HIP_R_8I;
+        static constexpr auto value = HIPTENSOR_R_8I;
     };
 
     template <>
-    struct HipDataType<uint8_t>
+    struct HipTensorDataType<uint8_t>
     {
-        static constexpr auto value = HIP_R_8U;
+        static constexpr auto value = HIPTENSOR_R_8U;
     };
 
     template <>
-    struct HipDataType<int16_t>
+    struct HipTensorDataType<int16_t>
     {
-        static constexpr auto value = HIP_R_16I;
+        static constexpr auto value = HIPTENSOR_R_16I;
     };
 
     template <>
-    struct HipDataType<uint16_t>
+    struct HipTensorDataType<uint16_t>
     {
-        static constexpr auto value = HIP_R_16U;
+        static constexpr auto value = HIPTENSOR_R_16U;
     };
 
     template <>
-    struct HipDataType<int32_t>
+    struct HipTensorDataType<int32_t>
     {
-        static constexpr auto value = HIP_R_32I;
+        static constexpr auto value = HIPTENSOR_R_32I;
     };
 
     template <>
-    struct HipDataType<uint32_t>
+    struct HipTensorDataType<uint32_t>
     {
-        static constexpr auto value = HIP_R_32U;
+        static constexpr auto value = HIPTENSOR_R_32U;
     };
 
     template <>
-    struct HipDataType<int64_t>
+    struct HipTensorDataType<int64_t>
     {
-        static constexpr auto value = HIP_R_64I;
+        static constexpr auto value = HIPTENSOR_R_64I;
     };
 
     template <>
-    struct HipDataType<uint64_t>
+    struct HipTensorDataType<uint64_t>
     {
-        static constexpr auto value = HIP_R_64U;
+        static constexpr auto value = HIPTENSOR_R_64U;
     };
 
     template <>
-    struct HipDataType<hipFloatComplex>
+    struct HipTensorDataType<hipFloatComplex>
     {
-        static constexpr auto value = HIP_C_32F;
+        static constexpr auto value = HIPTENSOR_C_32F;
     };
 
     template <>
-    struct HipDataType<hipDoubleComplex>
+    struct HipTensorDataType<hipDoubleComplex>
     {
-        static constexpr auto value = HIP_C_64F;
+        static constexpr auto value = HIPTENSOR_C_64F;
     };
 
     template <>
-    struct HipDataType<NoneType>
+    struct HipTensorDataType<NoneType>
     {
         static constexpr auto value = NONE_TYPE;
     };
 
     template <typename T>
-    T readVal(void const* value, hipDataType id)
+    T readVal(void const* value, hiptensorDataType_t id)
     {
-        if(id == HIP_R_16F)
+        if(id == HIPTENSOR_R_16BF)
+        {
+            return static_cast<T>(*(hip_bfloat16*)value);
+        }
+        else if(id == HIPTENSOR_R_16F)
         {
             return static_cast<T>(*(_Float16*)value);
         }
-        else if(id == HIP_R_32F)
+        else if(id == HIPTENSOR_R_32F)
         {
             return static_cast<T>(*(float*)value);
         }
-        else if(id == HIP_R_64F)
+        else if(id == HIPTENSOR_R_64F)
         {
             return static_cast<T>(*(double*)value);
         }
-        else if constexpr(std::is_same_v<T, hipFloatComplex> && id == HIP_C_32F)
+        else if(id == HIPTENSOR_R_8I)
+        {
+            return static_cast<T>(*(int8_t*)value);
+        }
+        else if(id == HIPTENSOR_R_8U)
+        {
+            return static_cast<T>(*(uint8_t*)value);
+        }
+        else if(id == HIPTENSOR_R_16I)
+        {
+            return static_cast<T>(*(int16_t*)value);
+        }
+        else if(id == HIPTENSOR_R_16U)
+        {
+            return static_cast<T>(*(uint16_t*)value);
+        }
+        else if(id == HIPTENSOR_R_32I)
+        {
+            return static_cast<T>(*(int32_t*)value);
+        }
+        else if(id == HIPTENSOR_R_32U)
+        {
+            return static_cast<T>(*(uint32_t*)value);
+        }
+        else if(id == HIPTENSOR_R_64I)
+        {
+            return static_cast<T>(*(int64_t*)value);
+        }
+        else if(id == HIPTENSOR_R_64U)
+        {
+            return static_cast<T>(*(uint64_t*)value);
+        }
+        else if constexpr(std::is_same_v<T, hipFloatComplex> && id == HIPTENSOR_C_32F)
         {
             return static_cast<T>(*(hipFloatComplex*)value);
         }
-        else if constexpr(std::is_same_v<T, hipDoubleComplex> && id == HIP_C_64F)
+        else if constexpr(std::is_same_v<T, hipDoubleComplex> && id == HIPTENSOR_C_64F)
         {
             return static_cast<T>(*(hipDoubleComplex*)value);
         }
@@ -156,24 +192,24 @@ namespace hiptensor
     }
 
     template <typename T>
-    T readVal(void const* value, hiptensorComputeType_t id)
+    T readVal(void const* value, hiptensorComputeDescriptor_t id)
     {
-        if(id == HIPTENSOR_COMPUTE_16F)
+        if(id == HIPTENSOR_COMPUTE_DESC_16F)
         {
             return static_cast<T>(*(_Float16*)value);
         }
-        else if(id == HIPTENSOR_COMPUTE_32F)
+        else if(id == HIPTENSOR_COMPUTE_DESC_32F)
         {
             return static_cast<T>(*(float*)value);
         }
-        else if(id == HIPTENSOR_COMPUTE_64F)
+        else if(id == HIPTENSOR_COMPUTE_DESC_64F)
         {
             return static_cast<T>(*(double*)value);
         }
         else
         {
 #if !NDEBUG
-            std::cout << "Unhandled hiptensorComputeType_t: " << id << std::endl;
+            std::cout << "Unhandled hiptensorComputeDescriptor_t: " << id << std::endl;
 #endif // !NDEBUG
             return 0;
         }
@@ -181,7 +217,7 @@ namespace hiptensor
 
     // @cond
     template <>
-    ScalarData readVal(void const* value, hiptensorComputeType_t id);
+    ScalarData readVal(void const* value, hiptensorComputeDescriptor_t id);
     // @endcond
 
 } // namespace hiptensor

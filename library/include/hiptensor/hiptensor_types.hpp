@@ -37,6 +37,39 @@
 #include <hip/hip_common.h>
 #include <hip/library_types.h>
 
+//! @brief hipTensor data types
+typedef enum hiptensorDataType_t
+{
+    HIPTENSOR_R_32F  = 0,
+    HIPTENSOR_R_64F  = 1,
+    HIPTENSOR_R_16F  = 2,
+    HIPTENSOR_R_8I   = 3,
+    HIPTENSOR_C_32F  = 4,
+    HIPTENSOR_C_64F  = 5,
+    HIPTENSOR_C_16F  = 6,
+    HIPTENSOR_C_8I   = 7,
+    HIPTENSOR_R_8U   = 8,
+    HIPTENSOR_C_8U   = 9,
+    HIPTENSOR_R_32I  = 10,
+    HIPTENSOR_C_32I  = 11,
+    HIPTENSOR_R_32U  = 12,
+    HIPTENSOR_C_32U  = 13,
+    HIPTENSOR_R_16BF = 14,
+    HIPTENSOR_C_16BF = 15,
+    HIPTENSOR_R_4I   = 16,
+    HIPTENSOR_C_4I   = 17,
+    HIPTENSOR_R_4U   = 18,
+    HIPTENSOR_C_4U   = 19,
+    HIPTENSOR_R_16I  = 20,
+    HIPTENSOR_C_16I  = 21,
+    HIPTENSOR_R_16U  = 22,
+    HIPTENSOR_C_16U  = 23,
+    HIPTENSOR_R_64I  = 24,
+    HIPTENSOR_C_64I  = 25,
+    HIPTENSOR_R_64U  = 26,
+    HIPTENSOR_C_64U  = 27,
+} hiptensorDataType_t;
+
 //! @brief hipTensor status type enumeration
 //! @details The type is used to indicate the resulting status of hipTensor library function calls
 typedef enum
@@ -74,29 +107,29 @@ typedef enum
 typedef enum
 {
     //! Single precision floating point
-    HIPTENSOR_COMPUTE_32F = (1U << 2U),
+    HIPTENSOR_COMPUTE_DESC_32F = (1U << 2U),
     //! Double precision floating point
-    HIPTENSOR_COMPUTE_64F = (1U << 4U),
+    HIPTENSOR_COMPUTE_DESC_64F = (1U << 4U),
     //! Half precision floating point
-    HIPTENSOR_COMPUTE_16F = (1U << 0U),
+    HIPTENSOR_COMPUTE_DESC_16F = (1U << 0U),
     //! Brain float half precision floating point
-    HIPTENSOR_COMPUTE_16BF = (1U << 10U),
+    HIPTENSOR_COMPUTE_DESC_16BF = (1U << 10U),
     //! Complex single precision floating point
-    HIPTENSOR_COMPUTE_C32F = (1U << 11U),
+    HIPTENSOR_COMPUTE_DESC_C32F = (1U << 11U),
     //! Complex double precision floating point
-    HIPTENSOR_COMPUTE_C64F = (1U << 12U),
+    HIPTENSOR_COMPUTE_DESC_C64F = (1U << 12U),
     //! No type
-    HIPTENSOR_COMPUTE_NONE = 0,
+    HIPTENSOR_COMPUTE_DESC_NONE = 0,
 
     // @cond
     //! <Following types to be added (TBA)>
-    HIPTENSOR_COMPUTE_8U  = (1U << 6U),
-    HIPTENSOR_COMPUTE_8I  = (1U << 8U),
-    HIPTENSOR_COMPUTE_32U = (1U << 7U),
-    HIPTENSOR_COMPUTE_32I = (1U << 9U),
+    HIPTENSOR_COMPUTE_DESC_8U  = (1U << 6U),
+    HIPTENSOR_COMPUTE_DESC_8I  = (1U << 8U),
+    HIPTENSOR_COMPUTE_DESC_32U = (1U << 7U),
+    HIPTENSOR_COMPUTE_DESC_32I = (1U << 9U),
     // @endcond
 
-} hiptensorComputeType_t;
+} hiptensorComputeDescriptor_t;
 
 //! @brief Element-wise operations
 typedef enum
@@ -153,7 +186,7 @@ typedef enum
     //! At least one algorithm will be available
     HIPTENSOR_WORKSPACE_MIN = 1,
     //! The most suitable algorithm will be available
-    HIPTENSOR_WORKSPACE_RECOMMENDED = 2,
+    HIPTENSOR_WORKSPACE_DEFAULT = 2,
     //! All algorithms will be available
     HIPTENSOR_WORKSPACE_MAX = 3,
 
@@ -178,68 +211,64 @@ typedef enum
 
 } hiptensorLogLevel_t;
 
-//! @brief hipTensor's library context
-struct hiptensorHandle_t
+typedef enum
 {
-    int64_t fields[512];
-};
+    HIPTENSOR_OPERATION_DESCRIPTOR_TAG           = 0,
+    HIPTENSOR_OPERATION_DESCRIPTOR_SCALAR_TYPE   = 1,
+    HIPTENSOR_OPERATION_DESCRIPTOR_FLOPS         = 2,
+    HIPTENSOR_OPERATION_DESCRIPTOR_MOVED_BYTES   = 3,
+    HIPTENSOR_OPERATION_DESCRIPTOR_PADDING_LEFT  = 4,
+    HIPTENSOR_OPERATION_DESCRIPTOR_PADDING_RIGHT = 5,
+    HIPTENSOR_OPERATION_DESCRIPTOR_PADDING_VALUE = 6,
+} hiptensorOperationDescriptorAttribute_t;
 
-//! @brief Structure representing a tensor descriptor
-//!
-//! Represents a descriptor for the tensor with the given properties of
-//! data type, lengths, strides and element-wise unary operation.
-//! Constructed with hiptensorInitTensorDescriptor() function.
-struct hiptensorTensorDescriptor_t
+typedef enum
 {
-    //! Data type of the tensors enum selection
-    hipDataType mType;
-    //! Lengths of the tensor
-    std::vector<std::size_t> mLengths;
-    //! Strides of the tensor
-    std::vector<std::size_t> mStrides;
-    //! Unary operator applied to the tensor
-    hiptensorOperator_t mUnaryOp;
-};
+    HIPTENSOR_PLAN_PREFERENCE_AUTOTUNE_MODE     = 0,
+    HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE        = 1,
+    HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT = 2,
+    HIPTENSOR_PLAN_PREFERENCE_ALGO              = 3,
+    HIPTENSOR_PLAN_PREFERENCE_KERNEL_RANK       = 4,
+    HIPTENSOR_PLAN_PREFERENCE_JIT               = 5,
+} hiptensorPlanPreferenceAttribute_t;
 
-//! @brief Structure representing a tensor contraction descriptor
-//!
-//! Represents contraction descriptor with the given properties of internal
-//! contraction op (either scale or bilinear), the internal compute type,
-//! as well as all of the input tensor descriptors, their alignment requirements
-//! and modes.
-//! Constructed with hiptensorInitContractionDescriptor() function.
-struct hiptensorContractionDescriptor_t
+typedef enum
 {
-    //! Enum that differentiates the internal contraction operation
-    int32_t mContractionOpId;
-    //! Compute type for the contraction
-    hiptensorComputeType_t mComputeType;
-    //! Cache of tensor descriptors
-    std::vector<hiptensorTensorDescriptor_t> mTensorDesc;
-    //! Cache of alignment requirements
-    std::vector<uint32_t> mAlignmentReq;
-    //! Tensor modes
-    std::vector<std::vector<int32_t>> mTensorMode;
-};
+    HIPTENSOR_PLAN_REQUIRED_WORKSPACE = 0,
+} hiptensorPlanAttribute_t;
 
-//! @brief hipTensor structure representing the contraction selection algorithm and candidates.
-struct hiptensorContractionFind_t
+typedef enum
 {
-    //! Id of the selection algorithm
-    hiptensorAlgo_t mSelectionAlgorithm;
-    //! A vector of the solver candidates
-    std::vector<void*> mCandidates;
-};
+    HIPTENSOR_AUTOTUNE_MODE_NONE        = 0,
+    HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL = 1,
+} hiptensorAutotuneMode_t;
 
-//! @brief hipTensor structure representing a contraction plan.
-//! Constructed with the hiptensorInitContractionPlan() function.
-struct hiptensorContractionPlan_t
+typedef enum
 {
-    //! Final solution candidate
-    void* mSolution;
-    //! Contraction parameters
-    hiptensorContractionDescriptor_t mContractionDesc;
-};
+    HIPTENSOR_CACHE_MODE_NONE     = 0,
+    HIPTENSOR_CACHE_MODE_PEDANTIC = 1,
+} hiptensorCacheMode_t;
+
+typedef enum
+{
+    HIPTENSOR_JIT_MODE_NONE    = 0,
+    HIPTENSOR_JIT_MODE_DEFAULT = 1,
+} hiptensorJitMode_t;
+
+//! @brief Pointer to hiptensorOperationDescriptor
+typedef struct hiptensorOperationDescriptor* hiptensorOperationDescriptor_t;
+
+//! @brief Pointer to hiptensorPlan
+typedef struct hiptensorPlan*                hiptensorPlan_t;
+
+//! @brief Pointer to hiptensorPlanPreference
+typedef struct hiptensorPlanPreference*      hiptensorPlanPreference_t;
+
+//! @brief Pointer to hiptensorHandle
+typedef struct hiptensorHandle*              hiptensorHandle_t;
+
+//! @brief Pointer to hiptensorTensorDescriptor
+typedef struct hiptensorTensorDescriptor*    hiptensorTensorDescriptor_t;
 
 //! @brief Logging callback
 //! The specified callback is invoked whenever logging is enabled and a message is generated.

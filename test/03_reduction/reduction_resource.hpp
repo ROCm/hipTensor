@@ -65,27 +65,27 @@ namespace hiptensor
     private: // No public instantiation except make_unique.
              // No copy
         ReductionResource();
-        ReductionResource(const ReductionResource&)            = delete;
+        ReductionResource(const ReductionResource&) = delete;
         ReductionResource& operator=(const ReductionResource&) = delete;
 
     public:
         ReductionResource(ReductionResource&&);
         virtual ~ReductionResource() = default;
 
-        void setupStorage(ProblemDims const& dimSizes,
-                          ProblemDims const& outputSizes,
-                          hipDataType        dataType);
+        void setupStorage(ProblemDims const&  dimSizes,
+                          ProblemDims const&  outputSizes,
+                          hiptensorDataType_t dataType);
         void setupWorkspace(uint64_t workspaceSize);
-        void fillRand(HostPtrT&   hostBuf,
-                      DevicePtrT& deviceBuf,
-                      hipDataType dataType,
-                      size_t      elementCount,
-                      uint32_t    seed);
-        void fillConstant(HostPtrT&   hostBuf,
-                          DevicePtrT& deviceBuf,
-                          hipDataType dataType,
-                          size_t      elementCount,
-                          double      value);
+        void fillRand(HostPtrT&           hostBuf,
+                      DevicePtrT&         deviceBuf,
+                      hiptensorDataType_t dataType,
+                      size_t              elementCount,
+                      uint32_t            seed);
+        void fillConstant(HostPtrT&           hostBuf,
+                          DevicePtrT&         deviceBuf,
+                          hiptensorDataType_t dataType,
+                          size_t              elementCount,
+                          double              value);
         void copyOutputToHost();
         void copyReferenceToDevice();
 
@@ -118,7 +118,7 @@ namespace hiptensor
         HostPtrT mHostD;
         HostPtrT mHostReference;
 
-        hipDataType mCurrentDataType; /**< Type size of element of A/C */
+        hiptensorDataType_t mCurrentDataType; /**< Type size of element of A/C */
 
         size_t mCurrentInputElementCount; /**< Element count of A */
         size_t mCurrentInputAllocByte; /**< Allocated size of memory */

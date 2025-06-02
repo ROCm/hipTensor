@@ -84,7 +84,7 @@ auto inline load_combined_config_params()
             std::size_t lower = ranges[0];
             std::size_t upper = ranges[1];
             std::size_t step  = ranges[2];
-            std::size_t maxElements = 134217728;
+            std::size_t maxElements = 16777216;
 
             std::size_t totalSizes = 0;
             if (ranges.size() == 4)
@@ -108,7 +108,7 @@ auto inline load_combined_config_params()
             std::size_t lower = ranges[0];
             std::size_t upper = ranges[1];
             std::size_t totalSizes = ranges[2];
-            std::size_t maxElements = 134217728;
+            std::size_t maxElements = 16777216;
 
             std::vector<std::vector<std::vector<std::size_t>>> generatedRandLengths;
             hiptensor::generate3DLengths(generatedRandLengths, lower, upper, upper, rank, maxElements, totalSizes, true);

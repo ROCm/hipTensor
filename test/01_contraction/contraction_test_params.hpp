@@ -41,7 +41,7 @@ namespace hiptensor
 
     struct ContractionTestParams
     {
-        using DataTypesT = std::vector<hipDataType>;
+        using DataTypesT = std::vector<hiptensorDataType_t>;
 
         using AlgorithmT    = hiptensorAlgo_t;
         using OperatorT     = hiptensorOperator_t;

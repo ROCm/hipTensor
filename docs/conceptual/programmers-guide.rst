@@ -131,7 +131,9 @@ The ``test`` directory contains the test codes for testing the following functio
 - ``01_contraction/contraction_resource``: Shared resource infrastructure for testing contractions.
 - ``01_contraction/configs``: YAML files with actual contraction testing parameters.
 - ``02_permutation/permutation*``: Testing infrastructure for permutation tests.
-- ``02_permutation/rank*``: Testing harnesses for permutation of a particular rank.
+- ``02_permutation/rank?_permutation_*``: Testing harnesses for permutation of a particular rank.
+- ``02_permutation/rank?_elementwise_binary_op*``: Testing harnesses for elementwise binary operation of a particular rank.
+- ``02_permutation/rank?_elementwise_trinary_op*``: Testing harnesses for elementwise trinary operation of a particular rank.
 - ``02_permutation/configs``: YAML files with actual permutation testing parameters.
 - ``03_conduction/conduction*``: Testing infrastructure for conduction tests.
 - ``03_conduction/rank*``: Testing harnesses for conduction of a particular rank.

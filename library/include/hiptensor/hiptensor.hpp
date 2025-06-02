@@ -29,79 +29,352 @@
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
 
-//! @brief Allocates an instance of hiptensorHandle_t on the heap and updates the handle pointer
+//! @brief Allocates and initializes a hipTensor library handle.
 //!
-//! @details Creates hipTensor handle for the associated device.
-//! In order for the  hipTensor library to use a different device, set the new
-//! device to be used by calling hipInit(0) and then create another hipTensor
-//! handle, which will be associated with the new device, by calling
-//! hiptensorCreate().
-//! @param[out] handle Pointer to hiptensorHandle_t pointer
-//! @returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
-hiptensorStatus_t hiptensorCreate(hiptensorHandle_t** handle);
+//! @details This function creates a hipTensor handle associated with the current device. To use a different device, call `hipInit(0)` to set the new device, then create another hipTensor handle with `hiptensorCreate()`.
+//! @param[out] handle A pointer to the `hiptensorHandle_t` pointer that will store the newly created handle.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` if the handle is created successfully, otherwise an error code.
+hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle);
 
-//! @brief De-allocates the instance of hiptensorHandle_t
-//! @param[out] handle Pointer to hiptensorHandle_t
-//! @returns HIPTENSOR_STATUS_SUCCESS on success and an error code otherwise
-hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t* handle);
+//! @brief Deallocates a hipTensor library handle.
+//! @param[out] handle The `hiptensorHandle_t` to be deallocated.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` on successful deallocation, otherwise an error code.
+hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle);
 
-//! @brief Initializes a tensor descriptor
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[out] desc Pointer to the allocated tensor descriptor object.
-//! @param[in] numModes Number of modes.
-//! @param[in] lens Extent of each mode(lengths) (must be larger than zero).
-//! @param[in] strides stride[i] denotes the displacement (stride) between two consecutive
-//! elements in the ith-mode. If stride is NULL, generalized packed column-major memory
-//! layout is assumed (i.e., the strides increase monotonically from left to right).
-//! @param[in] dataType Data type of the stored entries.
-//! @param[in] unaryOp Unary operator that will be applied to the tensor.
-//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorInitTensorDescriptor(const hiptensorHandle_t*     handle,
-                                                hiptensorTensorDescriptor_t* desc,
-                                                const uint32_t               numModes,
-                                                const int64_t                lens[],
-                                                const int64_t                strides[],
-                                                hipDataType                  dataType,
-                                                hiptensorOperator_t          unaryOp);
+//! @brief Resizes the plan cache associated with a hipTensor handle.
+//! @param[in] handle The hipTensor handle.
+//! @param[in] numEntries Number of entries the cache will support.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
+hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
+                                                 const uint32_t    numEntries);
 
-//! @brief Returns the description string for an error code
-//! @param[in] error Error code to convert to string.
-//! @retval the error string.
+//! @brief Writes the plan cache of a hipTensor handle to a file.
+//! @param[in] handle The hipTensor handle whose plan cache will be written.
+//! @param[in] filename The name of the file to write the cache to.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
+hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
+                                                      const char              filename[]);
+
+//! @brief Reads a plan cache from a file into a hipTensor handle.
+//! @param[in] handle The hipTensor handle to populate with the plan cache.
+//! @param[in] filename The name of the file to read the cache from.
+//! @param[out] numCachelinesRead On exit, this variable will hold the number of successfully-read cachelines.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
+hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
+                                                       const char        filename[],
+                                                       uint32_t*         numCachelinesRead);
+
+//! @brief Writes the kernel cache of a hipTensor handle to a file.
+//! @param[in] handle The hipTensor handle whose kernel cache will be written.
+//! @param[in] filename The name of the file to write the cache to.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
+hiptensorStatus_t hiptensorWriteKernelCacheToFile(const hiptensorHandle_t handle,
+                                                  const char              filename[]);
+
+//! @brief Reads a kernel cache from a file into a hipTensor handle.
+//! @param[in] handle The hipTensor handle to populate with the kernel cache.
+//! @param[in] filename The name of the file to read the cache from.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
+hiptensorStatus_t hiptensorReadKernelCacheFromFile(hiptensorHandle_t handle, const char filename[]);
+
+//! @brief Creates and initializes a tensor descriptor.
+//! @details This function allocates an instance of `hiptensorTensorDescriptor_t`. Call `hiptensorDestroyTensorDescriptor()` to free this instance.
+//! @param[in] handle An opaque handle representing the hipTensor library context.
+//! @param[out] desc A pointer to the `hiptensorTensorDescriptor_t` object to be allocated.
+//! @param[in] numModes The number of modes (dimensions) for the tensor.
+//! @param[in] lens An array specifying the extent (length) of each mode; all values must be greater than zero.
+//! @param[in] strides An array where `strides[i]` is the displacement between consecutive elements in the i-th mode. If `NULL`, a generalized packed column-major memory layout is assumed (strides increase monotonically from left to right).
+//! @param[in] dataType The data type of the tensor elements.
+//! @param[in] alignmentRequirement The memory alignment requirement for the tensor.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completes successfully.
+//! @retval `HIPTENSOR_STATUS_NOT_INITIALIZED` if the handle is not initialized.
+//! @retval `HIPTENSOR_STATUS_ARCH_MISMATCH` if the data type is not supported.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` if any parameters are invalid.
+hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      handle,
+                                                  hiptensorTensorDescriptor_t* desc,
+                                                  const uint32_t               numModes,
+                                                  const int64_t                lens[],
+                                                  const int64_t                strides[],
+                                                  hiptensorDataType_t          dataType,
+                                                  uint32_t alignmentRequirement);
+
+//! @brief Destroys a tensor descriptor.
+//!
+//! @param[in] desc A pointer to the tensor descriptor object to be deallocated.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completes successfully.
+hiptensorStatus_t hiptensorDestroyTensorDescriptor(hiptensorTensorDescriptor_t desc);
+
+//! @brief Allocates and initializes a `hiptensorOperationDescriptor` object for a tensor contraction of the form \f$D = \alpha \mathcal{A} \mathcal{B} + \beta \mathcal{C}\f$.
+//!
+//! @details Free this object by calling `hiptensorDestroyOperationDescriptor()`.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[out] desc Pointer to the `hiptensorOperationDescriptor_t` object that will be allocated and populated with contraction operation details.
+//! @param[in] descA Tensor descriptor for A, specifying data type, modes, and strides.
+//! @param[in] modeA Array with `nmodeA` entries representing tensor A's modes. Each `modeA[i]` corresponds to the `extent[i]` and `stride[i]` from `hiptensorInitTensorDescriptor`.
+//! @param[in] opA Unary operator applied to each element of A before processing. A's original data remains unchanged.
+//! @param[in] descB Tensor descriptor for B.
+//! @param[in] modeB Array with `nmodeB` entries representing tensor B's modes.
+//! @param[in] opB Unary operator applied to each element of B.
+//! @param[in] descC Tensor descriptor for C.
+//! @param[in] modeC Array with `nmodeC` entries representing tensor C's modes.
+//! @param[in] opC Unary operator applied to each element of C.
+//! @param[in] descD Tensor descriptor for D (must match `descC`).
+//! @param[in] modeD Array with `nmodeD` entries representing tensor D's modes (must match `modeC`).
+//! @param[in] descCompute Data type used for intermediate computation of \f$T = A * B\f$.
+//! @retval `HIPTENSOR_STATUS_NOT_SUPPORTED` When data type combinations or operations aren't supported.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` When tensor dimensions or modes contain illegal values.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` When the operation completes successfully.
+//! @retval `HIPTENSOR_STATUS_NOT_INITIALIZED` When the handle isn't initialized.
+hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t  descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t  descB,
+                                             const int32_t                      modeB[],
+                                             hiptensorOperator_t                opB,
+                                             const hiptensorTensorDescriptor_t  descC,
+                                             const int32_t                      modeC[],
+                                             hiptensorOperator_t                opC,
+                                             const hiptensorTensorDescriptor_t  descD,
+                                             const int32_t                      modeD[],
+                                             const hiptensorComputeDescriptor_t descCompute);
+
+//! @brief Releases all resources linked to a `hiptensorOperationDescriptor` object.
+//! @param[in,out] desc The `hiptensorOperationDescriptor_t` object to deallocate.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` when successful, otherwise returns an error code.
+hiptensorStatus_t hiptensorDestroyOperationDescriptor(hiptensorOperationDescriptor_t desc);
+
+//! @brief Configures an attribute in a `hiptensorOperationDescriptor_t` object.
+//! @param[in] handle Opaque handle for the hipTensor library context.
+//! @param[in] desc The `hiptensorOperationDescriptor_t` object being modified.
+//! @param[in] attr The attribute to configure.
+//! @param[in] buf Pointer to the buffer containing the attribute's new value.
+//! @param[in] sizeInBytes Size of the `buf` in bytes.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` when successful, otherwise returns an error code.
+hiptensorStatus_t
+    hiptensorOperationDescriptorSetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             const void*                             buf,
+                                             size_t                                  sizeInBytes);
+
+//! @brief Extracts an attribute from a `hiptensorOperationDescriptor_t` object.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[in] desc The `hiptensorOperationDescriptor_t` object to examine.
+//! @param[in] attr The attribute to extract.
+//! @param[out] buf Pointer to the buffer where the attribute value will be written.
+//! @param[in] sizeInBytes The buffer size in bytes.
+//! @returns `HIPTENSOR_STATUS_SUCCESS` when successful, otherwise returns an error code.
+hiptensorStatus_t
+    hiptensorOperationDescriptorGetAttribute(const hiptensorHandle_t                 handle,
+                                             hiptensorOperationDescriptor_t          desc,
+                                             hiptensorOperationDescriptorAttribute_t attr,
+                                             void*                                   buf,
+                                             size_t                                  sizeInBytes);
+
+//! @brief Creates a `hiptensorPlanPreference_t` object that lets users limit kernel options for a plan/operation.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[out] pref Pointer to the new `hiptensorPlanPreference_t` structure.
+//! @param[in] algo Controls algorithm selection. Use `HIPTENSOR_ALGO_DEFAULT` to let the heuristic choose. Returns `HIPTENSOR_STATUS_NOT_SUPPORTED` if the specified algorithm isn't available.
+//! @param[in] jitMode Controls whether hipTensor can use JIT-compiled kernels.
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully.
+hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handle,
+                                                hiptensorPlanPreference_t* pref,
+                                                hiptensorAlgo_t            algo,
+                                                hiptensorJitMode_t         jitMode);
+
+//! @brief Releases all resources associated with a `hiptensorPlanPreference_t` object.
+//! @param[in,out] pref The `hiptensorPlanPreference_t` object to deallocate.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` when successful, otherwise returns an error code.
+hiptensorStatus_t hiptensorDestroyPlanPreference(hiptensorPlanPreference_t pref);
+
+//! @brief Configures an attribute in a `hiptensorPlanPreference_t` object.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[in,out] pref Opaque structure that narrows the search space for viable kernel candidates.
+//! @param[in] attr The attribute to configure.
+//! @param[in] buf Buffer (of size `sizeInBytes`) containing the new value for `attr`.
+//! @param[in] sizeInBytes Size of `buf` in bytes.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` When the operation completes successfully.
+//! @retval `HIPTENSOR_STATUS_NOT_INITIALIZED` When the handle isn't initialized.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` When input data is invalid (typically user error).
+hiptensorStatus_t hiptensorPlanPreferenceSetAttribute(const hiptensorHandle_t            handle,
+                                                      hiptensorPlanPreference_t          pref,
+                                                      hiptensorPlanPreferenceAttribute_t attr,
+                                                      const void*                        buf,
+                                                      size_t sizeInBytes);
+
+//! @brief Fetches information from an existing plan.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[in] plan The existing plan (created via `hiptensorCreatePlan` or `hiptensorCreatePlanAutotuned`).
+//! @param[in] attr The attribute to retrieve.
+//! @param[out] buf Buffer that will contain the requested attribute information upon successful return.
+//! @param[in] sizeInBytes Size of `buf` in bytes.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` When the operation completes successfully.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` When input data is invalid (typically user error).
+hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
+                                            const hiptensorPlan_t    plan,
+                                            hiptensorPlanAttribute_t attr,
+                                            void*                    buf,
+                                            size_t                   sizeInBytes);
+
+//! @brief Calculates the workspace size needed for a specific operation.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[in] desc Opaque structure encoding the operation details.
+//! @param[in] planPref Opaque structure limiting the viable candidate space.
+//! @param[in] workspacePref Parameter that affects workspace size calculation.
+//! @param[out] workspaceSizeEstimate The estimated workspace size in bytes needed for the operation.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` When the operation completes successfully.
+//! @retval `HIPTENSOR_STATUS_NOT_INITIALIZED` When the handle isn't initialized.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` When input data is invalid (typically user error).
+hiptensorStatus_t hiptensorEstimateWorkspaceSize(const hiptensorHandle_t              handle,
+                                                 const hiptensorOperationDescriptor_t desc,
+                                                 const hiptensorPlanPreference_t      planPref,
+                                                 const hiptensorWorksizePreference_t  workspacePref,
+                                                 uint64_t* workspaceSizeEstimate);
+
+//! @brief Creates an operation descriptor for tensor permutation.
+//!
+//! @param[in] handle Opaque handle containing the hipTENSOR library context.
+//! @param[out] desc Opaque structure that will be allocated and filled with the encoded permutation information.
+//! @param[in] descA Descriptor containing information about A's data type, modes, and strides.
+//! @param[in] modeA Array of size descA->numModes containing the mode names of A.
+//! @param[in] opA Unary operator applied to each element of A before further processing. The original tensor data remains unchanged.
+//! @param[in] descB Descriptor containing information about B's data type, modes, and strides.
+//! @param[in] modeB Array of size descB->numModes containing the mode names of B.
+//! @param[in] descCompute Determines the precision used for this operation.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED When data type combinations or operations aren't supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE When tensor dimensions or modes contain illegal values
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
+hiptensorStatus_t hiptensorCreatePermutation(const hiptensorHandle_t            handle,
+                                             hiptensorOperationDescriptor_t*    desc,
+                                             const hiptensorTensorDescriptor_t  descA,
+                                             const int32_t                      modeA[],
+                                             hiptensorOperator_t                opA,
+                                             const hiptensorTensorDescriptor_t  descB,
+                                             const int32_t                      modeB[],
+                                             const hiptensorComputeDescriptor_t descCompute);
+
+//! @brief Creates a `hiptensorPlan_t` object that selects an appropriate kernel for an operation and prepares execution.
+//!
+//! @details Uses hipTensor's heuristic to select a kernel for operations created by functions like `hiptensorCreateContraction`,
+//! `hiptensorCreateReduction`, `hiptensorCreatePermutation`, `hiptensorCreateElementwiseBinary`, or `hiptensorCreateElementwiseTrinary`.
+//! The resulting plan can be passed to the corresponding `hiptensor*Execute` function to perform the operation.
+//! The plan is created for the currently active HIP device.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[out] plan Pointer to the `hiptensorPlan_t` structure that will contain all execution information (including selected kernel).
+//! @param[in] desc Opaque structure encoding the operation details.
+//! @param[in] pref Opaque structure limiting the applicable kernels. May be `nullptr` to use defaults.
+//! @param[in] workspaceSizeLimit Maximum workspace size in bytes that the operation may use.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` When a viable kernel is found.
+//! @retval `HIPTENSOR_STATUS_NOT_SUPPORTED` When no viable kernel can be found.
+//! @retval `HIPTENSOR_STATUS_NOT_INITIALIZED` When the handle isn't initialized.
+//! @retval `HIPTENSOR_STATUS_INSUFFICIENT_WORKSPACE` When the provided workspace is too small.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` When input data is invalid (typically user error).
+hiptensorStatus_t hiptensorCreatePlan(const hiptensorHandle_t              handle,
+                                      hiptensorPlan_t*                     plan,
+                                      const hiptensorOperationDescriptor_t desc,
+                                      const hiptensorPlanPreference_t      pref,
+                                      uint64_t                             workspaceSizeLimit);
+
+//! @brief Releases all resources associated with a plan.
+//! @param[in,out] plan The `hiptensorPlan_t` object to deallocate.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` when successful, otherwise returns an error code.
+hiptensorStatus_t hiptensorDestroyPlan(hiptensorPlan_t plan);
+
+//! @brief Performs tensor contraction \f$D = \alpha \mathcal{A} \mathcal{B} + \beta \mathcal{C}\f$.
+//!
+//! @details Computes: \f$\mathcal{D}_{{modes}_\mathcal{D}} \gets \alpha * \mathcal{A}_{{modes}_\mathcal{A}} B_{{modes}_\mathcal{B}} + \beta \mathcal{C}_{{modes}_\mathcal{C}}\f$.
+//! The active HIP device must match the device that was active during plan creation.
+//! @param[in] handle Opaque handle representing the hipTensor library context.
+//! @param[in] plan Opaque handle containing the contraction execution plan.
+//! @param[in] alpha Scaling factor for \f$A*B\f$. Data type determined by `descCompute`. Pointer to host memory.
+//! @param[in] A Pointer to tensor A data in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[in] B Pointer to tensor B data in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[in] beta Scaling factor for C. Data type determined by `descCompute`. Pointer to host memory.
+//! @param[in] C Pointer to tensor C data in GPU-accessible memory.
+//! @param[out] D Pointer to tensor D data in GPU-accessible memory.
+//! @param[out] workspace Optional parameter (can be `NULL`). Additional device memory workspace for optimizations.
+//! @param[in] workspaceSize Size of the `workspace` array in bytes.
+//! @param[in] stream HIP stream for all computations.
+//! @retval `HIPTENSOR_STATUS_NOT_SUPPORTED` When the operation isn't supported.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` When input data is invalid (typically user error).
+//! @retval `HIPTENSOR_STATUS_SUCCESS` When the operation completes successfully.
+//! @retval `HIPTENSOR_STATUS_NOT_INITIALIZED` When the handle isn't initialized.
+//! @retval `HIPTENSOR_STATUS_ARCH_MISMATCH` When the plan was created for a different device than the currently active one.
+//! @retval `HIPTENSOR_STATUS_INSUFFICIENT_DRIVER` When the driver is insufficient.
+hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
+                                    const hiptensorPlan_t   plan,
+                                    const void*             alpha,
+                                    const void*             A,
+                                    const void*             B,
+                                    const void*             beta,
+                                    const void*             C,
+                                    void*                   D,
+                                    void*                   workspace,
+                                    uint64_t                workspaceSize,
+                                    hipStream_t             stream);
+
+//! @brief Returns a descriptive string for a given error code.
+//! @param[in] error The error code to convert to a string.
+//! @retval ErrorString A string describing the error.
 const char* hiptensorGetErrorString(const hiptensorStatus_t error);
 
-//! @brief Tensor permutation
-//! @details This function computes the permuation operation:
+//! @brief Executes tensor permutation
+//! @details Computes the permutation operation:
 //! \f[
 //! B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)})
 //! \f]
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[in] alpha Scaling factor for A of the type typeScalar. Pointer to the host memory.
-//! If alpha is zero, A is not read and the corresponding unary operator is not applied.
-//! @param[in] A Multi-mode tensor of type typeA with nmodeA modes. Pointer to the GPU-accessible memory.
-//! @param[in] descA A descriptor that holds information about the data type, modes, and strides of A.
-//! @param[in] modeA Array of size descA->numModes that holds the names of the modes of A.
-//! @param[in,out] B Multi-mode tensor of type typeB with nmodeB modes. Pointer to the GPU-accessible memory.
-//! @param[in] descB A descriptor that holds information about the data type, modes, and strides of B.
-//! @param[in] modeB Array of size descB->numModes that holds the names of the modes of B
-//! @param[in] typeScalar data type of alpha
-//! @param[in] stream HIP stream to perform all operations.
-//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if the combination of data types or operations is not supported
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes have an illegal value
-//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully without error
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle,
-                                       const void*                        alpha,
-                                       const void*                        A,
-                                       const hiptensorTensorDescriptor_t* descA,
-                                       const int32_t                      modeA[],
-                                       void*                              B,
-                                       const hiptensorTensorDescriptor_t* descB,
-                                       const int32_t                      modeB[],
-                                       const hipDataType                  typeScalar,
-                                       const hipStream_t                  stream);
+//! @param[in] handle Opaque handle containing hipTensor's library context.
+//! @param[in] plan Opaque handle with permutation information.
+//! @param[in] alpha Scaling factor for A (typeScalar type). Pointer to host memory.
+//! @param[in] A Multi-mode tensor (typeA type) with nmodeA modes. Pointer to GPU-accessible memory.
+//! @param[in,out] B Multi-mode tensor (typeB type) with nmodeB modes. Pointer to GPU-accessible memory.
+//! @param[in] stream HIP stream for all operations.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED When data type combinations or operations aren't supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE When tensor dimensions or modes contain illegal values
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
+hiptensorStatus_t hiptensorPermute(const hiptensorHandle_t handle,
+                                   const hiptensorPlan_t   plan,
+                                   const void*             alpha,
+                                   const void*             A,
+                                   void*                   B,
+                                   const hipStream_t       stream);
 
-//! @brief Performs an element-wise tensor operation on two input tensors.
+//! @brief Creates an operation descriptor for elementwise binary operations.
+//!
+//! @param[in] handle Opaque handle containing hipTensor's library context.
+//! @param[out] desc Opaque structure allocated and filled with the elementwise operation information.
+//! @param[in] descA Descriptor containing A's data type, modes, and strides.
+//! @param[in] modeA Host memory array of size descA->numModes with A's mode names.
+//! @param[in] opA Unary operator applied to each element of A before processing. A's original data remains unchanged.
+//! @param[in] descC Descriptor containing C's data type, modes, and strides.
+//! @param[in] modeC Host memory array of size descC->numModes with C's mode names.
+//! @param[in] opC Unary operator applied to each element of C before processing. C's original data remains unchanged.
+//! @param[in] descD Descriptor containing D's data type, modes, and strides. Currently must be identical to descC.
+//! @param[in] modeD Host memory array of size descD->numModes with D's mode names.
+//! @param[in] opAC Element-wise binary operator.
+//! @param[in] descCompute Determines the precision for this operation.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED When data type combinations or operations aren't supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE When tensor dimensions or modes contain illegal values
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
+hiptensorStatus_t hiptensorCreateElementwiseBinary(const hiptensorHandle_t            handle,
+                                                   hiptensorOperationDescriptor_t*    desc,
+                                                   const hiptensorTensorDescriptor_t  descA,
+                                                   const int32_t                      modeA[],
+                                                   hiptensorOperator_t                opA,
+                                                   const hiptensorTensorDescriptor_t  descC,
+                                                   const int32_t                      modeC[],
+                                                   hiptensorOperator_t                opC,
+                                                   const hiptensorTensorDescriptor_t  descD,
+                                                   const int32_t                      modeD[],
+                                                   hiptensorOperator_t                opAC,
+                                                   const hiptensorComputeDescriptor_t descCompute);
+
+//! @brief Executes element-wise tensor operation on two input tensors.
 //!
 //! @details This function computes the element-wise operation:
 //! \f[
@@ -115,42 +388,67 @@ hiptensorStatus_t hiptensorPermutation(const hiptensorHandle_t*           handle
 //!   - \f$\Phi_{AC}\f$ is a binary element-wise operator.
 //!   - \f$\Pi^A\f$ and \f$\Pi^C\f$ represent mode permutations.
 //!
-//! @param[in] handle Opaque handle to the hipTensor library context.
-//! @param[in] alpha Scaling factor for tensor A (host memory).
-//! @param[in] A Input tensor A (GPU memory).
-//! @param[in] descA Descriptor for tensor A, including data type, modes, and strides.
-//! @param[in] modeA Array of mode names for tensor A (host memory).
-//! @param[in] gamma Scaling factor for tensor C (host memory).
-//! @param[in] C Input tensor C (GPU memory).
-//! @param[in] descC Descriptor for tensor C, including data type, modes, and strides.
-//! @param[in] modeC Array of mode names for tensor C (host memory).
-//! @param[out] D Output tensor D (GPU memory).
-//! @param[in] descD Descriptor for tensor D (must match descC).
-//! @param[in] modeD Array of mode names for tensor D (host memory).
-//! @param[in] opAC Element-wise binary operator \f$\Phi_{AC}\f$. 
-//! @param[in] typeScalar Scalar data type for intermediate computations.
-//! @param[in] stream stream for execution.
-//! @return HIPTENSOR_STATUS_NOT_SUPPORTED if data type or operation combination is unsupported.
-//! @return HIPTENSOR_STATUS_INVALID_VALUE if tensor dimensions or modes are invalid.
-//! @return HIPTENSOR_STATUS_SUCCESS if the operation completes successfully.
-//! @return HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           handle,
-                                             const void*                        alpha,
-                                             const void*                        A,
-                                             const hiptensorTensorDescriptor_t* descA,
-                                             const int32_t                      modeA[],
-                                             const void*                        gamma,
-                                             const void*                        C,
-                                             const hiptensorTensorDescriptor_t* descC,
-                                             const int32_t                      modeC[],
-                                             void*                              D,
-                                             const hiptensorTensorDescriptor_t* descD,
-                                             const int32_t                      modeD[],
-                                             hiptensorOperator_t                opAC,
-                                             hipDataType                        typeScalar,
-                                             hipStream_t                        stream);
+//! @param[in] handle Opaque handle containing hipTensor's library context.
+//! @param[in] plan Opaque handle with elementwise operation information.
+//! @param[in] alpha Scaling factor for A. Host memory pointer.
+//! @param[in] A Multi-mode tensor in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[in] gamma Scaling factor for C. Host memory pointer.
+//! @param[in] C Multi-mode tensor in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[out] D Multi-mode tensor in GPU-accessible memory. C and D may be identical only if descC == descD.
+//! @param[in] stream Stream for performing the operation.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED When data type combinations or operations aren't supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE When tensor dimensions or modes contain illegal values
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
+hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t handle,
+                                                    const hiptensorPlan_t   plan,
+                                                    const void*             alpha,
+                                                    const void*             A,
+                                                    const void*             gamma,
+                                                    const void*             C,
+                                                    void*                   D,
+                                                    hipStream_t             stream);
 
-//! @brief Performs an element-wise tensor operation with three input tensors.
+//! @brief Creates an operation descriptor for elementwise trinary operations.
+//!
+//! @param[in] handle Opaque handle containing hipTensor's library context.
+//! @param[out] desc Opaque structure allocated and filled with the elementwise operation information.
+//! @param[in] descA Descriptor containing A's data type, modes, and strides.
+//! @param[in] modeA Host memory array of size descA->numModes with A's mode names.
+//! @param[in] opA Unary operator applied to each element of A before processing. A's original data remains unchanged.
+//! @param[in] descB Descriptor containing B's data type, modes, and strides.
+//! @param[in] modeB Host memory array of size descB->numModes with B's mode names.
+//! @param[in] opB Unary operator applied to each element of B before processing. B's original data remains unchanged.
+//! @param[in] descC Descriptor containing C's data type, modes, and strides.
+//! @param[in] modeC Host memory array of size descC->numModes with C's mode names.
+//! @param[in] opC Unary operator applied to each element of C before processing. C's original data remains unchanged.
+//! @param[in] descD Descriptor containing D's data type, modes, and strides. Currently must be identical to descC.
+//! @param[in] modeD Host memory array of size descD->numModes with D's mode names.
+//! @param[in] opAB Element-wise binary operator.
+//! @param[in] opABC Element-wise binary operator.
+//! @param[in] descCompute Determines the precision for this operation.
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully.
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE When input data is invalid (typically user error).
+//! @retval HIPTENSOR_STATUS_ARCH_MISMATCH When the device isn't ready or the target architecture isn't supported.
+hiptensorStatus_t hiptensorCreateElementwiseTrinary(const hiptensorHandle_t            handle,
+                                                    hiptensorOperationDescriptor_t*    desc,
+                                                    const hiptensorTensorDescriptor_t  descA,
+                                                    const int32_t                      modeA[],
+                                                    hiptensorOperator_t                opA,
+                                                    const hiptensorTensorDescriptor_t  descB,
+                                                    const int32_t                      modeB[],
+                                                    hiptensorOperator_t                opB,
+                                                    const hiptensorTensorDescriptor_t  descC,
+                                                    const int32_t                      modeC[],
+                                                    hiptensorOperator_t                opC,
+                                                    const hiptensorTensorDescriptor_t  descD,
+                                                    const int32_t                      modeD[],
+                                                    hiptensorOperator_t                opAB,
+                                                    hiptensorOperator_t                opABC,
+                                                    const hiptensorComputeDescriptor_t descCompute);
+
+//! @brief Executes element-wise tensor operation on three input tensors.
 //!
 //! @details This function computes the element-wise operation:
 //! \f[ D_{\Pi^C(i_0,i_1,...,i_n)} = \Phi_{ABC}(\Phi_{AB}(\alpha \Psi_A(A_{\Pi^A(i_0,i_1,...,i_n)}), \beta \Psi_B(B_{\Pi^B(i_0,i_1,...,i_n)})), \gamma \Psi_C(C_{\Pi^C(i_0,i_1,...,i_n)})) \f]
@@ -159,294 +457,125 @@ hiptensorStatus_t hiptensorElementwiseBinary(const hiptensorHandle_t*           
 //!   - Modes present in \f$A\f$ or \f$B\f$ must also be present in the output tensor \f$D\f$. Modes only in inputs would imply contraction, which is handled by hiptensorContraction or hiptensorReduction.
 //!   - Each mode can appear at most once in each tensor.
 //!
-//! @param[in] handle Opaque handle to the hipTensor library context.
-//! @param[in] alpha Scaling factor for tensor \f$A\f$ (host memory).
-//! @param[in] A Input tensor \f$A\f$ (GPU memory).
-//! @param[in] descA Descriptor for tensor \f$A\f$, including data type, modes, and strides.
-//! @param[in] modeA Array of mode names for tensor \f$A\f$ (host memory).
-//! @param[in] beta Scaling factor for tensor \f$B\f$ (host memory).
-//! @param[in] B Input tensor \f$B\f$ (GPU memory).
-//! @param[in] descB Descriptor for tensor \f$B\f$, including data type, modes, and strides.
-//! @param[in] modeB Array of mode names for tensor \f$B\f$ (host memory).
-//! @param[in] gamma Scaling factor for tensor \f$C\f$ (host memory).
-//! @param[in] C Input tensor \f$C\f$ (GPU memory).
-//! @param[in] descC Descriptor for tensor \f$C\f$, including data type, modes, and strides.
-//! @param[in] modeC Array of mode names for tensor \f$C\f$ (host memory).
-//! @param[out] D Output tensor \f$D\f$ (GPU memory). May alias input tensors if memory layouts match.
-//! @param[in] descD Descriptor for tensor \f$D\f$ (must match descC).
-//! @param[in] modeD Array of mode names for tensor \f$D\f$ (host memory).
-//! @param[in] opAB Element-wise binary operator \f$\Phi_{AB}\f$.
-//! @param[in] opABC Element-wise binary operator \f$\Phi_{ABC}\f$.
-//! @param[in] typeScalar Data type for scalars alpha, beta, and gamma, and for intermediate computations.
-//! @param[in] stream stream for execution.
-//! @return HIPTENSOR_STATUS_SUCCESS if the operation completes successfully.
-//! @return HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-//! @return HIPTENSOR_STATUS_INVALID_VALUE if input data is invalid.
-//! @return HIPTENSOR_STATUS_ARCH_MISMATCH if the device is not ready or the architecture is unsupported.
-hiptensorStatus_t hiptensorElementwiseTrinary(const hiptensorHandle_t*           handle,
-                                              const void*                        alpha,
-                                              const void*                        A,
-                                              const hiptensorTensorDescriptor_t* descA,
-                                              const int32_t                      modeA[],
-                                              const void*                        beta,
-                                              const void*                        B,
-                                              const hiptensorTensorDescriptor_t* descB,
-                                              const int32_t                      modeB[],
-                                              const void*                        gamma,
-                                              const void*                        C,
-                                              const hiptensorTensorDescriptor_t* descC,
-                                              const int32_t                      modeC[],
-                                              void*                              D,
-                                              const hiptensorTensorDescriptor_t* descD,
-                                              const int32_t                      modeD[],
-                                              hiptensorOperator_t                opAB,
-                                              hiptensorOperator_t                opABC,
-                                              hipDataType                        typeScalar,
-                                              const hipStream_t                  stream);
+//! @param[in] handle Opaque handle containing hipTensor's library context.
+//! @param[in] plan Opaque handle with elementwise operation information.
+//! @param[in] alpha Scaling factor for A. Host memory pointer.
+//! @param[in] A Multi-mode tensor in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[in] beta Scaling factor for B. Host memory pointer.
+//! @param[in] B Multi-mode tensor in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[in] gamma Scaling factor for C. Host memory pointer.
+//! @param[in] C Multi-mode tensor in GPU-accessible memory. Must not overlap with elements written to D.
+//! @param[out] D Multi-mode tensor in GPU-accessible memory. C and D may be identical only if descC == descD.
+//! @param[in] stream Stream for performing the operation.
+//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED When data type combinations or operations aren't supported
+//! @retval HIPTENSOR_STATUS_INVALID_VALUE When tensor dimensions or modes contain illegal values
+//! @retval HIPTENSOR_STATUS_SUCCESS When the operation completes successfully
+//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED When the handle isn't initialized.
+hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t handle,
+                                                     const hiptensorPlan_t   plan,
+                                                     const void*             alpha,
+                                                     const void*             A,
+                                                     const void*             beta,
+                                                     const void*             B,
+                                                     const void*             gamma,
+                                                     const void*             C,
+                                                     void*                   D,
+                                                     hipStream_t             stream);
 
-//! @brief Computes the alignment requirement for a given pointer and descriptor.
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[in] ptr Pointer to the respective tensor data.
-//! @param[in] desc Tensor descriptor for ptr data.
-//! @param[out] alignmentRequirement Largest alignment requirement that ptr can fulfill (in bytes).
-//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE  if the unsupported parameter is passed.
-hiptensorStatus_t hiptensorGetAlignmentRequirement(const hiptensorHandle_t*           handle,
-                                                   const void*                        ptr,
-                                                   const hiptensorTensorDescriptor_t* desc,
-                                                   uint32_t* alignmentRequirement);
-
-//! @brief Initializes a contraction descriptor for the tensor contraction problem.
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[out] desc Tensor contraction problem descriptor.
-//! @param[in] descA A descriptor that holds information about tensor A.
-//! @param[in] modeA Array with 'nmodeA' entries that represent the modes of A.
-//! @param[in] alignmentRequirementA Alignment reqirement for A's pointer (in bytes);
-//! @param[in] descB A descriptor that holds information about tensor B.
-//! @param[in] modeB Array with 'nmodeB' entries that represent the modes of B.
-//! @param[in] alignmentRequirementB Alignment reqirement for B's pointer (in bytes);
-//! @param[in] modeC Array with 'nmodeC' entries that represent the modes of C.
-//! @param[in] descC A descriptor that holds information about tensor C.
-//! @param[in] alignmentRequirementC Alignment requirement for C's pointer (in bytes);
-//! @param[in] modeD Array with 'nmodeD' entries that represent the modes of D (must be identical to modeC).
-//! @param[in] descD A descriptor that holds information about tensor D (must be identical to descC).
-//! @param[in] alignmentRequirementD Alignment requirement for D's pointer (in bytes);
-//! @param[in] typeCompute Datatype for the intermediate computation  T = A * B.
-//! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or tensor descriptors are not initialized.
-hiptensorStatus_t hiptensorInitContractionDescriptor(const hiptensorHandle_t*           handle,
-                                                     hiptensorContractionDescriptor_t*  desc,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
-                                                     const uint32_t alignmentRequirementA,
-                                                     const hiptensorTensorDescriptor_t* descB,
-                                                     const int32_t                      modeB[],
-                                                     const uint32_t alignmentRequirementB,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
-                                                     const uint32_t alignmentRequirementC,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
-                                                     const uint32_t         alignmentRequirementD,
-                                                     hiptensorComputeType_t typeCompute);
-
-//! @brief Narrows down the candidates for the contraction problem.
-//! @details This function gives the user finer control over the candidates that
-//! the subsequent call to @ref hiptensorInitContractionPlan is allowed to
-//! evaluate. Currently, the backend provides few set of algorithms(DEFAULT).
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[out] find Narrowed set of candidates for the contraction problem.
-//! @param[in] algo Allows users to select a specific algorithm.
-//! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
-//! @retval HIPTENSOR_STATUS_NOT_SUPPORTED If a specified algorithm is not supported
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find is not initialized.
-hiptensorStatus_t hiptensorInitContractionFind(const hiptensorHandle_t*    handle,
-                                               hiptensorContractionFind_t* find,
-                                               const hiptensorAlgo_t       algo);
-
-//! @brief Computes the size of workspace for a given tensor contraction
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[in] desc Tensor contraction descriptor.
-//! @param[in] find Narrowed set of candidates for the contraction problem.
-//! @param[in] pref Preference to choose the workspace size.
-//! @param[out] workspaceSize Size of the workspace (in bytes).
-//! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
-hiptensorStatus_t hiptensorContractionGetWorkspaceSize(const hiptensorHandle_t* handle,
-                                                       const hiptensorContractionDescriptor_t* desc,
-                                                       const hiptensorContractionFind_t*       find,
-                                                       const hiptensorWorksizePreference_t     pref,
-                                                       uint64_t* workspaceSize);
-
-//! @brief Initializes the contraction plan for a given tensor contraction problem
-//! @details This function creates a contraction plan for the problem by applying
-//! hipTensor's heuristics to select a candidate. The creaated plan can be reused
-//! multiple times for the same tensor contraction problem. The plan is created for
-//! the active HIP device.
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[out] plan Opaque handle holding the contraction plan (i.e.,
-//! the algorithm that will be executed, its runtime parameters for the given
-//! tensor contraction problem).
-//! @param[in] desc Tensor contraction descriptor.
-//! @param[in] find Narrows down the candidates for the contraction problem.
-//! @param[in] workspaceSize Available workspace size (in bytes).
-//! @retval HIPTENSOR_STATUS_SUCCESS If a viable candidate has been found.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or find or desc is not
-//! initialized.
-hiptensorStatus_t hiptensorInitContractionPlan(const hiptensorHandle_t*                handle,
-                                               hiptensorContractionPlan_t*             plan,
-                                               const hiptensorContractionDescriptor_t* desc,
-                                               const hiptensorContractionFind_t*       find,
-                                               const uint64_t workspaceSize);
-
-//! @brief Computes the tensor contraction \f[ D = alpha * A * B + beta * C \f]
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! HIP Device associated with the handle must be same/active at the time,0
-//! the plan was created.
-//! @param[in] plan Opaque handle holding the contraction plan (i.e.,
-//! the algorithm that will be executed, its runtime parameters for the given
-//! tensor contraction problem).
-//! @param[in] alpha Scaling parameter for A*B of data type 'typeCompute'.
-//! @param[in] A Pointer to A's data in device memory.
-//! @param[in] B Pointer to B's data in device memory.
-//! @param[in] beta Scaling parameter for C of data type 'typeCompute'.
-//! @param[in] C Pointer to C's data in device memory.
-//! @param[out] D Pointer to D's data in device memory.
-//! @param[out] workspace Workspace pointer in device memory
-//! @param[in] workspaceSize Available workspace size.
-//! @param[in] stream HIP stream to perform all operations.
-//! @retval HIPTENSOR_STATUS_SUCCESS Successful completion of the operation.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle or pointers are not
-//! initialized.
-//! @retval HIPTENSOR_STATUS_CK_ERROR if some unknown composable_kernel (CK)
-//! error has occurred (e.g., no instance supported by inputs).
-hiptensorStatus_t hiptensorContraction(const hiptensorHandle_t*          handle,
-                                       const hiptensorContractionPlan_t* plan,
-                                       const void*                       alpha,
-                                       const void*                       A,
-                                       const void*                       B,
-                                       const void*                       beta,
-                                       const void*                       C,
-                                       void*                             D,
-                                       void*                             workspace,
-                                       uint64_t                          workspaceSize,
-                                       hipStream_t                       stream);
-
-//! @brief Implements a tensor reduction of the form \f[ D = alpha * opReduce(opA(A)) + beta * opC(C) \f]
+//! @brief Creates a hiptensorOperatorDescriptor_t object that encodes a tensor reduction of the form \f$ D = alpha * opReduce(opA(A)) + beta * opC(C) \f$.
 //!
 //! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[in] alpha Scaling for A; its data type is determined by 'typeCompute'. Pointer to the host memory.
-//! @param[in] A Pointer to the data corresponding to A in device memory. Pointer to the GPU-accessible memory.
-//! @param[in] descA A descriptor that holds the information about the data type, modes and strides of A.
-//! @param[in] modeA Array with 'nmodeA' entries that represent the modes of A. modeA[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor. Modes that only appear in modeA but not in modeC are reduced (contracted).
-//! @param[in] beta Scaling for C; its data type is determined by 'typeCompute'. Pointer to the host memory.
-//! @param[in] C Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
-//! @param[in] descC A descriptor that holds the information about the data type, modes and strides of C.
-//! @param[in] modeC Array with 'nmodeC' entries that represent the modes of C. modeC[i] corresponds to extent[i] and stride[i] w.r.t. the arguments provided to hiptensorInitTensorDescriptor.
-//! @param[out] D Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
+//! @param[out] desc This opaque struct gets allocated and filled with the information that encodes the requested tensor reduction operation.
+//! @param[in] descA The descriptor that holds the information about the data type, modes and strides of A.
+//! @param[in] modeA Array with 'nmodeA' entries that represent the modes of A.
+//! @param[in] opA Unary operator that will be applied to each element of A before it is further processed. The original data of this tensor remains unchanged.
+//! @param[in] descC The descriptor that holds the information about the data type, modes and strides of C.
+//! @param[in] modeC Array with 'nmodeC' entries that represent the modes of C.
+//! @param[in] opC Unary operator that will be applied to each element of C before it is further processed. The original data of this tensor remains unchanged.
 //! @param[in] descD Must be identical to descC for now.
 //! @param[in] modeD Must be identical to modeC for now.
 //! @param[in] opReduce binary operator used to reduce elements of A.
-//! @param[in] typeCompute All arithmetic is performed using this data type (i.e., it affects the accuracy and performance).
-//! @param[out] workspace Scratchpad (device) memory; the workspace must be aligned to 128 bytes.
-//! @param[in] workspaceSize Please use hiptensorReductionGetWorkspaceSize() to query the required workspace.
-//!            While lower values, including zero, are valid, they may lead to grossly suboptimal performance.
-//! @param[in] stream The stream in which all the computation is performed.
+//! @param[in] descCompute All arithmetic is performed using this data type.
+//!
 //! @retval HIPTENSOR_STATUS_NOT_SUPPORTED if operation is not supported.
 //! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
 //! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
+hiptensorStatus_t hiptensorCreateReduction(const hiptensorHandle_t            handle,
+                                           hiptensorOperationDescriptor_t*    desc,
+                                           const hiptensorTensorDescriptor_t  descA,
+                                           const int32_t                      modeA[],
+                                           hiptensorOperator_t                opA,
+                                           const hiptensorTensorDescriptor_t  descC,
+                                           const int32_t                      modeC[],
+                                           hiptensorOperator_t                opC,
+                                           const hiptensorTensorDescriptor_t  descD,
+                                           const int32_t                      modeD[],
+                                           hiptensorOperator_t                opReduce,
+                                           const hiptensorComputeDescriptor_t descCompute);
 
-hiptensorStatus_t hiptensorReduction(const hiptensorHandle_t*           handle,
-                                     const void*                        alpha,
-                                     const void*                        A,
-                                     const hiptensorTensorDescriptor_t* descA,
-                                     const int32_t                      modeA[],
-                                     const void*                        beta,
-                                     const void*                        C,
-                                     const hiptensorTensorDescriptor_t* descC,
-                                     const int32_t                      modeC[],
-                                     void*                              D,
-                                     const hiptensorTensorDescriptor_t* descD,
-                                     const int32_t                      modeD[],
-                                     hiptensorOperator_t                opReduce,
-                                     hiptensorComputeType_t             typeCompute,
-                                     void*                              workspace,
-                                     uint64_t                           workspaceSize,
-                                     hipStream_t                        stream);
-
-//! @brief Determines the required workspaceSize for a given tensor reduction (see \ref hiptensorReduction)
-//! @param[in] handle Opaque handle holding hipTensor's library context.
-//! @param[in] A same as in hiptensorReduction
-//! @param[in] descA same as in hiptensorReduction
-//! @param[in] modeA same as in hiptensorReduction
-//! @param[in] C same as in hiptensorReduction
-//! @param[in] descC same as in hiptensorReduction
-//! @param[in] modeC same as in hiptensorReduction
-//! @param[in] D same as in hiptensorReduction
-//! @param[in] descD same as in hiptensorReduction
-//! @param[in] modeD same as in hiptensorReduction
-//! @param[in] opReduce same as in hiptensorReduction
-//! @param[in] typeCompute same as in hiptensorReduction
-//! @param[out] workspaceSize The workspace size (in bytes) that is required for the given tensor reduction.
+//! @brief Performs the tensor reduction that is encoded by `plan`.
+//!
+//! @param[in] handle An opaque handle representing the hipTensor library context.
+//! @param[in] plan Opaque handle with elementwise operation information.
+//! @param[in] alpha Scaling for A. Its data type is determined by 'descCompute'. Pointer to the host memory.
+//! @param[in] A Pointer to the data corresponding to A in device memory. Pointer to the GPU-accessible memory. The data accessed via this pointer must not overlap with the elements written to D.
+//! @param[in] beta Scaling for C. Its data type is determined by 'descCompute'. Pointer to the host memory.
+//! @param[in] C Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
+//! @param[out] D Pointer to the data corresponding to C in device memory. Pointer to the GPU-accessible memory.
+//! @param[out] workspace Scratchpad (device) memory of size --at least-- `workspaceSize` bytes.
+//! @param[in] workspaceSize Please use \ref hiptensorEstimateWorkspaceSize() to query the required workspace.
+//! @param[in] stream The stream in which all the computation is performed.
 //! @retval HIPTENSOR_STATUS_SUCCESS The operation completed successfully.
-//! @retval HIPTENSOR_STATUS_NOT_INITIALIZED if the handle is not initialized.
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE if some input data is invalid (this typically indicates an user error).
-hiptensorStatus_t hiptensorReductionGetWorkspaceSize(const hiptensorHandle_t*           handle,
-                                                     const void*                        A,
-                                                     const hiptensorTensorDescriptor_t* descA,
-                                                     const int32_t                      modeA[],
-                                                     const void*                        C,
-                                                     const hiptensorTensorDescriptor_t* descC,
-                                                     const int32_t                      modeC[],
-                                                     const void*                        D,
-                                                     const hiptensorTensorDescriptor_t* descD,
-                                                     const int32_t                      modeD[],
-                                                     hiptensorOperator_t                opReduce,
-                                                     hiptensorComputeType_t             typeCompute,
-                                                     uint64_t* workspaceSize);
+hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
+                                  const hiptensorPlan_t   plan,
+                                  const void*             alpha,
+                                  const void*             A,
+                                  const void*             beta,
+                                  const void*             C,
+                                  void*                   D,
+                                  void*                   workspace,
+                                  uint64_t                workspaceSize,
+                                  hipStream_t             stream);
 
-//! @brief Registers a callback function that will be invoked by logger calls.
-//! @param[in] callback This parameter is the callback function pointer provided to the logger.
-//! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE if the given callback is invalid.
+//! @brief Registers a callback function to be invoked by logger calls.
+//! @param[in] callback The callback function pointer to provide to the logger.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completed successfully.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` if the given callback is invalid.
 hiptensorStatus_t hiptensorLoggerSetCallback(hiptensorLoggerCallback_t callback);
 
-//! @brief Registers a file output stream to redirect logging output to.
-//! @note File stream must be open and writable in text mode.
-//! @param[in] file This parameter is a file stream pointer provided to the logger.
-//! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
-//! @retval HIPTENSOR_STATUS_IO_ERROR if the output file is not valid (defaults back to stdout).
+//! @brief Registers a file output stream to redirect logging output.
+//! @note The file stream must be open and writable in text mode.
+//! @param[in] file A file stream pointer to provide to the logger.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completed successfully.
+//! @retval `HIPTENSOR_STATUS_IO_ERROR` if the output file is not valid (defaults back to stdout).
 hiptensorStatus_t hiptensorLoggerSetFile(FILE* file);
 
-//! @brief Redirects log output to a file given by the user.
-//! @param[in] logFile This parameter is a file name (relative to binary) or full path to redirect logger output.
-//! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
-//! @retval HIPTENSOR_STATUS_IO_ERROR if the output file is not valid (defaults back to stdout).
+//! @brief Redirects log output to a user-specified file.
+//! @param[in] logFile The file name (relative to binary) or full path to redirect logger output.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completed successfully.
+//! @retval `HIPTENSOR_STATUS_IO_ERROR` if the output file is not valid (defaults back to stdout).
 hiptensorStatus_t hiptensorLoggerOpenFile(const char* logFile);
 
-//! @brief User-specified logging level. Logs in other contexts will not be recorded.
-//! @param[in] level This parameter is the logging level to be enforced.
-//! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE if the given log level is invalid.
+//! @brief Sets the user-specified logging level. Logs in other contexts will not be recorded.
+//! @param[in] level The logging level to enforce.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completed successfully.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` if the given log level is invalid.
 hiptensorStatus_t hiptensorLoggerSetLevel(hiptensorLogLevel_t level);
 
-//! @brief User-specified logging mask. A mask may be a binary OR combination of
-//! several log levels together. Logs in other contexts will not be recorded.
-//! @param[in] mask This parameter is the logging mask to be enforced.
-//! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
-//! @retval HIPTENSOR_STATUS_INVALID_VALUE if the given log mask is invalid.
+//! @brief Sets the user-specified logging mask. A mask can be a binary OR combination of several log levels. Logs in other contexts will not be recorded.
+//! @param[in] mask The logging mask to enforce.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completed successfully.
+//! @retval `HIPTENSOR_STATUS_INVALID_VALUE` if the given log mask is invalid.
 hiptensorStatus_t hiptensorLoggerSetMask(int32_t mask);
 
 //! @brief Disables logging.
-//! @retval HIPTENSOR_STATUS_SUCCESS if the operation completed successfully.
+//! @retval `HIPTENSOR_STATUS_SUCCESS` if the operation completed successfully.
 hiptensorStatus_t hiptensorLoggerForceDisable();
 
-//! @brief Query HIP runtime version.
-//! @retval -1 if the operation failed.
-//! @retval Integer HIP runtime version if the operation succeeded.
+//! @brief Queries the HIP runtime version.
+//! @retval -1 If the operation failed.
+//! @retval Integer An integer representing the HIP runtime version if the operation succeeded.
 int hiptensorGetHiprtVersion();
 
 #endif // HIPTENSOR_API_HPP

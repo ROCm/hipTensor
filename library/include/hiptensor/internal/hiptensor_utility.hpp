@@ -61,11 +61,4 @@
     }
 #endif
 
-bool inline operator==(const hiptensorTensorDescriptor_t& lhs,
-                       const hiptensorTensorDescriptor_t& rhs)
-{
-    return lhs.mType == rhs.mType && lhs.mLengths == rhs.mLengths && lhs.mStrides == rhs.mStrides
-           && lhs.mUnaryOp == rhs.mUnaryOp;
-}
-
 #endif // HIPTENSOR_UTILITY_INTERNAL_HPP

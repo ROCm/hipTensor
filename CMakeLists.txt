@@ -176,6 +176,9 @@ if(HIPTENSOR_CODE_COVERAGE)
     add_link_options(-fprofile-instr-generate)
 endif()
 
+# disable warning about 'amdgpu-waves-per-eu'
+add_compile_options(-Wno-pass-failed)
+
 find_package( composable_kernel 1.0.0 REQUIRED PATHS $ENV{CK_DIR}/lib/cmake /opt/rocm /opt/rocm/ck COMPONENTS device_contraction_operations device_reduction_operations device_other_operations)
 rocm_package_add_dependencies("composable_kernel >= 1.0.0" COMPONENT tests)
 
@@ -201,7 +204,7 @@ if(HIPTENSOR_BUILD_SAMPLES)
 endif()
 
 # Versioning via rocm-cmake
-set ( VERSION_STRING "1.6.0" )
+set ( VERSION_STRING "2.0.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
 # configure a header file to pass the CMake version settings to the source
