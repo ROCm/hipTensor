@@ -53,7 +53,7 @@ The main differences between the 1.x and the new 2.0 API are listed below:
    * ``hiptensorInitContractionPlan`` -> `hiptensorCreatePlan() <../api-reference/api-reference.html#hiptensorcreateplan>`_ and `hiptensorDestroyPlan() <../api-reference/api-reference.html#hiptensordestroyplan>`_
 
 * The `hiptensorOperator_t <../api-reference/api-reference.html#hiptensoroperator-t>`_ (e.g., ``HIPTENSOR_OP_IDENTITY``) is no longer part of the `hiptensorTensorDescriptor_t <../api-reference/api-reference.html#hiptensortensordescriptor>`_ and has been moved to the creation of each operation (e.g., `hiptensorCreateContraction() <../api-reference/api-reference.html#hiptensorcreatecontraction>`_)
-* Additionally, the alignment is no longer part of each operation but has been moved to `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_, with the intention being that a `hiptensorTensorDescriptor_t <../api-reference/api-reference.html#hiptensortensordescriptor>`_ object outlines all aspects taht are related to the physical layout of the tensor in memory.
+* Additionally, the alignment is no longer part of each operation but has been moved to `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_, with the intention being that a `hiptensorTensorDescriptor_t <../api-reference/api-reference.html#hiptensortensordescriptor>`_ object outlines all aspects that are related to the physical layout of the tensor in memory.
 
 -------------------------------------------------------
 Example 1: Migrating a contraction from 1.x to 2.0
