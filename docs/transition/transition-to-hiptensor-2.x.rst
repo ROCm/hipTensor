@@ -87,7 +87,7 @@ hipTensor 2.0
 
    hiptensorHandle_t handle;
 
-hiptensorInitTensorDescriptor is replaced by `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_. It is not just a name change; the last argument has been changed. Specifically, instead of specifying the `hiptensorOperator_t <../api-reference/api-reference.html#hiptensoroperator-t>`_ (which is now part of the operation descriptor), the user specifies the alignment of the tensor pointer in bytes.
+``hiptensorInitTensorDescriptor`` is replaced by `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_. It is not just a name change; the last argument has been changed. Specifically, instead of specifying the `hiptensorOperator_t <../api-reference/api-reference.html#hiptensoroperator-t>`_ (which is now part of the operation descriptor), the user specifies the alignment of the tensor pointer in bytes.
 
 hipTensor 1.x
 ::
@@ -207,7 +207,7 @@ hipTensor 1.x
 
    void *work = nullptr;
    if (worksize > 0)
-      if (hipSuccess != hipMalloc(\&work, worksize))
+      if (hipSuccess != hipMalloc(&work, worksize))
       {
          work = nullptr;
          worksize = 0;
@@ -242,7 +242,7 @@ hipTensor 2.0
 ::
 
    hipStream_t stream;
-   CHECK_HIP_ERROR(hipStreamCreate(\&stream));
+   CHECK_HIP_ERROR(hipStreamCreate(&stream));
    
    hiptensorContract(handle,
                      plan,
