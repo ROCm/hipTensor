@@ -32,7 +32,7 @@ The hipTensor public repository is located at `<https://github.com/ROCm/hipTenso
 
     * :doc:`Programming guide <./conceptual/programmers-guide>`
 
-    .. grid-item-card:: Transition
+  .. grid-item-card:: Transition
 
     * :doc:`Transition to hipTensor 2.0 <./transition/transition-to-hiptensor-2.x>`
 
