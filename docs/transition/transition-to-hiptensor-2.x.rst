@@ -32,7 +32,8 @@ The main differences between the 1.x and the new 2.0 API include:
 * ``hipDataType`` -> `hiptensorDataType_t <../api-reference/api-reference.html#hiptensordatatype-t>`_. For example, HIP_R_32F -> HIPTENSOR_R_32F.
 * ``hiptensorComputeType_t`` -> `hiptensorComputeDescriptor_t <../api-reference/api-reference.html#hiptensorcomputedescriptor-t>`_. For example, HIPTENSOR_COMPUTE_32F -> HIPTENSOR_COMPUTE_DESC_32F.
 
-   .. note::
+  .. note::
+
      The previously deprecated compute types ``HIPTENSOR_R_MIN`` and ``HIPTENSOR_C_MIN`` have been removed.
 
 * ``hiptensorInitTensorDescriptor`` -> `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_
@@ -48,11 +49,11 @@ The main differences between the 1.x and the new 2.0 API include:
 * ``hiptensorReduction`` -> `hiptensorReduce() <../api-reference/api-reference.html#hiptensorreduce>`_
 * “Init” functions are now replaced by “Create” and “Destroy” pairs:
 
-   * ``hiptensorInit`` -> `hiptensorCreate() <../api-reference/api-reference.html#hiptensorcreate>`_ and `hiptensorDestroy() <../api-reference/api-reference.html#hiptensordestroy>`_
-   * ``hiptensorInitTensorDescriptor`` -> `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_ and `hiptensorDestroyTensorDescriptor() <../api-reference/api-reference.html#hiptensordestroytensordescriptor>`_
-   * ``hiptensorInitContractionDescriptor`` -> `hiptensorCreateContraction() <../api-reference/api-reference.html#hiptensorcreatecontraction>`_ and `hiptensorDestroyOperationDescriptor() <../api-reference/api-reference.html#hiptensordestroyoperationdescriptor>`_
-   * ``hiptensorInitContractionFind`` -> `hiptensorCreatePlanPreference() <../api-reference/api-reference.html#hiptensorcreateplanpreference>`_ and `hiptensorDestroyPlanPreference() <../api-reference/api-reference.html#hiptensordestroyplanpreference>`_
-   * ``hiptensorInitContractionPlan`` -> `hiptensorCreatePlan() <../api-reference/api-reference.html#hiptensorcreateplan>`_ and `hiptensorDestroyPlan() <../api-reference/api-reference.html#hiptensordestroyplan>`_
+  * ``hiptensorInit`` -> `hiptensorCreate() <../api-reference/api-reference.html#hiptensorcreate>`_ and `hiptensorDestroy() <../api-reference/api-reference.html#hiptensordestroy>`_
+  * ``hiptensorInitTensorDescriptor`` -> `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_ and `hiptensorDestroyTensorDescriptor() <../api-reference/api-reference.html#hiptensordestroytensordescriptor>`_
+  * ``hiptensorInitContractionDescriptor`` -> `hiptensorCreateContraction() <../api-reference/api-reference.html#hiptensorcreatecontraction>`_ and `hiptensorDestroyOperationDescriptor() <../api-reference/api-reference.html#hiptensordestroyoperationdescriptor>`_
+  * ``hiptensorInitContractionFind`` -> `hiptensorCreatePlanPreference() <../api-reference/api-reference.html#hiptensorcreateplanpreference>`_ and `hiptensorDestroyPlanPreference() <../api-reference/api-reference.html#hiptensordestroyplanpreference>`_
+  * ``hiptensorInitContractionPlan`` -> `hiptensorCreatePlan() <../api-reference/api-reference.html#hiptensorcreateplan>`_ and `hiptensorDestroyPlan() <../api-reference/api-reference.html#hiptensordestroyplan>`_
 
 * `hiptensorOperator_t <../api-reference/api-reference.html#hiptensoroperator-t>`_, for example, ``HIPTENSOR_OP_IDENTITY``, is no longer included in `hiptensorTensorDescriptor_t <../api-reference/api-reference.html#hiptensortensordescriptor>`_ and has been moved to operation creation. For example, `hiptensorCreateContraction() <../api-reference/api-reference.html#hiptensorcreatecontraction>`_).
 * Alignment is now set in `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_, rather than within each operation. This change ensures that a `hiptensorTensorDescriptor_t <../api-reference/api-reference.html#hiptensortensordescriptor>`_ fully defines the physical layout of the tensor in memory.
@@ -65,14 +66,14 @@ Example 1: Migrating a contraction from 1.x to 2.0
 
 First, update the DataType names to reflect the prefix change from ``HIP_`` to ``HIPTENSOR_``. For example, ``HIP_R_32F`` becomes ``HIPTENSOR_R_32F``.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hipDataType_t typeA = HIP_R_32F;
    hipDataType_t typeB = HIP_R_32F;
    hipDataType_t typeC = HIP_R_32F;
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorDataType_t typeA = HIPTENSOR_R_32F;
@@ -81,19 +82,19 @@ hipTensor 2.0
 
 With initialization functions replaced by "Create" and "Destroy" pairs, pointers to hipTensor objects are no longer required. You can now directly allocate structures using `hiptensorCreate() <../api-reference/api-reference.html#hiptensorcreate>`_. Any memory allocated by `hiptensorCreate() <../api-reference/api-reference.html#hiptensorcreate>`_ can be safely released using `hiptensorDestroy() <../api-reference/api-reference.html#hiptensordestroy>`_.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorHandle_t* handle; 
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorHandle_t handle;
 
 ``hiptensorInitTensorDescriptor`` is replaced by `hiptensorCreateTensorDescriptor() <../api-reference/api-reference.html#hiptensorcreatetensordescriptor>`_. This is more than a name change- the last argument has been updated. Instead of specifying `hiptensorOperator_t <../api-reference/api-reference.html#hiptensoroperator-t>`_ (now part of the operation descriptor), you can now specify the tensor pointer alignment in bytes.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorTensorDescriptor_t descA;
@@ -104,7 +105,7 @@ hipTensor 1.x
                                  NULL,/*stride*/
                                  typeA, HIPTENSOR_OP_IDENTITY);      
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorTensorDescriptor_t descA;
@@ -117,7 +118,7 @@ hipTensor 2.0
    
 In the new API, a contraction is represented by a `hiptensorOperationDescriptor_t <../api-reference/api-reference.html#hiptensoroperationdescriptor>`_, initialized using `hiptensorCreateContraction() <../api-reference/api-reference.html#hiptensorcreatecontraction>`_.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorContractionDescriptor_t desc;
@@ -129,7 +130,7 @@ hipTensor 1.x
                                       &descC, modeC.data(), alignmentRequirementC,
                                       typeCompute);
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorOperationDescriptor_t desc;
@@ -143,7 +144,7 @@ hipTensor 2.0
 
 ``hiptensorContractionFind_t`` has been renamed to `hiptensorPlanPreference_t <../api-reference/api-reference.html#hiptensorplanpreference>`_ to reflect its applicability to all operations, not just contractions. Its function remains the same: configuring the behavior of `hiptensorCreatePlan() <../api-reference/api-reference.html#hiptensorcreateplan>`_.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorContractionFind_t find;
@@ -151,7 +152,7 @@ hipTensor 1.x
                                 &find,
                                 HIPTENSOR_ALGO_DEFAULT); 
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorPlanPreference_t planPref;
@@ -162,7 +163,7 @@ hipTensor 2.0
 
 ``hiptensorContractionGetWorkspaceSize`` has been renamed to `hiptensorEstimateWorkspaceSize() <../api-reference/api-reference.html#hiptensorestimateworkspacesize>`_. Three values of `hiptensorWorksizePreference_t <../api-reference/api-reference.html#hiptensorworksizepreference-t>`_ are available; note that ``HIPTENSOR_WORKSPACE_RECOMMENDED`` has been renamed to ``HIPTENSOR_WORKSPACE_DEFAULT``.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    uint64_t worksize = 0;
@@ -172,7 +173,7 @@ hipTensor 1.x
                                         HIPTENSOR_WORKSPACE_RECOMMENDED,
                                         &worksize);
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    uint64_t workspaceSizeEstimate = 0;
@@ -184,7 +185,7 @@ hipTensor 2.0
 
 ``hiptensorInitContractionPlan`` has been renamed to `hiptensorCreatePlan() <../api-reference/api-reference.html#hiptensorcreateplan>`_.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorContractionPlan_t plan;
@@ -194,7 +195,7 @@ hipTensor 1.x
                                 &find,
                                 worksize);
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorPlan_t plan;
@@ -206,7 +207,7 @@ hipTensor 2.0
 
 After creating a plan, you can query the created plan to find the actual workspace required to execute the operation.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    void *work = nullptr;
@@ -217,7 +218,7 @@ hipTensor 1.x
          worksize = 0;
       }
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    uint64_t actualWorkspaceSize = 0;
@@ -233,7 +234,7 @@ hipTensor 2.0
 
 ``hiptensorContraction`` has been renamed to `hiptensorContract() <../api-reference/api-reference.html#hiptensorcontract>`_.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorContraction(handle,
@@ -242,7 +243,7 @@ hipTensor 1.x
                         (void*) &beta,  C_d, C_d,
                         work, worksize, 0 /* stream */);
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hipStream_t stream;
@@ -262,7 +263,7 @@ Example 2: Migrating a reduction operation from 1.x to 2.0
 
 Reduction operations, along with :ref:`migrate-permutation-elementwise`, were previously available only through an execution function, for example, a single-stage API. In hipTensor 2.0, reductions now follow the same multi-stage API used for all operations. The steps to compute a reduction with the new API are very similar to :ref:`migrate-contraction` and are illustrated below.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    uint64_t worksize = 0;
@@ -277,7 +278,7 @@ hipTensor 1.x
       hipMalloc(&work, worksize); 
    }
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
@@ -320,7 +321,7 @@ hipTensor 2.0
                       planPref,
                       workspaceSizeEstimate);
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    const hiptensorOperator_t opReduce = HIPTENSOR_OP_ADD;
@@ -330,7 +331,7 @@ hipTensor 1.x
                      C_d, &descC, modeC.data(),
                      opReduce, typeCompute, work, worksize, 0 /* stream */);
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorReduce(handle, plan,
@@ -346,11 +347,12 @@ Example 3: Migrating a permutation and elementwise operations from 1.x to 2.0
 
 In the new API, permutations and elementwise operations use the same multi-stage approach. The steps to compute an elementwise binary operation are illustrated below.
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
        
+   Not available.
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
 
    hiptensorOperationDescriptor_t  desc;
@@ -376,7 +378,7 @@ hipTensor 2.0
                       planPref,
                       0 /* workspaceSizeLimit */);
 
-hipTensor 1.x
+**hipTensor 1.x**
 ::
 
    hiptensorElementwiseBinary(handle,
@@ -386,7 +388,7 @@ hipTensor 1.x
                              HIPTENSOR_OP_ADD, 
                              typeCompute, 0 /* stream */);
 
-hipTensor 2.0
+**hipTensor 2.0**
 ::
    
    hiptensorElementwiseBinaryExecute(handle,
