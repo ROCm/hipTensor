@@ -20,3 +20,4 @@ markdownlint
 ol
 rocm
 trinary
+check_f8
