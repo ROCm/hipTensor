@@ -236,6 +236,8 @@ int main()
     HIPTENSOR_FREE_DEVICE(A_d);
     HIPTENSOR_FREE_DEVICE(C_d);
 
+    std::cout<<"Test!"<<std::endl;
+
     std::cout << "Finished!" << std::endl;
     return 0;
 }
