@@ -109,11 +109,6 @@ hiptensorDataType_t
 
 .. doxygenenum::  hiptensorDataType_t
 
-hiptensorDataType_t
--------------------
-
-.. doxygenenum::  hiptensorDataType_t
-
 hiptensorStatus_t
 -----------------
 
@@ -178,6 +173,21 @@ hiptensorLoggerCallback_t
 -------------------------
 
 .. doxygentypedef::  hiptensorLoggerCallback_t
+
+hiptensorTensorDescriptor
+---------------------------------------
+
+.. doxygenstruct::  hiptensorTensorDescriptor
+
+hiptensorOperationDescriptor
+---------------------------------------
+
+.. doxygenstruct::  hiptensorOperationDescriptor
+
+hiptensorPlanPreference
+---------------------------------------
+
+.. doxygenstruct::  hiptensorPlanPreference
 
 Helper functions
 ================
