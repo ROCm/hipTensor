@@ -13,7 +13,8 @@ library for tensor primitives. It's the AMD C++ library for accelerating tensor 
 leveraging specialized GPU matrix cores on the latest AMD discrete GPUs.
 hipTensor is powered by the composable kernel (CK) library backend.
 
-The hipTensor offers functionality for defining tensor data objects and supports
+The hipTensor API is designed to be portable with other similar libraries, letting other library users easily migrate to the AMD platform.
+It offers functionality for defining tensor data objects and supports
 contraction, permutation, and reduction operations.
 Users can also select from several available logging options.
 The hipTensor library is bundled with GPU kernel instances, which are automatically selected

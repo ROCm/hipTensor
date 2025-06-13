@@ -10,6 +10,8 @@ hipTensor documentation
 
 hipTensor is a high-performance HIP C++ library for accelerating tensor primitives.
 It leverages specialized GPU matrix cores on the latest AMD discrete GPUs.
+The hipTensor API is designed to be portable with other similar libraries, 
+letting other library users easily migrate to the AMD platform.
 The hipTensor library is a work in progress (WIP).
 For more information, see :doc:`What is hipTensor? <./what-is-hiptensor>`
 
