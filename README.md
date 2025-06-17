@@ -33,25 +33,23 @@ For more detailed information, please refer to the [hipTensor installation guide
 
 ### Project options
 
-| Option                              | Description                                         | Default Value                                                    |
-|-------------------------------------|-----------------------------------------------------|------------------------------------------------------------------|
-| AMDGPU_TARGETS (Deprecated)         | Build code for specific GPU target(s)               | gfx908;gfx90a;gfx942;gfx950                                      |
-| GPU_TARGETS                         | Build code for specific GPU target(s)               | gfx908;gfx90a;gfx942;gfx950                                      |
-| HIPTENSOR_BUILD_TESTS               | Build Tests                                         | ON                                                               |
-| HIPTENSOR_BUILD_SAMPLES             | Build Samples                                       | ON                                                               |
-| HIPTENSOR_BUILD_COMPRESSED_DBG      | Enable compressed debug symbols                     | ON                                                               |
-| HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR | Set hiptensor default data layout to column major   | ON                                                               |
+| Option                              | Description                                             | Default Value                               |
+|-------------------------------------|---------------------------------------------------------|---------------------------------------------|
+| GPU_TARGETS                         | Build code for specific GPU target(s)                   | gfx908;gfx90a;gfx942;gfx950                 |
+| HIPTENSOR_BUILD_TESTS               | Build the tests                                         | ON                                          |
+| HIPTENSOR_BUILD_SAMPLES             | Build the samples                                       | ON                                          |
+| HIPTENSOR_BUILD_COMPRESSED_DBG      | Enable compressed debug symbols                         | ON                                          |
+| HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR | Set the hipTensor default data layout to column major   | ON                                          |
 
 ### Example configurations
 
 By default, the project is configured as Release mode. Here are some of the examples for the configuration:
 
-| Configuration                    | Command                                                                   |
-|----------------------------------|---------------------------------------------------------------------------|
-| Basic                            | `CC=hipcc CXX=hipcc cmake -B<build_dir> .`                                |
-| Targeting gfx908                 | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DGPU_TARGETS=gfx908:xnack-`    |
-| Debug build                      | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`       |
-| Build without tests (default on) | `CC=hipcc CXX=hipcc cmake -B<build_dir> . -DHIPTENSOR_BUILD_TESTS=OFF`    |
+| Configuration                    | Command                                                                                                     |
+|----------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Basic                            | `CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> .`                              |
+| Targeting gfx908                 | `CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DGPU_TARGETS=gfx908`         |
+| Debug build                      | `CC=/opt/rocm/bin/amdclang CXX=/opt/rocm/bin/amdclang++ cmake -B<build_dir> . -DCMAKE_BUILD_TYPE=Debug`     |
 
 After configuration, build with `cmake --build <build_dir> -- -j<nproc>`.
 

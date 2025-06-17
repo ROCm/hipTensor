@@ -19,6 +19,8 @@ subtrees:
 
 - caption: How to
   entries:
+  - file: transition/transition-to-hiptensor-2.x
+    title: Transition to hipTensor 2.0
   - file: contribution/contributors-guide
     title: Contribute to hipTensor
 
