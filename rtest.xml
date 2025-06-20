@@ -7,7 +7,7 @@
     <var name="EMULATION_ROOT">./test_emulation_config</var>
     <var name="CODE_COVERAGE_ROOT">./code_coverage_config</var>
     <var name="CONTRACTION_CONFIGS">01_contraction</var>
-    <var name="PERMUTE_CONFIGS">02_permutation</var>
+    <var name="PERMUTE_CONFIGS">02_elementwise</var>
     <var name="REDUCTION_CONFIGS">03_reduction</var>
 
     <!-- smoke test -->

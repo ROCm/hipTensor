@@ -76,7 +76,7 @@ endif()
 # Generates hiptensor_contraction and hiptensor_contraction_instances
 add_subdirectory(contraction)
 # Generates hiptensor_permutation
-add_subdirectory(permutation)
+add_subdirectory(elementwise)
 # Generates hiptensor_reduction
 add_subdirectory(reduction)
 
