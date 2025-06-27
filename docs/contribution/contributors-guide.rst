@@ -112,16 +112,16 @@ Example
 1. Create and track a hipTensor fork.
 2. Clone your fork:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-    git clone -b develop https://github.com/<your_fork>/hipTensor.git .
-    .githooks/install
-    git checkout -b <new_branch>
-    ...
-    git add <new_work>
-    git commit -m "What was changed"
-    git push origin <new_branch>
-    ...
+      git clone -b develop https://github.com/<your_fork>/hipTensor.git .
+      .githooks/install
+      git checkout -b <new_branch>
+      ...
+      git add <new_work>
+      git commit -m "What was changed"
+      git push origin <new_branch>
+      ...
 
 3. Create a pull request to ``ROCmSoftwarePlatform/hipTensor`` targeting the ``develop`` branch.
 4. Respond to code reviews.

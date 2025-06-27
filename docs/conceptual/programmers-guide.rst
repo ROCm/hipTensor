@@ -24,7 +24,7 @@ Infrastructure
 - The preferred compiler for hipTensor is ``CC=<path_to_rocm>/bin/amdclang and CXX=<path_to_rocm>/bin/amdclang++``. ``hipcc`` is also supported, however may be deprecated in future ROCm releases.
 
 --------------------------------
-General Design Concepts
+Design concepts
 --------------------------------
 
 hipTensor is a library developed with the ``C++17`` language standard. It uses meta-programming techniques to optimize code at compile time and generate efficient GPU kernels. 
