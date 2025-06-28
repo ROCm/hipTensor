@@ -116,7 +116,9 @@ The ``samples`` directory contains the sample codes for the following simple dem
 - ``01_contraction/simple_scale_contraction``: Abstract base test for scale contractions.
 - ``01_contraction/simple_bilinear_contraction_*``: Specialized bilinear contraction tests per data type.
 - ``01_contraction/simple_scale_contraction_*``: Specialized bilinear contraction tests per data type.
-- ``02_elementwise/permutation``: Simple permutation demonstration.
+- ``02_elementwise/elementwise_permute``: Simple permutation demonstration.
+- ``02_elementwise/elementwise_binary``: Simple element-wise binary operation demonstration.
+- ``02_elementwise/elementwise_trinary``: Simple element-wise trinary operation demonstration.
 - ``03_reduction/reduction``: Simple reduction demonstration.
 
 ``test`` directory
@@ -130,8 +132,8 @@ The ``test`` directory contains the test codes for testing the following functio
 - ``01_contraction/complex_*_contraction``: Testing harness for the bilinear and scale contractions with complex data types.
 - ``01_contraction/contraction_resource``: Shared resource infrastructure for testing contractions.
 - ``01_contraction/configs``: YAML files with actual contraction testing parameters.
-- ``02_elementwise/permutation*``: Testing infrastructure for permutation tests.
-- ``02_elementwise/rank?_permutation_*``: Testing harnesses for permutation of a particular rank.
+- ``02_elementwise/elementwise_*``: Testing infrastructure for element-wise operation tests.
+- ``02_elementwise/rank?_elementwise_permute_*``: Testing harnesses for permutation of a particular rank.
 - ``02_elementwise/rank?_elementwise_binary_op*``: Testing harnesses for elementwise binary operation of a particular rank.
 - ``02_elementwise/rank?_elementwise_trinary_op*``: Testing harnesses for elementwise trinary operation of a particular rank.
 - ``02_elementwise/configs``: YAML files with actual permutation testing parameters.

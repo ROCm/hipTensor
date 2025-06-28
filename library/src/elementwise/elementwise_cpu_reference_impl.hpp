@@ -276,7 +276,7 @@ namespace hiptensor
         using BaseOp = typename ReferenceOp::Base;
 
         auto solution
-            = std::make_unique<PermutationSolutionImpl<BaseOp>>(std::make_unique<ReferenceOp>());
+            = std::make_unique<ElementwiseSolutionImpl<BaseOp>>(std::make_unique<ReferenceOp>());
 
         constexpr hiptensor::PermutationOpId_t opType
             = std::is_same_v<ElementwiseOperation, CkPermutationPassThroughCombinedOp>
@@ -285,7 +285,7 @@ namespace hiptensor
         auto params = ck::tensor_operation::device::instance::DeviceElementwiseParams::
             Gen<InDataTypeTuple, OutDataTypeTuple, opType, NumDim>();
         auto hashCode = hiptensor::Hash{}(params);
-        auto result   = std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>();
+        auto result   = std::unordered_map<Uid, std::unique_ptr<ElementwiseSolution>>();
         result.insert({hashCode, std::move(solution)});
 
         return result;

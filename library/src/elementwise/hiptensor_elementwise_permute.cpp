@@ -114,7 +114,7 @@ hiptensorStatus_t hiptensorPermute(const hiptensorHandle_t handle,
         alphaF = hiptensor::readVal<float>(alpha, hiptensor::convertToComputeType(typeScalar));
     }
 
-    auto& instances = hiptensor::PermutationSolutionInstances::instance();
+    auto& instances = hiptensor::ElementwiseSolutionInstances::instance();
     auto  solutions = instances->query({alphaF},
                                       descA->mLengths,
                                       {descA->mType},

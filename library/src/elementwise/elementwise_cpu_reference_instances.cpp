@@ -29,12 +29,12 @@
 
 namespace hiptensor
 {
-    PermutationCpuReferenceInstances::PermutationCpuReferenceInstances()
+    ElementwiseCpuReferenceInstances::ElementwiseCpuReferenceInstances()
     {
-        PermutationCpuReference2DInstances();
-        PermutationCpuReference3DInstances();
-        PermutationCpuReference4DInstances();
-        PermutationCpuReference5DInstances();
-        PermutationCpuReference6DInstances();
+        ElementwiseCpuReference2DInstances();
+        ElementwiseCpuReference3DInstances();
+        ElementwiseCpuReference4DInstances();
+        ElementwiseCpuReference5DInstances();
+        ElementwiseCpuReference6DInstances();
     }
 } // namespace hiptensor

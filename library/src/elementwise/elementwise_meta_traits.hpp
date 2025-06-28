@@ -34,7 +34,7 @@
 
 // hiptensor includes
 #include "data_types.hpp"
-#include "device/hiptensor_permutation_scale_instances.hpp"
+#include "device/hiptensor_elementwise_scale_instances.hpp"
 #include "meta_traits.hpp"
 #include <hiptensor/internal/native_types.hpp>
 

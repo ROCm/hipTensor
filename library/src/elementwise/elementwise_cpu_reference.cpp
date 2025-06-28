@@ -28,7 +28,7 @@
 #include "elementwise_cpu_reference_impl.hpp"
 #include "elementwise_cpu_reference_instances.hpp"
 
-hiptensorStatus_t hiptensorPermutationReference(const void*                       alpha,
+hiptensorStatus_t hiptensorElementwisePermuteReference(const void*                       alpha,
                                                 const void*                       A,
                                                 const hiptensorTensorDescriptor_t descA,
                                                 const int32_t                     modeA[],
@@ -40,7 +40,7 @@ hiptensorStatus_t hiptensorPermutationReference(const void*                     
                                                 const hipStream_t                 stream)
 {
     const int32_t dim       = descA->mLengths.size();
-    auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
+    auto&         instances = hiptensor::ElementwiseCpuReferenceInstances::instance();
 
     float alphaF;
     if(alpha != nullptr)
@@ -96,7 +96,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryOpReference(const void*             
                                                         hipStream_t         stream)
 {
     const int32_t dim       = descA->mLengths.size();
-    auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
+    auto&         instances = hiptensor::ElementwiseCpuReferenceInstances::instance();
 
     float alphaF;
     if(alpha != nullptr)
@@ -165,7 +165,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const void*            
                                                          hipStream_t         stream)
 {
     const int32_t dim       = descA->mLengths.size();
-    auto&         instances = hiptensor::PermutationCpuReferenceInstances::instance();
+    auto&         instances = hiptensor::ElementwiseCpuReferenceInstances::instance();
 
     float alphaF;
     if(alpha != nullptr)

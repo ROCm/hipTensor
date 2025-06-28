@@ -34,29 +34,29 @@
 
 namespace hiptensor
 {
-    class PermutationCpuReferenceInstances : public PermutationSolutionRegistry,
-                                             public LazySingleton<PermutationCpuReferenceInstances>
+    class ElementwiseCpuReferenceInstances : public ElementwiseSolutionRegistry,
+                                             public LazySingleton<ElementwiseCpuReferenceInstances>
     {
     public:
         // For static initialization
-        friend std::unique_ptr<PermutationCpuReferenceInstances>
-            std::make_unique<PermutationCpuReferenceInstances>();
+        friend std::unique_ptr<ElementwiseCpuReferenceInstances>
+            std::make_unique<ElementwiseCpuReferenceInstances>();
 
-        ~PermutationCpuReferenceInstances() = default;
+        ~ElementwiseCpuReferenceInstances() = default;
 
     private:
-        void PermutationCpuReference2DInstances();
-        void PermutationCpuReference3DInstances();
-        void PermutationCpuReference4DInstances();
-        void PermutationCpuReference5DInstances();
-        void PermutationCpuReference6DInstances();
+        void ElementwiseCpuReference2DInstances();
+        void ElementwiseCpuReference3DInstances();
+        void ElementwiseCpuReference4DInstances();
+        void ElementwiseCpuReference5DInstances();
+        void ElementwiseCpuReference6DInstances();
         // Singleton: only one instance
-        PermutationCpuReferenceInstances();
-        PermutationCpuReferenceInstances(PermutationCpuReferenceInstances const&) = delete;
-        PermutationCpuReferenceInstances(PermutationCpuReferenceInstances&&)      = delete;
-        PermutationCpuReferenceInstances& operator=(PermutationCpuReferenceInstances const&)
+        ElementwiseCpuReferenceInstances();
+        ElementwiseCpuReferenceInstances(ElementwiseCpuReferenceInstances const&) = delete;
+        ElementwiseCpuReferenceInstances(ElementwiseCpuReferenceInstances&&)      = delete;
+        ElementwiseCpuReferenceInstances& operator=(ElementwiseCpuReferenceInstances const&)
             = delete;
-        PermutationCpuReferenceInstances& operator=(PermutationCpuReferenceInstances&&) = delete;
+        ElementwiseCpuReferenceInstances& operator=(ElementwiseCpuReferenceInstances&&) = delete;
     };
 
 } // namespace hiptensor

@@ -31,7 +31,7 @@
 
 namespace hiptensor
 {
-    void PermutationCpuReferenceInstances::PermutationCpuReference5DInstances()
+    void ElementwiseCpuReferenceInstances::ElementwiseCpuReference5DInstances()
     {
         // Register all the solutions exactly once
         // 5d Permutation

@@ -141,7 +141,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
         gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
-    auto& instances = hiptensor::PermutationSolutionInstances::instance();
+    auto& instances = hiptensor::ElementwiseSolutionInstances::instance();
     auto  solutions = instances->query(
         {alphaF, gammaF},
         descA->mLengths,

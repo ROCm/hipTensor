@@ -127,7 +127,7 @@ auto permuteWithCpu(hiptensorDataType_t typeA,
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
         handle, &descB, nmodeB, extentB.data(), NULL /* stride */, typeB, 0));
 
-    hiptensorPermutationReference(&alphaValue,
+    hiptensorElementwisePermuteReference(&alphaValue,
                                   aArray.data(),
                                   descA,
                                   modeA.data(),

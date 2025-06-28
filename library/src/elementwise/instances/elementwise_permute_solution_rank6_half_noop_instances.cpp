@@ -29,18 +29,17 @@
 
 // Ensure access to
 #include "../device/hiptensor_ck_types.hpp"
-#include "../device/hiptensor_permutation_scale_instances.hpp"
-#include <hiptensor_element_wise_operation.hpp>
+#include "../device/hiptensor_elementwise_scale_instances.hpp"
 
 namespace hiptensor
 {
-    void PermutationSolutionInstances::PermutationSolution3DFloatInstances()
+    void ElementwiseSolutionInstances::ElementwisePermuteSolution6DHalfNoopInstances()
     {
         // Register all the solutions exactly once
-        // 3d Permutation
-        registerSolutions(enumeratePermutationSolutions<ck::Tuple<float>,
-                                                        ck::Tuple<float>,
-                                                        CkPermutationUnaryCombinedOp,
-                                                        3>());
+        // 6d Permutation
+        registerSolutions(enumerateElementwiseSolutions<ck::Tuple<ck::half_t>,
+                                                        ck::Tuple<ck::half_t>,
+                                                        CkPermutationPassThroughCombinedOp,
+                                                        6>());
     }
 } // namespace hiptensor

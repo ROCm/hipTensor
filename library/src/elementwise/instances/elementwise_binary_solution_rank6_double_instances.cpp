@@ -29,15 +29,15 @@
 
 // Ensure access to
 #include "../device/hiptensor_ck_types.hpp"
-#include "../device/hiptensor_permutation_scale_instances.hpp"
+#include "../device/hiptensor_elementwise_scale_instances.hpp"
 
 namespace hiptensor
 {
-    void PermutationSolutionInstances::ElementwiseBinarySolution6DDoubleInstances()
+    void ElementwiseSolutionInstances::ElementwiseBinarySolution6DDoubleInstances()
     {
         // Register all the solutions exactly once
         // 6d ElementwiseBinary
-        registerSolutions(enumeratePermutationSolutions<ck::Tuple<double, double>,
+        registerSolutions(enumerateElementwiseSolutions<ck::Tuple<double, double>,
                                                         ck::Tuple<double>,
                                                         CkBinaryWithUnaryCombinedOp,
                                                         6>());

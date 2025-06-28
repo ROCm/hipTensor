@@ -37,26 +37,26 @@
 
 namespace hiptensor
 {
-    class PermutationSolution;
+    class ElementwiseSolution;
 
-    class PermutationSolutionRegistry
+    class ElementwiseSolutionRegistry
     {
     protected:
         // Move only
-        PermutationSolutionRegistry()                              = default;
-        PermutationSolutionRegistry(PermutationSolutionRegistry&&) = default;
-        PermutationSolutionRegistry& operator=(PermutationSolutionRegistry&&) = default;
-        PermutationSolutionRegistry(PermutationSolutionRegistry const&)       = delete;
-        PermutationSolutionRegistry& operator=(PermutationSolutionRegistry const&) = delete;
+        ElementwiseSolutionRegistry()                              = default;
+        ElementwiseSolutionRegistry(ElementwiseSolutionRegistry&&) = default;
+        ElementwiseSolutionRegistry& operator=(ElementwiseSolutionRegistry&&) = default;
+        ElementwiseSolutionRegistry(ElementwiseSolutionRegistry const&)       = delete;
+        ElementwiseSolutionRegistry& operator=(ElementwiseSolutionRegistry const&) = delete;
 
         // Import permutation solutions for the registry to manage
         void registerSolutions(
-            std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>&& solutions);
+            std::unordered_map<Uid, std::unique_ptr<ElementwiseSolution>>&& solutions);
 
     public:
-        virtual ~PermutationSolutionRegistry() = default;
+        virtual ~ElementwiseSolutionRegistry() = default;
 
-        std::vector<PermutationSolution*>
+        std::vector<ElementwiseSolution*>
             query(std::vector<float> const&                scalarValues,
                   std::vector<std::size_t> const&          lengths,
                   std::vector<hiptensorDataType_t> const&  inDataTypes,
@@ -67,7 +67,7 @@ namespace hiptensor
                   ElementwiseExecutionSpaceType_t          instanceType) const;
 
     private:
-        std::unordered_map<Uid, std::unique_ptr<PermutationSolution>> mAllSolutions;
+        std::unordered_map<Uid, std::unique_ptr<ElementwiseSolution>> mAllSolutions;
     };
 
 } // namespace hiptensor

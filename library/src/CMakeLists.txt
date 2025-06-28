@@ -75,7 +75,7 @@ endif()
 
 # Generates hiptensor_contraction and hiptensor_contraction_instances
 add_subdirectory(contraction)
-# Generates hiptensor_permutation
+# Generates hiptensor_elementwise
 add_subdirectory(elementwise)
 # Generates hiptensor_reduction
 add_subdirectory(reduction)
@@ -98,7 +98,7 @@ add_library(hiptensor SHARED
     $<TARGET_OBJECTS:hiptensor_core>
     $<TARGET_OBJECTS:hiptensor_contraction>
     $<TARGET_OBJECTS:hiptensor_contraction_instances>
-    $<TARGET_OBJECTS:hiptensor_permutation>
+    $<TARGET_OBJECTS:hiptensor_elementwise>
     $<TARGET_OBJECTS:hiptensor_reduction>
     # $<TARGET_OBJECTS:hiptensor_reduction_instances>
     )

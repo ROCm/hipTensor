@@ -398,7 +398,7 @@ namespace hiptensor
                 if(abDataType == HIPTENSOR_R_32F)
                 {
                     CHECK_HIPTENSOR_ERROR(
-                        hiptensorPermutationReference(&alphaValue,
+                        hiptensorElementwisePermuteReference(&alphaValue,
                                                       (const float*)resource->hostInput1().get(),
                                                       descA,
                                                       modeA.data(),
@@ -419,7 +419,7 @@ namespace hiptensor
                 else if(abDataType == HIPTENSOR_R_16F)
                 {
                     CHECK_HIPTENSOR_ERROR(
-                        hiptensorPermutationReference(&alphaValue,
+                        hiptensorElementwisePermuteReference(&alphaValue,
                                                       (const _Float16*)resource->hostInput1().get(),
                                                       descA,
                                                       modeA.data(),

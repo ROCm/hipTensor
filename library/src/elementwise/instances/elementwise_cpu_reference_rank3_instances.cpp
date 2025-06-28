@@ -31,64 +31,64 @@
 
 namespace hiptensor
 {
-    void PermutationCpuReferenceInstances::PermutationCpuReference6DInstances()
+    void ElementwiseCpuReferenceInstances::ElementwiseCpuReference3DInstances()
     {
         // Register all the solutions exactly once
-        // 6d Permutation
+        // 3d Permutation
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<float>,
                                                       ck::Tuple<float>,
                                                       CkPermutationUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::half_t>,
                                                       ck::Tuple<ck::half_t>,
                                                       CkPermutationUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::bhalf_t>,
                                                       ck::Tuple<ck::bhalf_t>,
                                                       CkPermutationUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<double, double>,
                                                       ck::Tuple<double>,
                                                       CkBinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<float, float>,
                                                       ck::Tuple<float>,
                                                       CkBinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t>,
                                                       ck::Tuple<ck::half_t>,
                                                       CkBinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::bhalf_t, ck::bhalf_t>,
                                                       ck::Tuple<ck::bhalf_t>,
                                                       CkBinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<double, double, double>,
                                                       ck::Tuple<double>,
                                                       CkTrinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<float, float, float>,
                                                       ck::Tuple<float>,
                                                       CkTrinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(enumerateReferenceSolutions<ck::Tuple<ck::half_t, ck::half_t, ck::half_t>,
                                                       ck::Tuple<ck::half_t>,
                                                       CkTrinaryWithUnaryCombinedOp,
-                                                      6>());
+                                                      3>());
 
         registerSolutions(
             enumerateReferenceSolutions<ck::Tuple<ck::bhalf_t, ck::bhalf_t, ck::bhalf_t>,
                                         ck::Tuple<ck::bhalf_t>,
                                         CkTrinaryWithUnaryCombinedOp,
-                                        6>());
+                                        3>());
     }
 } // namespace hiptensor

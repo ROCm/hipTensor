@@ -34,15 +34,15 @@
 
 namespace hiptensor
 {
-    class PermutationSolutionInstances : public PermutationSolutionRegistry,
-                                         public LazySingleton<PermutationSolutionInstances>
+    class ElementwiseSolutionInstances : public ElementwiseSolutionRegistry,
+                                         public LazySingleton<ElementwiseSolutionInstances>
     {
     public:
         // For static initialization
-        friend std::unique_ptr<PermutationSolutionInstances>
-            std::make_unique<PermutationSolutionInstances>();
+        friend std::unique_ptr<ElementwiseSolutionInstances>
+            std::make_unique<ElementwiseSolutionInstances>();
 
-        ~PermutationSolutionInstances() = default;
+        ~ElementwiseSolutionInstances() = default;
 
     private:
         void ElementwiseBinarySolution2DDoubleInstances();
@@ -75,32 +75,32 @@ namespace hiptensor
         void ElementwiseTrinarySolution6DDoubleInstances();
         void ElementwiseTrinarySolution6DFloatInstances();
         void ElementwiseTrinarySolution6DHalfInstances();
-        void PermutationSolution2DFloatInstances();
-        void PermutationSolution2DFloatNoopInstances();
-        void PermutationSolution2DHalfInstances();
-        void PermutationSolution2DHalfNoopInstances();
-        void PermutationSolution3DFloatInstances();
-        void PermutationSolution3DFloatNoopInstances();
-        void PermutationSolution3DHalfInstances();
-        void PermutationSolution3DHalfNoopInstances();
-        void PermutationSolution4DFloatInstances();
-        void PermutationSolution4DFloatNoopInstances();
-        void PermutationSolution4DHalfInstances();
-        void PermutationSolution4DHalfNoopInstances();
-        void PermutationSolution5DFloatInstances();
-        void PermutationSolution5DFloatNoopInstances();
-        void PermutationSolution5DHalfInstances();
-        void PermutationSolution5DHalfNoopInstances();
-        void PermutationSolution6DFloatInstances();
-        void PermutationSolution6DFloatNoopInstances();
-        void PermutationSolution6DHalfInstances();
-        void PermutationSolution6DHalfNoopInstances();
+        void ElementwisePermuteSolution2DFloatInstances();
+        void ElementwisePermuteSolution2DFloatNoopInstances();
+        void ElementwisePermuteSolution2DHalfInstances();
+        void ElementwisePermuteSolution2DHalfNoopInstances();
+        void ElementwisePermuteSolution3DFloatInstances();
+        void ElementwisePermuteSolution3DFloatNoopInstances();
+        void ElementwisePermuteSolution3DHalfInstances();
+        void ElementwisePermuteSolution3DHalfNoopInstances();
+        void ElementwisePermuteSolution4DFloatInstances();
+        void ElementwisePermuteSolution4DFloatNoopInstances();
+        void ElementwisePermuteSolution4DHalfInstances();
+        void ElementwisePermuteSolution4DHalfNoopInstances();
+        void ElementwisePermuteSolution5DFloatInstances();
+        void ElementwisePermuteSolution5DFloatNoopInstances();
+        void ElementwisePermuteSolution5DHalfInstances();
+        void ElementwisePermuteSolution5DHalfNoopInstances();
+        void ElementwisePermuteSolution6DFloatInstances();
+        void ElementwisePermuteSolution6DFloatNoopInstances();
+        void ElementwisePermuteSolution6DHalfInstances();
+        void ElementwisePermuteSolution6DHalfNoopInstances();
         // Singleton: only one instance
-        PermutationSolutionInstances();
-        PermutationSolutionInstances(PermutationSolutionInstances const&)            = delete;
-        PermutationSolutionInstances(PermutationSolutionInstances&&)                 = delete;
-        PermutationSolutionInstances& operator=(PermutationSolutionInstances const&) = delete;
-        PermutationSolutionInstances& operator=(PermutationSolutionInstances&&)      = delete;
+        ElementwiseSolutionInstances();
+        ElementwiseSolutionInstances(ElementwiseSolutionInstances const&)            = delete;
+        ElementwiseSolutionInstances(ElementwiseSolutionInstances&&)                 = delete;
+        ElementwiseSolutionInstances& operator=(ElementwiseSolutionInstances const&) = delete;
+        ElementwiseSolutionInstances& operator=(ElementwiseSolutionInstances&&)      = delete;
     };
 
 } // namespace hiptensor

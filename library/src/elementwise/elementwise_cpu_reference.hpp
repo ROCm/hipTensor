@@ -32,7 +32,7 @@
 
 #include <hiptensor/hiptensor.hpp>
 
-hiptensorStatus_t hiptensorPermutationReference(const void*                       alpha,
+hiptensorStatus_t hiptensorElementwisePermuteReference(const void*                       alpha,
                                                 const void*                       A,
                                                 const hiptensorTensorDescriptor_t descA,
                                                 const int32_t                     modeA[],

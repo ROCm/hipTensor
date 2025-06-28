@@ -31,10 +31,10 @@
 namespace hiptensor
 {
     /////////////////////////////////////////
-    /// Class PermutationSolutionRegistry ///
+    /// Class ElementwiseSolutionRegistry ///
     /////////////////////////////////////////
-    std::vector<PermutationSolution*>
-        PermutationSolutionRegistry::query(std::vector<float> const&                scalarValues,
+    std::vector<ElementwiseSolution*>
+        ElementwiseSolutionRegistry::query(std::vector<float> const&                scalarValues,
                                            std::vector<std::size_t> const&          lengths,
                                            std::vector<hiptensorDataType_t> const&  inDataTypes,
                                            std::vector<hiptensorDataType_t> const&  outDataTypes,
@@ -71,7 +71,7 @@ namespace hiptensor
         auto hashCodes = ck::tensor_operation::device::instance::getHashCodeOfBestPerfInstances(
             inDataTypes, outDataTypes, scale, nDims, instanceParams);
 
-        std::vector<PermutationSolution*> solutions;
+        std::vector<ElementwiseSolution*> solutions;
         for(auto hashCode : hashCodes)
         {
             if(auto solution = mAllSolutions.find(hashCode); solution != mAllSolutions.end())
@@ -83,8 +83,8 @@ namespace hiptensor
         return solutions;
     }
 
-    void PermutationSolutionRegistry::registerSolutions(
-        std::unordered_map<Uid, std::unique_ptr<PermutationSolution>>&& solutions)
+    void ElementwiseSolutionRegistry::registerSolutions(
+        std::unordered_map<Uid, std::unique_ptr<ElementwiseSolution>>&& solutions)
     {
         for(auto&& solution : solutions)
         {

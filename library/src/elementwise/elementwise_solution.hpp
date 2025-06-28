@@ -42,20 +42,20 @@
 
 namespace hiptensor
 {
-    class PermutationSolution
+    class ElementwiseSolution
     {
     public:
         // Due to unique_ptr ownership of members,
-        // PermutationSolutions should also be considered unique.
+        // ElementwiseSolutions should also be considered unique.
         // This means disabling default and copy ctor
-        PermutationSolution()                           = delete;
-        PermutationSolution(PermutationSolution const&) = delete;
-        virtual ~PermutationSolution()                  = default;
-        PermutationSolution& operator=(PermutationSolution const&) = delete;
+        ElementwiseSolution()                           = delete;
+        ElementwiseSolution(ElementwiseSolution const&) = delete;
+        virtual ~ElementwiseSolution()                  = default;
+        ElementwiseSolution& operator=(ElementwiseSolution const&) = delete;
 
         // This class is intended to receive DeviceOp kernel pointers from
         // the CK generator and take ownership.
-        explicit PermutationSolution(
+        explicit ElementwiseSolution(
             std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp);
 
         // Must specialize incoming arg handling

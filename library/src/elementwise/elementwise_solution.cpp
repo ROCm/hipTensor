@@ -29,7 +29,7 @@
 namespace hiptensor
 {
 
-    PermutationSolution::PermutationSolution(
+    ElementwiseSolution::ElementwiseSolution(
         std::unique_ptr<ck::tensor_operation::device::BaseOperator>&& deviceOp)
         : mDim(0)
         , mSize(0)
@@ -38,7 +38,7 @@ namespace hiptensor
     {
     }
 
-    float PermutationSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
+    float ElementwiseSolution::operator()(StreamConfig const& streamConfig /*= StreamConfig{}*/)
     {
         if(!mInvokerArgPtr || !mInvokerPtr)
         {
@@ -59,7 +59,7 @@ namespace hiptensor
         return mInvokerPtr->Run(mInvokerArgPtr.get(), streamConfig);
     }
 
-    size_t PermutationSolution::uid() const
+    size_t ElementwiseSolution::uid() const
     {
         // Convert CK uid string into binary.
         std::istringstream converter(mDeviceOp->GetTypeIdHashCode());
@@ -68,17 +68,17 @@ namespace hiptensor
         return value;
     }
 
-    ck::index_t PermutationSolution::problemSize() const
+    ck::index_t ElementwiseSolution::problemSize() const
     {
         return mSize;
     }
 
-    std::string PermutationSolution::kernelName() const
+    std::string ElementwiseSolution::kernelName() const
     {
         return mDeviceOp->GetTypeString();
     }
 
-    void PermutationSolution::resetArgs()
+    void ElementwiseSolution::resetArgs()
     {
         mDim  = 0;
         mSize = 0;

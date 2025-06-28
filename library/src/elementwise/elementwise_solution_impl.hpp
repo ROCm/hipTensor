@@ -38,14 +38,14 @@
 namespace hiptensor
 {
     template <typename DeviceOp, typename Enabler = void>
-    class PermutationSolutionImpl;
+    class ElementwiseSolutionImpl;
 
     template <typename DeviceOp>
-    class PermutationSolutionImpl<DeviceOp> : public PermutationSolution
+    class ElementwiseSolutionImpl<DeviceOp> : public ElementwiseSolution
     {
     public:
-        PermutationSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
-            : PermutationSolution(std::move(deviceOp))
+        ElementwiseSolutionImpl(std::unique_ptr<DeviceOp>&& deviceOp)
+            : ElementwiseSolution(std::move(deviceOp))
         {
         }
 
@@ -60,7 +60,7 @@ namespace hiptensor
                       std::vector<const void*> const&              inBuffers,
                       std::vector<void*> const&                    outBuffers) override
         {
-            using Base   = PermutationSolution;
+            using Base   = ElementwiseSolution;
             using Traits = MetaTraits<DeviceOp>;
 
             // Clear out the previous arguments
@@ -228,7 +228,7 @@ namespace hiptensor
               typename OutDataTypeTuple,
               typename ElementwiseOperation,
               ck::index_t NumDim>
-    auto enumeratePermutationSolutions()
+    auto enumerateElementwiseSolutions()
     {
         using PermutationOp = ck::tensor_operation::device::
             DeviceElementwise<InDataTypeTuple, OutDataTypeTuple, ElementwiseOperation, NumDim>;
@@ -236,12 +236,12 @@ namespace hiptensor
         using Factory
             = ck::tensor_operation::device::instance::DeviceOperationInstanceFactory<PermutationOp>;
 
-        std::unordered_map<Uid, std::unique_ptr<PermutationSolution>> result;
+        std::unordered_map<Uid, std::unique_ptr<ElementwiseSolution>> result;
         for(auto& item : Factory::GetInstances())
         {
             result.insert(
                 {item.first,
-                 std::make_unique<PermutationSolutionImpl<PermutationOp>>(std::move(item.second))});
+                 std::make_unique<ElementwiseSolutionImpl<PermutationOp>>(std::move(item.second))});
         }
         return result;
     }
