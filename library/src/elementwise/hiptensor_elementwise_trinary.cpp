@@ -189,7 +189,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
 
         if(canRun)
         {
-            // Perform permutation with timing if LOG_LEVEL_PERF_TRACE
+            // Perform elementwise trinary with timing if LOG_LEVEL_PERF_TRACE
             if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
             {
                 using hiptensor::HiptensorOptions;
@@ -233,7 +233,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
                          metrics.mBandwidth);
                 logger->logPerformanceTrace("hiptensorElementwiseTrinaryExecute", msg);
             }
-            // Perform permutation without timing
+            // Perform elementwise trinary without timing
             else
             {
                 if((*pSolution)(StreamConfig{stream, false}) < 0)

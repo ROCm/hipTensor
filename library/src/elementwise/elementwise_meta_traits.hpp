@@ -40,7 +40,7 @@
 
 namespace hiptensor
 {
-    // Meta traits for Scalar permutation
+    // Meta traits for Scalar elementwise
     template <typename InDataTypeTuple,
               typename OutDataTypeTuple,
               typename Aop,
@@ -54,7 +54,7 @@ namespace hiptensor
     {
         constexpr static ck::index_t               NDim = NumDim;
         constexpr static ElementwiseInstanceType_t InstanceType
-            = ElementwiseInstanceType_t::PERMUTATION;
+            = ElementwiseInstanceType_t::ELEMENTWISE_PERMUTE;
 
         using InDataT  = InDataTypeTuple;
         using OutDataT = OutDataTypeTuple;

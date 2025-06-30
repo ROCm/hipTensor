@@ -132,7 +132,7 @@ namespace hiptensor
             convertVectorToCkArray(outBuffers, deviceOutBuffers);
 
             // Initialize the argument pointer
-            if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::PERMUTATION)
+            if constexpr(Traits::InstanceType == ElementwiseInstanceType_t::ELEMENTWISE_PERMUTE)
             {
                 if constexpr(std::is_same_v<typename Traits::ScaleOp,
                                             ck::tensor_operation::element_wise::PassThrough>)
@@ -150,7 +150,7 @@ namespace hiptensor
                 else
                 {
 
-                    // According to the definition of permutation \f$B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)}))\f$
+                    // According to the definition of elementwise permute \f$B_{\Pi^B(i_0,i_1,...,i_n)} = \alpha \Psi(A_{\Pi^A(i_0,i_1,...,i_n)}))\f$
                     // No operations can be applied to B so that the `opB` which is from descriptor B should be ignored.
                     Base::mInvokerArgPtr = std::move(deviceOp->MakeArgumentPointer(
                         deviceInputLengths,

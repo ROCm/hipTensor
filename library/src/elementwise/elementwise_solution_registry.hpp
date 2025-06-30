@@ -49,7 +49,7 @@ namespace hiptensor
         ElementwiseSolutionRegistry(ElementwiseSolutionRegistry const&)       = delete;
         ElementwiseSolutionRegistry& operator=(ElementwiseSolutionRegistry const&) = delete;
 
-        // Import permutation solutions for the registry to manage
+        // Import elementwise solutions for the registry to manage
         void registerSolutions(
             std::unordered_map<Uid, std::unique_ptr<ElementwiseSolution>>&& solutions);
 

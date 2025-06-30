@@ -319,7 +319,7 @@ namespace ck
                             addInstance<64  , 128 , 32  , 8  , 8  , ck::Sequence<0 , 1> , ck::Sequence<2>  , ck::Sequence<2>>(opPtrs);
                             addInstance<64  , 128 , 32  , 8  , 8  , ck::Sequence<0 , 1> , ck::Sequence<1>  , ck::Sequence<1>>(opPtrs);
                         } else if  constexpr(InDataTypeTuple::Size() == 1 && (NumDim == 5 || NumDim == 6)){
-                            // We haven't yet determined the optimal hyper-parameters for permutation rank<5|6>.
+                            // We haven't yet determined the optimal hyper-parameters for elementwise permute rank<5|6>.
                             // We're currently using these specific hyper-parameters as they performed best across the
                             // majority of our previous tests.
                             addInstance<256 , 64  , 64  , 4  , 4  , ck::Sequence<0 , 1> , ck::Sequence<4>  , ck::Sequence<4>>(opPtrs);

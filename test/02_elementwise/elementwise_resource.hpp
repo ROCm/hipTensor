@@ -34,7 +34,7 @@
 #include "singleton.hpp"
 
 // ElementwiseResource class is intended to manage a shared pool of resources for
-// testing hiptensor permutation kernels on the GPU.
+// testing hiptensor elementwise kernels on the GPU.
 //
 // It minimizes the memory handling overhead for launching thousands of GPU
 // kernels by allowing re-use of existing memory allocations. Memory is only
