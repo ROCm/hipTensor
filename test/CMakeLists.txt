@@ -196,7 +196,7 @@ endfunction()
 
 add_subdirectory(00_unit)
 add_subdirectory(01_contraction)
-add_subdirectory(02_permutation)
+add_subdirectory(02_elementwise)
 add_subdirectory(03_reduction)
 
 include(../cmake/Functions/CopyYamlFolder.cmake)
@@ -205,7 +205,7 @@ include(../cmake/Functions/CopyYamlFolder.cmake)
 copy_emulation_config_folders(
     SOURCE_FOLDERS
         "01_contraction/configs/emulation"
-        "02_permutation/configs/emulation"
+        "02_elementwise/configs/emulation"
         "03_reduction/configs/emulation"
     SOURCE_SCRIPTS
         "../rtest.py"
@@ -244,8 +244,8 @@ rocm_install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/01_contraction/configs/bench/
     COMPONENT tests
 )
 
-rocm_install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/02_permutation/configs/bench/
-    DESTINATION "${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}/bench/configs/02_permutation"
+rocm_install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/02_elementwise/configs/bench/
+    DESTINATION "${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}/bench/configs/02_elementwise"
     COMPONENT tests
 )
 

@@ -25,7 +25,7 @@
  *******************************************************************************/
 
 #include "reduction_cpu_reference.hpp"
-#include "../permutation/permutation_cpu_reference.hpp"
+#include "../elementwise/elementwise_cpu_reference.hpp"
 #include "reduction_cpu_reference_impl.hpp"
 #include "reduction_cpu_reference_instances.hpp"
 
