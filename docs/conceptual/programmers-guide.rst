@@ -79,7 +79,7 @@ A tensor contraction with A = [M0, ..., M5, K0, ..., K5], B = [N0, ..., N5, K0, 
 Tensor mode
 ^^^^^^^^^^^
 
-Tensor modes allow users to specify the order or labels of the input strides that define the dimensional data relationship. 
+Tensor modes let users specify the order or labels of the input strides that define the dimensional data relationship. 
 They describe the data’s memory layout and spatial relationships.
 
 --------------------------------
