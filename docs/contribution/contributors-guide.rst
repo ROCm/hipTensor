@@ -25,7 +25,7 @@ Pull-request guidelines
 
 Our code contribution guidelines closely follows the model of `GitHub
 pull-requests <https://help.github.com/articles/using-pull-requests/>`__.
-The hipTensor repository uses a workflow with a ``master`` branch for releases and a
+The hipTensor repository uses a workflow with a ``release`` branch for releases and a
 ``develop`` branch for integrating new code. Follow the guidelines below when creating a pull request:
 
 -  Target the ``develop`` branch for integration.
@@ -85,7 +85,7 @@ Format
 
 C++ code is formatted using ``clang-format``. To run ``clang-format``,
 use the version in the ``/opt/rocm/llvm/bin`` directory. Avoid using your
-system's built-in ``clang-format``, as it may be outdated and produce inconsistent results.
+system's built-in ``clang-format``, as it might be outdated and produce inconsistent results.
 
 To format a file, use:
 
