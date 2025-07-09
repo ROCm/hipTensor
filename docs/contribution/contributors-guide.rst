@@ -123,7 +123,7 @@ Example
       git push origin <new_branch>
       ...
 
-3. Create a pull request to ``ROCmSoftwarePlatform/hipTensor`` targeting the ``develop`` branch.
+3. Create a pull request to ``ROCm/hipTensor``, targeting the ``develop`` branch.
 4. Respond to code reviews.
 5. Await CI and approval feedback.
 6. Once approved, await for dev team to merge!
