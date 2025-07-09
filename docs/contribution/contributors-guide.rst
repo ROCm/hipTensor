@@ -42,7 +42,7 @@ Style guide
 
 This project follows the `CPP Core
 guidelines <https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md>`__,
-with few modifications and additions listed below. We encourage you to follow these guidelines when creating pull requests.
+with a few modifications and additions listed below. Follow these guidelines when creating pull requests.
 
 Interface
 ---------
