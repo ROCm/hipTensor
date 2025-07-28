@@ -27,16 +27,16 @@ Infrastructure
 Design concepts
 --------------------------------
 
-hipTensor is a library developed with the ``C++17`` language standard. It uses meta-programming techniques to optimize code at compile time and generate efficient GPU kernels. 
+hipTensor is a library developed with the ``C++17`` language standard. It uses meta-programming techniques to optimize code at compile time and generate efficient GPU kernels.
 hipTensor employs Composable Kernel as a functional backend and is written in different layers.
 
-The outer API layer serves as a functional interface for users to define tensor data abstractions and manipulations. 
-The second layer, the hipTensor solution interface, connects the API objects with the intended functionality. 
+The outer API layer serves as a functional interface for users to define tensor data abstractions and manipulations.
+The second layer, the hipTensor solution interface, connects the API objects with the intended functionality.
 The solution layer handles translating input problem parameters into solution candidates, selecting candidates, managing resources, and logging.
-Solution candidates provide interface abstractions into functional backends, such as Composable Kernel objects, which can be invoked with results returned through the API. 
-The Composable Kernel library is used as a header library, where all kernel instances are customized by hipTensor and statically bundled by the hipTensor functional backend layer. This allows future backends to remain isolated in their own modules, as they are now. 
-The hipTensor solution layer is divided into functional components, such as contraction, permutation, and reduction. 
-Each component contains a registry of backend instances as potential solution candidates for given input parameters. 
+Solution candidates provide interface abstractions into functional backends, such as Composable Kernel objects, which can be invoked with results returned through the API.
+The Composable Kernel library is used as a header library, where all kernel instances are customized by hipTensor and statically bundled by the hipTensor functional backend layer. This allows future backends to remain isolated in their own modules, as they are now.
+The hipTensor solution layer is divided into functional components, such as contraction, permutation, and reduction.
+Each component contains a registry of backend instances as potential solution candidates for given input parameters.
 These instances are selected based on API-provided hints and populated with the appropriate arguments for invocation by the API.
 
 hipTensor tests and samples are consumers of the hipTensor library and demonstrate the usages of the API in different contexts, such as tensor contractions, permutations and reductions.
@@ -48,14 +48,14 @@ Nomenclature
 Tensor contraction
 ^^^^^^^^^^^^^^^^^^^
 
-In general, a tensor contraction is a multiply-accumulate problem over elements between two multi-dimensional tensors. 
+In general, a tensor contraction is a multiply-accumulate problem over elements between two multi-dimensional tensors.
 hipTensor uses Einstein notation, where repeated indices are summed and each index appears at most twice in each mathematical term.
 In the process of accumulating over summation dimensions, they are effectively collapsed or contracted.
 
 Tensor permutation
 ^^^^^^^^^^^^^^^^^^^
 
-Tensor permutation reorders stride indices, changing the data's dimensional locality relationships.
+Tensor permutation reorders stride indices, changing the data dimensional locality relationships.
 
 Tensor reduction
 ^^^^^^^^^^^^^^^^^^^
@@ -65,7 +65,7 @@ Tensor reduction transforms a higher-dimensional tensor into a lower-dimensional
 Tensor rank
 ^^^^^^^^^^^
 
-Tensor rank refers to the data's dimensionality, such as the number of modes. In Einstein notation, repeated modes indicate the dimensions being contracted during tensor contractions.
+Tensor rank refers to the data dimensionality, such as the number of modes. In Einstein notation, repeated modes indicate the dimensions being contracted during tensor contractions.
 
 In contractions, modes can be categorized as M, N, and K, defined as follows:
 
@@ -79,8 +79,8 @@ A tensor contraction with A = [M0, ..., M5, K0, ..., K5], B = [N0, ..., N5, K0, 
 Tensor mode
 ^^^^^^^^^^^
 
-Tensor modes let users specify the order or labels of the input strides that define the dimensional data relationship. 
-They describe the data’s memory layout and spatial relationships.
+Tensor modes let users specify the order or labels of the input strides that define the dimensional data relationship.
+They describe the data's memory layout and spatial relationships.
 
 --------------------------------
 Library source code organization
