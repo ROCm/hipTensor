@@ -107,7 +107,7 @@ namespace hiptensor
             << "Modes, "                // 12
             << "Alpha, "                // 13
             << "Beta, "                 // 14
-            << "elapsedMs, "            // 15
+            << "ElapsedMs, "            // 15
             << "Problem Size(GFlops), " // 16
             << "TFlops/s, "             // 17
             << "TotalGBytes, "          // 18

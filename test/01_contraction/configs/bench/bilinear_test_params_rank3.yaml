@@ -9,8 +9,8 @@ Tensor Data Types:
   - [ HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F ]
   - [ HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_64F, HIPTENSOR_R_32F ]
 Algorithm Types:
-#  - HIPTENSOR_ALGO_ACTOR_CRITIC
-  - HIPTENSOR_ALGO_DEFAULT
+  - HIPTENSOR_ALGO_ACTOR_CRITIC
+#  - HIPTENSOR_ALGO_DEFAULT
 Operators:
   - HIPTENSOR_OP_IDENTITY
 Worksize Prefs:
@@ -22,7 +22,6 @@ Betas:
   - [2]
   - [0]
 Lengths:
-#  - [[2, 2, 2, 2, 2, 2], [2, 2, 2, 2, 2, 2], [2, 2, 2, 2, 2, 2]]
   - [[16, 16, 8, 16, 16, 16], [16, 16, 16, 16, 16, 16], [16, 16, 8, 16, 16, 16]]
   - [[16, 16, 16, 16, 16, 16], [16, 16, 16, 16, 16, 16], [16, 16, 16, 16, 16, 16]]
   - [[16, 16, 16, 32, 16, 16], [16, 16, 16, 32, 16, 16], [16, 16, 16, 16, 16, 16]]
