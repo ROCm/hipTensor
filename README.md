@@ -73,3 +73,4 @@ The latest official documentation for hipTensor is available at:
 ## Contributing to the hipTensor Library
 
 Community collaboration is encouraged! If you are considering contributing, please follow the [hipTensor Contribution Guide](https://rocm.docs.amd.com/projects/hipTensor/en/latest/contribution/contributors-guide.html) to get started.
+1
