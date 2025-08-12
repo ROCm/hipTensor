@@ -10,18 +10,26 @@ Tensor Data Types:
 Alphas:
   - 2.3
 Betas:
-  - 0.0
+#  - 0.0
   - 2.3
 Lengths:
-  - [ 11, 8, 5]
-  - [ 5, 6, 4]
+  - [256, 256, 256]
+  - [256, 256, 384]
+  - [256, 384, 384]
+  - [384, 384, 384]
+  - [384, 512, 384]
+  - [384, 512, 512]
+  - [512, 512, 512]
+  - [512, 600, 512]
+  - [512, 600, 600]
+  - [600, 600, 600]
 Ranges:
-  - [2, 128, 2, 16]
+#  - [2, 128, 2, 16]
 Random Ranges:
 Operators:
   - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_ADD]
-  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MUL]
-  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MIN]
+#  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MUL]
+#  - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MIN]
   - [HIPTENSOR_OP_NEG, HIPTENSOR_OP_NEG, HIPTENSOR_OP_MAX]
 Output Dims:
   - [0, 1]

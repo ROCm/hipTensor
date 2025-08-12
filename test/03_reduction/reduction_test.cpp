@@ -119,18 +119,20 @@ namespace hiptensor
         return stream
             << "TypeIn, "               // 1
             << "TypeCompute, "          // 2
-            << "Operator, "             // 3
-            << "LogLevel, "             // 4
-            << "Lengths, "              // 5
-            << "ReOrder, "              // 6
-            << "Alpha, "                // 7
-            << "Beta, "                 // 8
-            << "elapsedMs, "            // 9
-            << "Problem Size(GFlops), " // 10
-            << "TFlops/s, "             // 11
-            << "TotalGBytes, "          // 12
-            << "GBytes/s, "             // 13
-            << "Result"                 // 14
+            << "OperatorA, "            // 3
+            << "OperatorC, "            // 4
+            << "OperatorReduce, "       // 5
+            << "LogLevel, "             // 6
+            << "Lengths, "              // 7
+            << "ReOrder, "              // 8
+            << "Alpha, "                // 9
+            << "Beta, "                 // 10
+            << "ElapsedMs, "            // 11
+            << "Problem Size(GFlops), " // 12
+            << "TFlops/s, "             // 13
+            << "TotalGBytes, "          // 14
+            << "GBytes/s, "             // 15
+            << "Result"                 // 16
             << std::endl;
         // clang-format on
     }
@@ -453,7 +455,7 @@ namespace hiptensor
                                                   planPref,
                                                   workspacePref,
                                                   &worksize));
- 
+
             resource->setupWorkspace(worksize);
 
             hiptensorPlan_t plan;
