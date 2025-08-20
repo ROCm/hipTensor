@@ -50,6 +50,7 @@ namespace hiptensor
         ~HiptensorOptions()                  = default;
 
         void setOstream(std::string file);
+        void setLogOstream(std::string file);
         void setOmits(int mask);
         void setDefaultParams(bool val);
         void setValidation(std::string val);
@@ -57,8 +58,10 @@ namespace hiptensor
         void setColdRuns(int runs);
         void setInputYAMLFilename(std::string file);
         void setOutputStreamFilename(std::string file);
+        void setLogStreamFilename(std::string file);
 
         HiptensorOStream& ostream();
+        HiptensorOStream& logOstream();
 
         bool omitSkipped();
         bool omitFailed();
@@ -73,9 +76,10 @@ namespace hiptensor
 
         std::string inputFilename();
         std::string outputFilename();
+        std::string logFilename();
 
     protected:
-        HiptensorOStream mOstream;
+        HiptensorOStream mOstream, mLogOstream;
 
         bool mOmitSkipped, mOmitFailed, mOmitPassed, mOmitCout;
         bool mUsingDefaultParams;
@@ -84,7 +88,7 @@ namespace hiptensor
 
         int32_t mHotRuns, mColdRuns;
 
-        std::string mInputFilename, mOutputFilename;
+        std::string mInputFilename, mOutputFilename, mLogFilename;
     };
 
 } // namespace hiptensor

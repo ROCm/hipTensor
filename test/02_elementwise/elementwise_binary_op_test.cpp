@@ -26,10 +26,10 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
+#include "elementwise/elementwise_cpu_reference.hpp"
 #include "elementwise_binary_op_test.hpp"
 #include "hiptensor_options.hpp"
 #include "logger.hpp"
-#include "elementwise/elementwise_cpu_reference.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -219,8 +219,6 @@ namespace hiptensor
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
-            stream << ElementwiseBinaryOpTest::sAPILogBuff.str();
-
             printKernel(stream);
 
             if(mPrintElements)
@@ -362,6 +360,8 @@ namespace hiptensor
 
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+
+            CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(logLevel));
 
             hiptensorTensorDescriptor_t descA = nullptr;
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
@@ -591,12 +591,18 @@ namespace hiptensor
 
         if(!loggingOptions->omitCout())
         {
+            std::cout << ElementwiseBinaryOpTest::sAPILogBuff.str();
             reportResults(std::cout,
                           dataType,
                           mHeaderPrinted,
                           loggingOptions->omitSkipped(),
                           loggingOptions->omitFailed(),
                           loggingOptions->omitPassed());
+        }
+
+        if(loggingOptions->logOstream().isOpen())
+        {
+            loggingOptions->logOstream().fstream() << ElementwiseBinaryOpTest::sAPILogBuff.str();
         }
 
         if(loggingOptions->ostream().isOpen())
