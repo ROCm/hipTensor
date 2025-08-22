@@ -966,22 +966,22 @@ namespace hiptensor
 
             if(a_ms_ks)
             {
-                hiptensorDestroyTensorDescriptor(a_ms_ks);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(a_ms_ks));
                 a_ms_ks = nullptr;
             }
             if(b_ns_ks)
             {
-                hiptensorDestroyTensorDescriptor(b_ns_ks);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(b_ns_ks));
                 b_ns_ks = nullptr;
             }
             if(c_ms_ns)
             {
-                hiptensorDestroyTensorDescriptor(c_ms_ns);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(c_ms_ns));
                 c_ms_ns = nullptr;
             }
             if(d_ms_ns)
             {
-                hiptensorDestroyTensorDescriptor(d_ms_ns);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(d_ms_ns));
                 d_ms_ns = nullptr;
             }
             HIPTENSOR_FREE_DEVICE(workspace);

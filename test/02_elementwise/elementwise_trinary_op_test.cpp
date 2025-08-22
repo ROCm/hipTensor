@@ -26,10 +26,10 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
+#include "elementwise/elementwise_cpu_reference.hpp"
 #include "elementwise_trinary_op_test.hpp"
 #include "hiptensor_options.hpp"
 #include "logger.hpp"
-#include "elementwise/elementwise_cpu_reference.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -69,8 +69,6 @@ namespace hiptensor
 
     void ElementwiseTrinaryOpTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -649,24 +647,28 @@ namespace hiptensor
             } // if (testOptions->performValidation())
 
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
+
             if(descA)
             {
-                hiptensorDestroyTensorDescriptor(descA);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
                 descA = nullptr;
             }
             if(descB)
             {
-                hiptensorDestroyTensorDescriptor(descB);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descB));
                 descB = nullptr;
             }
             if(descC)
             {
-                hiptensorDestroyTensorDescriptor(descC);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
                 descC = nullptr;
             }
             if(descD)
             {
-                hiptensorDestroyTensorDescriptor(descD);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
                 descD = nullptr;
             }
         }
@@ -701,12 +703,6 @@ namespace hiptensor
         }
     }
 
-    void ElementwiseTrinaryOpTest::TearDown()
-    {
-        if(mRunFlag)
-        {
-            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
-        }
-    }
+    void ElementwiseTrinaryOpTest::TearDown() {}
 
 } // namespace hiptensor

@@ -26,10 +26,10 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "data_types.hpp"
-#include "hiptensor_options.hpp"
-#include "logger.hpp"
 #include "elementwise/elementwise_cpu_reference.hpp"
 #include "elementwise_test.hpp"
+#include "hiptensor_options.hpp"
+#include "logger.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -67,8 +67,6 @@ namespace hiptensor
 
     void PermutationTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -397,17 +395,17 @@ namespace hiptensor
 
                 if(abDataType == HIPTENSOR_R_32F)
                 {
-                    CHECK_HIPTENSOR_ERROR(
-                        hiptensorElementwisePermuteReference(&alphaValue,
-                                                      (const float*)resource->hostInput1().get(),
-                                                      descA,
-                                                      modeA.data(),
-                                                      Aop,
-                                                      (float*)resource->hostReference().get(),
-                                                      descB,
-                                                      modeB.data(),
-                                                      computeDataType,
-                                                      0 /* stream */));
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwisePermuteReference(
+                        &alphaValue,
+                        (const float*)resource->hostInput1().get(),
+                        descA,
+                        modeA.data(),
+                        Aop,
+                        (float*)resource->hostReference().get(),
+                        descB,
+                        modeB.data(),
+                        computeDataType,
+                        0 /* stream */));
 
                     resource->copyReferenceToDevice();
                     std::tie(mValidationResult, mMaxRelativeError)
@@ -418,17 +416,17 @@ namespace hiptensor
                 }
                 else if(abDataType == HIPTENSOR_R_16F)
                 {
-                    CHECK_HIPTENSOR_ERROR(
-                        hiptensorElementwisePermuteReference(&alphaValue,
-                                                      (const _Float16*)resource->hostInput1().get(),
-                                                      descA,
-                                                      modeA.data(),
-                                                      Aop,
-                                                      (_Float16*)resource->hostReference().get(),
-                                                      descB,
-                                                      modeB.data(),
-                                                      computeDataType,
-                                                      0 /* stream */));
+                    CHECK_HIPTENSOR_ERROR(hiptensorElementwisePermuteReference(
+                        &alphaValue,
+                        (const _Float16*)resource->hostInput1().get(),
+                        descA,
+                        modeA.data(),
+                        Aop,
+                        (_Float16*)resource->hostReference().get(),
+                        descB,
+                        modeB.data(),
+                        computeDataType,
+                        0 /* stream */));
 
                     resource->copyReferenceToDevice();
 
@@ -443,15 +441,18 @@ namespace hiptensor
             } // if (testOptions->performValidation())
 
             CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
 
             if(descA)
             {
-                hiptensorDestroyTensorDescriptor(descA);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
                 descA = nullptr;
             }
             if(descB)
             {
-                hiptensorDestroyTensorDescriptor(descB);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descB));
                 descB = nullptr;
             }
         }
@@ -486,12 +487,6 @@ namespace hiptensor
         }
     }
 
-    void PermutationTest::TearDown()
-    {
-        if(mRunFlag)
-        {
-            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
-        }
-    }
+    void PermutationTest::TearDown() {}
 
 } // namespace hiptensor

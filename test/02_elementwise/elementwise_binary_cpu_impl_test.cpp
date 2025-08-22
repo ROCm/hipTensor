@@ -154,19 +154,21 @@ auto elementaryBinaryOpWithCpu(hiptensorDataType_t inputType,
                                dArray.size(),
                                hiptensor::convertToComputeType(typeCompute),
                                0);
+
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
     if(descA)
     {
-        hiptensorDestroyTensorDescriptor(descA);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
         descA = nullptr;
     }
     if(descC)
     {
-        hiptensorDestroyTensorDescriptor(descC);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
         descC = nullptr;
     }
     if(descD)
     {
-        hiptensorDestroyTensorDescriptor(descD);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
         descD = nullptr;
     }
     return result;
