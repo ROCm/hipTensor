@@ -711,6 +711,8 @@ namespace hiptensor
                         stream, (hipDoubleComplex*)references.get(), elementsCD);
                     stream << std::endl;
                 }
+
+                resource->freeHost(D);
             }
         }
     }
@@ -920,6 +922,8 @@ namespace hiptensor
                 }
 
                 EXPECT_TRUE(mValidationResult) << "Max relative error: " << mMaxRelativeError;
+
+                resource->freeDevice(reference);
             } // if (testOptions->performValidation())
 
             using Options        = hiptensor::HiptensorOptions;

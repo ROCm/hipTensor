@@ -49,6 +49,12 @@ namespace hiptensor
         devicePtr = std::move(allocDevice(numBytes));
     }
 
+    void HipResource::freeDevice(DevicePtrT& devicePtr)
+    {
+        // Free existing ptr
+        devicePtr.reset(nullptr);
+    }
+
     auto HipResource::allocHost(int64_t numBytes) -> HostPtrT
     {
         void*  data;
@@ -61,6 +67,12 @@ namespace hiptensor
         // Free existing ptr first before alloc in case of big sizes.
         hostPtr.reset(nullptr);
         hostPtr = std::move(allocHost(numBytes));
+    }
+
+    void HipResource::freeHost(HostPtrT& hostPtr)
+    {
+        // Free existing ptr
+        hostPtr.reset(nullptr);
     }
 
     void HipResource::reallocDeviceHostPair(DevicePtrT& devicePtr,

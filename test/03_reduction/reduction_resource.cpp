@@ -66,6 +66,16 @@ namespace hiptensor
     {
     }
 
+    ReductionResource::~ReductionResource()
+    {
+        Base::freeDevice(mDeviceA);
+        Base::freeDevice(mDeviceC);
+        Base::freeDevice(mDeviceD);
+        Base::freeHost(mHostA);
+        Base::freeHost(mHostC);
+        Base::freeHost(mHostD);
+    }
+
     void ReductionResource::setupStorage(ProblemDims const&  dimSizes,
                                          ProblemDims const&  outputSizes,
                                          hiptensorDataType_t dataType)

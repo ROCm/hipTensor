@@ -43,8 +43,8 @@ namespace hiptensor
         HipResource() = default;
 
     private: // No Copy
-        HipResource(HipResource&&)      = delete;
-        HipResource(const HipResource&) = delete;
+        HipResource(HipResource&&)                 = delete;
+        HipResource(const HipResource&)            = delete;
         HipResource& operator=(const HipResource&) = delete;
 
     public:
@@ -57,8 +57,10 @@ namespace hiptensor
         // Alloc
         static DevicePtrT allocDevice(int64_t numBytes);
         static void       reallocDevice(DevicePtrT& devicePtr, int64_t numBytes);
+        static void       freeDevice(DevicePtrT& devicePtr);
         static HostPtrT   allocHost(int64_t numBytes);
         static void       reallocHost(HostPtrT& hostPtr, int64_t numBytes);
+        static void       freeHost(HostPtrT& hostPtr);
         static void
             reallocDeviceHostPair(DevicePtrT& devicePtr, HostPtrT& hostPtr, int64_t numBytes);
 

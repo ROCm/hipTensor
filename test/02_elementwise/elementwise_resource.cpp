@@ -68,6 +68,18 @@ namespace hiptensor
     {
     }
 
+    ElementwiseResource::~ElementwiseResource()
+    {
+        Base::freeDevice(mDeviceInput1);
+        Base::freeDevice(mDeviceInput2);
+        Base::freeDevice(mDeviceInput3);
+        Base::freeDevice(mDeviceOutput);
+        Base::freeHost(mHostInput1);
+        Base::freeHost(mHostInput2);
+        Base::freeHost(mHostInput3);
+        Base::freeHost(mHostOutput);
+    }
+
     // suppose that all input and output data types are same.
     void ElementwiseResource::setupStorage(ProblemDims const&  dimSizes,
                                            hiptensorDataType_t dataType,

@@ -66,6 +66,18 @@ namespace hiptensor
     {
     }
 
+    ContractionResource::~ContractionResource()
+    {
+        Base::freeDevice(mDeviceA);
+        Base::freeDevice(mDeviceB);
+        Base::freeDevice(mDeviceC);
+        Base::freeDevice(mDeviceD);
+        Base::freeHost(mHostA);
+        Base::freeHost(mHostB);
+        Base::freeHost(mHostC);
+        Base::freeHost(mHostD);
+    }
+
     void ContractionResource::copyHostToDeviceAll(ElementBytes const& bytesPerElement)
     {
         Base::copyData(mDeviceA,

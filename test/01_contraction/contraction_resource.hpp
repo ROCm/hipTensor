@@ -86,7 +86,7 @@ namespace hiptensor
 
     public:
         ContractionResource(ContractionResource&&);
-        ~ContractionResource() = default;
+        ~ContractionResource();
 
         void copyHostToDeviceAll(ElementBytes const& bytesPerElement);
         void copyDeviceToHostAll(ElementBytes const& bytesPerElement);
