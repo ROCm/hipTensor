@@ -526,8 +526,6 @@ namespace hiptensor
         {
             printKernel(stream);
 
-            stream << ContractionTest::sAPILogBuff.str();
-
             if(mPrintElements)
             {
                 auto resource = getResource();
@@ -927,6 +925,7 @@ namespace hiptensor
 
             if(!loggingOptions->omitCout())
             {
+                std::cout << ContractionTest::sAPILogBuff.str();
                 reportResults(std::cout,
                               DDataType,
                               computeType,
@@ -934,6 +933,11 @@ namespace hiptensor
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
+            }
+
+            if(loggingOptions->logOstream().isOpen())
+            {
+                loggingOptions->logOstream().fstream() << ContractionTest::sAPILogBuff.str();
             }
 
             if(loggingOptions->ostream().isOpen())

@@ -209,8 +209,6 @@ namespace hiptensor
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
-            stream << PermutationTest::sAPILogBuff.str();
-
             printKernel(stream);
 
             if(mPrintElements)
@@ -315,6 +313,8 @@ namespace hiptensor
             //hiptensorStatus_t err;
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
+
+            CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(logLevel));
 
             hiptensorTensorDescriptor_t descA = nullptr;
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
@@ -461,12 +461,18 @@ namespace hiptensor
 
         if(!loggingOptions->omitCout())
         {
+            std::cout << PermutationTest::sAPILogBuff.str();
             reportResults(std::cout,
                           abDataType,
                           mHeaderPrinted,
                           loggingOptions->omitSkipped(),
                           loggingOptions->omitFailed(),
                           loggingOptions->omitPassed());
+        }
+
+        if(loggingOptions->logOstream().isOpen())
+        {
+            loggingOptions->logOstream().fstream() << PermutationTest::sAPILogBuff.str();
         }
 
         if(loggingOptions->ostream().isOpen())

@@ -31,17 +31,19 @@ namespace hiptensor
 {
     HiptensorOptions::HiptensorOptions()
         : mOstream()
+        , mLogOstream()
         , mOmitSkipped(false)
         , mOmitFailed(false)
         , mOmitPassed(false)
         , mOmitCout(false)
         , mUsingDefaultParams(true)
         , mValidate(true)
+        , mColMajorStrides(HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR)
         , mHotRuns(1)
         , mColdRuns(0)
         , mInputFilename("")
         , mOutputFilename("")
-        , mColMajorStrides(HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR)
+        , mLogFilename("")
     {
         // Override HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR with environment variable if present
         if(const char* stride_env = std::getenv("HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR"))
@@ -62,6 +64,11 @@ namespace hiptensor
     void HiptensorOptions::setOstream(std::string file)
     {
         mOstream.initializeStream(file);
+    }
+
+    void HiptensorOptions::setLogOstream(std::string file)
+    {
+        mLogOstream.initializeStream(file);
     }
 
     void HiptensorOptions::setOmits(int mask)
@@ -141,9 +148,19 @@ namespace hiptensor
         mOutputFilename = file;
     }
 
+    void HiptensorOptions::setLogStreamFilename(std::string file)
+    {
+        mLogFilename = file;
+    }
+
     HiptensorOStream& HiptensorOptions::ostream()
     {
         return mOstream;
+    }
+
+    HiptensorOStream& HiptensorOptions::logOstream()
+    {
+        return mLogOstream;
     }
 
     bool HiptensorOptions::omitSkipped()
@@ -194,6 +211,11 @@ namespace hiptensor
     std::string HiptensorOptions::outputFilename()
     {
         return mOutputFilename;
+    }
+
+    std::string HiptensorOptions::logFilename()
+    {
+        return mLogFilename;
     }
 
     bool HiptensorOptions::isColMajorStrides()
