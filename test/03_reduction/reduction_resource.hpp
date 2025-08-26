@@ -70,7 +70,7 @@ namespace hiptensor
 
     public:
         ReductionResource(ReductionResource&&);
-        virtual ~ReductionResource();
+        virtual ~ReductionResource() = default;
 
         void setupStorage(ProblemDims const&  dimSizes,
                           ProblemDims const&  outputSizes,

@@ -82,7 +82,7 @@ namespace hiptensor
 
     public:
         ElementwiseResource(ElementwiseResource&&);
-        virtual ~ElementwiseResource();
+        virtual ~ElementwiseResource() = default;
 
         void setupStorage(ProblemDims const&  dimSizes,
                           hiptensorDataType_t dataType,
