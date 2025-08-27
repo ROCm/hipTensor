@@ -94,9 +94,6 @@ namespace hiptensor
                            bool                omitPassed) const;
 
     protected:
-        // Workspace items
-        hiptensorHandle_t handle = nullptr;
-
         // Execution flow control
         uint32_t mRepeats;
         bool     mRunFlag          = true;

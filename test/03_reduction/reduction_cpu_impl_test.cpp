@@ -147,14 +147,17 @@ auto reduceWithCpu(hiptensorDataType_t          typeA,
                                                       typeCompute,
                                                       0 /* stream */));
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
     if(descA)
     {
-        hiptensorDestroyTensorDescriptor(descA);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
         descA = nullptr;
     }
     if(descC)
     {
-        hiptensorDestroyTensorDescriptor(descC);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
         descC = nullptr;
     }
     return compareEqual(referenceArray.data(), cArray.data(), cArray.size(), typeCompute);

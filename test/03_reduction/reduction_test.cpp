@@ -98,8 +98,6 @@ namespace hiptensor
 
     void ReductionTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -448,13 +446,10 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(
                 hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
-            uint64_t worksize = 0;
+            uint64_t                            worksize      = 0;
             const hiptensorWorksizePreference_t workspacePref = HIPTENSOR_WORKSPACE_DEFAULT;
-            CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(handle,
-                                                  desc,
-                                                  planPref,
-                                                  workspacePref,
-                                                  &worksize));
+            CHECK_HIPTENSOR_ERROR(
+                hiptensorEstimateWorkspaceSize(handle, desc, planPref, workspacePref, &worksize));
 
             resource->setupWorkspace(worksize);
 
@@ -618,30 +613,29 @@ namespace hiptensor
             {
                 mHeaderPrinted = true;
             }
+
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
             if(descA)
             {
-                hiptensorDestroyTensorDescriptor(descA);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
                 descA = nullptr;
             }
             if(descC)
             {
-                hiptensorDestroyTensorDescriptor(descC);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
                 descC = nullptr;
             }
             if(descD)
             {
-                hiptensorDestroyTensorDescriptor(descD);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
                 descD = nullptr;
             }
         }
     }
 
-    void ReductionTest::TearDown()
-    {
-        if(mRunFlag)
-        {
-            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
-        }
-    }
+    void ReductionTest::TearDown() {}
 
 } // namespace hiptensor

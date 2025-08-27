@@ -160,24 +160,25 @@ auto elementaryTrinaryOpWithCpu(hiptensorDataType_t inputType,
                                            typeCompute,
                                            0);
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
     if(descA)
     {
-        hiptensorDestroyTensorDescriptor(descA);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
         descA = nullptr;
     }
     if(descB)
     {
-        hiptensorDestroyTensorDescriptor(descB);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descB));
         descB = nullptr;
     }
     if(descC)
     {
-        hiptensorDestroyTensorDescriptor(descC);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
         descC = nullptr;
     }
     if(descD)
     {
-        hiptensorDestroyTensorDescriptor(descD);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
         descD = nullptr;
     }
     return compareEqual(referenceArray.data(),

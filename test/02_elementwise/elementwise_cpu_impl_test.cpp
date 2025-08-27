@@ -138,14 +138,15 @@ auto permuteWithCpu(hiptensorDataType_t typeA,
                                   typeCompute,
                                   0);
 
+    CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
     if(descA)
     {
-        hiptensorDestroyTensorDescriptor(descA);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
         descA = nullptr;
     }
     if(descB)
     {
-        hiptensorDestroyTensorDescriptor(descB);
+        CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descB));
         descB = nullptr;
     }
     return compareEqual(referenceArray.data(),
