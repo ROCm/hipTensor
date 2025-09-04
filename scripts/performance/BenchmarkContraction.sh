@@ -3,7 +3,7 @@
 
 set -eux
 
-# Check if two arguments are provided
+# Check if three arguments are provided
 if [ $# -ne 3 ]; then
     echo "Usage: $0 <binary_dir> <config_dir> <output_dir>"
     exit 1
