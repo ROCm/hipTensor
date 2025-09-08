@@ -35,6 +35,7 @@
 #include "util.hpp"
 
 #include "hiptensor_options.hpp"
+#include "plancache_autotune.hpp"
 
 // Convert between vectors of void ptrs stored in opaque API objects
 // to vectors of ContractionSolution ptrs with simple cast.
@@ -188,7 +189,7 @@ hiptensorStatus_t hiptensorCreateContraction(const hiptensorHandle_t            
                                       ? hiptensor::ContractionOpId_t::SCALE_COMPLEX
                                       : hiptensor::ContractionOpId_t::SCALE);
 
-    (*desc)->mTag          = 0;
+    (*desc)->mTag          = 0u;
     (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops        = 0;
     (*desc)->mMovedBytes   = 0;
@@ -232,6 +233,10 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
+    using hiptensor::PlancacheAutotuneMgr;
+    auto& autotuneMgr = PlancacheAutotuneMgr::instance();
+    autotuneMgr->startAutotune("hiptensorContract");
+
     // Log API access
     char msg[512];
     char alphaMsg[32];
@@ -260,6 +265,8 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
                 = hiptensor::readVal<hiptensor::ScalarData>(beta, plan->mOpDesc->mDescCompute);
             snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
         }
+
+        autotuneMgr->setAutotune<hiptensor::ContractionSolution>("hiptensorContract", handle, plan);
     }
     else
     {
@@ -298,18 +305,16 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
-
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    if((int)currentDevice.getDeviceId() != handle->mDevice.getDeviceId())
     {
         auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
         snprintf(msg,
                  sizeof(msg),
                  "Device mismatch error: current device id: %d, handle device id: %d (%s)",
                  (int)currentDevice.getDeviceId(),
-                 (int)realHandle->getDevice().getDeviceId(),
+                 (int)handle->mDevice.getDeviceId(),
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
         return errorCode;
@@ -424,6 +429,8 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
         logger->logError("hiptensorContraction", msg);
     }
 
+    autotuneMgr->saveAutotune<hiptensor::ContractionSolution>("hiptensorContract", time, handle, plan);
+
     return errorCode;
 }
 
@@ -444,18 +451,16 @@ hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   hand
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
-
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    if((int)currentDevice.getDeviceId() != handle->mDevice.getDeviceId())
     {
         auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
         snprintf(msg,
                  sizeof(msg),
                  "Device mismatch error: current device id: %d, handle device id: %d (%s)",
                  (int)currentDevice.getDeviceId(),
-                 (int)realHandle->getDevice().getDeviceId(),
+                 (int)handle->mDevice.getDeviceId(),
                  hiptensorGetErrorString(errorCode));
 
         logger->logError("contractionCreatePlanPreference", msg);
@@ -524,18 +529,16 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
         return checkResult;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
-
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId())
+    if((int)currentDevice.getDeviceId() != handle->mDevice.getDeviceId())
     {
         auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
         snprintf(msg,
                  sizeof(msg),
                  "Device mismatch error: current device id: %d, handle device id: %d (%s)",
                  (int)currentDevice.getDeviceId(),
-                 (int)realHandle->getDevice().getDeviceId(),
+                 (int)handle->mDevice.getDeviceId(),
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
@@ -589,52 +592,66 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
     // Launch selection algorithm
     hiptensor::ContractionSolution* winner = nullptr;
     auto                            result = HIPTENSOR_STATUS_INTERNAL_ERROR;
-    if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
-       || pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
-    {
-        result = hiptensor::bruteForceModel(&winner,
-                                            candidates,
-                                            ADataType,
-                                            hiptensor::getTensorLengths(desc->mDescA),
-                                            hiptensor::getTensorStrides(desc->mDescA),
-                                            desc->mModeA,
-                                            BDataType,
-                                            hiptensor::getTensorLengths(desc->mDescB),
-                                            hiptensor::getTensorStrides(desc->mDescB),
-                                            desc->mModeB,
-                                            DDataType,
-                                            hiptensor::getTensorLengths(desc->mDescC),
-                                            hiptensor::getTensorStrides(desc->mDescC),
-                                            desc->mModeC,
-                                            EDataType,
-                                            hiptensor::getTensorLengths(desc->mDescD),
-                                            hiptensor::getTensorStrides(desc->mDescD),
-                                            desc->mModeD,
-                                            desc->mDescCompute,
-                                            workspaceSizeLimit);
+
+    //First to look for solution from memory cache (Plan Cache)
+    //If there is a solution in Plan Cache, set that solution and skip solution finding
+    if (pref->mCacheMode == HIPTENSOR_CACHE_MODE_PEDANTIC) {
+        auto Uid = handle -> mPlanCache.querySolutionUid(desc);
+        if (Uid > 0ull) {
+            winner = findSolutionByUid(candidates,Uid);
+            if(winner!=nullptr) result = HIPTENSOR_STATUS_SUCCESS;
+        }
     }
-    else if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
+
+    if (result != HIPTENSOR_STATUS_SUCCESS)
     {
-        result = hiptensor::actorCriticModel(&winner,
-                                             solutionQ.solutions(),
-                                             ADataType,
-                                             hiptensor::getTensorLengths(desc->mDescA),
-                                             hiptensor::getTensorStrides(desc->mDescA),
-                                             desc->mModeA,
-                                             BDataType,
-                                             hiptensor::getTensorLengths(desc->mDescB),
-                                             hiptensor::getTensorStrides(desc->mDescB),
-                                             desc->mModeB,
-                                             DDataType,
-                                             hiptensor::getTensorLengths(desc->mDescC),
-                                             hiptensor::getTensorStrides(desc->mDescC),
-                                             desc->mModeC,
-                                             EDataType,
-                                             hiptensor::getTensorLengths(desc->mDescD),
-                                             hiptensor::getTensorStrides(desc->mDescD),
-                                             desc->mModeC,
-                                             desc->mDescCompute,
-                                             workspaceSizeLimit);
+        if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
+           || pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
+        {
+            result = hiptensor::bruteForceModel(&winner,
+                                                candidates,
+                                                ADataType,
+                                                hiptensor::getTensorLengths(desc->mDescA),
+                                                hiptensor::getTensorStrides(desc->mDescA),
+                                                desc->mModeA,
+                                                BDataType,
+                                                hiptensor::getTensorLengths(desc->mDescB),
+                                                hiptensor::getTensorStrides(desc->mDescB),
+                                                desc->mModeB,
+                                                DDataType,
+                                                hiptensor::getTensorLengths(desc->mDescC),
+                                                hiptensor::getTensorStrides(desc->mDescC),
+                                                desc->mModeC,
+                                                EDataType,
+                                                hiptensor::getTensorLengths(desc->mDescD),
+                                                hiptensor::getTensorStrides(desc->mDescD),
+                                                desc->mModeD,
+                                                desc->mDescCompute,
+                                                workspaceSizeLimit);
+        }
+        else if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
+        {
+            result = hiptensor::actorCriticModel(&winner,
+                                                 solutionQ.solutions(),
+                                                 ADataType,
+                                                 hiptensor::getTensorLengths(desc->mDescA),
+                                                 hiptensor::getTensorStrides(desc->mDescA),
+                                                 desc->mModeA,
+                                                 BDataType,
+                                                 hiptensor::getTensorLengths(desc->mDescB),
+                                                 hiptensor::getTensorStrides(desc->mDescB),
+                                                 desc->mModeB,
+                                                 DDataType,
+                                                 hiptensor::getTensorLengths(desc->mDescC),
+                                                 hiptensor::getTensorStrides(desc->mDescC),
+                                                 desc->mModeC,
+                                                 EDataType,
+                                                 hiptensor::getTensorLengths(desc->mDescD),
+                                                 hiptensor::getTensorStrides(desc->mDescD),
+                                                 desc->mModeC,
+                                                 desc->mDescCompute,
+                                                 workspaceSizeLimit);
+        }
     }
 
     CHECK_HIP_ERROR(hipEventRecord(stopEvent));

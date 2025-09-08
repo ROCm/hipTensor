@@ -38,6 +38,9 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "hip_device.hpp"
+#include "plan_cache.hpp"
+
 typedef enum hiptensorOperationType_t
 {
     HIPTENSOR_CONTRACTION         = 0,
@@ -47,15 +50,9 @@ typedef enum hiptensorOperationType_t
     HIPTENSOR_REDUCTION           = 4,
 } hiptensorOperationType_t;
 
-//! @brief hipTensor's library context
-struct hiptensorHandle
-{
-    int64_t fields[512];
-};
-
 struct hiptensorOperationDescriptor
 {
-    int32_t             mTag;
+    uint32_t             mTag;
     hiptensorDataType_t mScalarType;
     float               mFlops;
     float               mMovedBytes;
@@ -84,6 +81,13 @@ struct hiptensorOperationDescriptor
     hiptensorOperator_t         mOpABC;
 
     hiptensorComputeDescriptor_t mDescCompute;
+};
+
+//! @brief hipTensor's library context
+struct hiptensorHandle
+{
+    hiptensor::HipDevice mDevice;
+    hiptensor::PlanCache mPlanCache;
 };
 
 struct hiptensorPlan

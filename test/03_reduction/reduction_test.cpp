@@ -446,7 +446,19 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(
                 hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
-            uint64_t                            worksize      = 0;
+            /**************************
+            * Disable Plan Cache for tests
+            ***************************/
+            const hiptensorCacheMode_t cacheMode = HIPTENSOR_CACHE_MODE_NONE;
+            CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(
+                 handle,
+                 planPref,
+                 HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE,
+                 &cacheMode,
+                 sizeof(hiptensorCacheMode_t)));
+
+
+            uint64_t worksize = 0;
             const hiptensorWorksizePreference_t workspacePref = HIPTENSOR_WORKSPACE_DEFAULT;
             CHECK_HIPTENSOR_ERROR(
                 hiptensorEstimateWorkspaceSize(handle, desc, planPref, workspacePref, &worksize));

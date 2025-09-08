@@ -79,9 +79,6 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
-    // Get the current device (handled by the Handle class)
-    auto realHandle = hiptensor::Handle::createHandle((*handle)->fields);
-
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -96,8 +93,6 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
         msg, sizeof(msg), "handle=0x%0*llX", 2 * (int)sizeof(void*), (unsigned long long)handle);
     logger->logAPITrace("hiptensorDestroy", msg);
 
-    hiptensor::Handle::destroyHandle(handle->fields);
-
     delete handle;
     handle = nullptr;
 
@@ -107,12 +102,23 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
 hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
                                                  const uint32_t    numEntries)
 {
+    if (numEntries < 1u) return HIPTENSOR_STATUS_INVALID_VALUE;
+
+    handle->mPlanCache.Resize(numEntries);
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
 hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
                                                       const char              filename[])
 {
+    std::ofstream mPlanCacheFile(filename, std::ios::out | std::ios::binary);
+    if(!mPlanCacheFile.is_open())
+    {
+        return HIPTENSOR_STATUS_IO_ERROR;
+    }
+    handle->mPlanCache.serialization(mPlanCacheFile);
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -120,6 +126,14 @@ hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
                                                        const char        filename[],
                                                        uint32_t*         numCachelinesRead)
 {
+    std::ifstream mPlanCacheFile(filename, std::ios::in | std::ios::binary);
+    if(!mPlanCacheFile.is_open())
+    {
+        return HIPTENSOR_STATUS_IO_ERROR;
+    }
+    handle->mPlanCache.deserialization(mPlanCacheFile);
+    (*numCachelinesRead) = handle->mPlanCache.getCachelinesNum();
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -205,8 +219,7 @@ hiptensorStatus_t hiptensorCreateTensorDescriptor(const hiptensorHandle_t      h
         return HIPTENSOR_STATUS_INVALID_VALUE;
     }
 
-    auto realHandle = hiptensor::Handle::toHandle((int64_t*)handle->fields);
-    if(dataType == HIPTENSOR_R_64F && !realHandle->getDevice().supportsF64())
+    if(dataType == HIPTENSOR_R_64F && !handle->mDevice.supportsF64())
     {
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
@@ -265,7 +278,19 @@ hiptensorStatus_t
                                              const void*                             buf,
                                              size_t                                  sizeInBytes)
 {
-    return HIPTENSOR_STATUS_SUCCESS;
+    hiptensorStatus_t retStatus = HIPTENSOR_STATUS_SUCCESS;
+
+    switch(attr)
+    {
+    case HIPTENSOR_OPERATION_DESCRIPTOR_TAG:
+        memcpy(&desc->mTag, buf, sizeInBytes);
+        break;
+    default:
+        retStatus = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        break;
+    }
+
+    return retStatus;
 }
 
 hiptensorStatus_t
@@ -289,7 +314,7 @@ hiptensorStatus_t hiptensorCreatePermutation(const hiptensorHandle_t            
 {
     *desc = new hiptensorOperationDescriptor();
 
-    (*desc)->mTag          = 0;
+    (*desc)->mTag          = 0u;
     (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops        = 0.0f;
     (*desc)->mMovedBytes   = 0.0f;
@@ -332,7 +357,7 @@ hiptensorStatus_t hiptensorCreateElementwiseBinary(const hiptensorHandle_t      
                                                    const hiptensorComputeDescriptor_t descCompute)
 {
     *desc                  = new hiptensorOperationDescriptor();
-    (*desc)->mTag          = 0;
+    (*desc)->mTag          = 0u;
     (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops        = 0.0f;
     (*desc)->mMovedBytes   = 0.0f;
@@ -379,7 +404,7 @@ hiptensorStatus_t hiptensorCreateElementwiseTrinary(const hiptensorHandle_t     
                                                     const hiptensorComputeDescriptor_t descCompute)
 {
     *desc                  = new hiptensorOperationDescriptor();
-    (*desc)->mTag          = 0;
+    (*desc)->mTag          = 0u;
     (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops        = 0.0f;
     (*desc)->mMovedBytes   = 0.0f;
@@ -422,7 +447,7 @@ hiptensorStatus_t hiptensorCreateReduction(const hiptensorHandle_t            ha
                                            const hiptensorComputeDescriptor_t descCompute)
 {
     *desc                  = new hiptensorOperationDescriptor();
-    (*desc)->mTag          = 0;
+    (*desc)->mTag          = 0u;
     (*desc)->mScalarType   = *hiptensor::convertToHipTensorDataType(descCompute);
     (*desc)->mFlops        = 0.0f;
     (*desc)->mMovedBytes   = 0.0f;
@@ -462,8 +487,16 @@ hiptensorStatus_t hiptensorCreatePlanPreference(const hiptensorHandle_t    handl
                                                 hiptensorJitMode_t         jitMode)
 {
     *pref                        = new hiptensorPlanPreference();
-    (*pref)->mSelectionAlgorithm = algo;
+
+    (*pref)->mAutotuneMode       = HIPTENSOR_AUTOTUNE_MODE_NONE;
+    (*pref)->mCacheMode          = HIPTENSOR_CACHE_MODE_PEDANTIC;
+    (*pref)->mIncrementalCount   = 0;
+    (*pref)->mKernelrank         = 0;
     (*pref)->mJit                = jitMode;
+
+    (*pref)->mSelectionAlgorithm = algo;
+    (*pref)->mSolution           = nullptr;
+
     return HIPTENSOR_STATUS_SUCCESS;
 }
 
@@ -479,7 +512,33 @@ hiptensorStatus_t hiptensorPlanPreferenceSetAttribute(const hiptensorHandle_t   
                                                       const void*                        buf,
                                                       size_t sizeInBytes)
 {
-    return HIPTENSOR_STATUS_SUCCESS;
+    hiptensorStatus_t retStatus = HIPTENSOR_STATUS_SUCCESS;
+    switch(attr)
+    {
+    case HIPTENSOR_PLAN_PREFERENCE_AUTOTUNE_MODE:
+        memcpy(&pref -> mAutotuneMode, buf, sizeInBytes);
+        break;
+    case HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE:
+        memcpy(&pref -> mCacheMode, buf, sizeInBytes);
+        break;
+    case HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT:
+        memcpy(&pref -> mIncrementalCount, buf, sizeInBytes);
+        break;
+    case HIPTENSOR_PLAN_PREFERENCE_ALGO:
+        memcpy(&pref -> mSelectionAlgorithm, buf, sizeInBytes);
+        break;
+    case HIPTENSOR_PLAN_PREFERENCE_KERNEL_RANK:
+        memcpy(&pref -> mKernelrank, buf, sizeInBytes);
+        break;
+    case HIPTENSOR_PLAN_PREFERENCE_JIT:
+        memcpy(&pref -> mJit, buf, sizeInBytes);
+        break;
+    default:
+        retStatus = HIPTENSOR_STATUS_NOT_SUPPORTED;
+        break;
+    }
+
+    return retStatus;
 }
 
 hiptensorStatus_t hiptensorPlanGetAttribute(const hiptensorHandle_t  handle,
@@ -734,3 +793,4 @@ int hiptensorGetHiprtVersion()
 
     return version;
 }
+

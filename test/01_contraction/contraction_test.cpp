@@ -494,6 +494,18 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(
                 handle, &planPref, algorithm, HIPTENSOR_JIT_MODE_NONE));
 
+            /**************************
+            * Disable Plan Cache for tests
+            ***************************/
+
+            const hiptensorCacheMode_t cacheMode = HIPTENSOR_CACHE_MODE_NONE;
+            CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(
+                 handle,
+                 planPref,
+                 HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE,
+                 &cacheMode,
+                 sizeof(hiptensorCacheMode_t)));
+
             /**********************
             * Query workspace
             **********************/

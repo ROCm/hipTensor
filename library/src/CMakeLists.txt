@@ -89,6 +89,7 @@ set(HIPTENSOR_CORE_SOURCES
    ${CMAKE_CURRENT_SOURCE_DIR}/hip_device.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/handle.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_options.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/plan_cache.cpp
 )
 
 add_hiptensor_component(hiptensor_core ${HIPTENSOR_CORE_SOURCES})
