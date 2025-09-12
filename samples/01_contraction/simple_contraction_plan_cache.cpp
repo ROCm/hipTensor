@@ -74,11 +74,11 @@ int main(int argc, char* argv[])
     std::unordered_map<int, int64_t> extent;
 
     extent['m'] = 96;
-    extent['n'] = 128;
-    extent['u'] = 64;
-    extent['v'] = 128;
-    extent['h'] = 92;
-    extent['k'] = 96;
+    extent['n'] = 96;
+    extent['u'] = 96;
+    extent['v'] = 64;
+    extent['h'] = 64;
+    extent['k'] = 64;
 
     std::vector<int64_t> c_ms_ns_lengths;
     for(auto mode : modeC)

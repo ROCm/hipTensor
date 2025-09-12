@@ -66,14 +66,15 @@ namespace hiptensor
         }
 
         //Set current solution to try in autotune
-        template<typename T>
+        template <typename T>
         void setAutotune(const std::string strFuncName, const hiptensorHandle_t handle, const hiptensorPlan_t plan)
         {
+            if(handle -> planCache == nullptr) return;
             if(plan->mPref == nullptr) return;
             if(plan->mPref->mCacheMode != HIPTENSOR_CACHE_MODE_PEDANTIC) return;
 
             // Look for solution from memory cache (Plan Cache) or do autotuning for Plan Cache
-            auto Uid = handle -> mPlanCache.querySolutionUid(plan->mOpDesc);
+            auto Uid = handle->planCache->querySolutionUid(plan->mOpDesc);
             if(Uid > 0ull)
             {
                 //If there is a solution already in the Plan Cache, directly set solution from Plan Cache
@@ -91,15 +92,17 @@ namespace hiptensor
                 {
                     //If the number of calling this function is less than the number of different candidates to explore,
                     //we are doing the autotuning to find the best solution
+                    if(callCount < plan->mPref->mCandidates.size()) plan->mPref->mSolution = plan->mPref->mCandidates[callCount];
                     // TODO: need a ranked solution array to explore from fastest to slowest
                 }
             }
         }
 
         //Check and save autotune results to Plan Cache
-        template<typename T>
+        template <typename T>
         void saveAutotune(const std::string strFuncName, float time, const hiptensorHandle_t handle, const hiptensorPlan_t plan)
         {
+            if(handle -> planCache == nullptr) return;
             if(plan->mPref == nullptr) return;
             if(plan->mPref->mCacheMode != HIPTENSOR_CACHE_MODE_PEDANTIC) return;
 
@@ -120,10 +123,10 @@ namespace hiptensor
             //or there is no autotuning, add the best solution to the Plan Cache.
             if(mpCallCount[strFuncName] >= plan->mPref->mIncrementalCount || plan->mPref->mAutotuneMode == HIPTENSOR_AUTOTUNE_MODE_NONE)
             {
-                hiptensor::PlanCache::HashId hashID = handle -> mPlanCache.getHashID(plan->mOpDesc);
+                hiptensor::PlanCache::HashId hashID = handle->planCache->getHashID(plan->mOpDesc);
                 T* solution = (T*)bestSolution[strFuncName].second;
                 if (solution == nullptr) solution = (T*)(plan->mPref->mSolution);
-                handle -> mPlanCache.addCacheLine(hashID, solution->uid());
+                handle->planCache->addCacheLine(hashID, solution->uid());
 
                 //reset callCount for next round of autotuning
                 mpAutotuneStarted[strFuncName] = false;

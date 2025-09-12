@@ -23,6 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
+#include <cstring>
 #include <hip/hip_runtime_api.h>
 
 #include <hiptensor/hiptensor.hpp>
@@ -69,7 +70,6 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
         logger->logError("hiptensorCreate", msg);
         return HIPTENSOR_STATUS_HIP_ERROR;
     }
-
     else if(hip_status == hipErrorInvalidValue)
     {
         auto errorCode = HIPTENSOR_STATUS_INVALID_VALUE;
@@ -77,6 +77,19 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
             msg, sizeof(msg), "Initialization error: (%s)", hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorCreate", msg);
         return HIPTENSOR_STATUS_INVALID_VALUE;
+    }
+
+    const char* plan_cache_disable = std::getenv("HIPTENSOR_DISABLE_PLAN_CACHE");
+    if(plan_cache_disable == nullptr || strcmp(plan_cache_disable, "ON") != 0)
+    {
+        (*handle) -> planCache = new hiptensor::PlanCache;
+        snprintf(msg, sizeof(msg), "Plan Cache is %s", "enabled.");
+        logger->logAPITrace("hiptensorCreate", msg);
+    }
+    else
+    {
+        snprintf(msg, sizeof(msg), "Plan Cache is %s", "disabled.");
+        logger->logAPITrace("hiptensorCreate", msg);
     }
 
     return HIPTENSOR_STATUS_SUCCESS;
@@ -102,9 +115,11 @@ hiptensorStatus_t hiptensorDestroy(hiptensorHandle_t handle)
 hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
                                                  const uint32_t    numEntries)
 {
+    if(handle->planCache == nullptr) return HIPTENSOR_STATUS_SUCCESS;
+
     if (numEntries < 1u) return HIPTENSOR_STATUS_INVALID_VALUE;
 
-    handle->mPlanCache.Resize(numEntries);
+    handle->planCache->Resize(numEntries);
 
     return HIPTENSOR_STATUS_SUCCESS;
 }
@@ -112,29 +127,20 @@ hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
 hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
                                                       const char              filename[])
 {
-    std::ofstream mPlanCacheFile(filename, std::ios::out | std::ios::binary);
-    if(!mPlanCacheFile.is_open())
-    {
-        return HIPTENSOR_STATUS_IO_ERROR;
-    }
-    handle->mPlanCache.serialization(mPlanCacheFile);
+    if(handle->planCache == nullptr) return HIPTENSOR_STATUS_SUCCESS;
 
-    return HIPTENSOR_STATUS_SUCCESS;
+    return handle->planCache->writeFile(filename);
 }
 
 hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
                                                        const char        filename[],
                                                        uint32_t*         numCachelinesRead)
 {
-    std::ifstream mPlanCacheFile(filename, std::ios::in | std::ios::binary);
-    if(!mPlanCacheFile.is_open())
-    {
-        return HIPTENSOR_STATUS_IO_ERROR;
-    }
-    handle->mPlanCache.deserialization(mPlanCacheFile);
-    (*numCachelinesRead) = handle->mPlanCache.getCachelinesNum();
+    if(handle->planCache == nullptr) return HIPTENSOR_STATUS_SUCCESS;
 
-    return HIPTENSOR_STATUS_SUCCESS;
+    hiptensorStatus_t retVal = handle->planCache->readFile(filename);
+    if (retVal == HIPTENSOR_STATUS_SUCCESS) (*numCachelinesRead) = handle->planCache->getCachelinesNum();
+    return retVal;
 }
 
 hiptensorStatus_t hiptensorWriteKernelCacheToFile(const hiptensorHandle_t handle,
@@ -283,7 +289,7 @@ hiptensorStatus_t
     switch(attr)
     {
     case HIPTENSOR_OPERATION_DESCRIPTOR_TAG:
-        memcpy(&desc->mTag, buf, sizeInBytes);
+        std::memcpy(&desc->mTag, buf, sizeInBytes);
         break;
     default:
         retStatus = HIPTENSOR_STATUS_NOT_SUPPORTED;
@@ -516,22 +522,22 @@ hiptensorStatus_t hiptensorPlanPreferenceSetAttribute(const hiptensorHandle_t   
     switch(attr)
     {
     case HIPTENSOR_PLAN_PREFERENCE_AUTOTUNE_MODE:
-        memcpy(&pref -> mAutotuneMode, buf, sizeInBytes);
+        std::memcpy(&pref -> mAutotuneMode, buf, sizeInBytes);
         break;
     case HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE:
-        memcpy(&pref -> mCacheMode, buf, sizeInBytes);
+        std::memcpy(&pref -> mCacheMode, buf, sizeInBytes);
         break;
     case HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT:
-        memcpy(&pref -> mIncrementalCount, buf, sizeInBytes);
+        std::memcpy(&pref -> mIncrementalCount, buf, sizeInBytes);
         break;
     case HIPTENSOR_PLAN_PREFERENCE_ALGO:
-        memcpy(&pref -> mSelectionAlgorithm, buf, sizeInBytes);
+        std::memcpy(&pref -> mSelectionAlgorithm, buf, sizeInBytes);
         break;
     case HIPTENSOR_PLAN_PREFERENCE_KERNEL_RANK:
-        memcpy(&pref -> mKernelrank, buf, sizeInBytes);
+        std::memcpy(&pref -> mKernelrank, buf, sizeInBytes);
         break;
     case HIPTENSOR_PLAN_PREFERENCE_JIT:
-        memcpy(&pref -> mJit, buf, sizeInBytes);
+        std::memcpy(&pref -> mJit, buf, sizeInBytes);
         break;
     default:
         retStatus = HIPTENSOR_STATUS_NOT_SUPPORTED;

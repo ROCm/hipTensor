@@ -87,7 +87,7 @@ struct hiptensorOperationDescriptor
 struct hiptensorHandle
 {
     hiptensor::HipDevice mDevice;
-    hiptensor::PlanCache mPlanCache;
+    hiptensor::PlanCache* planCache = nullptr;
 };
 
 struct hiptensorPlan

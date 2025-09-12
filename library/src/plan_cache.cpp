@@ -87,9 +87,13 @@ namespace hiptensor
 
     PlanCache::Uid PlanCache::querySolutionUid(hiptensorOperationDescriptor_t desc)
     {
-        PlanCache::HashId hashID = getHashID(desc);
+        std::scoped_lock lock(mMutex);
 
+        PlanCache::HashId hashID = getHashID(desc);
         PlanCache::Uid solution_uid = getSolutionID(hashID);
+        //Update cache line used time
+        if(solution_uid > 0ull) updateCachelineTime(hashID);
+
         return solution_uid;
     }
 
@@ -101,43 +105,41 @@ namespace hiptensor
 
         //If the table size equal to the maximum size, then remove extra LRU(least-recently-used) record
         if(mPlanCacheLines.size() == max_cachelines && mPlanCacheLines.find(hash_id) != mPlanCacheLines.end()) {
-            Uid_Pair lru_item = pq_UidUsedTimes.top();
+            std::pair<HashId, time_point> lru_item = pq_UidUsedTimes.top();
             pq_UidUsedTimes.pop();
 
-            mPlanCacheLines.erase(lru_item.second);
+            mPlanCacheLines.erase(lru_item.first);
         }
 
         //Add the cache line
         mPlanCacheLines[hash_id] = sol_id;
 
         //Also add the cache line generation time to a min heap
-        Uid_Pair item = std::make_pair(std::chrono::system_clock::now(),hash_id);
-        //If the cache line already in the heap, remove that element first
-        std::priority_queue<PlanCache::Uid_Pair, std::vector<Uid_Pair>,PlanCache::CompareUidPairs> tmp_heap;
-        while(!pq_UidUsedTimes.empty())
-        {
-            if(pq_UidUsedTimes.top().second != hash_id) tmp_heap.push(pq_UidUsedTimes.top());
-            pq_UidUsedTimes.pop();
-        }
-        pq_UidUsedTimes = std::move(tmp_heap);
-        //After make sure same item is removed, add the item
-        pq_UidUsedTimes.push(item);
+        updateCachelineTime(hash_id);
+    }
+
+    void PlanCache::updateCachelineTime(HashId hash_id)
+    {
+        time_point current_time = std::chrono::system_clock::now();
+        if(!pq_UidUsedTimes.update_item(hash_id, current_time)) pq_UidUsedTimes.push(hash_id, current_time);
 
         assert(pq_UidUsedTimes.size() == mPlanCacheLines.size());
     }
 
     void PlanCache::Resize(uint32_t numEntries)
     {
+        std::scoped_lock lock(mMutex);
+
         if(numEntries < 1u) return;
 
         max_cachelines = numEntries;
 
         //If the table size exceeds the maximum size, then remove extra LRU(least-recently-used) records
         while(pq_UidUsedTimes.size() > max_cachelines) {
-            Uid_Pair lru_item = pq_UidUsedTimes.top();
+            std::pair<HashId, time_point> lru_item = pq_UidUsedTimes.top();
             pq_UidUsedTimes.pop();
 
-            mPlanCacheLines.erase(lru_item.second);
+            mPlanCacheLines.erase(lru_item.first);
         }
     }
 
@@ -147,8 +149,16 @@ namespace hiptensor
         return 0ull;
     }
 
-    void PlanCache::serialization(std::ofstream& fstream)
+    hiptensorStatus_t PlanCache::writeFile(const char filename[])
     {
+        std::scoped_lock lock(mMutex);
+
+        std::ofstream fstream(filename, std::ios::out | std::ios::binary);
+        if(!fstream.is_open())
+        {
+            return HIPTENSOR_STATUS_IO_ERROR;
+        }
+
         fstream.write(reinterpret_cast<char*>(&max_cachelines), sizeof(max_cachelines));
         std::size_t size = mPlanCacheLines.size();
         fstream.write(reinterpret_cast<char*>(&size), sizeof(size));
@@ -161,19 +171,31 @@ namespace hiptensor
             fstream.write(reinterpret_cast<char*>(&uId), sizeof(uId));
         }
 
-        std::priority_queue<PlanCache::Uid_Pair, std::vector<Uid_Pair>,PlanCache::CompareUidPairs> tmp_heap = pq_UidUsedTimes;
+        Updatable_Priority_Queue<HashId, time_point> tmp_heap = pq_UidUsedTimes;
         size = tmp_heap.size();
         fstream.write(reinterpret_cast<char*>(&size), sizeof(size));
         while(!tmp_heap.empty()) {
-            PlanCache::Uid_Pair mPair = tmp_heap.top();
+            std::pair<HashId, time_point> mPair = tmp_heap.top();
             tmp_heap.pop();
             fstream.write(reinterpret_cast<char*>(&mPair.first), sizeof(mPair.first));
             fstream.write(reinterpret_cast<char*>(&mPair.second), sizeof(mPair.second));
         }
+
+        fstream.close();
+
+        return HIPTENSOR_STATUS_SUCCESS;
     }
 
-    void PlanCache::deserialization(std::ifstream& fstream)
+    hiptensorStatus_t PlanCache::readFile(const char filename[])
     {
+        std::scoped_lock lock(mMutex);
+
+        std::ifstream fstream(filename, std::ios::in | std::ios::binary);
+        if(!fstream.is_open())
+        {
+            return HIPTENSOR_STATUS_IO_ERROR;
+        }
+
         fstream.read(reinterpret_cast<char*>(&max_cachelines), sizeof(max_cachelines));
 
         std::size_t size=0;
@@ -190,14 +212,18 @@ namespace hiptensor
         }
 
         fstream.read(reinterpret_cast<char*>(&size), sizeof(size));
-        PlanCache::Uid_Pair mPair;
+        std::pair<HashId, time_point> mPair;
         while(!pq_UidUsedTimes.empty()) pq_UidUsedTimes.pop();
         for(int num=0; num<size; num++)
         {
             fstream.read(reinterpret_cast<char*>(&mPair.first), sizeof(mPair.first));
             fstream.read(reinterpret_cast<char*>(&mPair.second), sizeof(mPair.second));
-            pq_UidUsedTimes.push(mPair);
+            pq_UidUsedTimes.push(mPair.first, mPair.second);
         }
+
+        fstream.close();
+
+        return HIPTENSOR_STATUS_SUCCESS;
     }
 
 } // namespace hiptensor

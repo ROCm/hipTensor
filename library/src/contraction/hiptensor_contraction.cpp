@@ -595,8 +595,8 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
 
     //First to look for solution from memory cache (Plan Cache)
     //If there is a solution in Plan Cache, set that solution and skip solution finding
-    if (pref->mCacheMode == HIPTENSOR_CACHE_MODE_PEDANTIC) {
-        auto Uid = handle -> mPlanCache.querySolutionUid(desc);
+    if (handle -> planCache && pref->mCacheMode == HIPTENSOR_CACHE_MODE_PEDANTIC) {
+        auto Uid = handle -> planCache->querySolutionUid(desc);
         if (Uid > 0ull) {
             winner = findSolutionByUid(candidates,Uid);
             if(winner!=nullptr) result = HIPTENSOR_STATUS_SUCCESS;
@@ -628,6 +628,9 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
                                                 desc->mModeD,
                                                 desc->mDescCompute,
                                                 workspaceSizeLimit);
+            //Save solutions (from fastest to slowest) for plan cache autotune
+            pref->mCandidates.clear();
+            for(auto candidate:candidates) pref->mCandidates.push_back(candidate);
         }
         else if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
         {
