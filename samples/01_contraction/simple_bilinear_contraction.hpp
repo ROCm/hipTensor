@@ -23,12 +23,8 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#include <algorithm>
-#include <fstream>
 #include <hiptensor/hiptensor.hpp>
 #include <hiptensor/hiptensor_types.hpp>
-#include <hiptensor/internal/hiptensor_utility.hpp>
-#include <iterator>
 #include <numeric>
 #include <unordered_map>
 

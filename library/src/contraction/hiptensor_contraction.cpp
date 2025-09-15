@@ -73,6 +73,16 @@ hiptensorStatus_t contractionGetWorkspaceSize(const hiptensorHandle_t           
 
     // Log API access
     char msg[512];
+    snprintf(msg,
+             sizeof(msg),
+             "handle=0x%0*llX, desc=0x%llX, planPref=0x%llX, workspacePref=0x%u, workspaceSize=0x%llX",
+             2 * (int)sizeof(void*),
+             (unsigned long long)handle,
+             (unsigned long long)desc,
+             (unsigned long long)planPref,
+             (unsigned int)workspacePref,
+             (unsigned long long)workspaceSize);
+
     logger->logAPITrace("contractionGetWorkspaceSize", msg);
 
     hiptensorStatus_t checkResult = HIPTENSOR_STATUS_SUCCESS;
@@ -537,7 +547,7 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
                  (int)currentDevice.getDeviceId(),
                  (int)realHandle->getDevice().getDeviceId(),
                  hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorInitContractionPlan", msg);
+        logger->logError("contractionInitPlan", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
