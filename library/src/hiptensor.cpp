@@ -80,7 +80,7 @@ hiptensorStatus_t hiptensorCreate(hiptensorHandle_t* handle)
     }
 
     // Get the current device (handled by the Handle class)
-    auto realHandle = hiptensor::Handle::createHandle((*handle)->fields);
+    hiptensor::Handle::createHandle((*handle)->fields);
 
     return HIPTENSOR_STATUS_SUCCESS;
 }

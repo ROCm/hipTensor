@@ -547,7 +547,7 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
                  (int)currentDevice.getDeviceId(),
                  (int)realHandle->getDevice().getDeviceId(),
                  hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorInitContractionPlan", msg);
+        logger->logError("contractionInitPlan", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
     }
 
