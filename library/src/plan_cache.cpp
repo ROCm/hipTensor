@@ -26,29 +26,28 @@
 
 #include "plan_cache.hpp"
 #include "data_types.hpp"
-#include "util.hpp"
 #include "hash.hpp"
+#include "util.hpp"
 
 namespace hiptensor
 {
     /////// Class PlanCache ////////////////////////
 
     PlanCache::PlanCache()
-        : max_cachelines(128)
+        : mMaxCachelines(128)
     {
-
     }
 
     PlanCache::HashId PlanCache::getHashID(hiptensorOperationDescriptor_t desc)
     {
-        auto tag         = desc->mTag;
-        auto ADataType   = desc->mDescA ? desc->mDescA->mType : hiptensor::NONE_TYPE;
-        auto BDataType   = desc->mDescB ? desc->mDescB->mType : hiptensor::NONE_TYPE;
-        auto CDataType   = desc->mDescC ? desc->mDescC->mType : hiptensor::NONE_TYPE;
-        auto DDataType   = desc->mDescD ? desc->mDescD->mType : hiptensor::NONE_TYPE;
-        auto computeType = desc->mDescCompute;
-        auto mOperationType = desc->mOperationType;
-        auto mContractionOpId = desc->mContractionOpId;
+        auto tag             = desc->mTag;
+        auto ADataType       = desc->mDescA ? desc->mDescA->mType : hiptensor::NONE_TYPE;
+        auto BDataType       = desc->mDescB ? desc->mDescB->mType : hiptensor::NONE_TYPE;
+        auto CDataType       = desc->mDescC ? desc->mDescC->mType : hiptensor::NONE_TYPE;
+        auto DDataType       = desc->mDescD ? desc->mDescD->mType : hiptensor::NONE_TYPE;
+        auto computeType     = desc->mDescCompute;
+        auto operationType   = desc->mOperationType;
+        auto contractionOpId = desc->mContractionOpId;
 
         //Get lengths
         std::vector<std::size_t> lengthsA = hiptensor::getTensorLengths(desc->mDescA);
@@ -56,11 +55,11 @@ namespace hiptensor
         std::vector<std::size_t> lengthsC = hiptensor::getTensorLengths(desc->mDescC);
         std::vector<std::size_t> lengthsD = hiptensor::getTensorLengths(desc->mDescD);
 
-        std::vector<std::size_t> arr_lsm;
-        arr_lsm.insert(arr_lsm.end(),lengthsA.begin(),lengthsA.end());
-        arr_lsm.insert(arr_lsm.end(),lengthsB.begin(),lengthsB.end());
-        arr_lsm.insert(arr_lsm.end(),lengthsC.begin(),lengthsC.end());
-        arr_lsm.insert(arr_lsm.end(),lengthsD.begin(),lengthsD.end());
+        std::vector<std::size_t> arrLSM;
+        arrLSM.insert(arrLSM.end(), lengthsA.begin(), lengthsA.end());
+        arrLSM.insert(arrLSM.end(), lengthsB.begin(), lengthsB.end());
+        arrLSM.insert(arrLSM.end(), lengthsC.begin(), lengthsC.end());
+        arrLSM.insert(arrLSM.end(), lengthsD.begin(), lengthsD.end());
 
         //Get strides
         std::vector<std::size_t> stridesA = hiptensor::getTensorStrides(desc->mDescA);
@@ -68,19 +67,27 @@ namespace hiptensor
         std::vector<std::size_t> stridesC = hiptensor::getTensorStrides(desc->mDescC);
         std::vector<std::size_t> stridesD = hiptensor::getTensorStrides(desc->mDescD);
 
-        arr_lsm.insert(arr_lsm.end(),stridesA.begin(),stridesA.end());
-        arr_lsm.insert(arr_lsm.end(),stridesB.begin(),stridesB.end());
-        arr_lsm.insert(arr_lsm.end(),stridesC.begin(),stridesC.end());
-        arr_lsm.insert(arr_lsm.end(),stridesD.begin(),stridesD.end());
+        arrLSM.insert(arrLSM.end(), stridesA.begin(), stridesA.end());
+        arrLSM.insert(arrLSM.end(), stridesB.begin(), stridesB.end());
+        arrLSM.insert(arrLSM.end(), stridesC.begin(), stridesC.end());
+        arrLSM.insert(arrLSM.end(), stridesD.begin(), stridesD.end());
 
         //Get modes
-        arr_lsm.insert(arr_lsm.end(),desc->mModeA.begin(),desc->mModeA.end());
-        arr_lsm.insert(arr_lsm.end(),desc->mModeB.begin(),desc->mModeB.end());
-        arr_lsm.insert(arr_lsm.end(),desc->mModeC.begin(),desc->mModeC.end());
-        arr_lsm.insert(arr_lsm.end(),desc->mModeD.begin(),desc->mModeD.end());
+        arrLSM.insert(arrLSM.end(), desc->mModeA.begin(), desc->mModeA.end());
+        arrLSM.insert(arrLSM.end(), desc->mModeB.begin(), desc->mModeB.end());
+        arrLSM.insert(arrLSM.end(), desc->mModeC.begin(), desc->mModeC.end());
+        arrLSM.insert(arrLSM.end(), desc->mModeD.begin(), desc->mModeD.end());
 
         //generate hash ID by {Tag, DatatypeA, DatatypeB, DatatypeC, DatatypeD, DatatypeCompute, mOperationType, mContractionOpId, lengths, strides, modes}
-        PlanCache::HashId hashID = Hash{}(tag, ADataType, BDataType, CDataType, DDataType, computeType, mOperationType, mContractionOpId, arr_lsm);
+        PlanCache::HashId hashID = Hash{}(tag,
+                                          ADataType,
+                                          BDataType,
+                                          CDataType,
+                                          DDataType,
+                                          computeType,
+                                          operationType,
+                                          contractionOpId,
+                                          arrLSM);
 
         return hashID;
     }
@@ -89,92 +96,101 @@ namespace hiptensor
     {
         std::scoped_lock lock(mMutex);
 
-        PlanCache::HashId hashID = getHashID(desc);
-        PlanCache::Uid solution_uid = getSolutionID(hashID);
+        PlanCache::HashId hashID      = getHashID(desc);
+        PlanCache::Uid    solutionUid = getSolutionID(hashID);
         //Update cache line used time
-        if(solution_uid > 0ull) updateCachelineTime(hashID);
+        if(solutionUid > 0ull)
+            updateCachelineTime(hashID);
 
-        return solution_uid;
+        return solutionUid;
     }
 
-    void PlanCache::addCacheLine(HashId hash_id, Uid sol_id)
+    void PlanCache::addCacheLine(HashId hashId, Uid sol_id)
     {
         std::scoped_lock lock(mMutex);
 
-        assert(max_cachelines > 0);
+        assert(mMaxCachelines > 0);
 
         //If the table size equal to the maximum size, then remove extra LRU(least-recently-used) record
-        if(mPlanCacheLines.size() == max_cachelines && mPlanCacheLines.find(hash_id) != mPlanCacheLines.end()) {
-            std::pair<HashId, time_point> lru_item = pq_UidUsedTimes.top();
-            pq_UidUsedTimes.pop();
+        if(mPlanCacheLines.size() == mMaxCachelines
+           && mPlanCacheLines.find(hashId) != mPlanCacheLines.end())
+        {
+            std::pair<HashId, time_point> lru_item = mPqUidUsedTimes.top();
+            mPqUidUsedTimes.pop();
 
             mPlanCacheLines.erase(lru_item.first);
         }
 
         //Add the cache line
-        mPlanCacheLines[hash_id] = sol_id;
+        mPlanCacheLines[hashId] = sol_id;
 
         //Also add the cache line generation time to a min heap
-        updateCachelineTime(hash_id);
+        updateCachelineTime(hashId);
     }
 
-    void PlanCache::updateCachelineTime(HashId hash_id)
+    void PlanCache::updateCachelineTime(HashId hashId)
     {
         time_point current_time = std::chrono::system_clock::now();
-        if(!pq_UidUsedTimes.update_item(hash_id, current_time)) pq_UidUsedTimes.push(hash_id, current_time);
+        if(!mPqUidUsedTimes.updateItem(hashId, current_time))
+            mPqUidUsedTimes.push(hashId, current_time);
 
-        assert(pq_UidUsedTimes.size() == mPlanCacheLines.size());
+        assert(mPqUidUsedTimes.size() == mPlanCacheLines.size());
     }
 
-    void PlanCache::Resize(uint32_t numEntries)
+    void PlanCache::resize(uint32_t numEntries)
     {
         std::scoped_lock lock(mMutex);
 
-        if(numEntries < 1u) return;
+        if(numEntries < 1u)
+            return;
 
-        max_cachelines = numEntries;
+        mMaxCachelines = numEntries;
 
         //If the table size exceeds the maximum size, then remove extra LRU(least-recently-used) records
-        while(pq_UidUsedTimes.size() > max_cachelines) {
-            std::pair<HashId, time_point> lru_item = pq_UidUsedTimes.top();
-            pq_UidUsedTimes.pop();
+        while(mPqUidUsedTimes.size() > mMaxCachelines)
+        {
+            std::pair<HashId, time_point> lru_item = mPqUidUsedTimes.top();
+            mPqUidUsedTimes.pop();
 
             mPlanCacheLines.erase(lru_item.first);
         }
     }
 
-    PlanCache::Uid PlanCache::getSolutionID(HashId hash_id)
+    PlanCache::Uid PlanCache::getSolutionID(HashId hashId)
     {
-        if(mPlanCacheLines.find(hash_id)!=mPlanCacheLines.end()) return mPlanCacheLines[hash_id];
+        if(mPlanCacheLines.find(hashId) != mPlanCacheLines.end())
+            return mPlanCacheLines[hashId];
         return 0ull;
     }
 
-    hiptensorStatus_t PlanCache::writeFile(const char filename[])
+    hiptensorStatus_t PlanCache::writeFile(const char fileName[])
     {
         std::scoped_lock lock(mMutex);
 
-        std::ofstream fstream(filename, std::ios::out | std::ios::binary);
+        std::ofstream fstream(fileName, std::ios::out | std::ios::binary);
         if(!fstream.is_open())
         {
             return HIPTENSOR_STATUS_IO_ERROR;
         }
 
-        fstream.write(reinterpret_cast<char*>(&max_cachelines), sizeof(max_cachelines));
+        fstream.write(reinterpret_cast<char*>(&mMaxCachelines), sizeof(mMaxCachelines));
         std::size_t size = mPlanCacheLines.size();
         fstream.write(reinterpret_cast<char*>(&size), sizeof(size));
         PlanCache::HashId hashId;
-        PlanCache::Uid uId;
-        for(auto item:mPlanCacheLines) {
+        PlanCache::Uid    uId;
+        for(auto item : mPlanCacheLines)
+        {
             hashId = item.first;
-            uId = item.second;
+            uId    = item.second;
             fstream.write(reinterpret_cast<char*>(&hashId), sizeof(hashId));
             fstream.write(reinterpret_cast<char*>(&uId), sizeof(uId));
         }
 
-        Updatable_Priority_Queue<HashId, time_point> tmp_heap = pq_UidUsedTimes;
-        size = tmp_heap.size();
+        UpdatablePriorityQueue<HashId, time_point> tmp_heap = mPqUidUsedTimes;
+        size                                                = tmp_heap.size();
         fstream.write(reinterpret_cast<char*>(&size), sizeof(size));
-        while(!tmp_heap.empty()) {
+        while(!tmp_heap.empty())
+        {
             std::pair<HashId, time_point> mPair = tmp_heap.top();
             tmp_heap.pop();
             fstream.write(reinterpret_cast<char*>(&mPair.first), sizeof(mPair.first));
@@ -186,25 +202,25 @@ namespace hiptensor
         return HIPTENSOR_STATUS_SUCCESS;
     }
 
-    hiptensorStatus_t PlanCache::readFile(const char filename[])
+    hiptensorStatus_t PlanCache::readFile(const char fileName[])
     {
         std::scoped_lock lock(mMutex);
 
-        std::ifstream fstream(filename, std::ios::in | std::ios::binary);
+        std::ifstream fstream(fileName, std::ios::in | std::ios::binary);
         if(!fstream.is_open())
         {
             return HIPTENSOR_STATUS_IO_ERROR;
         }
 
-        fstream.read(reinterpret_cast<char*>(&max_cachelines), sizeof(max_cachelines));
+        fstream.read(reinterpret_cast<char*>(&mMaxCachelines), sizeof(mMaxCachelines));
 
-        std::size_t size=0;
+        std::size_t size = 0;
 
         mPlanCacheLines.clear();
         fstream.read(reinterpret_cast<char*>(&size), sizeof(size));
         PlanCache::HashId hashId;
-        PlanCache::Uid uId;
-        for(int num=0; num<size; num++)
+        PlanCache::Uid    uId;
+        for(int num = 0; num < size; num++)
         {
             fstream.read(reinterpret_cast<char*>(&hashId), sizeof(hashId));
             fstream.read(reinterpret_cast<char*>(&uId), sizeof(uId));
@@ -213,12 +229,13 @@ namespace hiptensor
 
         fstream.read(reinterpret_cast<char*>(&size), sizeof(size));
         std::pair<HashId, time_point> mPair;
-        while(!pq_UidUsedTimes.empty()) pq_UidUsedTimes.pop();
-        for(int num=0; num<size; num++)
+        while(!mPqUidUsedTimes.empty())
+            mPqUidUsedTimes.pop();
+        for(int num = 0; num < size; num++)
         {
             fstream.read(reinterpret_cast<char*>(&mPair.first), sizeof(mPair.first));
             fstream.read(reinterpret_cast<char*>(&mPair.second), sizeof(mPair.second));
-            pq_UidUsedTimes.push(mPair.first, mPair.second);
+            mPqUidUsedTimes.push(mPair.first, mPair.second);
         }
 
         fstream.close();
@@ -227,7 +244,3 @@ namespace hiptensor
     }
 
 } // namespace hiptensor
-
-
-
-

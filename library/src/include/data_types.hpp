@@ -86,6 +86,10 @@ struct hiptensorOperationDescriptor
 //! @brief hipTensor's library context
 struct hiptensorHandle
 {
+    hiptensor::HipDevice   getDevice() { return mDevice;}
+    hiptensor::PlanCache*  getPlanCache() { return planCache; }
+    void setPlanCache(hiptensor::PlanCache* pt_PlanCache) { planCache = pt_PlanCache; }
+private:
     hiptensor::HipDevice mDevice;
     hiptensor::PlanCache* planCache = nullptr;
 };
@@ -102,7 +106,7 @@ struct hiptensorPlanPreference
     hiptensorAutotuneMode_t mAutotuneMode;
     hiptensorCacheMode_t    mCacheMode;
     int32_t                 mIncrementalCount;
-    int32_t                 mKernelrank;
+    int32_t                 mKernelRank;
     hiptensorJitMode_t      mJit;
 
     hiptensorAlgo_t mSelectionAlgorithm;

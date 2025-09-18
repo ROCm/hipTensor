@@ -25,10 +25,10 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
-#include "logger.hpp"
 #include "elementwise_solution.hpp"
 #include "elementwise_solution_instances.hpp"
 #include "elementwise_solution_registry.hpp"
+#include "logger.hpp"
 
 #include "hiptensor_options.hpp"
 #include "plancache_autotune.hpp"
@@ -49,7 +49,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
 
     using hiptensor::PlancacheAutotuneMgr;
     auto& autotuneMgr = PlancacheAutotuneMgr::instance();
-    autotuneMgr->startAutotune("hiptensorElementwiseTrinaryExecute");
+    autotuneMgr->startAutotune(hiptensor::AutotuneOps::Autotune_TrinaryOp);
 
     hiptensorOperationDescriptor_t    opDes      = plan->mOpDesc;
     const hiptensorTensorDescriptor_t descA      = opDes->mDescA;
@@ -164,24 +164,25 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
         gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
-    autotuneMgr->setAutotune<hiptensor::ElementwiseSolution>("hiptensorElementwiseTrinaryExecute", handle, plan);
+    autotuneMgr->setAutotune<hiptensor::ElementwiseSolution>(
+        hiptensor::AutotuneOps::Autotune_TrinaryOp, handle, plan);
 
     std::vector<hiptensor::ElementwiseSolution*> solutions;
-    if (plan->mPref->mSolution != nullptr)
-       solutions.push_back((hiptensor::ElementwiseSolution*)plan->mPref->mSolution);
+    if(plan->mPref->mSolution != nullptr)
+        solutions.push_back((hiptensor::ElementwiseSolution*)plan->mPref->mSolution);
     else
     {
         auto& instances = hiptensor::ElementwiseSolutionInstances::instance();
-        solutions = instances->query({alphaF, betaF, gammaF},
-                                          descA->mLengths,
-                                          {descA->mType, descB->mType, descC->mType},
-                                          {descD->mType},
-                                          {{modeA, modeA + descA->mLengths.size()},
+        solutions       = instances->query({alphaF, betaF, gammaF},
+                                     descA->mLengths,
+                                     {descA->mType, descB->mType, descC->mType},
+                                     {descD->mType},
+                                     {{modeA, modeA + descA->mLengths.size()},
                                             {modeB, modeB + descB->mLengths.size()},
                                             {modeC, modeC + descC->mLengths.size()}},
-                                          {{modeD, modeD + descD->mLengths.size()}},
-                                          {opABC, opAB, opA, opB, opC},
-                                          hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
+                                     {{modeD, modeD + descD->mLengths.size()}},
+                                     {opABC, opAB, opA, opB, opC},
+                                     hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
     }
 
     bool canRun = false;
@@ -202,7 +203,7 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
 
         if(canRun)
         {
-            float time  = 0.0f;
+            float time = 0.0f;
             // Perform elementwise trinary with timing if LOG_LEVEL_PERF_TRACE
             if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
             {
@@ -258,7 +259,8 @@ hiptensorStatus_t hiptensorElementwiseTrinaryExecute(const hiptensorHandle_t han
             }
 
             plan->mPref->mSolution = pSolution;
-            autotuneMgr->saveAutotune<hiptensor::ElementwiseSolution>("hiptensorElementwiseTrinaryExecute", time, handle, plan);
+            autotuneMgr->saveAutotune<hiptensor::ElementwiseSolution>(
+                hiptensor::AutotuneOps::Autotune_TrinaryOp, time, handle, plan);
 
             return HIPTENSOR_STATUS_SUCCESS;
         }

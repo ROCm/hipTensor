@@ -78,6 +78,11 @@ namespace hiptensor
         ContractionTest();
         virtual ~ContractionTest() = default;
 
+        void EnablePlanCache()
+        {
+            mEnablePlanCache = true;
+        }
+
     protected: // Functions
         ContractionTest(ContractionTest&&)            = delete;
         ContractionTest(ContractionTest const&)       = delete;
@@ -130,6 +135,9 @@ namespace hiptensor
         double   mMaxRelativeError;
 
         static bool mHeaderPrinted;
+
+        //Enable plan cache
+        bool mEnablePlanCache = false;
 
         // Output buffer
         static std::stringstream sAPILogBuff;

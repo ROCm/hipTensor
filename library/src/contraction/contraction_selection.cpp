@@ -45,26 +45,26 @@
 
 namespace hiptensor
 {
-    hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,
-                                      std::vector<ContractionSolution*>&       candidates,
-                                      hiptensorDataType_t                      typeA,
-                                      std::vector<std::size_t> const&          a_ms_ks_lengths,
-                                      std::vector<std::size_t> const&          a_ms_ks_strides,
-                                      std::vector<int32_t> const&              a_ms_ks_modes,
-                                      hiptensorDataType_t                      typeB,
-                                      std::vector<std::size_t> const&          b_ns_ks_lengths,
-                                      std::vector<std::size_t> const&          b_ns_ks_strides,
-                                      std::vector<int32_t> const&              b_ns_ks_modes,
-                                      hiptensorDataType_t                      typeD,
-                                      std::vector<std::size_t> const&          d_ms_ns_lengths,
-                                      std::vector<std::size_t> const&          d_ms_ns_strides,
-                                      std::vector<int32_t> const&              d_ms_ns_modes,
-                                      hiptensorDataType_t                      typeE,
-                                      std::vector<std::size_t> const&          e_ms_ns_lengths,
-                                      std::vector<std::size_t> const&          e_ms_ns_strides,
-                                      std::vector<int32_t> const&              e_ms_ns_modes,
-                                      hiptensorComputeDescriptor_t             computeType,
-                                      const uint64_t                           workspaceSize)
+    hiptensorStatus_t bruteForceModel(ContractionSolution**              winner,
+                                      std::vector<ContractionSolution*>& candidates,
+                                      hiptensorDataType_t                typeA,
+                                      std::vector<std::size_t> const&    a_ms_ks_lengths,
+                                      std::vector<std::size_t> const&    a_ms_ks_strides,
+                                      std::vector<int32_t> const&        a_ms_ks_modes,
+                                      hiptensorDataType_t                typeB,
+                                      std::vector<std::size_t> const&    b_ns_ks_lengths,
+                                      std::vector<std::size_t> const&    b_ns_ks_strides,
+                                      std::vector<int32_t> const&        b_ns_ks_modes,
+                                      hiptensorDataType_t                typeD,
+                                      std::vector<std::size_t> const&    d_ms_ns_lengths,
+                                      std::vector<std::size_t> const&    d_ms_ns_strides,
+                                      std::vector<int32_t> const&        d_ms_ns_modes,
+                                      hiptensorDataType_t                typeE,
+                                      std::vector<std::size_t> const&    e_ms_ns_lengths,
+                                      std::vector<std::size_t> const&    e_ms_ns_strides,
+                                      std::vector<int32_t> const&        e_ms_ns_modes,
+                                      hiptensorComputeDescriptor_t       computeType,
+                                      const uint64_t                     workspaceSize)
     {
         // Make sure that we calculate full element space incase strides are not packed.
         auto sizeA = elementsFromLengths(a_ms_ks_lengths) * hiptensorDataTypeSize(typeA);
@@ -106,17 +106,17 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipMalloc(&wspace, workspaceSize));
 
         std::string          best_op_name;
-        ContractionSolution* bestSolution = nullptr;
-        PerfMetrics          bestMetrics  = {
-            0,
-            "",
-            0,
-            0,
-            0,
+        ContractionSolution* mBestSolution = nullptr;
+        PerfMetrics          bestMetrics   = {
+                       0,
+                       "",
+                       0,
+                       0,
+                       0,
         };
 
-        std::vector<float> sol_times(candidates.size(),1e100);
-        std::vector<int> indices(candidates.size());
+        std::vector<float> sol_times(candidates.size(), std::numeric_limits<float>::max());
+        std::vector<int>   indices(candidates.size());
         std::iota(indices.begin(), indices.end(), 0);
         int idx = 0;
         for(auto* solution : candidates)
@@ -187,8 +187,8 @@ namespace hiptensor
 
                 if(metrics > bestMetrics)
                 {
-                    bestSolution = solution;
-                    bestMetrics  = metrics;
+                    mBestSolution = solution;
+                    bestMetrics   = metrics;
                 }
 
                 sol_times[idx] = time;
@@ -203,17 +203,18 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipFree(E_d));
         CHECK_HIP_ALLOC(hipFree(wspace));
 
-        *winner = bestSolution;
+        *winner = mBestSolution;
 
         //Sort candidates based on performance (from fastest to slowest)
         std::sort(indices.begin(), indices.end(), [&](int i, int j) {
-           return sol_times[i] < sol_times[j];
+            return sol_times[i] < sol_times[j];
         });
         std::vector<ContractionSolution*> tmpCandidates = candidates;
         candidates.clear();
-        for(auto idx:indices) candidates.push_back(tmpCandidates[idx]);
+        for(auto idx : indices)
+            candidates.push_back(tmpCandidates[idx]);
 
-        if(bestSolution == nullptr)
+        if(mBestSolution == nullptr)
         {
             return HIPTENSOR_STATUS_EXECUTION_FAILED;
         }

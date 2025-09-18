@@ -36,7 +36,7 @@
 
 int main(int argc, char* argv[])
 {
-   /***************************************
+    /***************************************
    * Check device support                 *
    **************************************/
     if(!isF32Supported())
@@ -188,20 +188,23 @@ int main(int argc, char* argv[])
     /************************************************
    * load Plan Cache from disk
    ************************************************/
-    const char planCacheFileName[] = "./plan_cache.bin";
-    uint32_t numCachelines = 0;
-    hiptensorStatus_t status = hiptensorHandleReadPlanCacheFromFile(handle, planCacheFileName, &numCachelines);
-    if (status == HIPTENSOR_STATUS_IO_ERROR)
+    const char        planCacheFileName[] = "./plan_cache.bin";
+    uint32_t          numCachelines       = 0;
+    hiptensorStatus_t status
+        = hiptensorHandleReadPlanCacheFromFile(handle, planCacheFileName, &numCachelines);
+    if(status == HIPTENSOR_STATUS_IO_ERROR)
     {
-       std::cout << "File " << planCacheFileName << " doesn't seem to exist." << std::endl;
+        std::cout << "File " << planCacheFileName << " doesn't seem to exist." << std::endl;
     }
-    else if (status != HIPTENSOR_STATUS_SUCCESS)
+    else if(status != HIPTENSOR_STATUS_SUCCESS)
     {
-       std::cout << "hiptensorHandleReadPlanCacheFromFile reports error: " << hiptensorGetErrorString(status) << std::endl;
+        std::cout << "hiptensorHandleReadPlanCacheFromFile reports error: "
+                  << hiptensorGetErrorString(status) << std::endl;
     }
     else
     {
-       std::cout <<  "hiptensorHandleReadPlanCacheFromFile read " << numCachelines <<  " cachelines from file." << std::endl;
+        std::cout << "hiptensorHandleReadPlanCacheFromFile read " << numCachelines
+                  << " cachelines from file." << std::endl;
     }
 
     /**********************
@@ -276,28 +279,27 @@ int main(int argc, char* argv[])
         handle, &planPref, HIPTENSOR_ALGO_DEFAULT, HIPTENSOR_JIT_MODE_NONE));
 
     const hiptensorCacheMode_t cacheMode = HIPTENSOR_CACHE_MODE_PEDANTIC;
-    CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(
-         handle,
-         planPref,
-         HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE,
-         &cacheMode,
-         sizeof(hiptensorCacheMode_t)));
+    CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(handle,
+                                                              planPref,
+                                                              HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE,
+                                                              &cacheMode,
+                                                              sizeof(hiptensorCacheMode_t)));
 
     const hiptensorAutotuneMode_t autotuneMode = HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL;
-    CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(
-         handle,
-         planPref,
-         HIPTENSOR_PLAN_PREFERENCE_AUTOTUNE_MODE,
-         &autotuneMode ,
-         sizeof(hiptensorAutotuneMode_t)));
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorPlanPreferenceSetAttribute(handle,
+                                            planPref,
+                                            HIPTENSOR_PLAN_PREFERENCE_AUTOTUNE_MODE,
+                                            &autotuneMode,
+                                            sizeof(hiptensorAutotuneMode_t)));
 
     const uint32_t incCount = 4;
-    CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(
-         handle,
-         planPref,
-         HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT,
-         &incCount,
-         sizeof(uint32_t)));
+    CHECK_HIPTENSOR_ERROR(
+        hiptensorPlanPreferenceSetAttribute(handle,
+                                            planPref,
+                                            HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT,
+                                            &incCount,
+                                            sizeof(uint32_t)));
 
     /**********************
    * Query workspace
@@ -311,12 +313,8 @@ int main(int argc, char* argv[])
     * Optional: Set a different tag
     **********************/
     uint32_t tag = 1u;
-    CHECK_HIPTENSOR_ERROR( hiptensorOperationDescriptorSetAttribute(
-          handle,
-          desc,
-          HIPTENSOR_OPERATION_DESCRIPTOR_TAG,
-          &tag,
-          sizeof(uint32_t)));
+    CHECK_HIPTENSOR_ERROR(hiptensorOperationDescriptorSetAttribute(
+        handle, desc, HIPTENSOR_OPERATION_DESCRIPTOR_TAG, &tag, sizeof(uint32_t)));
 
     /**************************
    * Create Contraction Plan
@@ -336,7 +334,7 @@ int main(int argc, char* argv[])
 
     std::cout << "Launching contraction kernel..." << std::endl;
 
-    for(int i=0; i<incCount+1; i++) // last iteration will hit the cache
+    for(int i = 0; i < incCount + 1; i++) // last iteration will hit the cache
     {
         CHECK_HIPTENSOR_ERROR(hiptensorContract(
             handle, plan, &alpha, A_d, B_d, &beta, C_d, C_d, workspace, worksize, 0 /* stream */));
@@ -346,13 +344,14 @@ int main(int argc, char* argv[])
    * Write Plan Cache to disk
    **************************/
     status = hiptensorHandleWritePlanCacheToFile(handle, planCacheFileName);
-    if (status == HIPTENSOR_STATUS_IO_ERROR)
+    if(status == HIPTENSOR_STATUS_IO_ERROR)
     {
         std::cout << "Plan Cache couldn't be written to " << planCacheFileName << std::endl;
     }
-    else if (status != HIPTENSOR_STATUS_SUCCESS)
+    else if(status != HIPTENSOR_STATUS_SUCCESS)
     {
-        std::cout << "hiptensorHandleWritePlanCacheToFile reports error: " << hiptensorGetErrorString(status) << std::endl;
+        std::cout << "hiptensorHandleWritePlanCacheToFile reports error: "
+                  << hiptensorGetErrorString(status) << std::endl;
     }
     else
     {

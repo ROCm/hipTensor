@@ -25,10 +25,10 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
-#include "logger.hpp"
 #include "elementwise_solution.hpp"
 #include "elementwise_solution_instances.hpp"
 #include "elementwise_solution_registry.hpp"
+#include "logger.hpp"
 
 #include "hiptensor_options.hpp"
 #include "plancache_autotune.hpp"
@@ -47,7 +47,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
 
     using hiptensor::PlancacheAutotuneMgr;
     auto& autotuneMgr = PlancacheAutotuneMgr::instance();
-    autotuneMgr->startAutotune("hiptensorElementwiseBinaryExecute");
+    autotuneMgr->startAutotune(hiptensor::AutotuneOps::Autotune_BinaryOp);
 
     hiptensorOperationDescriptor_t    opDes      = plan->mOpDesc;
     const hiptensorTensorDescriptor_t descA      = opDes->mDescA;
@@ -146,15 +146,16 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
         gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
-    autotuneMgr->setAutotune<hiptensor::ElementwiseSolution>("hiptensorElementwiseBinaryExecute", handle, plan);
+    autotuneMgr->setAutotune<hiptensor::ElementwiseSolution>(
+        hiptensor::AutotuneOps::Autotune_BinaryOp, handle, plan);
 
     std::vector<hiptensor::ElementwiseSolution*> solutions;
-    if (plan->mPref->mSolution != nullptr)
-       solutions.push_back((hiptensor::ElementwiseSolution*)plan->mPref->mSolution);
+    if(plan->mPref->mSolution != nullptr)
+        solutions.push_back((hiptensor::ElementwiseSolution*)plan->mPref->mSolution);
     else
     {
         auto& instances = hiptensor::ElementwiseSolutionInstances::instance();
-        solutions = instances->query(
+        solutions       = instances->query(
             {alphaF, gammaF},
             descA->mLengths,
             {descA->mType, descC->mType},
@@ -182,7 +183,7 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
 
         if(canRun)
         {
-            float time  = 0.0f;
+            float time = 0.0f;
             // Perform elementwise binary with LOG_LEVEL_PERF_TRACE
             if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
             {
@@ -237,7 +238,8 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
             }
 
             plan->mPref->mSolution = pSolution;
-            autotuneMgr->saveAutotune<hiptensor::ElementwiseSolution>("hiptensorElementwiseBinaryExecute", time, handle, plan);
+            autotuneMgr->saveAutotune<hiptensor::ElementwiseSolution>(
+                hiptensor::AutotuneOps::Autotune_BinaryOp, time, handle, plan);
 
             return HIPTENSOR_STATUS_SUCCESS;
         }

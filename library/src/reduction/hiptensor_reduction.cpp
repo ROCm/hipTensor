@@ -162,7 +162,7 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
 
     using hiptensor::PlancacheAutotuneMgr;
     auto& autotuneMgr = PlancacheAutotuneMgr::instance();
-    autotuneMgr->startAutotune("hiptensorReduce");
+    autotuneMgr->startAutotune(hiptensor::AutotuneOps::Autotune_Redution);
 
     hiptensorOperationDescriptor_t    opDes       = plan->mOpDesc;
     const hiptensorTensorDescriptor_t descA       = opDes->mDescA;
@@ -256,11 +256,12 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
         internalTypeCompute = HIPTENSOR_COMPUTE_DESC_32F;
     }
 
-    autotuneMgr->setAutotune<hiptensor::ReductionSolution>("hiptensorReduce", handle, plan);
+    autotuneMgr->setAutotune<hiptensor::ReductionSolution>(
+        hiptensor::AutotuneOps::Autotune_Redution, handle, plan);
 
     std::vector<hiptensor::ReductionSolution*> solutions;
-    if (plan->mPref->mSolution != nullptr)
-       solutions.push_back((hiptensor::ReductionSolution*)plan->mPref->mSolution);
+    if(plan->mPref->mSolution != nullptr)
+        solutions.push_back((hiptensor::ReductionSolution*)plan->mPref->mSolution);
     else
     {
         // Query reduction solutions for the correct reduction operation and type
@@ -284,7 +285,8 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
             return errorCode;
         }
 
-        for(auto [_, pSolution] : solutionQ.solutions()) solutions.push_back(pSolution);
+        for(auto [_, pSolution] : solutionQ.solutions())
+            solutions.push_back(pSolution);
     }
 
     double alphaValue;
@@ -351,7 +353,6 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
                 int  n     = pSolution->problemDim();
                 auto flops = std::size_t(2) * n;
                 auto bytes = pSolution->problemBytes();
-                std::cout<<flops<<" "<<bytes<<std::endl;
 
                 hiptensor::PerfMetrics metrics = {
                     pSolution->uid(), // id
@@ -374,7 +375,8 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
             }
 
             plan->mPref->mSolution = pSolution;
-            autotuneMgr->saveAutotune<hiptensor::ReductionSolution>("hiptensorReduce", time, handle, plan);
+            autotuneMgr->saveAutotune<hiptensor::ReductionSolution>(
+                hiptensor::AutotuneOps::Autotune_Redution, time, handle, plan);
 
             return HIPTENSOR_STATUS_SUCCESS;
         }

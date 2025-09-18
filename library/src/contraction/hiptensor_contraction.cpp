@@ -235,7 +235,7 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
 
     using hiptensor::PlancacheAutotuneMgr;
     auto& autotuneMgr = PlancacheAutotuneMgr::instance();
-    autotuneMgr->startAutotune("hiptensorContract");
+    autotuneMgr->startAutotune(hiptensor::AutotuneOps::Autotune_Contraction);
 
     // Log API access
     char msg[512];
@@ -266,7 +266,8 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
             snprintf(betaMsg, sizeof(betaMsg), "beta=%s", std::to_string(betaValue).c_str());
         }
 
-        autotuneMgr->setAutotune<hiptensor::ContractionSolution>("hiptensorContract", handle, plan);
+        autotuneMgr->setAutotune<hiptensor::ContractionSolution>(
+            hiptensor::AutotuneOps::Autotune_Contraction, handle, plan);
     }
     else
     {
@@ -307,14 +308,14 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceId() != handle->mDevice.getDeviceId())
+    if((int)currentDevice.getDeviceId() != handle->getDevice().getDeviceId())
     {
         auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
         snprintf(msg,
                  sizeof(msg),
                  "Device mismatch error: current device id: %d, handle device id: %d (%s)",
                  (int)currentDevice.getDeviceId(),
-                 (int)handle->mDevice.getDeviceId(),
+                 (int)handle->getDevice().getDeviceId(),
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorContraction", msg);
         return errorCode;
@@ -429,7 +430,8 @@ hiptensorStatus_t hiptensorContract(const hiptensorHandle_t handle,
         logger->logError("hiptensorContraction", msg);
     }
 
-    autotuneMgr->saveAutotune<hiptensor::ContractionSolution>("hiptensorContract", time, handle, plan);
+    autotuneMgr->saveAutotune<hiptensor::ContractionSolution>(
+        hiptensor::AutotuneOps::Autotune_Contraction, time, handle, plan);
 
     return errorCode;
 }
@@ -453,14 +455,14 @@ hiptensorStatus_t contractionCreatePlanPreference(const hiptensorHandle_t   hand
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceId() != handle->mDevice.getDeviceId())
+    if((int)currentDevice.getDeviceId() != handle->getDevice().getDeviceId())
     {
         auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
         snprintf(msg,
                  sizeof(msg),
                  "Device mismatch error: current device id: %d, handle device id: %d (%s)",
                  (int)currentDevice.getDeviceId(),
-                 (int)handle->mDevice.getDeviceId(),
+                 (int)handle->getDevice().getDeviceId(),
                  hiptensorGetErrorString(errorCode));
 
         logger->logError("contractionCreatePlanPreference", msg);
@@ -531,14 +533,14 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
 
     // Ensure current HIP device is same as the handle.
     hiptensor::HipDevice currentDevice;
-    if((int)currentDevice.getDeviceId() != handle->mDevice.getDeviceId())
+    if((int)currentDevice.getDeviceId() != handle->getDevice().getDeviceId())
     {
         auto errorCode = HIPTENSOR_STATUS_ARCH_MISMATCH;
         snprintf(msg,
                  sizeof(msg),
                  "Device mismatch error: current device id: %d, handle device id: %d (%s)",
                  (int)currentDevice.getDeviceId(),
-                 (int)handle->mDevice.getDeviceId(),
+                 (int)handle->getDevice().getDeviceId(),
                  hiptensorGetErrorString(errorCode));
         logger->logError("hiptensorInitContractionPlan", msg);
         return HIPTENSOR_STATUS_ARCH_MISMATCH;
@@ -595,15 +597,18 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
 
     //First to look for solution from memory cache (Plan Cache)
     //If there is a solution in Plan Cache, set that solution and skip solution finding
-    if (handle -> planCache && pref->mCacheMode == HIPTENSOR_CACHE_MODE_PEDANTIC) {
-        auto Uid = handle -> planCache->querySolutionUid(desc);
-        if (Uid > 0ull) {
-            winner = findSolutionByUid(candidates,Uid);
-            if(winner!=nullptr) result = HIPTENSOR_STATUS_SUCCESS;
+    if(handle->getPlanCache() && pref->mCacheMode == HIPTENSOR_CACHE_MODE_PEDANTIC)
+    {
+        auto Uid = handle->getPlanCache()->querySolutionUid(desc);
+        if(Uid > 0ull)
+        {
+            winner = findSolutionByUid(candidates, Uid);
+            if(winner != nullptr)
+                result = HIPTENSOR_STATUS_SUCCESS;
         }
     }
 
-    if (result != HIPTENSOR_STATUS_SUCCESS)
+    if(result != HIPTENSOR_STATUS_SUCCESS)
     {
         if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT
            || pref->mSelectionAlgorithm == HIPTENSOR_ALGO_DEFAULT_PATIENT)
@@ -630,7 +635,8 @@ hiptensorStatus_t contractionInitPlan(const hiptensorHandle_t              handl
                                                 workspaceSizeLimit);
             //Save solutions (from fastest to slowest) for plan cache autotune
             pref->mCandidates.clear();
-            for(auto candidate:candidates) pref->mCandidates.push_back(candidate);
+            for(auto candidate : candidates)
+                pref->mCandidates.push_back(candidate);
         }
         else if(pref->mSelectionAlgorithm == HIPTENSOR_ALGO_ACTOR_CRITIC)
         {

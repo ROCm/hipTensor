@@ -27,14 +27,14 @@
 #ifndef HIPTENSOR_PLAN_CACHE_HPP
 #define HIPTENSOR_PLAN_CACHE_HPP
 
-#include <vector>
-#include <unordered_map>
 #include <chrono>
-#include <queue>
-#include <mutex>
 #include <fstream>
-#include <iostream>
 #include <functional>
+#include <iostream>
+#include <mutex>
+#include <queue>
+#include <unordered_map>
+#include <vector>
 
 #include <hiptensor/hiptensor_types.hpp>
 
@@ -43,9 +43,11 @@ namespace hiptensor
     template <typename T>
     auto findSolutionByUid(const std::vector<T*>& candidates, std::size_t Uid)
     {
-        T* solPtr=nullptr;
-        for(auto sol:candidates) {
-            if(sol->uid()==Uid) {
+        T* solPtr = nullptr;
+        for(auto sol : candidates)
+        {
+            if(sol->uid() == Uid)
+            {
                 solPtr = sol;
                 break;
             }
@@ -55,27 +57,31 @@ namespace hiptensor
 
     //Updatable priority queue
     template <typename T, typename PriorityType, typename Compare = std::less<PriorityType>>
-    class Updatable_Priority_Queue
+    class UpdatablePriorityQueue
     {
     public:
         //An element in the queue
-        struct Element {
-            T key;
+        struct Element
+        {
+            T            key;
             PriorityType priority;
-            std::size_t heap_index;
+            std::size_t  heapIndex;
         };
 
-        Updatable_Priority_Queue() = default;
+        UpdatablePriorityQueue() = default;
 
-        Updatable_Priority_Queue(const Updatable_Priority_Queue& other)
-           : heap_data(other.heap_data), mp_key_to_element(other.mp_key_to_element) {}
+        UpdatablePriorityQueue(const UpdatablePriorityQueue& other)
+            : mHeapData(other.mHeapData)
+            , mKeyToElement(other.mKeyToElement)
+        {
+        }
 
-        Updatable_Priority_Queue& operator=(const Updatable_Priority_Queue& other)
+        UpdatablePriorityQueue& operator=(const UpdatablePriorityQueue& other)
         {
             if(this != &other)
             {
-                heap_data = other.heap_data;
-                mp_key_to_element = other.mp_key_to_element;
+                mHeapData     = other.mHeapData;
+                mKeyToElement = other.mKeyToElement;
             }
             return (*this);
         }
@@ -83,30 +89,30 @@ namespace hiptensor
         //Insert a new element
         void push(const T& key, const PriorityType& priority)
         {
-            Element *item = new Element{key, priority, heap_data.size()};
-            heap_data.push_back(item);
-            mp_key_to_element[key] = heap_data.back();
-            sift_up(heap_data.size() - 1);
+            Element* item = new Element{key, priority, mHeapData.size()};
+            mHeapData.push_back(item);
+            mKeyToElement[key] = mHeapData.back();
+            siftUp(mHeapData.size() - 1);
         }
 
         //Update the priority of an existing element
-        bool update_item(const T& key, const PriorityType& new_priority)
+        bool updateItem(const T& key, const PriorityType& new_priority)
         {
             bool retVal = false;
-            auto it = mp_key_to_element.find(key);
-            if(it != mp_key_to_element.end())
+            auto it     = mKeyToElement.find(key);
+            if(it != mKeyToElement.end())
             {
-                Element *elem = it->second;
+                Element*     elem         = it->second;
                 PriorityType old_priority = elem->priority;
-                elem->priority = new_priority;
+                elem->priority            = new_priority;
 
                 if(compare(new_priority, old_priority))
                 {
-                    sift_up(elem->heap_index);
+                    siftUp(elem->heapIndex);
                 }
                 else
                 {
-                    sift_down(elem->heap_index);
+                    siftDown(elem->heapIndex);
                 }
 
                 retVal = true;
@@ -115,78 +121,88 @@ namespace hiptensor
             return retVal;
         }
 
-        const T& top_key() const
+        const T& topKey() const
         {
-            return heap_data[0]->key;
+            return mHeapData[0]->key;
         }
 
         const std::pair<T, PriorityType> top() const
         {
-            return {heap_data[0]->key, heap_data[0]->priority};
+            return {mHeapData[0]->key, mHeapData[0]->priority};
         }
 
         //Remove the top element
         void pop()
         {
-            if(empty()) return;
-            mp_key_to_element.erase(heap_data[0]->key);
-            std::swap(heap_data[0], heap_data.back());
-            heap_data[0]->heap_index = 0;
-            delete heap_data.back();
-            heap_data.pop_back();
+            if(empty())
+                return;
+            mKeyToElement.erase(mHeapData[0]->key);
+            std::swap(mHeapData[0], mHeapData.back());
+            mHeapData[0]->heapIndex = 0;
+            delete mHeapData.back();
+            mHeapData.pop_back();
             if(!empty())
             {
-                sift_down(0);
+                siftDown(0);
             }
         }
 
-        bool empty() const {
-            return heap_data.empty();
-        }
-
-        std::size_t size() const {
-            return heap_data.size();
-        }
-
-        ~Updatable_Priority_Queue()
+        bool empty() const
         {
-            for(auto elem:heap_data) delete elem;
-            heap_data.clear();
+            return mHeapData.empty();
+        }
+
+        std::size_t size() const
+        {
+            return mHeapData.size();
+        }
+
+        ~UpdatablePriorityQueue()
+        {
+            for(auto elem : mHeapData)
+                delete elem;
+            mHeapData.clear();
         }
 
     private:
-        std::vector<Element*> heap_data;
-        std::unordered_map<T,Element*> mp_key_to_element;
-        Compare compare;
+        std::vector<Element*>           mHeapData;
+        std::unordered_map<T, Element*> mKeyToElement;
+        Compare                         compare;
 
-        void sift_up(std::size_t index)
+        void siftUp(std::size_t index)
         {
-            if(index < 1) return;
+            if(index < 1)
+                return;
 
             std::size_t parent_index = (index - 1) / 2;
-            if(compare(heap_data[index]->priority, heap_data[parent_index]->priority))
+            if(compare(mHeapData[index]->priority, mHeapData[parent_index]->priority))
             {
-                std::swap(heap_data[index], heap_data[parent_index]);
-                heap_data[index]->heap_index = index;
-                heap_data[parent_index]->heap_index = parent_index;
-                sift_up(parent_index);
+                std::swap(mHeapData[index], mHeapData[parent_index]);
+                mHeapData[index]->heapIndex        = index;
+                mHeapData[parent_index]->heapIndex = parent_index;
+                siftUp(parent_index);
             }
         }
 
-        void sift_down(std::size_t index)
+        void siftDown(std::size_t index)
         {
-            std::size_t left_child = 2*index + 1;
-            std::size_t right_child = 2*index + 2;
-            std::size_t largest = index;
+            std::size_t left_child  = 2 * index + 1;
+            std::size_t right_child = 2 * index + 2;
+            std::size_t largest     = index;
 
-            if(left_child < heap_data.size() && compare(heap_data[left_child]->priority, heap_data[largest]->priority)) largest = left_child;
-            if(right_child < heap_data.size() && compare(heap_data[right_child]->priority, heap_data[largest]->priority)) largest = right_child;
+            if(left_child < mHeapData.size()
+               && compare(mHeapData[left_child]->priority, mHeapData[largest]->priority))
+                largest = left_child;
+            if(right_child < mHeapData.size()
+               && compare(mHeapData[right_child]->priority, mHeapData[largest]->priority))
+                largest = right_child;
 
-            if(largest != index) {
-                std::swap(heap_data[largest], heap_data[index]);
-                heap_data[largest]->heap_index = largest;
-                heap_data[index]->heap_index = index;
-                sift_down(largest);
+            if(largest != index)
+            {
+                std::swap(mHeapData[largest], mHeapData[index]);
+                mHeapData[largest]->heapIndex = largest;
+                mHeapData[index]->heapIndex   = index;
+                siftDown(largest);
             }
         }
     };
@@ -194,10 +210,9 @@ namespace hiptensor
     class PlanCache
     {
     public:
-        using HashId = std::size_t;
-        using Uid = std::size_t;
+        using HashId     = std::size_t;
+        using Uid        = std::size_t;
         using time_point = std::chrono::system_clock::time_point;
-        using Uid_Pair = std::pair<time_point,HashId>;
 
         PlanCache();
         ~PlanCache() = default;
@@ -211,38 +226,40 @@ namespace hiptensor
 
         //Add a cache record to the solution table
         //If the table size exceeds the maximum size, then remove one LRU(least-recently-used) record
-        void addCacheLine(HashId hash_id, Uid sol_id);
+        void addCacheLine(HashId hashId, Uid sol_id);
 
         //Function for serialization to disk
-        hiptensorStatus_t writeFile(const char filename[]);
+        hiptensorStatus_t writeFile(const char fileName[]);
 
         //Function for deserialization from disk
-        hiptensorStatus_t readFile(const char filename[]);
+        hiptensorStatus_t readFile(const char fileName[]);
 
-        uint32_t getCachelinesNum() {return mPlanCacheLines.size();}
+        uint32_t getCachelinesNum()
+        {
+            return mPlanCacheLines.size();
+        }
 
-       //Resize Plan Cache
-       void Resize(uint32_t numEntries);
+        //Resize Plan Cache
+        void resize(uint32_t numEntries);
 
     private:
         //Max size of the hash table
-        uint32_t max_cachelines;
+        uint32_t mMaxCachelines;
 
         //Hash table to store solution uid for lookup by hash key
-        std::unordered_map<HashId,Uid> mPlanCacheLines;
+        std::unordered_map<HashId, Uid> mPlanCacheLines;
 
         //Heap to sort the solution uid by used time
-        Updatable_Priority_Queue<HashId, time_point> pq_UidUsedTimes;
+        UpdatablePriorityQueue<HashId, time_point> mPqUidUsedTimes;
 
         //Mutex to implement the plan cache in a thread-safe manner
         mutable std::mutex mMutex;
 
         //Get solution id through hash key
-        Uid getSolutionID(HashId hash_id);
+        Uid getSolutionID(HashId hashId);
 
         //Update cache line used time
-        void updateCachelineTime(HashId hash_id);
-
+        void updateCachelineTime(HashId hashId);
     };
 
 } // namespace hiptensor
