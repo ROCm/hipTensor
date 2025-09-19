@@ -61,7 +61,6 @@ namespace hiptensor
 
         // M, N, U, V, H, K
         using ProblemDims = std::vector<std::vector<std::size_t>>;
-        ;
 
         // MatrixA, MatrixB, MatrixC, MatrixD (# of elements)
         using MatrixElements = std::tuple<int64_t, int64_t, int64_t, int64_t>;

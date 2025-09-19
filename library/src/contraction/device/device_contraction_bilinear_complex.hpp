@@ -687,20 +687,20 @@ namespace ck
                     auto str = std::stringstream();
 
                     // clang-format off
-        str << "DeviceContractionMultipleD_Xdl_CShuffle"
-            << "<"
-            << NumDimM << ", "
-            << NumDimN << ", "
-            << NumDimK << ", "
-            << BlockSize << ", "
-            << MPerBlock << ", "
-            << NPerBlock << ", "
-            << KPerBlock << ", "
-            << AK1 << ", "
-            << BK1 << ", "
-            << ABlockTransferSrcVectorDim << ", "
-            << BBlockTransferSrcVectorDim
-            << ">";
+                    str << "DeviceContractionMultipleD_Xdl_CShuffle"
+                        << "<"
+                        << NumDimM << ", "
+                        << NumDimN << ", "
+                        << NumDimK << ", "
+                        << BlockSize << ", "
+                        << MPerBlock << ", "
+                        << NPerBlock << ", "
+                        << KPerBlock << ", "
+                        << AK1 << ", "
+                        << BK1 << ", "
+                        << ABlockTransferSrcVectorDim << ", "
+                        << BBlockTransferSrcVectorDim
+                        << ">";
                     // clang-format on
 
                     return str.str();
