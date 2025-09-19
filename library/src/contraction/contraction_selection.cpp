@@ -106,13 +106,13 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipMalloc(&wspace, workspaceSize));
 
         std::string          best_op_name;
-        ContractionSolution* mBestSolution = nullptr;
-        PerfMetrics          bestMetrics   = {
-                       0,
-                       "",
-                       0,
-                       0,
-                       0,
+        ContractionSolution* bestSolution = nullptr;
+        PerfMetrics          bestMetrics  = {
+                      0,
+                      "",
+                      0,
+                      0,
+                      0,
         };
 
         std::vector<float> sol_times(candidates.size(), std::numeric_limits<float>::max());
@@ -187,8 +187,8 @@ namespace hiptensor
 
                 if(metrics > bestMetrics)
                 {
-                    mBestSolution = solution;
-                    bestMetrics   = metrics;
+                    bestSolution = solution;
+                    bestMetrics  = metrics;
                 }
 
                 sol_times[idx] = time;
@@ -203,7 +203,7 @@ namespace hiptensor
         CHECK_HIP_ALLOC(hipFree(E_d));
         CHECK_HIP_ALLOC(hipFree(wspace));
 
-        *winner = mBestSolution;
+        *winner = bestSolution;
 
         //Sort candidates based on performance (from fastest to slowest)
         std::sort(indices.begin(), indices.end(), [&](int i, int j) {
@@ -214,7 +214,7 @@ namespace hiptensor
         for(auto idx : indices)
             candidates.push_back(tmpCandidates[idx]);
 
-        if(mBestSolution == nullptr)
+        if(bestSolution == nullptr)
         {
             return HIPTENSOR_STATUS_EXECUTION_FAILED;
         }
