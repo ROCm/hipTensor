@@ -36,6 +36,7 @@
 #include "reduction_solution_registry.hpp"
 
 #include "hiptensor_options.hpp"
+#include "plancache_autotune.hpp"
 
 using namespace ck;
 using namespace ck::tensor_operation::device;
@@ -159,6 +160,10 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
     using hiptensor::Logger;
     auto& logger = Logger::instance();
 
+    using hiptensor::PlancacheAutotuneMgr;
+    auto& autotuneMgr = PlancacheAutotuneMgr::instance();
+    autotuneMgr->startAutotune(hiptensor::AutotuneOps::Autotune_Redution);
+
     hiptensorOperationDescriptor_t    opDes       = plan->mOpDesc;
     const hiptensorTensorDescriptor_t descA       = opDes->mDescA;
     const int32_t*                    modeA       = opDes->mModeA.data();
@@ -251,25 +256,37 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
         internalTypeCompute = HIPTENSOR_COMPUTE_DESC_32F;
     }
 
-    // Query reduction solutions for the correct reduction operation and type
-    auto solutionQ = instances->querySolutions(ADataType,
-                                               internalTypeCompute,
-                                               DDataType,
-                                               rankA,
-                                               numReduceDim,
-                                               opReduce,
-                                               true, // @TODO hardcode
-                                               false); // @TODO hardcode
+    autotuneMgr->setAutotune<hiptensor::ReductionSolution>(
+        hiptensor::AutotuneOps::Autotune_Redution, handle, plan);
 
-    if(solutionQ.solutionCount() == 0)
+    std::vector<hiptensor::ReductionSolution*> solutions;
+    if(plan->mPref->mSolution != nullptr)
+        solutions.push_back((hiptensor::ReductionSolution*)plan->mPref->mSolution);
+    else
     {
-        auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
-        snprintf(msg,
-                 sizeof(msg),
-                 "Internal Error : querySolutions returns 0 kernel. (%s)",
-                 hiptensorGetErrorString(errorCode));
-        logger->logError("hiptensorReduce", msg);
-        return errorCode;
+        // Query reduction solutions for the correct reduction operation and type
+        auto solutionQ = instances->querySolutions(ADataType,
+                                                   internalTypeCompute,
+                                                   DDataType,
+                                                   rankA,
+                                                   numReduceDim,
+                                                   opReduce,
+                                                   true, // @TODO hardcode
+                                                   false); // @TODO hardcode
+
+        if(solutionQ.solutionCount() == 0)
+        {
+            auto errorCode = HIPTENSOR_STATUS_INTERNAL_ERROR;
+            snprintf(msg,
+                     sizeof(msg),
+                     "Internal Error : querySolutions returns 0 kernel. (%s)",
+                     hiptensorGetErrorString(errorCode));
+            logger->logError("hiptensorReduce", msg);
+            return errorCode;
+        }
+
+        for(auto [_, pSolution] : solutionQ.solutions())
+            solutions.push_back(pSolution);
     }
 
     double alphaValue;
@@ -294,7 +311,7 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
                                   hipMemcpyDeviceToDevice));
     }
 
-    for(auto [_, pSolution] : solutionQ.solutions())
+    for(auto pSolution : solutions)
     {
         using hiptensor::HiptensorOptions;
         auto& options = HiptensorOptions::instance();
@@ -356,6 +373,10 @@ hiptensorStatus_t hiptensorReduce(const hiptensorHandle_t handle,
                          metrics.mBandwidth);
                 logger->logPerformanceTrace("hiptensorReduce", msg);
             }
+
+            plan->mPref->mSolution = pSolution;
+            autotuneMgr->saveAutotune<hiptensor::ReductionSolution>(
+                hiptensor::AutotuneOps::Autotune_Redution, time, handle, plan);
 
             return HIPTENSOR_STATUS_SUCCESS;
         }

@@ -38,6 +38,9 @@
 
 #include <hiptensor/hiptensor_types.hpp>
 
+#include "hip_device.hpp"
+#include "plan_cache.hpp"
+
 typedef enum hiptensorOperationType_t
 {
     HIPTENSOR_CONTRACTION         = 0,
@@ -47,15 +50,9 @@ typedef enum hiptensorOperationType_t
     HIPTENSOR_REDUCTION           = 4,
 } hiptensorOperationType_t;
 
-//! @brief hipTensor's library context
-struct hiptensorHandle
-{
-    int64_t fields[512];
-};
-
 struct hiptensorOperationDescriptor
 {
-    int32_t             mTag;
+    uint32_t             mTag;
     hiptensorDataType_t mScalarType;
     float               mFlops;
     float               mMovedBytes;
@@ -86,6 +83,17 @@ struct hiptensorOperationDescriptor
     hiptensorComputeDescriptor_t mDescCompute;
 };
 
+//! @brief hipTensor's library context
+struct hiptensorHandle
+{
+    hiptensor::HipDevice   getDevice() { return mDevice;}
+    hiptensor::PlanCache*  getPlanCache() { return planCache; }
+    void setPlanCache(hiptensor::PlanCache* pt_PlanCache) { planCache = pt_PlanCache; }
+private:
+    hiptensor::HipDevice mDevice;
+    hiptensor::PlanCache* planCache = nullptr;
+};
+
 struct hiptensorPlan
 {
     uint64_t                       mRequiredWorkspace;
@@ -98,7 +106,7 @@ struct hiptensorPlanPreference
     hiptensorAutotuneMode_t mAutotuneMode;
     hiptensorCacheMode_t    mCacheMode;
     int32_t                 mIncrementalCount;
-    int32_t                 mKernelrank;
+    int32_t                 mKernelRank;
     hiptensorJitMode_t      mJit;
 
     hiptensorAlgo_t mSelectionAlgorithm;

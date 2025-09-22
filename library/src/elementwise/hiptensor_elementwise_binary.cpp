@@ -25,12 +25,13 @@
  *******************************************************************************/
 #include <hiptensor/hiptensor.hpp>
 
-#include "logger.hpp"
 #include "elementwise_solution.hpp"
 #include "elementwise_solution_instances.hpp"
 #include "elementwise_solution_registry.hpp"
+#include "logger.hpp"
 
 #include "hiptensor_options.hpp"
+#include "plancache_autotune.hpp"
 
 hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t handle,
                                                     const hiptensorPlan_t   plan,
@@ -43,6 +44,10 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
 {
     using hiptensor::Logger;
     auto& logger = Logger::instance();
+
+    using hiptensor::PlancacheAutotuneMgr;
+    auto& autotuneMgr = PlancacheAutotuneMgr::instance();
+    autotuneMgr->startAutotune(hiptensor::AutotuneOps::Autotune_BinaryOp);
 
     hiptensorOperationDescriptor_t    opDes      = plan->mOpDesc;
     const hiptensorTensorDescriptor_t descA      = opDes->mDescA;
@@ -141,16 +146,25 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
         gammaF = hiptensor::readVal<float>(gamma, hiptensor::convertToComputeType(typeScalar));
     }
 
-    auto& instances = hiptensor::ElementwiseSolutionInstances::instance();
-    auto  solutions = instances->query(
-        {alphaF, gammaF},
-        descA->mLengths,
-        {descA->mType, descC->mType},
-        {descD->mType},
-        {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
-        {{modeD, modeD + descD->mLengths.size()}},
-        {opAC, opA, opC},
-        hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
+    autotuneMgr->setAutotune<hiptensor::ElementwiseSolution>(
+        hiptensor::AutotuneOps::Autotune_BinaryOp, handle, plan);
+
+    std::vector<hiptensor::ElementwiseSolution*> solutions;
+    if(plan->mPref->mSolution != nullptr)
+        solutions.push_back((hiptensor::ElementwiseSolution*)plan->mPref->mSolution);
+    else
+    {
+        auto& instances = hiptensor::ElementwiseSolutionInstances::instance();
+        solutions       = instances->query(
+            {alphaF, gammaF},
+            descA->mLengths,
+            {descA->mType, descC->mType},
+            {descD->mType},
+            {{modeA, modeA + descA->mLengths.size()}, {modeC, modeC + descC->mLengths.size()}},
+            {{modeD, modeD + descD->mLengths.size()}},
+            {opAC, opA, opC},
+            hiptensor::ElementwiseExecutionSpaceType_t::DEVICE);
+    }
 
     bool canRun = false;
     for(auto pSolution : solutions)
@@ -169,13 +183,14 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
 
         if(canRun)
         {
-            // Perform elementwise binary with timing if LOG_LEVEL_PERF_TRACE
+            float time = 0.0f;
+            // Perform elementwise binary with LOG_LEVEL_PERF_TRACE
             if(logger->getLogMask() & HIPTENSOR_LOG_LEVEL_PERF_TRACE)
             {
                 using hiptensor::HiptensorOptions;
                 auto& options = HiptensorOptions::instance();
 
-                auto time = (*pSolution)(StreamConfig{
+                time = (*pSolution)(StreamConfig{
                     stream, // stream id
                     true, // time_kernel
                     0, // log_level
@@ -215,11 +230,16 @@ hiptensorStatus_t hiptensorElementwiseBinaryExecute(const hiptensorHandle_t hand
             // Perform elementwise binary without timing
             else
             {
-                if((*pSolution)(StreamConfig{stream, false}) < 0)
+                time = (*pSolution)(StreamConfig{stream, false});
+                if(time < 0)
                 {
                     return HIPTENSOR_STATUS_CK_ERROR;
                 }
             }
+
+            plan->mPref->mSolution = pSolution;
+            autotuneMgr->saveAutotune<hiptensor::ElementwiseSolution>(
+                hiptensor::AutotuneOps::Autotune_BinaryOp, time, handle, plan);
 
             return HIPTENSOR_STATUS_SUCCESS;
         }

@@ -332,6 +332,17 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(
                 hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
+            /**************************
+            * Disable Plan Cache for tests
+            ***************************/
+            const hiptensorCacheMode_t cacheMode = HIPTENSOR_CACHE_MODE_NONE;
+            CHECK_HIPTENSOR_ERROR(hiptensorPlanPreferenceSetAttribute(
+                 handle,
+                 planPref,
+                 HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE,
+                 &cacheMode,
+                 sizeof(hiptensorCacheMode_t)));
+
             hiptensorPlan_t plan;
             CHECK_HIPTENSOR_ERROR(
                 hiptensorCreatePlan(handle, &plan, desc, planPref, 0 /* workspaceSizeLimit */));

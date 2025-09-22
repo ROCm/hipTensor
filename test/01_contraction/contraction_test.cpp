@@ -727,6 +727,8 @@ namespace hiptensor
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
 
+        ContractionTest::sAPILogBuff.str("");
+
         if(mRunFlag)
         {
             auto ADataType = dataTypes[0];
@@ -748,6 +750,20 @@ namespace hiptensor
             ScalarData betaBuf;
             writeVal(&alphaBuf, computeType, ScalarData(computeType, alpha[0], alpha[1]));
             writeVal(&betaBuf, computeType, ScalarData(computeType, beta[0], beta[1]));
+
+            /**************************
+            * Disable Plan Cache for tests
+            ***************************/
+            if(!mEnablePlanCache)
+            {
+                const hiptensorCacheMode_t cacheMode = HIPTENSOR_CACHE_MODE_NONE;
+                CHECK_HIPTENSOR_ERROR(
+                    hiptensorPlanPreferenceSetAttribute(handle,
+                                                        planPref,
+                                                        HIPTENSOR_PLAN_PREFERENCE_CACHE_MODE,
+                                                        &cacheMode,
+                                                        sizeof(hiptensorCacheMode_t)));
+            }
 
             CHECK_HIPTENSOR_ERROR(hiptensorCreatePlan(handle, &plan, desc, planPref, worksize));
 
@@ -925,7 +941,6 @@ namespace hiptensor
 
             if(!loggingOptions->omitCout())
             {
-                std::cout << ContractionTest::sAPILogBuff.str();
                 reportResults(std::cout,
                               DDataType,
                               computeType,
@@ -933,6 +948,7 @@ namespace hiptensor
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
+                std::cout << ContractionTest::sAPILogBuff.str();
             }
 
             if(loggingOptions->logOstream().isOpen())

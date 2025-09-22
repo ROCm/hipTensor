@@ -68,10 +68,10 @@ int main()
     int32_t              nmodeC = modeC.size();
 
     std::unordered_map<int32_t, int64_t> extent;
-    extent['m'] = 3;
-    extent['v'] = 4;
-    extent['h'] = 5;
-    extent['k'] = 6;
+    extent['m'] = 32;
+    extent['v'] = 46;
+    extent['h'] = 58;
+    extent['k'] = 64;
 
     std::vector<int64_t> extentC;
     for(auto mode : modeC)
@@ -120,7 +120,7 @@ int main()
 
     /*************************
      * hipTensor
-     *************************/ 
+     *************************/
 
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
@@ -151,7 +151,7 @@ int main()
                           descC, modeC.data(), HIPTENSOR_OP_IDENTITY,
                           descC, modeC.data(),
                           opReduce, descCompute));
-         
+
     /**************************
     * Set the algorithm to use
     ***************************/
@@ -203,7 +203,7 @@ int main()
 
     CHECK_HIPTENSOR_ERROR(hiptensorReduce(handle, plan,
             (const void*)&alpha, A_d,
-            (const void*)&beta,  C_d, 
+            (const void*)&beta,  C_d,
                                  C_d, work, worksize, 0));
 
 #if !NDEBUG

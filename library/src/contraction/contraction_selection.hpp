@@ -36,7 +36,7 @@ namespace hiptensor
     struct PerfMetrics;
 
     hiptensorStatus_t bruteForceModel(ContractionSolution**                    winner,
-                                      std::vector<ContractionSolution*> const& candidates,
+                                      std::vector<ContractionSolution*>&       candidates,
                                       hiptensorDataType_t                      typeA,
                                       std::vector<std::size_t> const&          a_ms_ks_lengths,
                                       std::vector<std::size_t> const&          a_ms_ks_strides,

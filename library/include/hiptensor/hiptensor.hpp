@@ -50,32 +50,32 @@ hiptensorStatus_t hiptensorHandleResizePlanCache(hiptensorHandle_t handle,
 
 //! @brief Writes the plan cache of a hipTensor handle to a file.
 //! @param[in] handle The hipTensor handle whose plan cache will be written.
-//! @param[in] filename The name of the file to write the cache to.
+//! @param[in] fileName The name of the file to write the cache to.
 //! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
 hiptensorStatus_t hiptensorHandleWritePlanCacheToFile(const hiptensorHandle_t handle,
-                                                      const char              filename[]);
+                                                      const char              fileName[]);
 
 //! @brief Reads a plan cache from a file into a hipTensor handle.
 //! @param[in] handle The hipTensor handle to populate with the plan cache.
-//! @param[in] filename The name of the file to read the cache from.
+//! @param[in] fileName The name of the file to read the cache from.
 //! @param[out] numCachelinesRead On exit, this variable will hold the number of successfully-read cachelines.
 //! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
 hiptensorStatus_t hiptensorHandleReadPlanCacheFromFile(hiptensorHandle_t handle,
-                                                       const char        filename[],
+                                                       const char        fileName[],
                                                        uint32_t*         numCachelinesRead);
 
 //! @brief Writes the kernel cache of a hipTensor handle to a file.
 //! @param[in] handle The hipTensor handle whose kernel cache will be written.
-//! @param[in] filename The name of the file to write the cache to.
+//! @param[in] fileName The name of the file to write the cache to.
 //! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
 hiptensorStatus_t hiptensorWriteKernelCacheToFile(const hiptensorHandle_t handle,
-                                                  const char              filename[]);
+                                                  const char              fileName[]);
 
 //! @brief Reads a kernel cache from a file into a hipTensor handle.
 //! @param[in] handle The hipTensor handle to populate with the kernel cache.
-//! @param[in] filename The name of the file to read the cache from.
+//! @param[in] fileName The name of the file to read the cache from.
 //! @returns `HIPTENSOR_STATUS_SUCCESS` on success, or an error code otherwise.
-hiptensorStatus_t hiptensorReadKernelCacheFromFile(hiptensorHandle_t handle, const char filename[]);
+hiptensorStatus_t hiptensorReadKernelCacheFromFile(hiptensorHandle_t handle, const char fileName[]);
 
 //! @brief Creates and initializes a tensor descriptor.
 //! @details This function allocates an instance of `hiptensorTensorDescriptor_t`. Call `hiptensorDestroyTensorDescriptor()` to free this instance.

@@ -248,7 +248,7 @@ TEST(hiptensorInitContractionFindTest, UtilTest)
     output = hiptensorInitContractionFind(handle, &find, algo);
     EXPECT_EQ(
         output,
-        HIPTENSOR_STATUS_ARCH_MISMATCH); // fail for currentDevice.getDeviceId() != realHandle->getDevice().getDeviceId()
+        HIPTENSOR_STATUS_ARCH_MISMATCH); // fail for currentDevice.getDeviceId() != handle->mDevice.getDeviceId()
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 
     hiptensorHandle_t handlePtr;
@@ -312,6 +312,6 @@ TEST(hiptensorContractionTest, UtilTest)
         handle, &plan, &alpha, A, B, &beta, C, D, workspace, workspaceSize, 0);
     EXPECT_EQ(
         output,
-        HIPTENSOR_STATUS_ARCH_MISMATCH); // fail for realHandle->getDevice().getDeviceId() == -1
+        HIPTENSOR_STATUS_ARCH_MISMATCH); // fail for handle->mDevice.getDeviceId() == -1
     CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
 }

@@ -137,3 +137,9 @@ set (ContractionModeTestSources ${ContractionCommonSources}
 ${CMAKE_CURRENT_SOURCE_DIR}/contraction_mode_test.cpp)
 set (ContractionModeTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/mode_test_params.yaml)
 add_hiptensor_test(contraction_mode_test ${ContractionModeTestConfig}  ${ContractionModeTestSources})
+
+# Plan Cache tests
+set (PlanCacheTestSources ${ContractionCommonSources}
+${CMAKE_CURRENT_SOURCE_DIR}/plan_cache_contraction_test.cpp)
+set (PlanCacheTestConfig  ${CMAKE_CURRENT_SOURCE_DIR}/configs/plan_cache_test_params.yaml)
+add_hiptensor_test(plan_cache_test ${PlanCacheTestConfig}  ${PlanCacheTestSources})
