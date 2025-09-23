@@ -174,6 +174,17 @@ hiptensorLoggerCallback_t
 
 .. doxygentypedef::  hiptensorLoggerCallback_t
 
+hiptensorHandle_t
+-----------------
+
+.. doxygenstruct::  hiptensorHandle
+
+hiptensorPlan_t
+-----------------
+
+.. doxygenstruct::  hiptensorPlan
+
+
 hiptensorTensorDescriptor
 ---------------------------------------
 
