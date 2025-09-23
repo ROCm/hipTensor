@@ -39,7 +39,7 @@ To enable the plan cache, set HIPTENSOR_DISABLE_PLAN_CACHE to OFF.
 Incremental Autotuning
 ------------------------------------
 Incremental autotuning is a feature that allows hipTensor to intelligently search for the most efficient implementation of a tensor operation without introducing measurable overhead.
-When enabled (``HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL``), repeated executions of the same operation (even with different memory addresses) are tried with multiple backend kernels. Each candidate is benchmarked automatically, and the fastest one is stored in the plan cache for subsequent use.
+When enabled (``HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL``), repeated executions of the same operation (even with different memory addresses) are tried with multiple backend kernels. Each candidate is measured automatically, and the fastest one is stored in the plan cache for subsequent use.
 You can control the number of candidates explored using ``HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT``. For best results, it's recommended to warm up the GPU before autotuning to reduce performance variability.
 
 *****************************
@@ -86,12 +86,12 @@ You can selectively disable caching for certain operations via the plan preferen
                                                      &cacheMode,
                                                      sizeof(hiptensorCacheMode_t)));
 
-Plan cache lookups occur during plan creation. Disabling the cache for frequent, identical contractions may lead to performance penalties.
+Plan cache lookup occur during plan creation. Disabling the cache for frequent, identical contractions may lead to performance penalties.
 
 ***********************************
 3. Enabling Incremental Autotuning
 ***********************************
-To enable Autotuning, we need to use API hiptensorPlanPreferenceSetAttribute as follows:
+To enable Autotuning, we need to use API `hiptensorPlanPreferenceSetAttribute <../api-reference/api-reference.html#hiptensorplanpreferencesetattribute>`_ as follows:
 ::
 
     const hiptensorAutotuneMode_t autotuneMode = HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL;
