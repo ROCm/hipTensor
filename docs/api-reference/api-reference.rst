@@ -26,6 +26,7 @@ List of supported CDNA architectures:
 
     gfx942+ = gfx942, gfx950
 
+.. _hiptensor-supported-data-types:
 
 Supported data types
 --------------------
