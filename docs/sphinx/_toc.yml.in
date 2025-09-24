@@ -17,7 +17,7 @@ subtrees:
   - file: conceptual/programmers-guide
     title: Programming guide
   - file: conceptual/plan-cache
-    title: Plan Cache
+    title: Plan cache
 
 - caption: How to
   entries:

@@ -239,7 +239,7 @@ Executable name                                                    Description
 ``simple_elementwise_binary``                                      A simple element-wise binary operation using single-precision floating point input and output types
 ``simple_elementwise_trinary``                                     A simple element-wise trinary operation using single-precision floating point input and output types
 ``simple_reduction``                                               A simple reduction using single-precision floating point input and output types
-``simple_contraction_plan_cache``                                  A simple bilinear contraction operation that demonstrating plan cache usages
+``simple_contraction_plan_cache``                                  A simple bilinear contraction operation demonstrating plan cache usages
 ================================================================== =======================================================================================================================================================================
 
 Building the library and tests

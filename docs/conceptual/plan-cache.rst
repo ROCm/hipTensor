@@ -5,65 +5,65 @@
 .. _Plan Cache:
 
 =============================
-Plan Cache
+Plan cache
 =============================
 
 Creating a plan for specific operations can be time-consuming, as it requires invoking performance models to determine the optimal solution. Therefore, it is advantageous to store the plan in memory cache for reuse in subsequent executions. The hipTensor library includes a software-managed plan cache designed to boost performance by reusing optimized execution plans across repeated tensor operations. This section explores its features and demonstrates how to use and customize the cache effectively.
 
 --------------------------------
-Key Features
+Key features
 --------------------------------
 
-- Reduced Launch Overhead: Reuses plans to minimize time spent on kernel selection and setup.
-- Autotuning (Incremental Autotuning): Automatically benchmarks multiple kernel candidates to select the best-performing one.
-- Thread-Safe Design: The cache is safe for concurrent use and is shared across all threads operating under a single `hiptensorHandle_t  <../api-reference/api-reference.html#hiptensorHandle>`_.
-- Persistence Support: The cache state can be saved to disk and reloaded in future runs, avoiding repeated tuning.
+- **Reduced Launch Overhead:** Reuses plans to minimize time spent on kernel selection and setup.
+- **Autotuning (Incremental Autotuning):** Automatically benchmarks multiple kernel candidates to select the best-performing one.
+- **Thread-Safe Design:** The cache is safe for concurrent use and is shared across all threads operating under a single `hiptensorHandle_t  <../api-reference/api-reference.html#hiptensorHandle>`_.
+- **Persistence Support:** The cache state can be saved to disk and reloaded in future runs, avoiding repeated tuning.
 At its core, the plan cache maps a specific problem configuration (represented by `hiptensorOperationDescriptor_t <../api-reference/api-reference.html#hiptensorOperationDescriptor>`_) to an optimized execution plan (`hiptensorPlan_t <../api-reference/api-reference.html#hiptensorPlan>`_).
 
 ------------------------------------
-Default Environment Setting
+Default environment setting
 ------------------------------------
 
-The plan cache is enabled by default. It can be disabled by setting the HIPTENSOR_DISABLE_PLAN_CACHE environment variable.
-To disable the plan cache, set HIPTENSOR_DISABLE_PLAN_CACHE to ON.
+The plan cache is enabled by default. It can be disabled by setting the ``HIPTENSOR_DISABLE_PLAN_CACHE`` environment variable.
+To disable the plan cache, set ``HIPTENSOR_DISABLE_PLAN_CACHE`` to ``ON``.
 ::
 
    export HIPTENSOR_DISABLE_PLAN_CACHE = ON
 
-To enable the plan cache, set HIPTENSOR_DISABLE_PLAN_CACHE to OFF.
+To enable the plan cache, set ``HIPTENSOR_DISABLE_PLAN_CACHE`` to ``OFF``.
 ::
 
    export HIPTENSOR_DISABLE_PLAN_CACHE = OFF
 
 ------------------------------------
-Incremental Autotuning
+Incremental autotuning
 ------------------------------------
 Incremental autotuning is a feature that allows hipTensor to intelligently search for the most efficient implementation of a tensor operation without introducing measurable overhead.
-When enabled (``HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL``), repeated executions of the same operation (even with different memory addresses) are tried with multiple backend kernels. Each candidate is measured automatically, and the fastest one is stored in the plan cache for subsequent use.
+When ``HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL`` is enabled, repeated executions of the same operation, even with different memory addresses, are tried with multiple backend kernels. Each candidate is measured automatically, and the fastest one is stored in the plan cache for subsequent use.
 You can control the number of candidates explored using ``HIPTENSOR_PLAN_PREFERENCE_INCREMENTAL_COUNT``. For best results, it's recommended to warm up the GPU before autotuning to reduce performance variability.
 
 *****************************
-Advantages of Autotuning
+Advantages of autotuning
 *****************************
 
-- Minimal Overhead: No explicit timing loops or extra synchronization steps.
-- Realistic Benchmarking: Candidate timings reflect production cache states, not cold-start measurements.
-- Smart Candidate Ordering: Evaluations follow a performance model that prioritizes likely best options first.
+- **Minimal Overhead:** No explicit timing loops or extra synchronization steps.
+- **Realistic Benchmarking:** Candidate timings reflect production cache states, not cold-start measurements.
+- **Smart Candidate Ordering:** Evaluations follow a performance model that prioritizes likely best options first.
 
 ------------------------------------
-Save/Load from Disk
+Save and load from disk
 ------------------------------------
 
 When paired with cache serialization APIs like `hiptensorHandleWritePlanCacheToFile() <../api-reference/api-reference.html#hiptensorhandlewriteplancachetofile>`_ and `hiptensorHandleReadPlanCacheFromFile() <../api-reference/api-reference.html#hiptensorhandlereadplancachefromfile>`_, plan cache lines can be saved to disk and reloaded later to avoid the repeated benchmarking in future application runs.
 
 ------------------------------------
-Plan Cache Example
+Plan cache example
 ------------------------------------
 
-This example demonstrates how to set up the plan cache beyond default settings, including how to resize the cache, configure plan preferences etc. for individual contractions.
+This example demonstrates how to set up the plan cache beyond default settings, including how to resize the cache, configure plan preferences and so on for individual contractions.
 
 *****************************
-1. Setting the Cache Size
+1. Setting the cache size
 *****************************
 The default maximum cache line number is 128 and the number of entries is user-configurable:
 ::
@@ -74,7 +74,7 @@ The default maximum cache line number is 128 and the number of entries is user-c
 Ideally, the cache should be large enough to store all unique contractions your application performs. If it exceeds capacity, hipTensor evicts entries using a Least Recently Used (LRU) policy.
 
 **********************************************************
-2. Disabling Caching for Specific Contractions
+2. Disabling caching for specific contractions
 **********************************************************
 You can selectively disable caching for certain operations via the plan preference API:
 ::
@@ -86,12 +86,12 @@ You can selectively disable caching for certain operations via the plan preferen
                                                      &cacheMode,
                                                      sizeof(hiptensorCacheMode_t)));
 
-Plan cache lookup occur during plan creation. Disabling the cache for frequent, identical contractions may lead to performance penalties.
+Plan cache lookups occur during plan creation. Disabling the cache for frequent, identical contractions might lead to performance penalties.
 
 ***********************************
-3. Enabling Incremental Autotuning
+3. Enabling incremental autotuning
 ***********************************
-To enable Autotuning, we need to use API `hiptensorPlanPreferenceSetAttribute <../api-reference/api-reference.html#hiptensorplanpreferencesetattribute>`_ as follows:
+To enable autotuning, use API `hiptensorPlanPreferenceSetAttribute <../api-reference/api-reference.html#hiptensorplanpreferencesetattribute>`_ as follows:
 ::
 
     const hiptensorAutotuneMode_t autotuneMode = HIPTENSOR_AUTOTUNE_MODE_INCREMENTAL;
@@ -109,24 +109,24 @@ To enable Autotuning, we need to use API `hiptensorPlanPreferenceSetAttribute <.
                                             &incCount,
                                             sizeof(uint32_t)));
 
-In above code:
+In the code above:
 
 - The first attribute enables incremental tuning.
 - The second sets the number of kernel variants to evaluate before caching the best result.
 
-A value of around four is generally a good balance for giving good coverage without significant initial overhead. Higher values may yield better performance because it will check more kernel candidates in the ranked solution system. If the tuned plan is used frequently, the initial overhead can be amortized over time.
+Using a value of around four provides good coverage with minimal initial overhead. Higher values can improve performance by checking more kernel candidates in the ranked solution system. If the tuned plan is used frequently, the initial overhead can be amortized over time.
 
 ************************************************
-4. Using Tags to Distinguish Similar Operations
+4. Using tags to distinguish similar operations
 ************************************************
-In performance-critical scenarios, two contractions with identical descriptors may still perform differently due to differences in hardware cache states. To account for this, you can assign unique tags to differentiate them, ensuring each operation is tuned independently.
+In performance-critical scenarios, two contractions with identical descriptors can still perform differently due to differences in hardware cache states. Assigning unique tags ensures each operation is tuned independently.
 This is particularly useful when:
 
 - One operand has just been written or accessed by a previous call.
 - The contraction is bandwidth-bound and cache-sensitive.
 
 ************************************************
-5. Saving and Loading the Plan Cache
+5. Saving and loading the plan cache
 ************************************************
 After tuning, you can store the optimized plan cache lines to disk and reload them during future runs:
 ::
@@ -176,7 +176,7 @@ After tuning, you can store the optimized plan cache lines to disk and reload th
 This is especially valuable for:
 
 - Applications that require consistent startup performance.
-- Systems where tuning incurs a significant cost (e.g., large candidate counts).
+- Systems where tuning incurs a significant cost. For example, large candidate counts.
 
 Complete code:
 ::
