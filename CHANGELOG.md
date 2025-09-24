@@ -20,7 +20,7 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 
 ### Resolved issues
 
-* Fixed issue where `hiptensor-test` files are not removed after uninstallation.
+* Fixed an issue where `hiptensor-test` files are not removed after uninstallation.
 * Fixed memory leaks in the test code and cleared Valgrind leak reports.
 
 ## hipTensor 2.0.0 for ROCm 7.0.0
