@@ -193,7 +193,7 @@ After configuration, build the library using this command:
    cmake --build <build_dir> -- -j<nproc>
 
 .. note::
-   
+
    It's recommended to use a minimum of 16 threads to build hipTensor with any tests, for example, using ``-j16``.
 
 Building the library and samples
@@ -239,6 +239,7 @@ Executable name                                                    Description
 ``simple_elementwise_binary``                                      A simple element-wise binary operation using single-precision floating point input and output types
 ``simple_elementwise_trinary``                                     A simple element-wise trinary operation using single-precision floating point input and output types
 ``simple_reduction``                                               A simple reduction using single-precision floating point input and output types
+``simple_contraction_plan_cache``                                  A simple bilinear contraction operation demonstrating plan cache usages
 ================================================================== =======================================================================================================================================================================
 
 Building the library and tests
@@ -311,6 +312,7 @@ Executable name                                  Description
 ``rank4_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 4
 ``rank5_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 5
 ``rank6_reduction_test``                         Reduction test with half, single, and double precision datatypes of rank 6
+``plan_cache_test``                              Plan Cache tests with single precision datatype and different rank of tensors
 ================================================ ===========================================================================================================================
 
 Make targets list
@@ -362,6 +364,8 @@ The following table highlights the relationships between high-level grouped targ
 |                                   |``simple_elementwise_trinary``                                                   |
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``simple_reduction``                                                             |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``simple_contraction_plan_cache``                                                |
 +-----------------------------------+---------------------------------------------------------------------------------+
 |                                   |``logger_test``                                                                  |
 |                                   +---------------------------------------------------------------------------------+

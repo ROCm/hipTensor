@@ -20,3 +20,7 @@ markdownlint
 ol
 rocm
 trinary
+Autotuning
+LRU
+autotuning
+lookups

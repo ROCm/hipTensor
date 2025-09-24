@@ -2,7 +2,28 @@
 
 Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hiptensor](https://rocm.docs.amd.com/projects/hipTensor/en/latest/index.html).
 
-## (Unreleased) hipTensor 2.0.0 for ROCm 7.0.0
+## (Unreleased) hipTensor 2.1.0 for ROCm 7.1.0
+
+### Added
+
+* Added software-managed plan cache support.
+* Added `hiptensorHandleWritePlanCacheToFile` to write the plan cache of a hipTensor handle to a file.
+* Added `hiptensorHandleReadPlanCacheFromFile` to read a plan cache from a file into a hipTensor handle.
+* Added `simple_contraction_plan_cache` to demonstrate plan cache usages.
+* Added `plan_cache_test` to test the plan cache across various tensor ranks.
+* Added large tensor lengths in benchmark yaml files.
+* Added a new "-l" option to tests for redirecting logs to a file.
+
+### Changed
+
+* Replaced `permutation` with `welementwise` or `elementwise_permute` across folder names, file names, function names, and variable names.
+
+### Resolved issues
+
+* Fixed an issue where `hiptensor-test` files are not removed after uninstallation.
+* Fixed memory leaks in the test code and cleared Valgrind leak reports.
+
+## hipTensor 2.0.0 for ROCm 7.0.0
 
 ### Added
 
