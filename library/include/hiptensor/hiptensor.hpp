@@ -578,4 +578,10 @@ hiptensorStatus_t hiptensorLoggerForceDisable();
 //! @retval Integer An integer representing the HIP runtime version if the operation succeeded.
 int hiptensorGetHiprtVersion();
 
+//! @brief Returns the version number of hipTensor
+//! @details Return the version with three least significant digits for patch version,
+//! the next three digits for minor version, and the most significant digits for major version.
+//! @returns The version number calculated as major * 10000 + minor * 100 + patch.
+size_t hiptensorGetVersion();
+
 #endif // HIPTENSOR_API_HPP
