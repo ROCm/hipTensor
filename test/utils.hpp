@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_UTILS_HPP
-#define HIPTENSOR_TEST_UTILS_HPP
+#pragma once
 
 #include <algorithm>
 #include <ctime>
@@ -609,5 +608,3 @@ namespace std
         return os;
     }
 }
-
-#endif // HIPTENSOR_TEST_UTILS_HPP

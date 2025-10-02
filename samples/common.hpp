@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_SAMPLES_CONTRACTION_COMMON_HPP
-#define HIPTENSOR_SAMPLES_CONTRACTION_COMMON_HPP
+#pragma once
+
 #include "../test/utils.hpp"
 
 #define MAX_ELEMENTS_PRINT_COUNT 512
@@ -41,5 +41,3 @@
     {                                      \
         CHECK_HIP_ERROR(hipHostFree(ptr)); \
     }
-
-#endif // HIPTENSOR_SAMPLES_CONTRACTION_COMMON_HPP
