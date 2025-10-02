@@ -142,7 +142,7 @@ namespace hiptensor
             << opTypeToString(operatorType) << ", "                           // 7
             << workSizePrefToString(workSizePref) << ", "                     // 8
             << logLevelToString(logLevel) << ", ";                            // 9
-        printVectorInCsv(lengths, stream) << ", ";                         // 10
+        printVectorInCsv(lengths, stream) << ", ";                            // 10
         printContainerInCsv(strides, stream) << ", ";                         // 11
         printContainerInCsv(modes, stream)   << ", ";                         // 12
         printContainerInCsv(alpha, stream)   << ", ";                         // 13

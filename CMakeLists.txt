@@ -59,17 +59,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 #Set clang - driver mode to g++
 set(CLANG_DRIVER_MODE "--driver-mode=g++")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O2") # clang++ crashes without -O2
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -ggdb") # clang++ crashes with -O0
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -DNDEBUG") # clang++ failed to build the project with the default -Os
 
 # Project options
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
   option( HIPTENSOR_BUILD_TESTS "Build hiptensor tests" ON )
   option( HIPTENSOR_BUILD_SAMPLES "Build hiptensor samples" ON )
-  option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON)
+  option( HIPTENSOR_BUILD_COMPRESSED_DBG "Enable compressed debug symbols" ON )
   option( HIPTENSOR_DEFAULT_STRIDES_COL_MAJOR "Set hiptensor default strides to column major" ON )
-  option(BUILD_OFFLOAD_COMPRESS "Build hiptensor with offload compression" ON)
-  option( HIPTENSOR_CODE_COVERAGE "Build with code coverage flags (clang only)" OFF)
+  option( BUILD_OFFLOAD_COMPRESS "Build hiptensor with offload compression" ON )
+  option( HIPTENSOR_CODE_COVERAGE "Build with code coverage flags (clang only)" OFF )
 endif()
 
 # Setup output paths
@@ -208,9 +208,9 @@ endif()
 set ( VERSION_STRING "2.1.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
-# configure a header file to pass the CMake version settings to the source
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library/include/hiptensor/internal/hiptensor-version.hpp.in"
-               "${CMAKE_CURRENT_SOURCE_DIR}/library/include/hiptensor/hiptensor-version.hpp" )
+# configure a source file to pass the CMake version settings to the source
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library/src/hiptensor_version.cpp.in"
+               "${CMAKE_CURRENT_SOURCE_DIR}/library/src/hiptensor_version.cpp" )
 
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfigVersion.cmake"

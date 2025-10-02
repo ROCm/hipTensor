@@ -23,11 +23,14 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HIPTENSOR_API_HPP
-#define HIPTENSOR_API_HPP
+#pragma once
 
 #include "hiptensor_types.hpp"
 #include "internal/hiptensor_utility.hpp"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif /* __cplusplus */
 
 //! @brief Allocates and initializes a hipTensor library handle.
 //!
@@ -578,10 +581,6 @@ hiptensorStatus_t hiptensorLoggerForceDisable();
 //! @retval Integer An integer representing the HIP runtime version if the operation succeeded.
 int hiptensorGetHiprtVersion();
 
-//! @brief Returns the version number of hipTensor
-//! @details Return the version with three least significant digits for patch version,
-//! the next three digits for minor version, and the most significant digits for major version.
-//! @returns The version number calculated as major * 10000 + minor * 100 + patch.
-size_t hiptensorGetVersion();
-
-#endif // HIPTENSOR_API_HPP
+#if defined(__cplusplus)
+}
+#endif /* __cplusplus */

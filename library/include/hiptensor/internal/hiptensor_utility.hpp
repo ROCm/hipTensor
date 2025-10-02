@@ -23,8 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HIPTENSOR_UTILITY_INTERNAL_HPP
-#define HIPTENSOR_UTILITY_INTERNAL_HPP
+#pragma once
 
 #include <fstream>
 #include <hip/hip_complex.h>
@@ -60,5 +59,3 @@
         exit(EXIT_FAILURE);                                            \
     }
 #endif
-
-#endif // HIPTENSOR_UTILITY_INTERNAL_HPP

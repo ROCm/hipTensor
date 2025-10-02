@@ -66,7 +66,7 @@ add_custom_target(hiptensor_tests)
 set(HIPTENSOR_COMMON_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hip_resource.cpp
                                   ${CMAKE_CURRENT_SOURCE_DIR}/hiptensor_gtest_main.cpp)
 
-#Prevent CMake to add building path to RUNPATH
+# Prevent CMake to add building path to RUNPATH
 set(CMAKE_SKIP_RPATH  TRUE)
 
 # Create test executables and deploy
@@ -147,7 +147,7 @@ endfunction()
 
 # Create unit test executables and deploy
 # Differs from hiptensor_test in that src include directory is linked
-function(add_hiptensor_unit_test )
+function(add_hiptensor_unit_test)
     set(BINARY_NAME ${ARGV0})
     message( STATUS "adding hiptensor unit test: ${BINARY_NAME}")
 
