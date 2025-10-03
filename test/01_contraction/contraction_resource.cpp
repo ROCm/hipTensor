@@ -2,7 +2,7 @@
  *
  * MIT License
  *
- * Copyright (C) 2021-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_RESOURCE_IMPL_HPP
-#define HIPTENSOR_CONTRACTION_RESOURCE_IMPL_HPP
+#include <numeric>
 
 #include "contraction_resource.hpp"
 
@@ -226,5 +225,3 @@ namespace hiptensor
     }
 
 } // namespace hiptensor
-
-#endif // HIPTENSOR_CONTRACTION_RESOURCE_IMPL_HPP

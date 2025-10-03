@@ -29,6 +29,7 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
     add_hiptensor_sample(simple_elementwise_permute elementwise_permute.cpp)
     add_hiptensor_sample(simple_elementwise_binary elementwise_binary.cpp)
     add_hiptensor_sample(simple_elementwise_trinary elementwise_trinary.cpp)
+    add_hiptensor_sample(simple_elementwise_binary_c elementwise_binary_c.c)
 # If building hipTensor samples as a standalone Cmake project
 else()
     add_executable(elementwise_permute elementwise_permute.cpp)
@@ -39,4 +40,7 @@ else()
 
     add_executable(elementwise_trinary elementwise_trinary.cpp)
     target_link_libraries(elementwise_trinary PRIVATE hiptensor::hiptensor)
+
+    add_executable(elementwise_binary_c elementwise_binary_c.c)
+    target_link_libraries(elementwise_binary_c PRIVATE hiptensor::hiptensor)
 endif()

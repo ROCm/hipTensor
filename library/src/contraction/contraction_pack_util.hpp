@@ -29,7 +29,7 @@
 
 #include "data_types.hpp"
 #include "util.hpp"
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 namespace hiptensor
 {

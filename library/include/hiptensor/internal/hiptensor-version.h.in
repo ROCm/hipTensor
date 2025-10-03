@@ -23,16 +23,10 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-
-#include <hiptensor/hiptensor-version.hpp>
+#pragma once
 
 // clang-format off
 #define HIPTENSOR_MAJOR_VERSION       @hiptensor_VERSION_MAJOR@
 #define HIPTENSOR_MINOR_VERSION       @hiptensor_VERSION_MINOR@
 #define HIPTENSOR_PATCH_VERSION       @hiptensor_VERSION_PATCH@
 // clang-format on
-
-size_t hiptensorGetVersion()
-{
-    return HIPTENSOR_MAJOR_VERSION * 1e6 + HIPTENSOR_MINOR_VERSION * 1e3 + HIPTENSOR_PATCH_VERSION;
-}

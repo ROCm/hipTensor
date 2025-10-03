@@ -34,7 +34,7 @@
 
 #include "elementwise_types.hpp"
 #include <combined_element_wise_operation.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 namespace hiptensor
 {

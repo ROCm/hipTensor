@@ -114,14 +114,18 @@ The ``library`` directory contains the following include and source files:
 
 The ``samples`` directory contains the sample codes for the following demonstrations:
 
-- ``01_contraction/simple_bilinear_contraction``: Abstract base test for bilinear contractions.
-- ``01_contraction/simple_scale_contraction``: Abstract base test for scale contractions.
-- ``01_contraction/simple_bilinear_contraction_*``: Specialized bilinear contraction tests per data type.
-- ``01_contraction/simple_scale_contraction_*``: Specialized bilinear contraction tests per data type.
+- ``01_contraction/simple_bilinear_contraction``: Abstract base code for bilinear contractions.
+- ``01_contraction/simple_scale_contraction``: Abstract base code for scale contractions.
+- ``01_contraction/simple_bilinear_contraction_*``: Specialized bilinear contraction demonstrations per data type.
+- ``01_contraction/simple_scale_contraction_*``: Specialized bilinear contraction demonstrations per data type.
+- ``01_contraction/simple_contraction_plan_cache``: Simple contraction with plan cache demonstration.
+- ``01_contraction/simple_contraction_c``: Simple contraction demonstration in C.
 - ``02_elementwise/elementwise_permute``: Simple permutation demonstration.
 - ``02_elementwise/elementwise_binary``: Simple element-wise binary operation demonstration.
 - ``02_elementwise/elementwise_trinary``: Simple element-wise trinary operation demonstration.
+- ``02_elementwise/elementwise_binary_c``: Simple element-wise binary operation demonstration in C.
 - ``03_reduction/reduction``: Simple reduction demonstration.
+- ``03_reduction/reduction_c``: Simple reduction demonstration in C.
 
 ``test`` directory
 ^^^^^^^^^^^^^^^^^^^^^^^

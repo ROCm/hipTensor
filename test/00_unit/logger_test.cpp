@@ -27,8 +27,8 @@
 
 // hiptensor includes
 #include "logger.hpp"
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
 void printBool(bool in)

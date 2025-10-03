@@ -43,6 +43,7 @@ if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
     add_hiptensor_sample(simple_scale_contraction_f64_f64_f64_compute_f32 simple_scale_contraction_f64_f64_f64_compute_f32.cpp)
     add_hiptensor_sample(simple_scale_contraction_f64_f64_f64_compute_f64 simple_scale_contraction_f64_f64_f64_compute_f64.cpp)
     add_hiptensor_sample(simple_contraction_plan_cache simple_contraction_plan_cache.cpp)
+    add_hiptensor_sample(simple_contraction_c simple_contraction_c.c)
 
 # If building hipTensor samples as a standalone Cmake project
 else()
@@ -91,4 +92,6 @@ else()
     add_executable(simple_contraction_plan_cache simple_contraction_plan_cache.cpp)
     target_link_libraries(simple_contraction_plan_cache PRIVATE hiptensor::hiptensor)
 
+    add_executable(simple_contraction_c simple_contraction_c.c)
+    target_link_libraries(simple_contraction_c PRIVATE hiptensor::hiptensor)
 endif()

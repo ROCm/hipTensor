@@ -27,8 +27,12 @@
 # Check whether building within hiptensor context
 if( CMAKE_PROJECT_NAME STREQUAL "hiptensor" )
     add_hiptensor_sample(simple_reduction reduction.cpp)
+    add_hiptensor_sample(simple_reduction_c reduction_c.c)
 # If building hipTensor samples as a standalone Cmake project
 else()
     add_executable(reduction reduction.cpp)
     target_link_libraries(reduction PRIVATE hiptensor::hiptensor)
+
+    add_executable(reduction_c reduction_c.c)
+    target_link_libraries(reduction_c PRIVATE hiptensor::hiptensor)
 endif()

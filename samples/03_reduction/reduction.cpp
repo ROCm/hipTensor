@@ -32,7 +32,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
 #include "common.hpp"
@@ -59,7 +59,7 @@ int main()
     floatTypeCompute beta  = (floatTypeCompute)0.f;
 
     /**********************
-     C_{m,v} = alpha * A_{m,h,k,v} + beta * C_{m,v}
+     * Computing: C_{k,v} = alpha * A_{m,h,k,v} + beta * C_{k,v}
      **********************/
 
     std::vector<int32_t> modeA{'m', 'h', 'k', 'v'};

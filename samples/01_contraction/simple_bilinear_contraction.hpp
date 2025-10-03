@@ -23,8 +23,8 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 #include <numeric>
 #include <unordered_map>
 
@@ -40,9 +40,8 @@ template <typename ADataType,
 int bilinearContractionSample(void* alpha, void* beta)
 {
     /**********************
-   * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta *
-   *C_{m,n,u,v}
-   **********************/
+     * Computing: C_{m,n,u,v} = alpha * A_{m,n,h,k} B_{u,v,h,k} + beta * C_{m,n,u,v}
+     **********************/
 
     std::vector<int> modeC{'m', 'n', 'u', 'v'};
     std::vector<int> modeA{'m', 'n', 'h', 'k'};
@@ -80,8 +79,8 @@ int bilinearContractionSample(void* alpha, void* beta)
     }
 
     /**********************
-   * Allocating data
-   **********************/
+     * Allocating data
+     **********************/
     std::cout << "Initializing host data..." << std::endl;
 
     size_t elementsA = std::accumulate(
@@ -109,8 +108,8 @@ int bilinearContractionSample(void* alpha, void* beta)
     CHECK_HIP_ERROR(hipMalloc(static_cast<void**>(&C_d), sizeC));
 
     /*******************
-   * Initialize data
-   *******************/
+     * Initialize data
+     *******************/
     int initMethod = 1; // TODO read value from commandline
     for(int64_t i = 0; i < elementsA; i++)
     {
@@ -149,8 +148,8 @@ int bilinearContractionSample(void* alpha, void* beta)
     }
 
     /********************************************
-   * Transfer the Host Tensor to Device Memory *
-   ********************************************/
+     * Transfer the Host Tensor to Device Memory
+     ********************************************/
     std::cout << "Initializing device data..." << std::endl;
 
     CHECK_HIP_ERROR(hipMemcpy(A_d, static_cast<const void*>(A), sizeA, hipMemcpyHostToDevice));
@@ -158,8 +157,8 @@ int bilinearContractionSample(void* alpha, void* beta)
     CHECK_HIP_ERROR(hipMemcpy(C_d, static_cast<const void*>(C), sizeC, hipMemcpyHostToDevice));
 
     /************************************************
-   * Retrieve the memory alignment for each tensor
-   ************************************************/
+     * Retrieve the memory alignment for each tensor
+     ************************************************/
     uint32_t          alignmentRequirement = 1;
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
@@ -167,8 +166,8 @@ int bilinearContractionSample(void* alpha, void* beta)
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
     /********************************************
-   * Initialize tensors with the input lengths *
-   ********************************************/
+     * Initialize tensors with the input lengths
+     ********************************************/
     hiptensorTensorDescriptor_t a_ms_ks = nullptr;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(handle,
                                                           &a_ms_ks,
@@ -196,9 +195,9 @@ int bilinearContractionSample(void* alpha, void* beta)
                                                           typeC,
                                                           alignmentRequirement));
 
-    /*******************************
-   * Create Contraction Descriptor
-   *******************************/
+    /********************************
+     * Create Contraction Descriptor
+     ********************************/
 
     hiptensorOperationDescriptor_t desc;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateContraction(handle,
@@ -224,24 +223,23 @@ int bilinearContractionSample(void* alpha, void* beta)
                 (void*)&scalarType,
                 sizeof(scalarType)));
 #endif
-    /**************************
-   * Set the algorithm to use
-   ***************************/
+    /***************************
+     * Set the algorithm to use
+     ***************************/
     hiptensorPlanPreference_t planPref;
     CHECK_HIPTENSOR_ERROR(hiptensorCreatePlanPreference(
         handle, &planPref, HIPTENSOR_ALGO_ACTOR_CRITIC, HIPTENSOR_JIT_MODE_NONE));
 
     /**********************
-   * Query workspace
-   **********************/
-
+     * Query workspace
+     **********************/
     uint64_t worksize = 0;
     CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(
         handle, desc, planPref, HIPTENSOR_WORKSPACE_DEFAULT, &worksize));
 
     /**************************
-   * Create Contraction Plan
-   **************************/
+     * Create Contraction Plan
+     **************************/
     std::cout << "Initializing contraction plan..." << std::endl;
 
     hiptensorPlan_t plan;

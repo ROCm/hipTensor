@@ -23,7 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 #include "data_types.hpp"
 #include "elementwise/elementwise_cpu_reference.hpp"

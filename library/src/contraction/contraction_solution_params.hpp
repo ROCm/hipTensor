@@ -27,7 +27,7 @@
 #ifndef HIPTENSOR_CONTRACTION_SOLUTION_PARAMS_HPP
 #define HIPTENSOR_CONTRACTION_SOLUTION_PARAMS_HPP
 
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 #include "contraction_types.hpp"
 #include "data_types.hpp"

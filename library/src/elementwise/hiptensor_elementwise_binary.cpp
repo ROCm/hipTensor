@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 #include "elementwise_solution.hpp"
 #include "elementwise_solution_instances.hpp"

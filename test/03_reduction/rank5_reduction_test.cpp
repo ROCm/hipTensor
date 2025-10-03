@@ -25,8 +25,8 @@
  *
  *******************************************************************************/
 
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 
 #include "reduction_test.hpp"
 #include "reduction_test_helpers.hpp"

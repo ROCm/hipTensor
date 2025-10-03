@@ -33,7 +33,7 @@
 #include <ck/utility/math_v2.hpp>
 #include <ck/utility/type_convert.hpp>
 
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 namespace ck
 {

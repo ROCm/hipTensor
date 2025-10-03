@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 #include <set>
 #include <unordered_set>
 

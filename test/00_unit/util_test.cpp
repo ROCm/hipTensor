@@ -30,7 +30,7 @@
 #include <data_types.hpp>
 #include <data_types_impl.hpp>
 #include <hip/hip_runtime.h>
-#include <hiptensor/hiptensor-version.hpp>
+#include <hiptensor/hiptensor.h>
 #include <logger.hpp>
 #include <util.hpp>
 

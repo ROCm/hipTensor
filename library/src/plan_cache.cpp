@@ -24,9 +24,9 @@
  *
  *******************************************************************************/
 
-#include "plan_cache.hpp"
 #include "data_types.hpp"
 #include "hash.hpp"
+#include "plan_cache.hpp"
 #include "util.hpp"
 
 namespace hiptensor

@@ -30,7 +30,7 @@
 #include <hip/library_types.h>
 #include <vector>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 hiptensorStatus_t hiptensorContractionReference(const hiptensorPlan_t       plan,
                                                 void const*                 alpha,

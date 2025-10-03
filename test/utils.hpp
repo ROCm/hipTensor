@@ -37,8 +37,8 @@
 #include <vector>
 
 // hiptensor includes
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 #include <hiptensor/internal/types.hpp>
 
