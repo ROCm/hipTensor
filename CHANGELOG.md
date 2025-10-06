@@ -13,10 +13,13 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * Added `plan_cache_test` to test the plan cache across various tensor ranks.
 * Added large tensor lengths in benchmark yaml files.
 * Added a new "-l" option to tests for redirecting logs to a file.
+* Added C API headers to enable compatibility with C programs.
 
 ### Changed
 
 * Replaced `permutation` with `welementwise` or `elementwise_permute` across folder names, file names, function names, and variable names.
+* Updated C++ standard from C++17 to C++20.
+* Include files `hiptensor/hiptensor.hpp` and `hiptensor/hiptensor_types.hpp` are now deprecated. Use `hiptensor/hiptensor.h` and `hiptensor/hiptensor_types.h` instead.
 
 ### Resolved issues
 
