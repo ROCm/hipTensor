@@ -78,7 +78,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR}/lib)
 
 # ROCm setup
-find_package(ROCM 0.8 CONFIG REQUIRED)
+find_package(ROCmCMakeBuildTools 0.8 CONFIG REQUIRED)
 include(ROCMSetupVersion)
 include(ROCMCreatePackage)
 include(ROCMInstallTargets)
