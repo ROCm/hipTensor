@@ -4,6 +4,12 @@ resources:
     type: github
     endpoint: ROCm
     name: ROCm/ROCm
+    ref: ${{ parameters.pipelinesRepoRef }} 
+
+parameters:
+- name: pipelinesRepoRef
+  type: string
+  default: refs/heads/develop
 
 variables:
 - group: common
