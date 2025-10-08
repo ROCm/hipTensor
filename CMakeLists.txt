@@ -208,7 +208,7 @@ endif()
 set ( VERSION_STRING "2.1.0" )
 rocm_setup_version( VERSION ${VERSION_STRING} )
 
-# configure a source file to pass the CMake version settings to the source
+# configure a header file to pass the CMake version settings to the source
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/library/include/hiptensor/internal/hiptensor-version.h.in"
                "${CMAKE_CURRENT_SOURCE_DIR}/library/include/hiptensor/internal/hiptensor-version.h" )
 
