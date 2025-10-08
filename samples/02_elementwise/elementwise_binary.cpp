@@ -32,7 +32,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 #include <hiptensor_options.hpp>
 
@@ -111,9 +111,9 @@ int main()
     floatTypeA* A;
     floatTypeC* C;
     floatTypeD* D;
-    CHECK_HIP_ERROR(hipHostMalloc((void**)&A, sizeof(floatTypeA) * elementsA));
-    CHECK_HIP_ERROR(hipHostMalloc((void**)&C, sizeof(floatTypeC) * elementsC));
-    CHECK_HIP_ERROR(hipHostMalloc((void**)&D, sizeof(floatTypeD) * elementsD));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&A, sizeA));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&C, sizeC));
+    CHECK_HIP_ERROR(hipHostMalloc((void**)&D, sizeD));
 
     /*******************
      * Initialize data
@@ -121,41 +121,44 @@ int main()
 
     for(size_t i = 0; i < elementsA; i++)
     {
-        A[i] = (float)i;
-        C[i] = static_cast<float>(i % 41);
+        A[i] = static_cast<floatTypeA>(i);
+    }
+    for(size_t i = 0; i < elementsC; i++)
+    {
+        C[i] = static_cast<floatTypeC>(i % 41);
     }
 
+    /********************************************
+     * Transfer the Host Tensor to Device Memory
+     ********************************************/
     CHECK_HIP_ERROR(hipMemcpy(A_d, A, sizeA, hipMemcpyDefault));
     CHECK_HIP_ERROR(hipMemcpy(C_d, C, sizeC, hipMemcpyDefault));
 
     /*************************
      * hipTensor
      *************************/
-
     hiptensorHandle_t handle;
     CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
     CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(HIPTENSOR_LOG_LEVEL_PERF_TRACE));
 
-    /**********************
-     * Create Tensor Descriptors
-     **********************/
-
+    /********************************************
+     * Initialize tensors with the input lengths
+     ********************************************/
     hiptensorTensorDescriptor_t descA = nullptr;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        handle, &descA, nmodeA, extentA.data(), nullptr /* stride */, typeA, 0));
+        handle, &descA, nmodeA, extentA.data(), nullptr /* stride */, typeA, 0 /* alignmentRequirement */));
 
     hiptensorTensorDescriptor_t descC = nullptr;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        handle, &descC, nmodeC, extentC.data(), nullptr /* stride */, typeC, 0));
+        handle, &descC, nmodeC, extentC.data(), nullptr /* stride */, typeC, 0 /* alignmentRequirement */));
 
     hiptensorTensorDescriptor_t descD = nullptr;
     CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
-        handle, &descD, nmodeD, extentD.data(), nullptr /* stride */, typeD, 0));
+        handle, &descD, nmodeD, extentD.data(), nullptr /* stride */, typeD, 0 /* alignmentRequirement */));
 
-    /*******************************
+    /***************************************
      * Create Elementwise Binary Descriptor
-     *******************************/
-
+     ***************************************/
     hiptensorOperationDescriptor_t desc;
     CHECK_HIPTENSOR_ERROR(
         hiptensorCreateElementwiseBinary(handle,
@@ -183,9 +186,9 @@ int main()
     //
     // assert(scalarType == CUTENSOR_R_32F);
 
-    /**************************
-    * Set the algorithm to use
-    ***************************/
+    /***************************
+     * Set the algorithm to use
+     ***************************/
 
     const hiptensorAlgo_t algo = HIPTENSOR_ALGO_DEFAULT;
 

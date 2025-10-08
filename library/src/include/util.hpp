@@ -24,14 +24,14 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_SRC_UTIL_HPP
-#define HIPTENSOR_SRC_UTIL_HPP
+#pragma once
 
 #include <ck/utility/data_type.hpp>
 #include <ck/utility/tuple.hpp>
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 #include <hiptensor/internal/types.hpp>
 #include <logger.hpp>
+#include <numeric>
 #include <type_traits>
 #include <vector>
 
@@ -201,5 +201,3 @@ namespace hiptensor
     }
 
 } // namespace hiptensor
-
-#endif // HIPTENSOR_SRC_UTIL_HPP

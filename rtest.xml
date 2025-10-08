@@ -238,6 +238,18 @@
         <run name="regression015">./bin/simple_bilinear_contraction_f16_f16_f16_f16_compute_f16 </run>
     </emulation>
     <emulation sets="regression">
+        <run name="regression016">./bin/simple_contraction_plan_cache </run>
+    </emulation>
+    <emulation sets="regression">
+        <run name="regression017">./bin/simple_contraction_c </run>
+    </emulation>
+    <emulation sets="regression">
+        <run name="regression018">./bin/simple_elementwise_binary_c </run>
+    </emulation>
+    <emulation sets="regression">
+        <run name="regression019">./bin/simple_reduction_c </run>
+    </emulation>
+    <emulation sets="regression">
         <run name="regression101">./bin/bilinear_contraction_test_m1n1k1 -y {EMULATION_ROOT}/{CONTRACTION_CONFIGS}/regression/bilinear_test_params_rank1.yaml {REGRESSION_PARAMS} </run>
     </emulation>
     <emulation sets="regression">
@@ -599,6 +611,18 @@
     </emulation>
     <emulation sets="codecoverage">
         <run name="codecoverage015">./bin/simple_bilinear_contraction_f16_f16_f16_f16_compute_f16 </run>
+    </emulation>
+    <emulation sets="codecoverage">
+        <run name="codecoverage016">./bin/simple_contraction_plan_cache </run>
+    </emulation>
+    <emulation sets="codecoverage">
+        <run name="codecoverage017">./bin/simple_contraction_c </run>
+    </emulation>
+    <emulation sets="codecoverage">
+        <run name="codecoverage018">./bin/simple_elementwise_binary_c </run>
+    </emulation>
+    <emulation sets="codecoverage">
+        <run name="codecoverage019">./bin/simple_reduction_c </run>
     </emulation>
     <emulation sets="codecoverage">
         <run name="codecoverage101">./bin/bilinear_contraction_test_m1n1k1 -y {CODE_COVERAGE_ROOT}/{CONTRACTION_CONFIGS}/bilinear_test_params_rank1.yaml {CODE_COVERAGE_PARAMS} </run>

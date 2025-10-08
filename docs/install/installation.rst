@@ -240,6 +240,9 @@ Executable name                                                    Description
 ``simple_elementwise_trinary``                                     A simple element-wise trinary operation using single-precision floating point input and output types
 ``simple_reduction``                                               A simple reduction using single-precision floating point input and output types
 ``simple_contraction_plan_cache``                                  A simple bilinear contraction operation demonstrating plan cache usages
+``simple_contraction_c``                                           A simple bilinear contractionoperation demonstrating how to use the API in C language
+``simple_elementwise_binary_c``                                    A simple element-wise binary operation demonstrating how to use the API in C language
+``simple_reduction_c``                                             A simple reduction operation demonstrating how to use the API in C language
 ================================================================== =======================================================================================================================================================================
 
 Building the library and tests
@@ -366,6 +369,12 @@ The following table highlights the relationships between high-level grouped targ
 |                                   |``simple_reduction``                                                             |
 |                                   +---------------------------------------------------------------------------------+
 |                                   |``simple_contraction_plan_cache``                                                |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``simple_contraction_c``                                                         |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``simple_elementwise_binary_c``                                                  |
+|                                   +---------------------------------------------------------------------------------+
+|                                   |``simple_reduction_c``                                                           |
 +-----------------------------------+---------------------------------------------------------------------------------+
 |                                   |``logger_test``                                                                  |
 |                                   +---------------------------------------------------------------------------------+

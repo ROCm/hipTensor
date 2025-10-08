@@ -34,7 +34,7 @@
 
 #include "contraction_types.hpp"
 #include "device/device_element_wise_operation_complex.hpp"
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 namespace hiptensor
 {

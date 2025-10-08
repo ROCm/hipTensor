@@ -23,23 +23,10 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-
-#ifndef HIPTENSOR_VERSION_HPP_
-#define HIPTENSOR_VERSION_HPP_
+#pragma once
 
 // clang-format off
 #define HIPTENSOR_MAJOR_VERSION       @hiptensor_VERSION_MAJOR@
 #define HIPTENSOR_MINOR_VERSION       @hiptensor_VERSION_MINOR@
 #define HIPTENSOR_PATCH_VERSION       @hiptensor_VERSION_PATCH@
 // clang-format on
-
-//! @brief Returns the version number of hipTensor
-//! @details Return the version with three least significant digits for patch version,
-//! the next three digits for minor version, and the most significant digits for major version.
-//! @returns The version number calculated as major * 10000 + minor * 100 + patch.
-inline size_t hiptensorGetVersion()
-{
-    return HIPTENSOR_MAJOR_VERSION * 1e6 + HIPTENSOR_MINOR_VERSION * 1e3 + HIPTENSOR_PATCH_VERSION;
-}
-
-#endif // HIPTENSOR_VERSION_HPP_

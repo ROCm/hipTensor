@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 
 #include "contraction_test.hpp"
 #include "contraction_test_helpers.hpp"

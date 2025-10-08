@@ -29,7 +29,7 @@
 
 #include <ck/tensor_operation/gpu/device/reduction_operator_mapping.hpp>
 #include <ck/utility/reduction_enums.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 namespace hiptensor
 {

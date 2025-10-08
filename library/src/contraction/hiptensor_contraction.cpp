@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 #include "contraction_selection.hpp"
 #include "contraction_solution.hpp"
@@ -74,15 +74,16 @@ hiptensorStatus_t contractionGetWorkspaceSize(const hiptensorHandle_t           
 
     // Log API access
     char msg[512];
-    snprintf(msg,
-             sizeof(msg),
-             "handle=0x%0*llX, desc=0x%llX, planPref=0x%llX, workspacePref=0x%u, workspaceSize=0x%llX",
-             2 * (int)sizeof(void*),
-             (unsigned long long)handle,
-             (unsigned long long)desc,
-             (unsigned long long)planPref,
-             (unsigned int)workspacePref,
-             (unsigned long long)workspaceSize);
+    snprintf(
+        msg,
+        sizeof(msg),
+        "handle=0x%0*llX, desc=0x%llX, planPref=0x%llX, workspacePref=0x%u, workspaceSize=0x%llX",
+        2 * (int)sizeof(void*),
+        (unsigned long long)handle,
+        (unsigned long long)desc,
+        (unsigned long long)planPref,
+        (unsigned int)workspacePref,
+        (unsigned long long)workspaceSize);
 
     logger->logAPITrace("contractionGetWorkspaceSize", msg);
 

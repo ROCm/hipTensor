@@ -36,7 +36,7 @@
 #include <hip/hip_fp16.h>
 #include <iostream>
 
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 #include "hip_device.hpp"
 #include "plan_cache.hpp"

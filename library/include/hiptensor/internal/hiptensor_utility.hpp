@@ -23,42 +23,44 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HIPTENSOR_UTILITY_INTERNAL_HPP
-#define HIPTENSOR_UTILITY_INTERNAL_HPP
+#pragma once
 
-#include <fstream>
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>
-#include <iostream>
+#include <stdio.h>
 
-#include "../hiptensor_types.hpp"
+#include "../hiptensor_types.h"
 
 #ifndef CHECK_HIP_ERROR
-#define CHECK_HIP_ERROR(expression)                      \
-    if(auto status = (expression); status != hipSuccess) \
-    {                                                    \
-        fprintf(stderr,                                  \
-                "hip error: '%s'(%d) at %s:%d\n",        \
-                hipGetErrorString(status),               \
-                status,                                  \
-                __FILE__,                                \
-                __LINE__);                               \
-        exit(EXIT_FAILURE);                              \
+#define CHECK_HIP_ERROR(expression)                   \
+    {                                                 \
+        hipError_t status = (expression);             \
+        if(status != hipSuccess)                      \
+        {                                             \
+            fprintf(stderr,                           \
+                    "hip error: '%s'(%d) at %s:%d\n", \
+                    hipGetErrorString(status),        \
+                    status,                           \
+                    __FILE__,                         \
+                    __LINE__);                        \
+            exit(EXIT_FAILURE);                       \
+        }                                             \
     }
 #endif
 
 #ifndef CHECK_HIPTENSOR_ERROR
-#define CHECK_HIPTENSOR_ERROR(expression)                              \
-    if(auto status = (expression); status != HIPTENSOR_STATUS_SUCCESS) \
-    {                                                                  \
-        fprintf(stderr,                                                \
-                "hipTensor error: '%s'(%d) at %s:%d\n",                \
-                hiptensorGetErrorString(status),                       \
-                status,                                                \
-                __FILE__,                                              \
-                __LINE__);                                             \
-        exit(EXIT_FAILURE);                                            \
+#define CHECK_HIPTENSOR_ERROR(expression)                   \
+    {                                                       \
+        hiptensorStatus_t status = (expression);            \
+        if(status != HIPTENSOR_STATUS_SUCCESS)              \
+        {                                                   \
+            fprintf(stderr,                                 \
+                    "hipTensor error: '%s'(%d) at %s:%d\n", \
+                    hiptensorGetErrorString(status),        \
+                    status,                                 \
+                    __FILE__,                               \
+                    __LINE__);                              \
+            exit(EXIT_FAILURE);                             \
+        }                                                   \
     }
 #endif
-
-#endif // HIPTENSOR_UTILITY_INTERNAL_HPP

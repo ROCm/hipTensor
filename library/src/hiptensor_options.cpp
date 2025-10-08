@@ -25,7 +25,6 @@
  *******************************************************************************/
 
 #include "hiptensor_options.hpp"
-#include <hiptensor/hiptensor-version.hpp>
 
 namespace hiptensor
 {

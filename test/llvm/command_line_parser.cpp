@@ -24,7 +24,7 @@
  *
  *******************************************************************************/
 
-#include <hiptensor/hiptensor-version.hpp>
+#include <hiptensor/hiptensor.h>
 #include <llvm/Support/CommandLine.h>
 
 #include "command_line_parser.hpp"

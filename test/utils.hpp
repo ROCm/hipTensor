@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_UTILS_HPP
-#define HIPTENSOR_TEST_UTILS_HPP
+#pragma once
 
 #include <algorithm>
 #include <ctime>
@@ -38,8 +37,8 @@
 #include <vector>
 
 // hiptensor includes
-#include <hiptensor/hiptensor.hpp>
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 #include <hiptensor/internal/types.hpp>
 
@@ -609,5 +608,3 @@ namespace std
         return os;
     }
 }
-
-#endif // HIPTENSOR_TEST_UTILS_HPP

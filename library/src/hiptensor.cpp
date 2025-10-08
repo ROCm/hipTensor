@@ -26,7 +26,7 @@
 #include <cstring>
 #include <hip/hip_runtime_api.h>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 #include "data_types.hpp"
 #include "handle.hpp"
@@ -804,4 +804,9 @@ int hiptensorGetHiprtVersion()
     }
 
     return version;
+}
+
+size_t hiptensorGetVersion()
+{
+    return HIPTENSOR_MAJOR_VERSION * 1e6 + HIPTENSOR_MINOR_VERSION * 1e3 + HIPTENSOR_PATCH_VERSION;
 }

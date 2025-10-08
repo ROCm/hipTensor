@@ -32,7 +32,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 #include <hiptensor/internal/hiptensor_utility.hpp>
 #include <hiptensor_options.hpp>
 

@@ -31,7 +31,7 @@
 #include <data_types_impl.hpp>
 #include <handle.hpp>
 #include <hip/hip_runtime.h>
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 #include <reduction/reduction_solution.hpp>
 #include <reduction/reduction_solution_instances.hpp>
 

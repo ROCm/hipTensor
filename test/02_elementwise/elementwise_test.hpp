@@ -29,7 +29,7 @@
 
 #include <sstream>
 
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 #include "common.hpp"
 #include "elementwise_resource.hpp"

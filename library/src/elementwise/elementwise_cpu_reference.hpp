@@ -30,7 +30,7 @@
 #include <hip/library_types.h>
 #include <vector>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 hiptensorStatus_t hiptensorElementwisePermuteReference(const void*                       alpha,
                                                 const void*                       A,

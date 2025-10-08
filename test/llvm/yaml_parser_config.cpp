@@ -28,7 +28,7 @@
 
 #include <llvm/ObjectYAML/YAML.h>
 
-#include <hiptensor/hiptensor.hpp>
+#include <hiptensor/hiptensor.h>
 
 #include "01_contraction/contraction_test_params.hpp"
 #include "02_elementwise/elementwise_test_params.hpp"

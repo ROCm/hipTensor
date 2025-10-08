@@ -36,7 +36,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <hiptensor/hiptensor_types.hpp>
+#include <hiptensor/hiptensor_types.h>
 
 namespace hiptensor
 {

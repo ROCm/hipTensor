@@ -23,8 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HIPTENSOR_NATIVE_TYPES_HPP
-#define HIPTENSOR_NATIVE_TYPES_HPP
+#pragma once
 
 #include <array>
 #include <hip/hip_bfloat16.h>
@@ -90,5 +89,3 @@ namespace hiptensor
 // Add in some extensions to basic type support.
 // Some of these are required for vector implementations.
 #include "native_types_impl.hpp"
-
-#endif // HIPTENSOR_NATIVE_TYPES_HPP

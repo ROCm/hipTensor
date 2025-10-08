@@ -23,8 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef HIPTENSOR_CONFIG_HPP
-#define HIPTENSOR_CONFIG_HPP
+#pragma once
 
 namespace hiptensor
 {
@@ -94,5 +93,3 @@ namespace hiptensor
 #define HIPTENSOR_KERNEL __global__
 
 } // namespace hiptensor
-
-#endif // HIPTENSOR_CONFIG_HPP
