@@ -108,12 +108,14 @@ else()
     set(ADDRESS_SANITIZER_ENABLED OFF)
 endif()
 
+include(cmake/Functions/hiptensorSupportedArchitectures.cmake)
 if (ADDRESS_SANITIZER_ENABLED)
     rocm_check_target_ids(DEFAULT_GPU_TARGETS
         TARGETS "gfx90a:xnack+;gfx942:xnack+;gfx950:xnack+" )
 else()
+    hiptensor_get_supported_architectures(SUPPORTED_ARCHS)
     rocm_check_target_ids(DEFAULT_GPU_TARGETS
-        TARGETS "gfx908;gfx90a;gfx942;gfx950" )
+        TARGETS ${SUPPORTED_ARCHS} )
 endif()
 
 # Check if offload compression is supported
@@ -227,6 +229,7 @@ configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
 rocm_install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfig.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/hiptensorConfigVersion.cmake"
+    "cmake/Functions/hiptensorSupportedArchitectures.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/hiptensor
 )
 
