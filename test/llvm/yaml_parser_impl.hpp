@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP
-#define HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP
+#pragma once
 
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/YAMLParser.h>
@@ -107,4 +106,3 @@ namespace hiptensor
     }
 }
 
-#endif // HIPTENSOR_TEST_YAML_PARSER_IMPL_HPP

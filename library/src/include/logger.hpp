@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LOGGER_HPP
-#define HIPTENSOR_LOGGER_HPP
+#pragma once
 
 #include "singleton.hpp"
 
@@ -101,4 +100,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_LOGGER_HPP

@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_TEST_HELPERS_HPP
-#define HIPTENSOR_REDUCTION_TEST_HELPERS_HPP
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -127,4 +126,3 @@ auto inline load_config_helper()
                               ::testing::ValuesIn(testParams.operators()));
 }
 
-#endif // HIPTENSOR_REDUCTION_TEST_HELPERS_HPP

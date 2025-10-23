@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERFORMANCE_HPP
-#define HIPTENSOR_PERFORMANCE_HPP
+#pragma once
 
 #include <ostream>
 #include <string>
@@ -54,4 +53,3 @@ namespace std
     ostream& operator<<(std::ostream& os, hiptensor::PerfMetrics const& metrics);
 } // namespace std
 
-#endif // HIPTENSOR_PERFORMANCE_HPP

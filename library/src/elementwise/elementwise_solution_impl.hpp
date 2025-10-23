@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_SOLUTION_IMPL_HPP
-#define HIPTENSOR_PERMUTATION_SOLUTION_IMPL_HPP
+#pragma once
 
 #include <map>
 #include <numeric>
@@ -248,4 +247,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_SOLUTION_IMPL_HPP

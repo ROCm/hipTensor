@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef CONTRACTION_DEVICE_COMMON_HPP
-#define CONTRACTION_DEVICE_COMMON_HPP
+#pragma once
 
 // Stdlib includes
 #include <cstdlib>
@@ -41,4 +40,3 @@
 
 #include "device_element_wise_operation_complex.hpp"
 
-#endif // CONTRACTION_DEVICE_COMMON_HPP

@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_DATA_TYPES_HPP
-#define HIPTENSOR_LIBRARY_DATA_TYPES_HPP
+#pragma once
 
 // clang-format off
 // Include order needs to be preserved
@@ -224,4 +223,3 @@ namespace std
 
 #include "data_types_impl.hpp"
 
-#endif // HIPTENSOR_LIBRARY_DATA_TYPES_HPP

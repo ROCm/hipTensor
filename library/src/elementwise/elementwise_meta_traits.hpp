@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_META_TRAITS_HPP
-#define HIPTENSOR_PERMUTATION_META_TRAITS_HPP
+#pragma once
 
 // CK includes
 #include <combined_element_wise_operation.hpp>
@@ -132,4 +131,3 @@ namespace hiptensor
     };
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_META_TRAITS_HPP

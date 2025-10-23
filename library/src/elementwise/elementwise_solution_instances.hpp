@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_SOLUTION_INSTANCES_HPP
-#define HIPTENSOR_PERMUTATION_SOLUTION_INSTANCES_HPP
+#pragma once
 
 #include <memory>
 
@@ -105,4 +104,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_SOLUTION_INSTANCES_HPP

@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_SOLUTION_HPP
-#define HIPTENSOR_CONTRACTION_SOLUTION_HPP
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -167,4 +166,3 @@ namespace hiptensor
 
 #include "contraction_solution_impl.hpp"
 
-#endif // HIPTENSOR_CONTRACTION_SOLUTION_HPP

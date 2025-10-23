@@ -23,6 +23,8 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
+#pragma once
+
 #include <hiptensor/hiptensor.h>
 #include <hiptensor/hiptensor_types.h>
 #include <numeric>

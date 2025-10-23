@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_CPU_REFERENCE_IMPL_HPP
-#define HIPTENSOR_CONTRACTION_CPU_REFERENCE_IMPL_HPP
+#pragma once
 
 // Std includes
 #include <array>
@@ -634,4 +633,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_CPU_REFERENCE_IMPL_HPP

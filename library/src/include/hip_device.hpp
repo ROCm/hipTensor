@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HIP_DEVICE_HPP
-#define HIPTENSOR_HIP_DEVICE_HPP
+#pragma once
 
 #include <hip/hip_runtime_api.h>
 
@@ -72,4 +71,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HIP_DEVICE_HPP

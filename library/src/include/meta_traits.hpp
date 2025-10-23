@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_META_TRAITS_HPP
-#define HIPTENSOR_META_TRAITS_HPP
+#pragma once
 
 namespace hiptensor
 {
@@ -37,4 +36,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_META_TRAITS_HPP

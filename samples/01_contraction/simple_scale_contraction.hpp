@@ -23,6 +23,8 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
+#pragma once
+
 #include <algorithm>
 #include <fstream>
 #include <hiptensor/hiptensor.h>

@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_SOLUTION_PARAMS_IMPL_HPP
-#define HIPTENSOR_REDUCTION_SOLUTION_PARAMS_IMPL_HPP
+#pragma once
 
 #include "data_types.hpp"
 #include "hash.hpp"
@@ -126,4 +125,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_REDUCTION_SOLUTION_PARAMS_IMPL_HPP

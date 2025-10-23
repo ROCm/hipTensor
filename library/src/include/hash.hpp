@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HASH_HPP
-#define HIPTENSOR_HASH_HPP
+#pragma once
 
 #include <functional>
 #include <vector>
@@ -82,4 +81,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HASH_HPP

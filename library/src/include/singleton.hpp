@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_SINGLETON_HPP
-#define HIPTENSOR_SINGLETON_HPP
+#pragma once
 
 #include <memory>
 
@@ -45,4 +44,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_SINGLETON_HPP

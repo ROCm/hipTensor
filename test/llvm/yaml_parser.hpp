@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_YAML_PARSER_HPP
-#define HIPTENSOR_TEST_YAML_PARSER_HPP
+#pragma once
 
 #include <optional>
 #include <string>
@@ -42,4 +41,3 @@ namespace hiptensor
     };
 }
 
-#endif // HIPTENSOR_TEST_YAML_PARSER_HPP

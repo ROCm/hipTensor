@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HANDLE_HPP
-#define HIPTENSOR_HANDLE_HPP
+#pragma once
 
 #include <new>
 
@@ -53,4 +52,3 @@ namespace hiptensor
     };
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HANDLE_HPP

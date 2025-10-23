@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_SOLUTION_HPP
-#define HIPTENSOR_PERMUTATION_SOLUTION_HPP
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -104,4 +103,3 @@ namespace hiptensor
 
 #include "elementwise_solution_impl.hpp"
 
-#endif // HIPTENSOR_PERMUTATION_SOLUTION_HPP

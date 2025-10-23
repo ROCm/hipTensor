@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_TEST_HPP
-#define HIPTENSOR_PERMUTATION_TEST_HPP
+#pragma once
 
 #include <sstream>
 
@@ -108,4 +107,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_TEST_HPP

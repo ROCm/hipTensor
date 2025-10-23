@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_COMMON_HPP
-#define HIPTENSOR_TEST_COMMON_HPP
+#pragma once
 
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
@@ -49,4 +48,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_TEST_COMMON_HPP

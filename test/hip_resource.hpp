@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_HIPTENSOR_RESOURCE_HPP
-#define HIPTENSOR_HIPTENSOR_RESOURCE_HPP
+#pragma once
 
 #include "common.hpp"
 #include <memory>
@@ -73,4 +72,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_HIPTENSOR_RESOURCE_HPP

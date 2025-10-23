@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_LIBRARY_DATA_TYPES_IMPL_HPP
-#define HIPTENSOR_LIBRARY_DATA_TYPES_IMPL_HPP
+#pragma once
 
 #include "data_types.hpp"
 
@@ -222,4 +221,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_LIBRARY_DATA_TYPES_IMPL_HPP

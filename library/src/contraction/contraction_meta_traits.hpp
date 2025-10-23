@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_META_TRAITS_HPP
-#define HIPTENSOR_CONTRACTION_META_TRAITS_HPP
+#pragma once
 
 // CK includes
 #include <contraction_bilinear.hpp>
@@ -148,4 +147,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_META_TRAITS_HPP

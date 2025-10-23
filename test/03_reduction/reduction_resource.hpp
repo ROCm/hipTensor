@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_RESOURCE_HPP
-#define HIPTENSOR_REDUCTION_RESOURCE_HPP
+#pragma once
 
 #include <memory>
 #include <tuple>
@@ -129,4 +128,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_REDUCTION_RESOURCE_HPP

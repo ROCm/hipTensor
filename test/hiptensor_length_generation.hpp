@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_LENGTH_GENERATION_HPP
-#define HIPTENSOR_TEST_LENGTH_GENERATION_HPP
+#pragma once
 
 #include "hash.hpp"
 
@@ -402,4 +401,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_TEST_LENGTH_GENERATION_HPP

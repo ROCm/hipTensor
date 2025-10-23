@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_SOLUTION_PARAMS_HPP
-#define HIPTENSOR_REDUCTION_SOLUTION_PARAMS_HPP
+#pragma once
 
 #include <memory>
 #include <unordered_map>
@@ -62,4 +61,3 @@ namespace hiptensor
 
 #include "reduction_solution_params_impl.hpp"
 
-#endif // HIPTENSOR_REDUCTION_SOLUTION_PARAMS_HPP

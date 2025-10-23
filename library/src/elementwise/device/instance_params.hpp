@@ -23,8 +23,7 @@
  * SOFTWARE.
  *
  *******************************************************************************/
-#ifndef INSTANCE_PARAMS_HPP
-#define INSTANCE_PARAMS_HPP
+#pragma once
 
 #include "../elementwise_types.hpp"
 #include "data_types.hpp"
@@ -196,4 +195,3 @@ namespace std
         }
     };
 }
-#endif //  INSTANCE_PARAMS_HPP

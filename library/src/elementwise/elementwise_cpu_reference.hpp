@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
-#define HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP
+#pragma once
 
 #include <hip/library_types.h>
 #include <vector>
@@ -81,4 +80,3 @@ hiptensorStatus_t hiptensorElementwiseTrinaryOpReference(const void*            
                                                          hiptensorOperator_t               opABC,
                                                          hiptensorDataType_t typeScalar,
                                                          hipStream_t         stream);
-#endif // HIPTENSOR_PERMUTATION_CPU_REFERENCE_HPP

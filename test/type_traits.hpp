@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TYPE_TRAITS_HPP
-#define HIPTENSOR_TYPE_TRAITS_HPP
+#pragma once
+
 #include <cfloat>
 
 #include <hiptensor/internal/config.hpp>
@@ -76,4 +76,3 @@ namespace std
         return stream << static_cast<float>(val);
     }
 } // namespace std
-#endif // HIPTENSOR_TYPE_TRAITS_HPP

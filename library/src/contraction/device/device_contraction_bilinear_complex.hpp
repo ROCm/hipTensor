@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_BILINEAR_COMPLEX_HPP
-#define HIPTENSOR_CONTRACTION_BILINEAR_COMPLEX_HPP
+#pragma once
 
 #include "../contraction_pack_util.hpp"
 #include "common.hpp"
@@ -711,4 +710,3 @@ namespace ck
     } // namespace tensor_operation
 } // namespace ck
 
-#endif // HIPTENSOR_CONTRACTION_BILINEAR_COMPLEX_HPP

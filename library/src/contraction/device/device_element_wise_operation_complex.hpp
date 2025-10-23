@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_ELEMENT_WISE_OPERATION_COMPLEX_HPP
-#define HIPTENSOR_ELEMENT_WISE_OPERATION_COMPLEX_HPP
+#pragma once
 
 #include <binary_element_wise_operation.hpp>
 #include <hip/hip_complex.h>
@@ -110,4 +109,3 @@ namespace ck
     } // namespace tensor_operation
 } // namespace ck
 
-#endif // HIPTENSOR_ELEMENT_WISE_OPERATION_COMPLEX_HPP

@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_SOLUTION_REGISTRY_HPP
-#define HIPTENSOR_PERMUTATION_SOLUTION_REGISTRY_HPP
+#pragma once
 
 #include <memory>
 #include <unordered_map>
@@ -72,4 +71,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_SOLUTION_REGISTRY_HPP

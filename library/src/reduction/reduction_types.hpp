@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_TYPES_HPP
-#define HIPTENSOR_REDUCTION_TYPES_HPP
+#pragma once
 
 #include <ck/tensor_operation/gpu/device/reduction_operator_mapping.hpp>
 #include <ck/utility/reduction_enums.hpp>
@@ -62,4 +61,3 @@ namespace hiptensor
         static constexpr auto value = ck::ReduceTensorOp::MAX;
     };
 } // namespace hiptensor
-#endif // HIPTENSOR_REDUCTION_TYPES_HPP

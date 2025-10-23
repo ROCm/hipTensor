@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_SCALE_INSTANCES_HPP
-#define HIPTENSOR_PERMUTATION_SCALE_INSTANCES_HPP
+#pragma once
 
 // Stdlib includes
 #include <cstdlib>
@@ -350,4 +349,3 @@ namespace ck
     } // namespace tensor_operation
 } // namespace ck
 
-#endif // HIPTENSOR_PERMUTATION_SCALE_INSTANCES_HPP
