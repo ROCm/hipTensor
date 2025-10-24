@@ -24,12 +24,10 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_COMMAND_LINE_PARSER_IMPL_HPP
-#define HIPTENSOR_COMMAND_LINE_PARSER_IMPL_HPP
+#pragma once
 
 namespace hiptensor
 {
     void parseOptions(int argc, char** argv);
 }
 
-#endif // HIPTENSOR_COMMAND_LINE_PARSER_IMPL_HPP

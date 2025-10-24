@@ -25,8 +25,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CK_TYPES_HPP
-#define HIPTENSOR_CK_TYPES_HPP
+#pragma once
 
 #include <ck/ck.hpp>
 #include <ck/tensor_operation/gpu/device/device_elementwise.hpp>
@@ -57,4 +56,3 @@ namespace hiptensor
                                                                          CkUnaryCombinedOp>;
 }
 
-#endif // HIPTENSOR_CK_TYPES_HPP

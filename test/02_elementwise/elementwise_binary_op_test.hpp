@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef ELEMENTWISE_BINARY_OP_TEST_HPP
-#define ELEMENTWISE_BINARY_OP_TEST_HPP
+#pragma once
 
 #include <sstream>
 
@@ -110,4 +109,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // ELEMENTWISE_BINARY_OP_TEST_HPP

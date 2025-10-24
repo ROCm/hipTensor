@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef ELEMENTWISE_TRINARY_OP_TEST_HELPERS_HPP
-#define ELEMENTWISE_TRINARY_OP_TEST_HELPERS_HPP
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -76,4 +75,3 @@ auto inline load_config_helper()
                               ::testing::ValuesIn(testParams.operators()));
 }
 
-#endif // ELEMENTWISE_TRINARY_OP_TEST_HELPERS_HPP

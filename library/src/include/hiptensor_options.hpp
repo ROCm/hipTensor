@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_OPTIONS
-#define HIPTENSOR_OPTIONS
+#pragma once
 
 #include <stdlib.h>
 
@@ -93,4 +92,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_OPTIONS

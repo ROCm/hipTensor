@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_TEST_HELPERS_HPP
-#define HIPTENSOR_CONTRACTION_TEST_HELPERS_HPP
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -197,4 +196,3 @@ auto inline load_sequence_config_params()
     return ::testing::ValuesIn(paramsSequence);
 }
 
-#endif // HIPTENSOR_CONTRACTION_TEST_HELPERS_HPP

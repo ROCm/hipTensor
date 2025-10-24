@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_IOSTREAM
-#define HIPTENSOR_IOSTREAM
+#pragma once
 
 #include <fstream>
 #include <utility>
@@ -77,4 +76,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_IOSTREAM

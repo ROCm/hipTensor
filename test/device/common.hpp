@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_TEST_CONTRACTION_DEVICE_COMMON_HPP
-#define HIPTENSOR_TEST_CONTRACTION_DEVICE_COMMON_HPP
+#pragma once
+
 #include "../type_traits.hpp"
 
 template <typename T>
@@ -151,4 +151,3 @@ __global__ void compareEqualKernel(DDataType* deviceD,
     }
 }
 
-#endif // HIPTENSOR_TEST_CONTRACTION_DEVICE_COMMON_HPP

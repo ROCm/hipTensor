@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_TEST_PARAMS_HPP
-#define HIPTENSOR_REDUCTION_TEST_PARAMS_HPP
+#pragma once
 
 #include <tuple>
 #include <vector>
@@ -123,4 +122,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_REDUCTION_TEST_PARAMS_HPP

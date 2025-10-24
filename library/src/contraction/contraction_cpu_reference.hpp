@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP
-#define HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP
+#pragma once
 
 #include <hip/library_types.h>
 #include <vector>
@@ -57,4 +56,3 @@ hiptensorStatus_t hiptensorContractionReference(const hiptensorPlan_t       plan
                                                 hiptensorDataType_t         typeD,
                                                 void*                       workspace);
 
-#endif // HIPTENSOR_CONTRACTION_CPU_REFERENCE_HPP

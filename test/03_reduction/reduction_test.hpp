@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_TEST_HPP
-#define HIPTENSOR_REDUCTION_TEST_HPP
+#pragma once
 
 #include <sstream>
 
@@ -110,4 +109,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_REDUCTION_TEST_HPP

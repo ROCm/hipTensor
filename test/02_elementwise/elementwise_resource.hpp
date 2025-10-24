@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_RESOURCE_HPP
-#define HIPTENSOR_PERMUTATION_RESOURCE_HPP
+#pragma once
 
 #include <memory>
 #include <tuple>
@@ -125,4 +124,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PERMUTATION_RESOURCE_HPP

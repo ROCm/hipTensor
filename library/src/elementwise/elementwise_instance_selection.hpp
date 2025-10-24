@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef PERMUTATION_INSTANCE_SELECTION_HPP
-#define PERMUTATION_INSTANCE_SELECTION_HPP
+#pragma once
 
 #include "data_types.hpp"
 #include "elementwise_types.hpp"
@@ -39,4 +38,3 @@ namespace hiptensor
                                              ck::index_t                             numDim);
 } // namespace hiptensor
 
-#endif // PERMUTATION_INSTANCE_SELECTION_HPP

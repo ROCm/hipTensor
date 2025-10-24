@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_SOLUTION_REGISTRY_HPP
-#define HIPTENSOR_CONTRACTION_SOLUTION_REGISTRY_HPP
+#pragma once
 
 #include <memory>
 #include <unordered_map>
@@ -160,4 +159,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_SOLUTION_REGISTRY_HPP

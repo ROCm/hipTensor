@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef ELEMENTWISE_BINARY_OP_TEST_HELPERS_HPP
-#define ELEMENTWISE_BINARY_OP_TEST_HELPERS_HPP
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -132,4 +131,3 @@ auto inline load_config_helper()
                               ::testing::ValuesIn(testParams.operators()));
 }
 
-#endif // ELEMENTWISE_BINARY_OP_TEST_HELPERS_HPP

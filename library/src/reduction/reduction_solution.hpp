@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_SOLUTION_HPP
-#define HIPTENSOR_REDUCTION_SOLUTION_HPP
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -136,4 +135,3 @@ namespace hiptensor
 
 #include "reduction_solution_impl.hpp"
 
-#endif // HIPTENSOR_REDUCTION_SOLUTION_HPP

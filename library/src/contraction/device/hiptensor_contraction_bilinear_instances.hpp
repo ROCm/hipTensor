@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef CONTRACTION_BILINEAR_HPP
-#define CONTRACTION_BILINEAR_HPP
+#pragma once
 
 #include "common.hpp"
 
@@ -242,4 +241,3 @@ namespace ck
     } // namespace tensor_operation
 } // namespace ck
 
-#endif // CONTRACTION_BILINEAR_HPP

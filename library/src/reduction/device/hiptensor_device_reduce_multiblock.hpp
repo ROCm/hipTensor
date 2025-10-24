@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef REDUCTION_DEVICE_HIPTENSOR_DEVICE_REDUCE_MULTIBLOCK
-#define REDUCTION_DEVICE_HIPTENSOR_DEVICE_REDUCE_MULTIBLOCK
+#pragma once
 
 #include <array>
 #include <iostream>
@@ -601,4 +600,3 @@ namespace ck
         } // namespace device
     } // namespace tensor_operation
 } // namespace ck
-#endif // REDUCTION_DEVICE_HIPTENSOR_DEVICE_REDUCE_MULTIBLOCK

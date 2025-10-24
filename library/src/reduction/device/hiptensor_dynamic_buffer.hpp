@@ -23,8 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#ifndef REDUCTION_DEVICE_HIPTENSOR_DYNAMIC_BUFFER
-#define REDUCTION_DEVICE_HIPTENSOR_DYNAMIC_BUFFER
+#pragma once
 
 #include "c_style_pointer_cast.hpp"
 #include "ck/ck.hpp"
@@ -527,4 +526,3 @@ namespace ck
     }
 
 } // namespace ck
-#endif // REDUCTION_DEVICE_HIPTENSOR_DYNAMIC_BUFFER

@@ -23,8 +23,7 @@
  * THE SOFTWARE.
  *
  *******************************************************************************/
-#ifndef REDUCTION_DEVICE_HIPTENSOR_REFERENCE_REDUCE
-#define REDUCTION_DEVICE_HIPTENSOR_REFERENCE_REDUCE
+#pragma once
 
 #include <algorithm>
 #include <array>
@@ -496,4 +495,3 @@ namespace ck
         } // namespace host
     } // namespace tensor_operation
 } // namespace ck
-#endif // REDUCTION_DEVICE_HIPTENSOR_REFERENCE_REDUCE

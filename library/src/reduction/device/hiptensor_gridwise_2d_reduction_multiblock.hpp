@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef REDUCTION_DEVICE_HIPTENSOR_GRIDWISE_2D_REDUCTION_MULTIBLOCK
-#define REDUCTION_DEVICE_HIPTENSOR_GRIDWISE_2D_REDUCTION_MULTIBLOCK
+#pragma once
 
 #include "ck/tensor_operation/gpu/block/reduction_functions_blockwise.hpp"
 #include "ck/tensor_operation/gpu/element/element_wise_operation.hpp"
@@ -346,4 +345,3 @@ namespace ck
     };
 
 } // namespace ck
-#endif // REDUCTION_DEVICE_HIPTENSOR_GRIDWISE_2D_REDUCTION_MULTIBLOCK

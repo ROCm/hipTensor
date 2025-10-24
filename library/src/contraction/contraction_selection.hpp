@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_HEURISTICS_HPP
-#define HIPTENSOR_CONTRACTION_HEURISTICS_HPP
+#pragma once
 
 #include "contraction_solution.hpp"
 #include <vector>
@@ -110,4 +109,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_HEURISTICS_HPP

@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef ELEMENTWISE_TRINARY_OP_TEST_HPP
-#define ELEMENTWISE_TRINARY_OP_TEST_HPP
+#pragma once
 
 #include <sstream>
 
@@ -112,4 +111,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // ELEMENTWISE_TRINARY_OP_TEST_HPP

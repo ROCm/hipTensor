@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PERMUTATION_TYPES_HPP
-#define HIPTENSOR_PERMUTATION_TYPES_HPP
+#pragma once
 
 #include <ck/ck.hpp>
 #include <ck/utility/sequence.hpp>
@@ -93,4 +92,3 @@ namespace std
 
 } // namespace std
 
-#endif // HIPTENSOR_PERMUTATION_TYPES_HPP

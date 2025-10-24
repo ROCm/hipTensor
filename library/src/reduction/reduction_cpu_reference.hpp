@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_CPU_REFERENCE_HPP
-#define HIPTENSOR_REDUCTION_CPU_REFERENCE_HPP
+#pragma once
 
 #include <hip/library_types.h>
 #include <vector>
@@ -48,4 +47,3 @@ hiptensorStatus_t hiptensorReductionReference(const void*                       
                                               hiptensorOperator_t               opReduce,
                                               hiptensorComputeDescriptor_t      typeCompute,
                                               hipStream_t                       stream);
-#endif // HIPTENSOR_REDUCTION_CPU_REFERENCE_HPP

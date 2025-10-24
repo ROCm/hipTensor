@@ -24,8 +24,8 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_UNARY_ELEMENT_WISE_OPERATION
-#define HIPTENSOR_UNARY_ELEMENT_WISE_OPERATION
+#pragma once
+
 #include <cassert>
 
 #include <ck/utility/data_type.hpp>
@@ -382,4 +382,3 @@ namespace ck
         } // namespace element_wise
     } // namespace tensor_operation
 } // namespace ck
-#endif // HIPTENSOR_UNARY_ELEMENT_WISE_OPERATION

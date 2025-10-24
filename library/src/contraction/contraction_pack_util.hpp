@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_PACK_UTIL_HPP
-#define HIPTENSOR_CONTRACTION_PACK_UTIL_HPP
+#pragma once
 
 #include "data_types.hpp"
 #include "util.hpp"
@@ -137,4 +136,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_PACK_UTIL_HPP

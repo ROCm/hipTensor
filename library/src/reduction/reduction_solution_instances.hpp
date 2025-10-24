@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_SOLUTION_INSTANCES_HPP
-#define HIPTENSOR_REDUCTION_SOLUTION_INSTANCES_HPP
+#pragma once
 
 #include <memory>
 
@@ -177,4 +176,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_REDUCTION_SOLUTION_INSTANCES_HPP

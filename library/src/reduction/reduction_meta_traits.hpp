@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_REDUCTION_META_TRAITS_HPP
-#define HIPTENSOR_REDUCTION_META_TRAITS_HPP
+#pragma once
 
 #include <hiptensor/internal/types.hpp>
 
@@ -97,4 +96,3 @@ namespace hiptensor
     };
 } // namespace hiptensor
 
-#endif // HIPTENSOR_REDUCTION_META_TRAITS_HPP

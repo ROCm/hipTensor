@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PLAN_CACHE_HPP
-#define HIPTENSOR_PLAN_CACHE_HPP
+#pragma once
 
 #include <chrono>
 #include <fstream>
@@ -264,4 +263,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PLAN_CACHE_HPP

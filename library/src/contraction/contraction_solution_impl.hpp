@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_SOLUTION_IMPL_HPP
-#define HIPTENSOR_CONTRACTION_SOLUTION_IMPL_HPP
+#pragma once
 
 #include <algorithm>
 #include <numeric>
@@ -380,4 +379,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_SOLUTION_IMPL_HPP

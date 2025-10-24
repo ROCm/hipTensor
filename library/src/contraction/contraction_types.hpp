@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_TYPES_HPP
-#define HIPTENSOR_CONTRACTION_TYPES_HPP
+#pragma once
 
 #include <ostream>
 
@@ -69,4 +68,3 @@ namespace std
 
 #include "contraction_types_impl.hpp"
 
-#endif // HIPTENSOR_CONTRACTION_TYPES_HPP

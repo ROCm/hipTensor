@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_CONTRACTION_TYPES_IMPL_HPP
-#define HIPTENSOR_CONTRACTION_TYPES_IMPL_HPP
+#pragma once
 
 // CK includes
 #include <contraction_bilinear.hpp>
@@ -72,4 +71,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_CONTRACTION_TYPES_IMPL_HPP

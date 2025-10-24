@@ -24,8 +24,7 @@
  *
  *******************************************************************************/
 
-#ifndef HIPTENSOR_PLAN_CACHE_AUTOTUNE_HPP
-#define HIPTENSOR_PLAN_CACHE_AUTOTUNE_HPP
+#pragma once
 
 #include <unordered_map>
 #include <vector>
@@ -168,4 +167,3 @@ namespace hiptensor
 
 } // namespace hiptensor
 
-#endif // HIPTENSOR_PLAN_CACHE_AUTOTUNE_HPP
