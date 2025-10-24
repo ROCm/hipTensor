@@ -47,7 +47,8 @@ namespace hiptensor
                      typename PermutationTestParams::PermutedDimsT,
                      typename PermutationTestParams::AlphaT,
                      typename PermutationTestParams::GammaT,
-                     typename PermutationTestParams::OperatorT>;
+                     typename PermutationTestParams::OperatorT,
+                     typename PermutationTestParams::MemoryLayoutT>;
     class ElementwiseBinaryOpTest : public ::testing::TestWithParam<ElementwiseBinaryOpTestParams_t>
     {
     protected: // Types
@@ -90,6 +91,10 @@ namespace hiptensor
                            bool                omitFailed,
                            bool                omitPassed) const;
 
+        void fillStridesIfNeeded(std::vector<int64_t>&           strides,
+                                 const std::vector<std::size_t>& lengths,
+                                 hiptensorMemoryLayout_t         memoryLayout) const;
+
     protected:
         // Execution flow control
         uint32_t mRepeats;
@@ -108,4 +113,3 @@ namespace hiptensor
     };
 
 } // namespace hiptensor
-

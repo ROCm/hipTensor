@@ -291,7 +291,6 @@ namespace llvm
         {
             static void mapping(IO& io, hiptensor::ContractionTestParams& doc)
             {
-                std::cout << "MAPPPIIIIIINGGGGGGGGGGGGGGGGG" << std::endl;
                 // Logging bitfield
                 io.mapRequired("Log Level", doc.logLevelMask());
 
