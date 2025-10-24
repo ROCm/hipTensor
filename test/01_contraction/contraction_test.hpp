@@ -53,7 +53,8 @@ namespace hiptensor
                                                      typename ContractionTestParams::StridesT,
                                                      typename ContractionTestParams::ModesT,
                                                      typename ContractionTestParams::AlphaT,
-                                                     typename ContractionTestParams::BetaT>>
+                                                     typename ContractionTestParams::BetaT,
+                                                     typename ContractionTestParams::MemoryLayoutT>>
     {
     protected: // Types
         using Base
@@ -66,7 +67,8 @@ namespace hiptensor
                                                   typename ContractionTestParams::StridesT,
                                                   typename ContractionTestParams::ModesT,
                                                   typename ContractionTestParams::AlphaT,
-                                                  typename ContractionTestParams::BetaT>>;
+                                                  typename ContractionTestParams::BetaT,
+                                                  typename ContractionTestParams::MemoryLayoutT>>;
 
         // Shared access to Contraction storage
         using DataStorage = ContractionResource;
@@ -110,6 +112,10 @@ namespace hiptensor
                            bool                         omitSkipped,
                            bool                         omitFailed,
                            bool                         omitPassed) const;
+
+        void fillStridesIfNeeded(std::vector<std::vector<std::size_t>>&       strides,
+                                 const std::vector<std::vector<std::size_t>>& lengths,
+                                 hiptensorMemoryLayout_t                      memoryLayout) const;
 
     protected:
         // Workspace items

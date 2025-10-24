@@ -28,6 +28,14 @@
 
 #include <hiptensor/internal/hiptensor_utility.hpp>
 
+//! @brief hipTensor data types
+typedef enum
+{
+    HIPTENSOR_MEMORY_LAYOUT_DEFAULT      = 0, // Use the default memory layout
+    HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR = 1, // strides increase monotonically from left to right
+    HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR    = 2, // strides increase monotonically from right to left
+} hiptensorMemoryLayout_t;
+
 namespace hiptensor
 {
     struct HostDeleter
@@ -47,4 +55,3 @@ namespace hiptensor
     };
 
 } // namespace hiptensor
-

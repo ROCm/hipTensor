@@ -130,6 +130,9 @@ namespace hiptensor
         auto modes        = std::get<7>(param);
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
+        auto memoryLayout = std::get<10>(param);
+
+        fillStridesIfNeeded(strides, lengths, memoryLayout);
 
         // clang-format off
         stream
@@ -198,6 +201,7 @@ namespace hiptensor
         auto modes        = std::get<7>(param);
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
+        auto memoryLayout = std::get<10>(param);
 
         EXPECT_EQ(dataTypes.size(), 5);
 
@@ -218,6 +222,8 @@ namespace hiptensor
             }
             EXPECT_TRUE(modes[i].size() == lengths[i].size());
         }
+
+        fillStridesIfNeeded(strides, lengths, memoryLayout);
 
         // Separate compute type from test types
         auto computeType = convertToComputeType(dataTypes[4]);
@@ -726,6 +732,7 @@ namespace hiptensor
         auto modes        = std::get<7>(param);
         auto alpha        = std::get<8>(param);
         auto beta         = std::get<9>(param);
+        auto memoryLayout = std::get<10>(param);
 
         ContractionTest::sAPILogBuff.str("");
 
@@ -971,6 +978,51 @@ namespace hiptensor
             if(!mHeaderPrinted)
             {
                 mHeaderPrinted = true;
+            }
+        }
+    }
+
+    void ContractionTest::fillStridesIfNeeded(std::vector<std::vector<std::size_t>>&       strides,
+                                              const std::vector<std::vector<std::size_t>>& lengths,
+                                              hiptensorMemoryLayout_t memoryLayout) const
+    {
+        // If strides are provided, use them as is
+        if(!strides.empty())
+        {
+            return;
+        }
+
+        // Column major is the default layout, no need to fill strides
+        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
+        {
+            return;
+        }
+
+        strides.resize(lengths.size());
+        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
+        {
+            for(int t = 0; t < static_cast<int>(lengths.size()); t++)
+            {
+                // Fill the srtrides for row major layout
+                strides[t].resize(lengths[t].size());
+                strides[t][lengths[t].size() - 1] = 1;
+                for(int i = static_cast<int>(lengths[t].size()) - 2; i >= 0; --i)
+                {
+                    strides[t][i] = strides[t][i + 1] * lengths[t][i + 1];
+                }
+            }
+        }
+        else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
+        {
+            for(int t = 0; t < static_cast<int>(lengths.size()); t++)
+            {
+                // Fill the srtrides for column major layout
+                strides[t].resize(lengths[t].size());
+                strides[t][0] = 1;
+                for(int i = 1; i < static_cast<int>(lengths[t].size()); ++i)
+                {
+                    strides[t][i] = strides[t][i - 1] * lengths[t][i - 1];
+                }
             }
         }
     }
