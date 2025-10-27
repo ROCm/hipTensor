@@ -46,7 +46,8 @@ namespace hiptensor
                                              typename ReductionTestParams::OutputDimsT,
                                              typename ReductionTestParams::AlphaT,
                                              typename ReductionTestParams::BetaT,
-                                             typename ReductionTestParams::OperatorT>;
+                                             typename ReductionTestParams::OperatorT,
+                                             typename ReductionTestParams::MemoryLayoutT>;
     class ReductionTest : public ::testing::TestWithParam<ReductionTestParams_t>
     {
     protected: // Types
@@ -90,6 +91,10 @@ namespace hiptensor
                            bool                omitFailed,
                            bool                omitPassed) const;
 
+        void fillStridesIfNeeded(std::vector<int64_t>&           strides,
+                                 const std::vector<std::size_t>& lengths,
+                                 hiptensorMemoryLayout_t         memoryLayout) const;
+
     protected:
         // Execution flow control
         uint32_t mRepeats;
@@ -108,4 +113,3 @@ namespace hiptensor
     };
 
 } // namespace hiptensor
-
