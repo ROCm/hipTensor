@@ -90,16 +90,17 @@ namespace hiptensor
             << "Operators, "            // 3
             << "LogLevel, "             // 4
             << "Lengths, "              // 5
-            << "Strides, "              // 6
+            << "StridesIn, "            // 6
             << "PermutedOrder, "        // 7
-            << "Alpha, "                // 8
-            << "Gamma, "                // 9
-            << "ElapsedMs, "            // 10
-            << "Problem Size(GFlops), " // 11
-            << "TFlops/s, "             // 12
-            << "TotalGBytes, "          // 13
-            << "GBytes/s, "             // 14
-            << "Result"                 // 15
+            << "StridesOut, "           // 8
+            << "Alpha, "                // 9
+            << "Gamma, "                // 10
+            << "ElapsedMs, "            // 11
+            << "Problem Size(GFlops), " // 12
+            << "TFlops/s, "             // 13
+            << "TotalGBytes, "          // 14
+            << "GBytes/s, "             // 15
+            << "Result"                 // 16
             << std::endl;
         // clang-format on
     }
@@ -116,8 +117,9 @@ namespace hiptensor
         auto operators    = std::get<6>(param);
         auto memoryLayout = std::get<7>(param);
 
-        std::vector<int64_t> strides = {};
-        fillStridesIfNeeded(strides, lengths, memoryLayout);
+        std::vector<int64_t> stridesIn  = {};
+        std::vector<int64_t> stridesOut = {};
+        fillStridesIfNeeded(stridesIn, stridesOut, lengths, permutedDims, memoryLayout);
 
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                                              // 1
@@ -125,21 +127,22 @@ namespace hiptensor
             << "[ " << opTypeToString(operators[0]) << " " << opTypeToString(operators[1]) << " " << opTypeToString(operators[2]) << "], " // 3
             << logLevelToString(logLevel) << ", ";                                                  // 4
         printContainerInCsv(lengths, stream) << ", ";                                               // 5
-        printContainerInCsv(strides, stream) << ", ";                                               // 6
+        printContainerInCsv(stridesIn, stream) << ", ";                                             // 6
         printContainerInCsv(permutedDims, stream) << ", ";                                          // 7
-        stream << alpha << ", ";                                                                    // 8
-        stream << gamma << ", ";                                                                    // 9
+        printContainerInCsv(stridesOut, stream) << ", ";                                            // 8
+        stream << alpha << ", ";                                                                    // 9
+        stream << gamma << ", ";                                                                    // 10
         // clang-format on
 
         if(!mRunFlag)
         {
             // clang-format off
-            stream << "n/a" << ", " // 10
-                << "n/a" << ", "    // 11
+            stream << "n/a" << ", " // 11
                 << "n/a" << ", "    // 12
                 << "n/a" << ", "    // 13
                 << "n/a" << ", "    // 14
-                << "SKIPPED"        // 15
+                << "n/a" << ", "    // 15
+                << "SKIPPED"        // 16
                 << std::endl;
             // clang-format on
         }
@@ -149,12 +152,12 @@ namespace hiptensor
             auto result = isPerformValidation ? (mValidationResult ? "PASSED" : "FAILED") : "BENCH";
 
             // clang-format off
-            stream << mElapsedTimeMs << ", "     // 10
-                << mTotalGFlops << ", "          // 11
-                << mMeasuredTFlopsPerSec << ", " // 12
-                << mTotalGBytes << ", "          // 13
-                << mGBytesPerSec << ", "         // 14
-                << result                        // 15
+            stream << mElapsedTimeMs << ", "     // 11
+                << mTotalGFlops << ", "          // 12
+                << mMeasuredTFlopsPerSec << ", " // 13
+                << mTotalGBytes << ", "          // 14
+                << mGBytesPerSec << ", "         // 15
+                << result                        // 16
                 << std::endl;
             // clang-format on
         }
@@ -318,8 +321,9 @@ namespace hiptensor
         auto operators    = std::get<6>(param);
         auto memoryLayout = std::get<7>(param);
 
-        std::vector<int64_t> strides = {};
-        fillStridesIfNeeded(strides, lengths, memoryLayout);
+        std::vector<int64_t> stridesIn  = {};
+        std::vector<int64_t> stridesOut = {};
+        fillStridesIfNeeded(stridesIn, stridesOut, lengths, permutedDims, memoryLayout);
 
         auto dataType        = dataTypes[0];
         auto computeDataType = dataTypes[1];
@@ -379,7 +383,7 @@ namespace hiptensor
                                                 &descA,
                                                 nmodeA,
                                                 extentA.data(),
-                                                strides.empty() ? nullptr : strides.data(),
+                                                stridesIn.empty() ? nullptr : stridesIn.data(),
                                                 dataType,
                                                 0));
 
@@ -389,7 +393,7 @@ namespace hiptensor
                                                 &descC,
                                                 nmodeC,
                                                 extentC.data(),
-                                                strides.empty() ? nullptr : strides.data(),
+                                                stridesIn.empty() ? nullptr : stridesIn.data(),
                                                 dataType,
                                                 0));
 
@@ -399,7 +403,7 @@ namespace hiptensor
                                                 &descD,
                                                 nmodeD,
                                                 extentD.data(),
-                                                strides.empty() ? nullptr : strides.data(),
+                                                stridesOut.empty() ? nullptr : stridesOut.data(),
                                                 dataType,
                                                 0));
 
@@ -664,12 +668,14 @@ namespace hiptensor
         }
     }
 
-    void ElementwiseBinaryOpTest::fillStridesIfNeeded(std::vector<int64_t>&           strides,
+    void ElementwiseBinaryOpTest::fillStridesIfNeeded(std::vector<int64_t>&           stridesIn,
+                                                      std::vector<int64_t>&           stridesOut,
                                                       const std::vector<std::size_t>& lengths,
+                                                      const std::vector<std::size_t>& permutedDims,
                                                       hiptensorMemoryLayout_t memoryLayout) const
     {
         // If strides are provided, use them as is
-        if(!strides.empty())
+        if(!stridesIn.empty() && !stridesOut.empty())
         {
             return;
         }
@@ -680,25 +686,49 @@ namespace hiptensor
             return;
         }
 
-        strides.resize(lengths.size());
-        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
+        if(stridesIn.empty())
         {
-            // Fill the srtrides for row major layout
-            strides.resize(lengths.size());
-            strides[lengths.size() - 1] = 1;
-            for(int i = static_cast<int>(lengths.size()) - 2; i >= 0; --i)
+            stridesIn.resize(lengths.size());
+            if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
             {
-                strides[i] = strides[i + 1] * lengths[i + 1];
+                // Fill the strides for row major layout
+                stridesIn[lengths.size() - 1] = 1;
+                for(int i = static_cast<int>(lengths.size()) - 2; i >= 0; --i)
+                {
+                    stridesIn[i] = stridesIn[i + 1] * lengths[i + 1];
+                }
+            }
+            else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
+            {
+                // Fill the strides for column major layout
+                stridesIn[0] = 1;
+                for(int i = 1; i < static_cast<int>(lengths.size()); ++i)
+                {
+                    stridesIn[i] = stridesIn[i - 1] * lengths[i - 1];
+                }
             }
         }
-        else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
+
+        if(stridesOut.empty())
         {
-            // Fill the srtrides for column major layout
-            strides.resize(lengths.size());
-            strides[0] = 1;
-            for(int i = 1; i < static_cast<int>(lengths.size()); ++i)
+            stridesOut.resize(lengths.size());
+            if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
             {
-                strides[i] = strides[i - 1] * lengths[i - 1];
+                // Fill the strides for row major layout
+                stridesOut[lengths.size() - 1] = 1;
+                for(int i = static_cast<int>(lengths.size()) - 2; i >= 0; --i)
+                {
+                    stridesOut[i] = stridesOut[i + 1] * lengths[permutedDims[i + 1]];
+                }
+            }
+            else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
+            {
+                // Fill the strides for column major layout
+                stridesOut[0] = 1;
+                for(int i = 1; i < static_cast<int>(lengths.size()); ++i)
+                {
+                    stridesOut[i] = stridesOut[i - 1] * lengths[permutedDims[i - 1]];
+                }
             }
         }
     }
