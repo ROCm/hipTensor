@@ -143,6 +143,11 @@ auto inline load_sequence_config_params()
 {
     auto testParams = load_config_params();
 
+    if(testParams.memoryLayouts().empty())
+    {
+        testParams.memoryLayouts().push_back(HIPTENSOR_MEMORY_LAYOUT_DEFAULT);
+    }
+
     auto dataTypes          = testParams.dataTypes();
     auto algorithms         = testParams.algorithms();
     auto operators          = testParams.operators();
