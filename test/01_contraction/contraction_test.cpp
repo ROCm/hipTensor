@@ -103,7 +103,7 @@ namespace hiptensor
             << "WorkSizePreference, "   // 8
             << "LogLevel, "             // 9
             << "Lengths, "              // 10
-            << "Strides, "              // 11
+            << "MemoryLayout, "         // 11
             << "Modes, "                // 12
             << "Alpha, "                // 13
             << "Beta, "                 // 14
@@ -132,7 +132,7 @@ namespace hiptensor
         auto beta         = std::get<9>(param);
         auto memoryLayout = std::get<10>(param);
 
-        fillStridesIfNeeded(strides, lengths, memoryLayout);
+        auto usedMemoryLayout = inferMemoryLayout(strides, lengths, memoryLayout);
 
         // clang-format off
         stream
@@ -146,7 +146,7 @@ namespace hiptensor
             << workSizePrefToString(workSizePref) << ", "                     // 8
             << logLevelToString(logLevel) << ", ";                            // 9
         printVectorInCsv(lengths, stream) << ", ";                            // 10
-        printContainerInCsv(strides, stream) << ", ";                         // 11
+        stream << hipMemoryLayoutToString(usedMemoryLayout) << ", ";          // 11
         printContainerInCsv(modes, stream)   << ", ";                         // 12
         printContainerInCsv(alpha, stream)   << ", ";                         // 13
         printContainerInCsv(beta, stream)   << ", ";                          // 14
@@ -213,6 +213,8 @@ namespace hiptensor
             EXPECT_TRUE(strides.size() == 3); // Tensors A, B, C/D
         }
 
+        fillStridesIfNeeded(strides, lengths, memoryLayout);
+
         for(int i = 0; i < lengths.size(); i++)
         {
             EXPECT_TRUE(lengths[i].size() <= MaxNumDimsM + MaxNumDimsN);
@@ -222,8 +224,6 @@ namespace hiptensor
             }
             EXPECT_TRUE(modes[i].size() == lengths[i].size());
         }
-
-        fillStridesIfNeeded(strides, lengths, memoryLayout);
 
         // Separate compute type from test types
         auto computeType = convertToComputeType(dataTypes[4]);
@@ -1025,6 +1025,64 @@ namespace hiptensor
                 }
             }
         }
+    }
+
+    hiptensorMemoryLayout_t
+        ContractionTest::inferMemoryLayout(const std::vector<std::vector<std::size_t>>& strides,
+                                           const std::vector<std::vector<std::size_t>>& lengths,
+                                           hiptensorMemoryLayout_t memoryLayout) const
+    {
+        // If no strides are provided, return the provided memory layout
+        if(strides.empty())
+        {
+            return memoryLayout;
+        }
+
+        // Test if strides are in Row major
+        bool isRowMajor = true;
+        for(int t = 0; t < static_cast<int>(lengths.size()); t++)
+        {
+            if(strides[t][lengths[t].size() - 1] != 1)
+            {
+                isRowMajor = false;
+                break;
+            }
+            for(int i = static_cast<int>(lengths[t].size()) - 2; i >= 0; --i)
+            {
+                if(strides[t][i] != strides[t][i + 1] * lengths[t][i + 1])
+                {
+                    isRowMajor = false;
+                    break;
+                }
+            }
+            if(!isRowMajor)
+            {
+                break;
+            }
+        }
+
+        if(isRowMajor)
+        {
+            return HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR;
+        }
+
+        // Test if strides are in Column major
+        for(int t = 0; t < static_cast<int>(lengths.size()); t++)
+        {
+            if(strides[t][0] != 1)
+            {
+                return HIPTENSOR_MEMORY_LAYOUT_OTHER;
+            }
+            for(int i = 1; i < static_cast<int>(lengths[t].size()); ++i)
+            {
+                if(strides[t][i] != strides[t][i - 1] * lengths[t][i - 1])
+                {
+                    return HIPTENSOR_MEMORY_LAYOUT_OTHER;
+                }
+            }
+        }
+
+        return HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR;
     }
 
     void ContractionTest::TearDown()

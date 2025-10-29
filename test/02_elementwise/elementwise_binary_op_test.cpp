@@ -90,17 +90,16 @@ namespace hiptensor
             << "Operators, "            // 3
             << "LogLevel, "             // 4
             << "Lengths, "              // 5
-            << "StridesIn, "            // 6
+            << "memoryLayout, "         // 6
             << "PermutedOrder, "        // 7
-            << "StridesOut, "           // 8
-            << "Alpha, "                // 9
-            << "Gamma, "                // 10
-            << "ElapsedMs, "            // 11
-            << "Problem Size(GFlops), " // 12
-            << "TFlops/s, "             // 13
-            << "TotalGBytes, "          // 14
-            << "GBytes/s, "             // 15
-            << "Result"                 // 16
+            << "Alpha, "                // 8
+            << "Gamma, "                // 9
+            << "ElapsedMs, "            // 10
+            << "Problem Size(GFlops), " // 11
+            << "TFlops/s, "             // 12
+            << "TotalGBytes, "          // 13
+            << "GBytes/s, "             // 14
+            << "Result"                 // 15
             << std::endl;
         // clang-format on
     }
@@ -117,32 +116,27 @@ namespace hiptensor
         auto operators    = std::get<6>(param);
         auto memoryLayout = std::get<7>(param);
 
-        std::vector<int64_t> stridesIn  = {};
-        std::vector<int64_t> stridesOut = {};
-        fillStridesIfNeeded(stridesIn, stridesOut, lengths, permutedDims, memoryLayout);
-
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                                              // 1
             << computeTypeToString(convertToComputeType(testType[1])) << ", "                       // 2
             << "[ " << opTypeToString(operators[0]) << " " << opTypeToString(operators[1]) << " " << opTypeToString(operators[2]) << "], " // 3
             << logLevelToString(logLevel) << ", ";                                                  // 4
         printContainerInCsv(lengths, stream) << ", ";                                               // 5
-        printContainerInCsv(stridesIn, stream) << ", ";                                             // 6
+        stream << hipMemoryLayoutToString(memoryLayout) << ", ";                                    // 6
         printContainerInCsv(permutedDims, stream) << ", ";                                          // 7
-        printContainerInCsv(stridesOut, stream) << ", ";                                            // 8
-        stream << alpha << ", ";                                                                    // 9
-        stream << gamma << ", ";                                                                    // 10
+        stream << alpha << ", ";                                                                    // 8
+        stream << gamma << ", ";                                                                    // 9
         // clang-format on
 
         if(!mRunFlag)
         {
             // clang-format off
-            stream << "n/a" << ", " // 11
+            stream << "n/a" << ", " // 10
+                << "n/a" << ", "    // 11
                 << "n/a" << ", "    // 12
                 << "n/a" << ", "    // 13
                 << "n/a" << ", "    // 14
-                << "n/a" << ", "    // 15
-                << "SKIPPED"        // 16
+                << "SKIPPED"        // 15
                 << std::endl;
             // clang-format on
         }
@@ -152,12 +146,12 @@ namespace hiptensor
             auto result = isPerformValidation ? (mValidationResult ? "PASSED" : "FAILED") : "BENCH";
 
             // clang-format off
-            stream << mElapsedTimeMs << ", "     // 11
-                << mTotalGFlops << ", "          // 12
-                << mMeasuredTFlopsPerSec << ", " // 13
-                << mTotalGBytes << ", "          // 14
-                << mGBytesPerSec << ", "         // 15
-                << result                        // 16
+            stream << mElapsedTimeMs << ", "     // 10
+                << mTotalGFlops << ", "          // 11
+                << mMeasuredTFlopsPerSec << ", " // 12
+                << mTotalGBytes << ", "          // 13
+                << mGBytesPerSec << ", "         // 14
+                << result                        // 15
                 << std::endl;
             // clang-format on
         }

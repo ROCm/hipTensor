@@ -117,6 +117,11 @@ namespace hiptensor
                                  const std::vector<std::vector<std::size_t>>& lengths,
                                  hiptensorMemoryLayout_t                      memoryLayout) const;
 
+        hiptensorMemoryLayout_t
+            inferMemoryLayout(const std::vector<std::vector<std::size_t>>& strides,
+                              const std::vector<std::vector<std::size_t>>& lengths,
+                              hiptensorMemoryLayout_t                      memoryLayout) const;
+
     protected:
         // Workspace items
         hiptensorHandle_t              handle = nullptr;
@@ -152,4 +157,3 @@ namespace hiptensor
     };
 
 } // namespace hiptensor
-

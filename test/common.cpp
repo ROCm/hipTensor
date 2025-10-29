@@ -24,39 +24,25 @@
  *
  *******************************************************************************/
 
-#pragma once
-
 #include <string>
 
-#include <hiptensor/internal/hiptensor_utility.hpp>
-
-//! @brief hipTensor data types
-typedef enum
-{
-    HIPTENSOR_MEMORY_LAYOUT_DEFAULT      = 0, // Use the default memory layout
-    HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR = 1, // Strides increase monotonically from left to right
-    HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR    = 2, // Strides increase monotonically from right to left
-    HIPTENSOR_MEMORY_LAYOUT_OTHER        = 3, // Other memory layout
-} hiptensorMemoryLayout_t;
+#include "common.hpp"
 
 namespace hiptensor
 {
-    std::string hipMemoryLayoutToString(hiptensorMemoryLayout_t hipMemoryLayout);
-
-    struct HostDeleter
+    std::string hipMemoryLayoutToString(hiptensorMemoryLayout_t hipMemoryLayout)
     {
-        void operator()(void* ptr)
+        switch(hipMemoryLayout)
         {
-            operator delete(ptr);
+        case HIPTENSOR_MEMORY_LAYOUT_DEFAULT:
+            return "HIPTENSOR_MEMORY_LAYOUT_DEFAULT";
+        case HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR:
+            return "HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR";
+        case HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR:
+            return "HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR";
+        case HIPTENSOR_MEMORY_LAYOUT_OTHER:
+        default:
+            return "HIPTENSOR_MEMORY_LAYOUT_OTHER";
         }
-    };
-
-    struct DeviceDeleter
-    {
-        void operator()(void* ptr)
-        {
-            CHECK_HIP_ERROR(hipFree(ptr));
-        }
-    };
-
-} // namespace hiptensor
+    }
+}

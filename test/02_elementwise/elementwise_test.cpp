@@ -84,9 +84,8 @@ namespace hiptensor
             << "Operators, "            // 3
             << "LogLevel, "             // 4
             << "Lengths, "              // 5
-            << "StridesIn, "            // 6
+            << "MemoryLayout, "         // 6
             << "PermutedOrder, "        // 7
-            << "StridesOut, "           // 6
             << "Alpha, "                // 8
             << "ElapsedMs, "            // 9
             << "Problem Size(GFlops), " // 10
@@ -109,31 +108,26 @@ namespace hiptensor
         auto operators    = std::get<5>(param);
         auto memoryLayout = std::get<6>(param);
 
-        std::vector<int64_t> stridesIn  = {};
-        std::vector<int64_t> stridesOut = {};
-        fillStridesIfNeeded(stridesIn, stridesOut, lengths, permutedDims, memoryLayout);
-
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                                              // 1
             << computeTypeToString(convertToComputeType(testType[1])) << ", "                       // 2
             << "[ " << opTypeToString(operators[0]) << "], "                                        // 3
             << logLevelToString(logLevel) << ", ";                                                  // 4
         printContainerInCsv(lengths, stream) << ", ";                                               // 5
-        printContainerInCsv(stridesIn, stream) << ", ";                                             // 6
+        stream << hipMemoryLayoutToString(memoryLayout) << ", ";                                    // 6
         printContainerInCsv(permutedDims, stream) << ", ";                                          // 7
-        printContainerInCsv(stridesOut, stream) << ", ";                                            // 8
-        stream << alpha << ", ";                                                                    // 9
+        stream << alpha << ", ";                                                                    // 8
         // clang-format on
 
         if(!mRunFlag)
         {
             // clang-format off
-            stream << "n/a" << ", " // 10
+            stream << "n/a" << ", " // 9
+                << "n/a" << ", "    // 10
                 << "n/a" << ", "    // 11
                 << "n/a" << ", "    // 12
                 << "n/a" << ", "    // 13
-                << "n/a" << ", "    // 14
-                << "SKIPPED"        // 15
+                << "SKIPPED"        // 14
                 << std::endl;
             // clang-format on
         }
@@ -143,12 +137,12 @@ namespace hiptensor
             auto result = isPerformValidation ? (mValidationResult ? "PASSED" : "FAILED") : "BENCH";
 
             // clang-format off
-            stream << mElapsedTimeMs << ", "     // 10
-                << mTotalGFlops << ", "          // 11
-                << mMeasuredTFlopsPerSec << ", " // 12
-                << mTotalGBytes << ", "          // 13
-                << mGBytesPerSec << ", "         // 14
-                << result                        // 15
+            stream << mElapsedTimeMs << ", "     // 9
+                << mTotalGFlops << ", "          // 10
+                << mMeasuredTFlopsPerSec << ", " // 11
+                << mTotalGBytes << ", "          // 12
+                << mGBytesPerSec << ", "         // 13
+                << result                        // 14
                 << std::endl;
             // clang-format on
         }

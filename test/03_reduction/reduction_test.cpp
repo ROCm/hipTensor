@@ -123,7 +123,7 @@ namespace hiptensor
             << "OperatorReduce, "       // 5
             << "LogLevel, "             // 6
             << "Lengths, "              // 7
-            << "Strides, "              // 8
+            << "memoryLayout, "         // 8
             << "ReOrder, "              // 9
             << "Alpha, "                // 10
             << "Beta, "                 // 11
@@ -152,9 +152,6 @@ namespace hiptensor
         auto reduceOp     = op[2];
         auto memoryLayout = std::get<7>(param);
 
-        std::vector<int64_t> strides = {};
-        fillStridesIfNeeded(strides, lengths, memoryLayout);
-
         // clang-format off
         stream << hipTypeToString(testType[0]) << ", "                           //1
                << computeTypeToString(convertToComputeType(testType[1])) << ", " //2
@@ -163,7 +160,7 @@ namespace hiptensor
                << opTypeToString(reduceOp) << ", "                               //5
                << logLevelToString(logLevel) << ", ";                            //6
         printContainerInCsv(lengths, stream) << ", ";                            //7
-        printContainerInCsv(strides, stream) << ", ";                            //8
+        stream << hipMemoryLayoutToString(memoryLayout) << ", ";                 //8
         printContainerInCsv(outputDims, stream) << ", ";                         //9
         stream << alpha << ", "                                                  //10
             << beta << ", ";                                                     //11
