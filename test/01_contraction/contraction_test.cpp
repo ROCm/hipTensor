@@ -30,6 +30,7 @@
 
 #include "contraction/contraction_cpu_reference.hpp"
 #include "contraction_test.hpp"
+#include "util.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -999,31 +1000,10 @@ namespace hiptensor
         }
 
         strides.resize(lengths.size());
-        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
+        for(int t = 0; t < static_cast<int>(lengths.size()); t++)
         {
-            for(int t = 0; t < static_cast<int>(lengths.size()); t++)
-            {
-                // Fill the srtrides for row major layout
-                strides[t].resize(lengths[t].size());
-                strides[t][lengths[t].size() - 1] = 1;
-                for(int i = static_cast<int>(lengths[t].size()) - 2; i >= 0; --i)
-                {
-                    strides[t][i] = strides[t][i + 1] * lengths[t][i + 1];
-                }
-            }
-        }
-        else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
-        {
-            for(int t = 0; t < static_cast<int>(lengths.size()); t++)
-            {
-                // Fill the srtrides for column major layout
-                strides[t].resize(lengths[t].size());
-                strides[t][0] = 1;
-                for(int i = 1; i < static_cast<int>(lengths[t].size()); ++i)
-                {
-                    strides[t][i] = strides[t][i - 1] * lengths[t][i - 1];
-                }
-            }
+            strides[t] = hiptensor::stridesFromLengths(
+                lengths[t], memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
         }
     }
 

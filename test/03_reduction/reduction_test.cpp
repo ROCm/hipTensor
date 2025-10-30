@@ -288,11 +288,8 @@ namespace hiptensor
                 auto cOp          = op[1];
                 auto reduceOp     = op[2];
 
-                std::vector<int64_t> strides = {};
-                fillStridesIfNeeded(strides, lengths, memoryLayout);
-
                 stream << "Input [type: " << dataTypes << ", lengths: " << lengths
-                       << ", strides: " << strides << ", outputDims: " << outputDims
+                       << ", memoryLayout: " << memoryLayout << ", outputDims: " << outputDims
                        << ", alpha: " << alpha << ", beta: " << beta << ", opReduce: [" << aOp
                        << ", " << cOp << ", " << reduceOp << "]\n";
 
@@ -338,9 +335,6 @@ namespace hiptensor
         auto aOp          = op[0];
         auto cOp          = op[1];
         auto reduceOp     = op[2];
-
-        std::vector<int64_t> stridesA = {};
-        fillStridesIfNeeded(stridesA, lengths, memoryLayout);
 
         auto acDataType      = dataTypes[0];
         auto computeDataType = convertToComputeType(dataTypes[1]);
@@ -389,6 +383,8 @@ namespace hiptensor
             std::vector<int64_t> extentD(extentC);
 
             auto& options = HiptensorOptions::instance();
+
+            std::vector<int64_t> stridesA = fillStridesIfNeeded(extentA, memoryLayout);
 
             std::vector<int64_t> strideD
                 = hiptensor::stridesFromLengths(extentD, options->isColMajorStrides());
@@ -666,43 +662,18 @@ namespace hiptensor
         }
     }
 
-    void ReductionTest::fillStridesIfNeeded(std::vector<int64_t>&           strides,
-                                            const std::vector<std::size_t>& lengths,
-                                            hiptensorMemoryLayout_t         memoryLayout) const
+    std::vector<int64_t>
+        ReductionTest::fillStridesIfNeeded(const std::vector<int64_t>& lengths,
+                                           hiptensorMemoryLayout_t     memoryLayout) const
     {
-        // If strides are provided, use them as is
-        if(!strides.empty())
-        {
-            return;
-        }
-
         // Column major is the default layout, no need to fill strides
         if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
         {
-            return;
+            return {};
         }
 
-        strides.resize(lengths.size());
-        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
-        {
-            // Fill the srtrides for row major layout
-            strides.resize(lengths.size());
-            strides[lengths.size() - 1] = 1;
-            for(int i = static_cast<int>(lengths.size()) - 2; i >= 0; --i)
-            {
-                strides[i] = strides[i + 1] * lengths[i + 1];
-            }
-        }
-        else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
-        {
-            // Fill the srtrides for column major layout
-            strides.resize(lengths.size());
-            strides[0] = 1;
-            for(int i = 1; i < static_cast<int>(lengths.size()); ++i)
-            {
-                strides[i] = strides[i - 1] * lengths[i - 1];
-            }
-        }
+        return hiptensor::stridesFromLengths(lengths,
+                                             memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
     }
 
     void ReductionTest::TearDown() {}

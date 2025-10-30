@@ -31,6 +31,7 @@
 #include "elementwise_trinary_op_test.hpp"
 #include "hiptensor_options.hpp"
 #include "logger.hpp"
+#include "util.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -339,10 +340,6 @@ namespace hiptensor
         auto operators    = std::get<7>(param);
         auto memoryLayout = std::get<8>(param);
 
-        std::vector<int64_t> stridesIn  = {};
-        std::vector<int64_t> stridesOut = {};
-        fillStridesIfNeeded(stridesIn, stridesOut, lengths, permutedDims, memoryLayout);
-
         auto dataType        = dataTypes[0];
         auto computeDataType = dataTypes[1];
 
@@ -395,6 +392,9 @@ namespace hiptensor
             for(auto mode : modeD)
                 extentD.push_back(extent[mode]);
 
+            std::vector<int64_t> stridesIn = fillStridesIfNeeded(extentA, memoryLayout);
+            std::vector<int64_t> stridesD  = fillStridesIfNeeded(extentD, memoryLayout);
+
             hiptensorStatus_t err;
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
@@ -437,7 +437,7 @@ namespace hiptensor
                                                 &descD,
                                                 nmodeD,
                                                 extentD.data(),
-                                                stridesOut.empty() ? nullptr : stridesOut.data(),
+                                                stridesD.empty() ? nullptr : stridesD.data(),
                                                 dataType,
                                                 HIPTENSOR_OP_IDENTITY));
 
@@ -749,69 +749,18 @@ namespace hiptensor
         }
     }
 
-    void ElementwiseTrinaryOpTest::fillStridesIfNeeded(std::vector<int64_t>&           stridesIn,
-                                                       std::vector<int64_t>&           stridesOut,
-                                                       const std::vector<std::size_t>& lengths,
-                                                       const std::vector<std::size_t>& permutedDims,
-                                                       hiptensorMemoryLayout_t memoryLayout) const
+    std::vector<int64_t>
+        ElementwiseTrinaryOpTest::fillStridesIfNeeded(const std::vector<int64_t>& lengths,
+                                                      hiptensorMemoryLayout_t memoryLayout) const
     {
-        // If strides are provided, use them as is
-        if(!stridesIn.empty() && !stridesOut.empty())
-        {
-            return;
-        }
-
         // Column major is the default layout, no need to fill strides
         if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
         {
-            return;
+            return {};
         }
 
-        if(stridesIn.empty())
-        {
-            stridesIn.resize(lengths.size());
-            if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
-            {
-                // Fill the strides for row major layout
-                stridesIn[lengths.size() - 1] = 1;
-                for(int i = static_cast<int>(lengths.size()) - 2; i >= 0; --i)
-                {
-                    stridesIn[i] = stridesIn[i + 1] * lengths[i + 1];
-                }
-            }
-            else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
-            {
-                // Fill the strides for column major layout
-                stridesIn[0] = 1;
-                for(int i = 1; i < static_cast<int>(lengths.size()); ++i)
-                {
-                    stridesIn[i] = stridesIn[i - 1] * lengths[i - 1];
-                }
-            }
-        }
-
-        if(stridesOut.empty())
-        {
-            stridesOut.resize(lengths.size());
-            if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_ROW_MAJOR)
-            {
-                // Fill the strides for row major layout
-                stridesOut[lengths.size() - 1] = 1;
-                for(int i = static_cast<int>(lengths.size()) - 2; i >= 0; --i)
-                {
-                    stridesOut[i] = stridesOut[i + 1] * lengths[permutedDims[i + 1]];
-                }
-            }
-            else // HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR
-            {
-                // Fill the strides for column major layout
-                stridesOut[0] = 1;
-                for(int i = 1; i < static_cast<int>(lengths.size()); ++i)
-                {
-                    stridesOut[i] = stridesOut[i - 1] * lengths[permutedDims[i - 1]];
-                }
-            }
-        }
+        return hiptensor::stridesFromLengths(lengths,
+                                             memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
     }
 
     void ElementwiseTrinaryOpTest::TearDown() {}
