@@ -31,7 +31,7 @@
 #include <hiptensor/hiptensor.hpp>
 
 #include "01_contraction/contraction_test_params.hpp"
-#include "02_permutation/permutation_test_params.hpp"
+#include "02_elementwise/elementwise_test_params.hpp"
 #include "03_reduction/reduction_test_params.hpp"
 #include "common.hpp"
 #include "yaml_parser_impl.hpp"

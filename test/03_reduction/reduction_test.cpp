@@ -98,8 +98,6 @@ namespace hiptensor
 
     void ReductionTest::reset()
     {
-        handle = nullptr;
-
         mRepeats          = 1u;
         mRunFlag          = true;
         mValidationResult = false;
@@ -119,18 +117,20 @@ namespace hiptensor
         return stream
             << "TypeIn, "               // 1
             << "TypeCompute, "          // 2
-            << "Operator, "             // 3
-            << "LogLevel, "             // 4
-            << "Lengths, "              // 5
-            << "ReOrder, "              // 6
-            << "Alpha, "                // 7
-            << "Beta, "                 // 8
-            << "elapsedMs, "            // 9
-            << "Problem Size(GFlops), " // 10
-            << "TFlops/s, "             // 11
-            << "TotalGBytes, "          // 12
-            << "GBytes/s, "             // 13
-            << "Result"                 // 14
+            << "OperatorA, "            // 3
+            << "OperatorC, "            // 4
+            << "OperatorReduce, "       // 5
+            << "LogLevel, "             // 6
+            << "Lengths, "              // 7
+            << "ReOrder, "              // 8
+            << "Alpha, "                // 9
+            << "Beta, "                 // 10
+            << "ElapsedMs, "            // 11
+            << "Problem Size(GFlops), " // 12
+            << "TFlops/s, "             // 13
+            << "TotalGBytes, "          // 14
+            << "GBytes/s, "             // 15
+            << "Result"                 // 16
             << std::endl;
         // clang-format on
     }
@@ -264,8 +264,6 @@ namespace hiptensor
         if((mRunFlag || !omitSkipped) && (mValidationResult || !omitFailed)
            && (!mValidationResult || !omitPassed))
         {
-            stream << ReductionTest::sAPILogBuff.str();
-
             printKernel(stream);
 
             if(mPrintElements)
@@ -414,6 +412,8 @@ namespace hiptensor
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
 
+            CHECK_HIPTENSOR_ERROR(hiptensorLoggerSetMask(logLevel));
+
             hiptensorTensorDescriptor_t descA = nullptr;
             CHECK_HIPTENSOR_ERROR(hiptensorCreateTensorDescriptor(
                 handle, &descA, nmodeA, extentA.data(), NULL /* stride */, acDataType, 0));
@@ -446,14 +446,11 @@ namespace hiptensor
             CHECK_HIPTENSOR_ERROR(
                 hiptensorCreatePlanPreference(handle, &planPref, algo, HIPTENSOR_JIT_MODE_NONE));
 
-            uint64_t worksize = 0;
+            uint64_t                            worksize      = 0;
             const hiptensorWorksizePreference_t workspacePref = HIPTENSOR_WORKSPACE_DEFAULT;
-            CHECK_HIPTENSOR_ERROR(hiptensorEstimateWorkspaceSize(handle,
-                                                  desc,
-                                                  planPref,
-                                                  workspacePref,
-                                                  &worksize));
- 
+            CHECK_HIPTENSOR_ERROR(
+                hiptensorEstimateWorkspaceSize(handle, desc, planPref, workspacePref, &worksize));
+
             resource->setupWorkspace(worksize);
 
             hiptensorPlan_t plan;
@@ -587,12 +584,18 @@ namespace hiptensor
 
             if(!loggingOptions->omitCout())
             {
+                std::cout << ReductionTest::sAPILogBuff.str();
                 reportResults(std::cout,
                               acDataType,
                               mHeaderPrinted,
                               loggingOptions->omitSkipped(),
                               loggingOptions->omitFailed(),
                               loggingOptions->omitPassed());
+            }
+
+            if(loggingOptions->logOstream().isOpen())
+            {
+                loggingOptions->logOstream().fstream() << ReductionTest::sAPILogBuff.str();
             }
 
             if(loggingOptions->ostream().isOpen())
@@ -610,30 +613,29 @@ namespace hiptensor
             {
                 mHeaderPrinted = true;
             }
+
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlan(plan));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyPlanPreference(planPref));
+            CHECK_HIPTENSOR_ERROR(hiptensorDestroyOperationDescriptor(desc));
             if(descA)
             {
-                hiptensorDestroyTensorDescriptor(descA);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descA));
                 descA = nullptr;
             }
             if(descC)
             {
-                hiptensorDestroyTensorDescriptor(descC);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descC));
                 descC = nullptr;
             }
             if(descD)
             {
-                hiptensorDestroyTensorDescriptor(descD);
+                CHECK_HIPTENSOR_ERROR(hiptensorDestroyTensorDescriptor(descD));
                 descD = nullptr;
             }
         }
     }
 
-    void ReductionTest::TearDown()
-    {
-        if(mRunFlag)
-        {
-            CHECK_HIPTENSOR_ERROR(hiptensorDestroy(handle));
-        }
-    }
+    void ReductionTest::TearDown() {}
 
 } // namespace hiptensor

@@ -83,6 +83,7 @@ include(ROCMSetupVersion)
 include(ROCMCreatePackage)
 include(ROCMInstallTargets)
 include(ROCMCheckTargetIds)
+include(ROCMClients)
 
 include(ROCMPackageConfigHelpers)
 include(ROCMInstallSymlinks)
@@ -193,13 +194,13 @@ endif()
 
 # Configure tests build
 if(HIPTENSOR_BUILD_TESTS)
-  rocm_package_setup_component(tests PARENT clients)
+  rocm_package_setup_client_component(tests)
   add_subdirectory(test)
 endif()
 
 # Configure clients build
 if(HIPTENSOR_BUILD_SAMPLES)
-  rocm_package_setup_component(samples PARENT clients)
+  rocm_package_setup_client_component(samples)
   add_subdirectory(samples)
 endif()
 

@@ -28,7 +28,6 @@
 #define HIPTENSOR_IOSTREAM
 
 #include <fstream>
-#include <iostream>
 #include <utility>
 
 namespace hiptensor

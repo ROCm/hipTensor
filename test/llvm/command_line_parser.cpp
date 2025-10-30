@@ -38,9 +38,13 @@ llvm::cl::opt<std::string> hiptensorInputFilename("y",
                                                   llvm::cl::value_desc("filename"),
                                                   llvm::cl::cat(HiptensorCategory));
 llvm::cl::opt<std::string> hiptensorOutputFilename("o",
-                                                   llvm::cl::desc("Specify output filename"),
+                                                   llvm::cl::desc("Specify output CSV filename"),
                                                    llvm::cl::value_desc("filename"),
                                                    llvm::cl::cat(HiptensorCategory));
+llvm::cl::opt<std::string> hiptensorLogFilename("l",
+                                                llvm::cl::desc("Specify log filename"),
+                                                llvm::cl::value_desc("filename"),
+                                                llvm::cl::cat(HiptensorCategory));
 llvm::cl::opt<std::string>
     hiptensorValidationOption("v",
                               llvm::cl::desc("Specify whether to perform validation"),
@@ -86,6 +90,7 @@ namespace hiptensor
         // set I/O files if present
         options->setInputYAMLFilename(hiptensorInputFilename);
         options->setOutputStreamFilename(hiptensorOutputFilename);
+        options->setLogStreamFilename(hiptensorLogFilename);
 
         options->setOmits(hiptensorOmitMask);
 
@@ -104,6 +109,12 @@ namespace hiptensor
         if(!options->outputFilename().empty())
         {
             options->setOstream(options->outputFilename());
+        }
+
+        // Initialize log stream
+        if(!options->logFilename().empty())
+        {
+            options->setLogOstream(options->logFilename());
         }
     }
 }

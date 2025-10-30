@@ -39,11 +39,11 @@ if [ -d "$binary_dir" ]; then
     # setup output directory for benchmarks
     mkdir -p "$output_dir"
 
-    tests=("rank2_permutation_test"
-           "rank3_permutation_test"
-           "rank4_permutation_test"
-           "rank5_permutation_test"
-           "rank6_permutation_test"
+    tests=("rank2_elementwise_permute_test"
+           "rank3_elementwise_permute_test"
+           "rank4_elementwise_permute_test"
+           "rank5_elementwise_permute_test"
+           "rank6_elementwise_permute_test"
            "rank2_elementwise_binary_op_test"
            "rank3_elementwise_binary_op_test"
            "rank4_elementwise_binary_op_test"

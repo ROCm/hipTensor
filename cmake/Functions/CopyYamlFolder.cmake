@@ -93,7 +93,7 @@ endfunction()
 
 function(copy_code_coverage_config_files SOURCE_FOLDER DEST_FOLDER)
     # Define the patterns to process
-    set(PATTERNS "01_contraction" "02_permutation" "03_reduction")
+    set(PATTERNS "01_contraction" "02_elementwise" "03_reduction")
     # Initialize variable to track copied files
     set(COPIED_FILES_LIST "")
 
@@ -102,7 +102,7 @@ function(copy_code_coverage_config_files SOURCE_FOLDER DEST_FOLDER)
         # Create the source path
         if(PATTERN STREQUAL "01_contraction")
             set(SOURCE_PATHS "${SOURCE_FOLDER}/${PATTERN}/configs/code_coverage/")
-        elseif(PATTERN STREQUAL "02_permutation")
+        elseif(PATTERN STREQUAL "02_elementwise")
             # The config files of smoke and code coverage are the same for permution and reduction
             # reuse the smoke config files to avoid duplicated files
             set(SOURCE_PATHS
