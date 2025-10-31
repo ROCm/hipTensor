@@ -31,7 +31,6 @@
 #include "elementwise_test.hpp"
 #include "hiptensor_options.hpp"
 #include "logger.hpp"
-#include "util.hpp"
 #include "utils.hpp"
 
 namespace hiptensor
@@ -524,20 +523,6 @@ namespace hiptensor
         {
             mHeaderPrinted = true;
         }
-    }
-
-    std::vector<int64_t>
-        PermutationTest::fillStridesIfNeeded(const std::vector<int64_t>& lengths,
-                                             hiptensorMemoryLayout_t     memoryLayout) const
-    {
-        // Column major is the default layout, no need to fill strides
-        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
-        {
-            return {};
-        }
-
-        return hiptensor::stridesFromLengths(lengths,
-                                             memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
     }
 
     void PermutationTest::TearDown() {}

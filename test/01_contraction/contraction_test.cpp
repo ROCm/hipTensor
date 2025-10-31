@@ -214,7 +214,15 @@ namespace hiptensor
             EXPECT_TRUE(strides.size() == 3); // Tensors A, B, C/D
         }
 
-        fillStridesIfNeeded(strides, lengths, memoryLayout);
+        // If strides are provided, use as is
+        if(strides.empty() && memoryLayout != HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
+        {
+            strides.resize(lengths.size());
+            for(int t = 0; t < static_cast<int>(lengths.size()); t++)
+            {
+                strides[t] = fillStridesIfNeeded(lengths[t], memoryLayout);
+            }
+        }
 
         for(int i = 0; i < lengths.size(); i++)
         {
@@ -980,30 +988,6 @@ namespace hiptensor
             {
                 mHeaderPrinted = true;
             }
-        }
-    }
-
-    void ContractionTest::fillStridesIfNeeded(std::vector<std::vector<std::size_t>>&       strides,
-                                              const std::vector<std::vector<std::size_t>>& lengths,
-                                              hiptensorMemoryLayout_t memoryLayout) const
-    {
-        // If strides are provided, use them as is
-        if(!strides.empty())
-        {
-            return;
-        }
-
-        // Column major is the default layout, no need to fill strides
-        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
-        {
-            return;
-        }
-
-        strides.resize(lengths.size());
-        for(int t = 0; t < static_cast<int>(lengths.size()); t++)
-        {
-            strides[t] = hiptensor::stridesFromLengths(
-                lengths[t], memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
         }
     }
 

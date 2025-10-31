@@ -29,7 +29,9 @@
 #include <ck/utility/data_type.hpp>
 #include <ck/utility/tuple.hpp>
 #include <hiptensor/hiptensor.h>
+#include <hiptensor/hiptensor_types.h>
 #include <hiptensor/internal/types.hpp>
+#include <data_types.hpp>
 #include <logger.hpp>
 #include <numeric>
 #include <type_traits>
