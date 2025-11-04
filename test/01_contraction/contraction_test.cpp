@@ -220,8 +220,7 @@ namespace hiptensor
             strides.resize(lengths.size());
             for(int t = 0; t < static_cast<int>(lengths.size()); t++)
             {
-                strides[t] = stridesFromLengths(
-                    lengths[t], memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
+                strides[t] = fillStridesIfNeeded(lengths[t], memoryLayout);
             }
         }
 
