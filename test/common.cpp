@@ -26,7 +26,10 @@
 
 #include <string>
 
+#include <data_types.hpp>
+
 #include "common.hpp"
+#include "util.hpp"
 
 namespace hiptensor
 {
@@ -44,5 +47,17 @@ namespace hiptensor
         default:
             return "HIPTENSOR_MEMORY_LAYOUT_OTHER";
         }
+    }
+
+    std::vector<int64_t> fillStridesIfNeeded(const std::vector<int64_t>& lengths,
+                                             hiptensorMemoryLayout_t     memoryLayout)
+    {
+        // Column major is the default layout, no need to fill strides
+        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
+        {
+            return {};
+        }
+
+        return stridesFromLengths(lengths, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
     }
 }
