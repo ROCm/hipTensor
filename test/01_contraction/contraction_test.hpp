@@ -113,6 +113,10 @@ namespace hiptensor
                            bool                         omitFailed,
                            bool                         omitPassed) const;
 
+        void fillStridesIfNeeded(std::vector<std::vector<std::size_t>>&       strides,
+                                 const std::vector<std::vector<std::size_t>>& lengths,
+                                 hiptensorMemoryLayout_t                      memoryLayout) const;
+
         hiptensorMemoryLayout_t
             inferMemoryLayout(const std::vector<std::vector<std::size_t>>& strides,
                               const std::vector<std::vector<std::size_t>>& lengths,
