@@ -27,8 +27,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <hiptensor/internal/hiptensor_utility.hpp>
+#include "util.hpp"
 
 //! @brief hipTensor data types
 typedef enum
@@ -42,6 +44,19 @@ typedef enum
 namespace hiptensor
 {
     std::string hipMemoryLayoutToString(hiptensorMemoryLayout_t hipMemoryLayout);
+
+    template <typename T>
+    std::vector<T> fillStridesIfNeeded(const std::vector<T>&   lengths,
+                                       hiptensorMemoryLayout_t memoryLayout)
+    {
+        // Column major is the default layout, no need to fill strides
+        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
+        {
+            return {};
+        }
+
+        return stridesFromLengths(lengths, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
+    }
 
     struct HostDeleter
     {
