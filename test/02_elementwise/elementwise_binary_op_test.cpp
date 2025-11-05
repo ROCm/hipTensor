@@ -363,8 +363,16 @@ namespace hiptensor
             for(auto mode : modeD)
                 extentD.push_back(extent[mode]);
 
-            std::vector<int64_t> stridesIn = fillStridesIfNeededBinary(extentA, memoryLayout);
-            std::vector<int64_t> stridesD  = fillStridesIfNeededBinary(extentD, memoryLayout);
+            std::vector<int64_t> stridesIn
+                = memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT
+                      ? std::vector<int64_t>{}
+                      : hiptensor::stridesFromLengths(
+                            extentA, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
+            std::vector<int64_t> stridesD
+                = memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT
+                      ? std::vector<int64_t>{}
+                      : hiptensor::stridesFromLengths(
+                            extentD, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
 
             hiptensorHandle_t handle;
             CHECK_HIPTENSOR_ERROR(hiptensorCreate(&handle));
@@ -660,19 +668,6 @@ namespace hiptensor
         {
             mHeaderPrinted = true;
         }
-    }
-
-    std::vector<int64_t> ElementwiseBinaryOpTest::fillStridesIfNeededBinary(
-        const std::vector<int64_t>& lengths, hiptensorMemoryLayout_t memoryLayout) const
-    {
-        // Column major is the default layout, no need to fill strides
-        if(memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT)
-        {
-            return {};
-        }
-
-        return hiptensor::stridesFromLengths(lengths,
-                                             memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
     }
 
     void ElementwiseBinaryOpTest::TearDown() {}

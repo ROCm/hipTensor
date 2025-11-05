@@ -384,7 +384,11 @@ namespace hiptensor
 
             auto& options = HiptensorOptions::instance();
 
-            std::vector<int64_t> stridesA = fillStridesIfNeeded(extentA, memoryLayout);
+            std::vector<int64_t> stridesA
+                = memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT
+                      ? std::vector<int64_t>{}
+                      : hiptensor::stridesFromLengths(
+                            extentA, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
 
             std::vector<int64_t> strideD
                 = hiptensor::stridesFromLengths(extentD, options->isColMajorStrides());

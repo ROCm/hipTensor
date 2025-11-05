@@ -91,9 +91,6 @@ namespace hiptensor
                            bool                omitFailed,
                            bool                omitPassed) const;
 
-        std::vector<int64_t> fillStridesIfNeededBinary(const std::vector<int64_t>& lengths,
-                                                       hiptensorMemoryLayout_t memoryLayout) const;
-
     protected:
         // Execution flow control
         uint32_t mRepeats;

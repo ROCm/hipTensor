@@ -44,9 +44,6 @@ namespace hiptensor
 {
     std::string hipMemoryLayoutToString(hiptensorMemoryLayout_t hipMemoryLayout);
 
-    std::vector<int64_t> fillStridesIfNeeded(const std::vector<int64_t>& lengths,
-                                             hiptensorMemoryLayout_t     memoryLayout);
-
     struct HostDeleter
     {
         void operator()(void* ptr)

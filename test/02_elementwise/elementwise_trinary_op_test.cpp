@@ -392,8 +392,16 @@ namespace hiptensor
             for(auto mode : modeD)
                 extentD.push_back(extent[mode]);
 
-            std::vector<int64_t> stridesIn = fillStridesIfNeeded(extentA, memoryLayout);
-            std::vector<int64_t> stridesD  = fillStridesIfNeeded(extentD, memoryLayout);
+            std::vector<int64_t> stridesIn
+                = memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT
+                      ? std::vector<int64_t>{}
+                      : hiptensor::stridesFromLengths(
+                            extentA, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
+            std::vector<int64_t> stridesD
+                = memoryLayout == HIPTENSOR_MEMORY_LAYOUT_DEFAULT
+                      ? std::vector<int64_t>{}
+                      : hiptensor::stridesFromLengths(
+                            extentD, memoryLayout == HIPTENSOR_MEMORY_LAYOUT_COLUMN_MAJOR);
 
             hiptensorStatus_t err;
             hiptensorHandle_t handle;
