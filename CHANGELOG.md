@@ -34,7 +34,7 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 
 ### Changed
 
-* Replaced `permutation` with `welementwise` or `elementwise_permute` across folder names, file names, function names, and variable names.
+* Replaced `permutation` with `elementwise` or `elementwise_permute` across folder names, file names, function names, and variable names.
 
 ### Resolved issues
 
