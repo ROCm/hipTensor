@@ -45,6 +45,12 @@ Full documentation for hipTensor is available at [rocm.docs.amd.com/projects/hip
 * Replaced `hiptensorElementwiseTrinary` with `hiptensorElementwiseTrinaryExecute`.
 * Removed function `hiptensorReductionGetWorkspaceSize`.
 
+### Resolved issues
+
+* Fixed `HIPTENSOR_ALGO_ACTOR_CRITIC` contraction plans failing with `HIPTENSOR_STATUS_EXECUTION_FAILED` when built against a
+  Composable Kernel whose contraction instances changed. Actor-critic now looks up kernels by name instead of by a
+  compiler-specific type hash, and the selected kernels match the current Composable Kernel instances.
+
 ## hipTensor 1.5.0 for ROCm 6.4.0
 
 ### Added
